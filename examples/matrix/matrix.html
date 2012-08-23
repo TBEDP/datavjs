@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Matrix</title>
+    <script type="text/javascript" src="../../deps/d3.min.js"></script>
+	<script type="text/javascript" src="../../deps/d3.csv.js"></script>
+    <script type="text/javascript" src="../../deps/d3.layout.min.js"></script>
+    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+	<script src="../../deps/eventproxy.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+
+  <STYLE type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+}
+.textArea {
+    border: 2px solid black;
+    color: black;
+    font-family: monospace;
+    height: 3in;
+    overflow: auto;
+    padding: 0.5em;
+    width: 750px;
+}
+</STYLE>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+	<!--
+    <p>code Output: (Download codes.rar, then replace the content of dataInput.js with the codes in the textarea below.)</p>
+    <p><textarea id="codeOutput" class="textArea">
+    </textarea></p>
+
+    <p>download <a href="./codes.rar">codes.rar</a></p>
+	-->
+    <script type="text/javascript">
+		seajs.config({
+			alias: {
+				'jquery': '/deps/jquery-1.7.1.js',
+				'datav': '/datav.js',
+				'matrix': '/libs/matrix.js'
+			}
+		});
+		seajs.use(["matrix", "datav"], function (Matrix, DataV) {
+			var matrix = new Matrix("chart", {});
+			DataV.csv("DataExample.csv", function(source){
+				matrix.setSource(source);
+				matrix.render();
+			});
+
+			matrix.on("click", function (event) {
+				var sort = new Array();
+				var count;
+				var pt;
+				for (n=0;n<100;n++)
+				{
+					sort[n] = n;
+				}
+
+				for (n=0;n<100;n++)
+				{	
+					count = Math.random() * 99;
+					count = Math.round(count);
+
+					pt = sort[n];
+					sort[n] = sort[count];
+					sort[count] = pt;
+				}
+
+				matrix.update(sort);
+			});
+		});
+    </script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>Parallel Coordinates</title>
+    <style type="text/css">
+/*
+svg {
+  font: 10px sans-serif;
+}
+
+.background path {
+  fill: none;
+  stroke: #ccc;
+  stroke-opacity: .4;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+  stroke-opacity: .7;
+}
+
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line, .axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff;
+}
+*/
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript" src="../../deps/d3.js"></script>
+    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+    <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+
+    <div id="chart"></div>
+    <p>brushstart</p>
+    <div id="info_brushstart"></div>
+    <p>brush</p>
+    <div id="info_brush"></div>
+    <p>brushend</p>
+    <div id="info_brushend"></div>
+    <script type="text/javascript">
+
+    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
+    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+        alias: {
+            'datav': dir + '/../../datav.js',
+            'parallel': dir + '/../../libs/parallel.js'
+        }
+    });
+
+    seajs.use(["parallel", "datav"], function (Parallel, DataV) {
+        var parallel = new Parallel("chart", {"width": 950, "height": 500});
+        
+        DataV.csv("cars.csv", function(dataSource) {
+            var domains;
+            parallel.setSource(dataSource);
+            parallel.chooseDimensions(["economy (mpg)", "cylinders", "displacement (cc)", "power (hp)", "weight (lb)", "0-60 mph (s)", "year"]);
+            parallel.setDimensionType({"cylinders": "ordinal"});
+            domains = parallel.getDimensionDomains();
+            parallel.setDimensionDomain({"cylinders": domains["cylinders"].sort(d3.ascending),
+                                        "economy (mpg)": domains["economy (mpg)"].reverse()});
+            parallel.setDimensionExtent({"cylinders": ["6", "3"], "economy (mpg)": [35, 20] });
+
+            parallel.on("brushstart", function() {
+                $("#info_brushstart").html(JSON.stringify(this.statistic));
+                });
+            parallel.on("brush", function() {
+                $("#info_brush").html(JSON.stringify(this.statistic));
+                });
+            parallel.on("brushend", function() {
+                $("#info_brushend").html(JSON.stringify(this.statistic));
+                });
+            parallel.render();
+            parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
+        });
+    });
+
+
+    </script>
+  </body>
+</html>

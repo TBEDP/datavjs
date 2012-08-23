@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>Hierarchical Edge Bundling</title>
+        <style type="text/css">
+            .node {
+                font: 12px sans-serif;
+            }
+            .link {
+                stroke: steelblue;
+                stroke-opacity: .4;
+                fill: none;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <script type="text/javascript" src="../../deps/d3.js"></script>
+        <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+        <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+
+        <div id="chart"></div>
+        <script type="text/javascript">
+    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
+    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+        alias: {
+            'datav': dir + '/../../datav.js',
+            'bundle': dir + '/../../libs/bundle.js'
+        }
+    });
+    seajs.use(["bundle", "datav"], function (Bundle, DataV) {
+            var bundle = new Bundle("chart", {
+                "diameter": 1000
+            });
+            DataV.json("data.json", function (source) {
+                bundle.setSource(source);
+                bundle.render();
+            });
+            /*
+            DataV.csv("bundle.csv", function(source){
+                bundle.setSource(source);
+                bundle.render();
+            });
+            */
+    });
+        </script>
+    </body>
+
+</html>

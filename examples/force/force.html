@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)http://mbostock.github.com/d3/ex/force.html
+-->
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Force-Directed Graph</title>
+        <script src="../../deps/compatible.js"></script>
+        <script type="text/javascript" src="../../deps/d3.min.js"></script>
+        <script type="text/javascript" src="../../deps/d3.layout.min.js"></script>
+        <script type="text/javascript" src="../../deps/d3.geom.min.js"></script>
+        <script type="text/javascript" src="../../deps/d3.csv.js"></script>
+        <script src="../../deps/raphael.min.js"></script>
+        <!-- force -->
+        <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+        <script type="text/javascript">
+            var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+            seajs.config({
+                alias: {
+                    'datav': dir + '/../../datav.js',
+                    'force': dir + '/../../libs/force.js'
+                }
+            });
+        </script>
+        <STYLE type="text/css">
+            #chart {
+                border-top: 1px dashed #F00;
+                border-bottom: 1px dashed #F00;
+                padding-left: 20px;
+            }
+            .textArea {
+                border: 2px solid black;
+                color: black;
+                font-family: monospace;
+                height: 3in;
+                overflow: auto;
+                padding: 0.5em;
+                width: 750px;
+            }
+        </STYLE>
+    </head>
+    
+    <body>
+        <div class="body">
+            <h1 id="forcedirected_graph">Force-Directed Graph</h1>
+            <div class="gallery" id="chart"></div>
+        </div>
+        <script type="text/javascript">
+            seajs.use(["force", "datav"], function (Force, DataV) {
+                // DataV.changeTheme("datav");
+                var net = new Force("chart", {
+                    width: 800,
+                    height: 600,
+                    tag: true
+                });
+                DataV.csv("DataExample.csv", function (source) {
+                    net.setSource(source);
+                    net.render();
+                });
+            });
+        </script>
+    </body>
+
+</html>

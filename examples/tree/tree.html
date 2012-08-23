@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>tree</title>
+    <script type="text/javascript" src="../../deps/d3.min.js"></script>
+	<script type="text/javascript" src="../../deps/d3.csv.js"></script>
+    <script type="text/javascript" src="../../deps/d3.layout.min.js"></script>
+    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+	<script src="../../deps/eventproxy.js"></script>
+
+	<script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+
+  <STYLE type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+}
+.textArea {
+    border: 2px solid black;
+    color: black;
+    font-family: monospace;
+    height: 3in;
+    overflow: auto;
+    padding: 0.5em;
+    width: 750px;
+}
+</STYLE>
+  </head>
+
+  <body>
+
+    <div id="chart"></div>
+
+    <script type="text/javascript">
+	    seajs.config({
+			alias: {
+				'jquery': '/deps/jquery-1.7.1.js',
+				'datav': '/datav.js',
+				'tree': '/libs/tree.js'
+			}
+		});
+		seajs.use(["tree", "datav"], function (Tree, DataV) {
+			var tree = new Tree("chart", {width:960});
+			DataV.csv("DataExample.csv", function(source){
+				tree.setSource(source);
+				tree.render();
+			});
+		});
+    </script>
+  </body>
+</html>

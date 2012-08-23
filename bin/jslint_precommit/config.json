@@ -1,0 +1,11 @@
+{
+  "indent": 4,
+  "plusplus": true,
+  "sloppy": true,
+  "eqeqeq": true,
+  "maxlen": 120,
+  "node": true,
+  "nomen": true,
+  "browser": true,
+  "vars": true
+}

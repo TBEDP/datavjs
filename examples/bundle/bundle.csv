@@ -1,0 +1,21 @@
+name,imports
+flare.vis.data.DataList,flare.analytics.cluster.CommunityStructure
+flare.animate.interpolate.ArrayInterpolator,flare.util.Arrays flare.animate.interpolate.Interpolator
+flare.util.Arrays,flare.util.IValueProxy flare.util.Property flare.util.IEvaluable
+flare.animate.interpolate.Interpolator,flare.util.Property flare.util.IEvaluable
+flare.util.IValueProxy,flare.animate.interpolate.ArrayInterpolator flare.analytics.cluster.AgglomerativeCluster
+flare.util.Property,flare.util.IEvaluable
+flare.util.IEvaluable,flare.animate.Transitioner
+flare.data.DataTable,flare.data.DataUtil flare.vis.data.DataList
+flare.data.DataUtil,flare.util.Arrays flare.vis.data.DataList
+flare.display.DirtySprite,flare.data.DataUtil flare.vis.data.DataList
+flare.display.RectSprite,flare.display.DirtySprite
+flare.display.TextSprite,flare.data.DataUtil flare.vis.data.DataList flare.display.RectSprite
+flare.flex.FlareVis,flare.data.DataUtil flare.vis.data.DataList flare.display.RectSprite
+flare.physics.DragForce,flare.physics.Simulation flare.physics.Particle flare.physics.IForce
+flare.physics.Simulation,flare.util.IEvaluable flare.physics.Particle flare.physics.IForce
+flare.physics.Particle,flare.physics.Simulation
+flare.physics.IForce,flare.physics.Particle flare.animate.interpolate.ArrayInterpolator
+flare.analytics.cluster.AgglomerativeCluster,flare.animate.Transitioner flare.vis.data.DataList
+flare.analytics.cluster.CommunityStructure,flare.animate.Transitioner
+flare.animate.Transitioner,flare.vis.data.DataList
