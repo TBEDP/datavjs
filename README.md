@@ -6,7 +6,7 @@
  * [sea.js](https://github.com/seajs/seajs).
 
 ## Want to learn more?
-   The example site: <http://datavlab.org/datav.js/>
+   The example site: <http://datavlab.org/datavjs/>
    
 ## License
    datavjs is available under the terms of the MIT License.
