@@ -225,11 +225,12 @@ define(function (require, exports, module) {
         //画背景点------------------------------------------------------------------------//
         var circlesBg = paper.set(); //背景点
         var centerPos;
-        for (k = 0; k < sourceData.length; k++) {
-            for (i = 0; i < lx; i++) {
-                for (j = 0; j < ly; j++) {
-                    centerPos = this.circleCenter(k, dimensionsX[i], dimensionsY[j]);
-                    if (browserName !== "Microsoft Internet Explorer") {
+
+        if (browserName !== "Microsoft Internet Explorer") {
+            for (k = 0; k < sourceData.length; k++) {
+                for (i = 0; i < lx; i++) {
+                    for (j = 0; j < ly; j++) {
+                        centerPos = this.circleCenter(k, dimensionsX[i], dimensionsY[j]);
                         circlesBg.push(paper.circle(centerPos[0], centerPos[1], cR).attr({
                             "fill": "gray",
                             "stroke": "none",
@@ -237,8 +238,9 @@ define(function (require, exports, module) {
                         }));
                     }
                 }
-            }
+            } 
         }
+        
 
         //画矩形框 ------------------------------------------------------------------------// 
         var squares = paper.set();
@@ -397,7 +399,7 @@ define(function (require, exports, module) {
         }
 
         //图例--- ------------------------------------------------------------------//
-        if (browserName !== "Microsoft Internet Explorer") {
+        
             var tagArea = this.defaults.tagArea;
             var rectBn = paper.set();
             var underBn = [];
@@ -430,6 +432,7 @@ define(function (require, exports, module) {
                 }).data("type", i)).data("clicked", 0);
             }
 
+        if (browserName !== "Microsoft Internet Explorer") {
             rectBn.forEach(function (d, i) {
                 underBn[i].data('tagclicked', false);
                 d.mouseover(function () {
