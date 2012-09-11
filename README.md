@@ -1,12 +1,15 @@
-# datavjs is a JavaScript library for data visualization.
+# DataV.js is a JavaScript library for data visualization
+======
+## Plan
+* [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). Welcome join us.
 
 ## Requires:
- * [d3.js](https://github.com/mbostock/d3).
- * [raphael.js](http://raphaeljs.com/).
- * [sea.js](https://github.com/seajs/seajs).
+* [d3.js](https://github.com/mbostock/d3).
+* [raphael.js](http://raphaeljs.com/).
+* [sea.js](https://github.com/seajs/seajs).
 
-## Want to learn more?
-   The example site: <http://datavlab.org/datavjs/>
-   
+## Learn more?
+The example site: <http://datavlab.org/datavjs/>
+
 ## License
-   datavjs is available under the terms of the MIT License.
+DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
