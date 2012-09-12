@@ -9,4 +9,4 @@
    The example site: <http://datavlab.org/datav.js/>
    
 ## License
-   datavjs is available under the terms of the MIT License.
+   datavjs is available under the terms of the **MIT** License.
