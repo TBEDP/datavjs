@@ -224,7 +224,7 @@ define(function (require, exports, module) {
     }
  
     DataV.json = function (url, callback) {
-        d3.json(url, callback); '] '
+        d3.json(url, callback);
     };
 
     DataV.csv = function (url, callback) {
