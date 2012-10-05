@@ -1,5 +1,26 @@
 /*global d3 */
-define(function (require, exports, module) {
+// Module/Plugin core
+// Note: the wrapper code you see around the module is what enables
+// us to support multiple module formats and specifications by
+// mapping the arguments defined to what a specific format expects
+// to be present. Our actual module functionality is defined lower
+// down, where a named module and exports are demonstrated.
+
+;(function (name, definition) {
+    var theModule = definition(),
+        // this is considered "safe":
+        hasDefine = typeof define === 'function' && define.amd,
+        // hasDefine = typeof define === 'function',
+        hasExports = typeof module !== 'undefined' && module.exports;
+ 
+        if (hasDefine) { // AMD Module
+            define(theModule);
+        } else if (hasExports) { // Node.js Module
+            module.exports = theModule;
+        } else { // Assign to common namespaces or simply the global object (window)
+            this[name] = theModule;
+        }
+})('DataV', function () {
     var DataV = function () {};
     DataV.version = "0.0.1";
 
@@ -170,7 +191,7 @@ define(function (require, exports, module) {
 
             return thisColor[num % thisolorCount];
         };
-    }
+    };
 
     //Get gradient color, used for gradient data
     DataV.gradientColor = function (color, method) {
@@ -182,7 +203,7 @@ define(function (require, exports, module) {
         var colorColor;
         var colorCount = color.length;
 
-        var hsb
+        var hsb;
         if (colorCount === 1) {
             hsb = Raphael.color(color[0]);
             endColor = Raphael.hsb(hsb.h / 360, (hsb.s -30) / 100, 1);
@@ -221,10 +242,10 @@ define(function (require, exports, module) {
         } else {
             return d3.interpolateRgb.apply(null, [startColor, endColor]);
         }
-    }
+    };
  
     DataV.json = function (url, callback) {
-        d3.json(url, callback); '] '
+        d3.json(url, callback);
     };
 
     DataV.csv = function (url, callback) {
@@ -531,7 +552,7 @@ define(function (require, exports, module) {
       
         /**
          * get or set axis' tick padding(the distance between tick text and axis).
-         * @param x is a number, unit is px; 
+         * @param x is a number, unit is px
          */
         axis.tickPadding = function (x) {
             if (!arguments.length) {
@@ -783,10 +804,10 @@ define(function (require, exports, module) {
         }
     }
 
-    /*
+    /**
      * function from d3,
      * reset brush offset if "space" key up to restore normal drush state.
-     */    
+     */
     function d3_svg_brushKeyup(e) {
         if (e.keyCode === 32 && d3_svg_brushDrag === 2) {
             d3_svg_brushOffset[0] += d3_svg_brushExtent[1][0];
@@ -796,10 +817,10 @@ define(function (require, exports, module) {
         }
     }
 
-    /*
+    /**
      * function from d3,
      * mouse up and stop brushing.
-     */ 
+     */
     function d3_svg_brushUp(e) {
         if (d3_svg_brushOffset) {
             d3_svg_brushMove(e);
@@ -1030,7 +1051,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's left 
+         * get or set brush's left
          * @param z, a value in brush scale's domain
          */
         brush.left = function (z) {
@@ -1040,7 +1061,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's top 
+         * get or set brush's top
          * @param z, a value in brush scale's domain
          */
         brush.top = function (z) {
@@ -1050,7 +1071,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's width 
+         * get or set brush's width
          * @param z, a value in brush scale's domain
          */
         brush.width = function (z) {
@@ -1060,7 +1081,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's height 
+         * get or set brush's height
          * @param z, a value in brush scale's domain
          */
         brush.height = function (z) {
@@ -1070,7 +1091,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's x scale 
+         * get or set brush's x scale
          * @param z, d3's sacle object
          */
         brush.x = function (z) {
@@ -1080,7 +1101,7 @@ define(function (require, exports, module) {
         };
       
         /**
-         * get or set brush's y scale 
+         * get or set brush's y scale
          * @param z, d3's sacle object
          */
         brush.y = function (z) {
@@ -1090,7 +1111,7 @@ define(function (require, exports, module) {
         };
       
         /**
-         * get or set brush's extent in scale's domain format. 
+         * get or set brush's extent in scale's domain format.
          * if both x and y exist, @param z's format is [[x0, y0], [x1, y1]]
          * if only one of x and y exists, @param z's format is [x0, x1] or [y0, y1].
          */
@@ -1261,7 +1282,7 @@ define(function (require, exports, module) {
                 "font-size": "12px",
                 "box-shadow": "3px 3px 6px 0px rgba(0,0,0,0.58)",
                 "font-familiy": "宋体",
-                "z-index": 10000, 
+                "z-index": 10000,
                 "text-align": "center",
     
                 "visibility": "hidden",
@@ -1284,5 +1305,5 @@ define(function (require, exports, module) {
 
     DataV.FloatTag = FloatTag;
 
-    module.exports = DataV;
+    return DataV;
 });
