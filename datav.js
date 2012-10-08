@@ -1,5 +1,11 @@
 /*global d3 */
-define(function (require, exports, module) {
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('DataV', function (require) {
     var DataV = function () {};
     DataV.version = "0.0.1";
 
@@ -24,8 +30,6 @@ define(function (require, exports, module) {
     //     //FONT_ARGS: {HEADER_FAMILY:"微软雅黑", HEADER_SIZE: 20, PAGE_FAMILY:"微软雅黑", PAGE_SIZE: 5}
     // };
     DataV.Themes["default"] = DataV.Themes.theme0 = {
-        
-
          COLOR_ARGS: [
             ["#3dc6f4", "#8ce3ff"],
             ["#214fd9", "#7396ff"],
@@ -170,7 +174,7 @@ define(function (require, exports, module) {
 
             return thisColor[num % thisolorCount];
         };
-    }
+    };
 
     //Get gradient color, used for gradient data
     DataV.gradientColor = function (color, method) {
@@ -182,7 +186,7 @@ define(function (require, exports, module) {
         var colorColor;
         var colorCount = color.length;
 
-        var hsb
+        var hsb;
         if (colorCount === 1) {
             hsb = Raphael.color(color[0]);
             endColor = Raphael.hsb(hsb.h / 360, (hsb.s -30) / 100, 1);
@@ -221,7 +225,7 @@ define(function (require, exports, module) {
         } else {
             return d3.interpolateRgb.apply(null, [startColor, endColor]);
         }
-    }
+    };
  
     DataV.json = function (url, callback) {
         d3.json(url, callback);
@@ -233,6 +237,13 @@ define(function (require, exports, module) {
         });
     };
 
+    /**
+     * return true if input is number, or return false
+     */
+    DataV.isNumber = function (n) {
+        // http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    };
 
     // Create a new Chart.
     // @example
@@ -531,7 +542,7 @@ define(function (require, exports, module) {
       
         /**
          * get or set axis' tick padding(the distance between tick text and axis).
-         * @param x is a number, unit is px; 
+         * @param x is a number, unit is px
          */
         axis.tickPadding = function (x) {
             if (!arguments.length) {
@@ -733,7 +744,7 @@ define(function (require, exports, module) {
         if (d3_svg_brushOffset) {
             var bgOffset = $(d3_svg_brushTarget).offset();
             var mouse = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
-            
+
             if (!d3_svg_brushDrag) {
                 // If needed, determine the center from the current extent.
                 if (e.altKey) {
@@ -743,7 +754,7 @@ define(function (require, exports, module) {
                             (d3_svg_brushExtent[0][1] + d3_svg_brushExtent[1][1]) / 2
                         ];
                     }
-            
+
                     // Update the offset, for when the ALT key is released.
                     d3_svg_brushOffset[0] = d3_svg_brushExtent[+(mouse[0] < d3_svg_brushCenter[0])][0];
                     d3_svg_brushOffset[1] = d3_svg_brushExtent[+(mouse[1] < d3_svg_brushCenter[1])][1];
@@ -752,7 +763,7 @@ define(function (require, exports, module) {
                     d3_svg_brushCenter = null;
                 }
             }
-        
+
             // Update the brush extent for each dimension.
             if (d3_svg_brushX) {
                 d3_svg_brushMove1(mouse, d3_svg_brushX, 0);
@@ -783,10 +794,10 @@ define(function (require, exports, module) {
         }
     }
 
-    /*
+    /**
      * function from d3,
      * reset brush offset if "space" key up to restore normal drush state.
-     */    
+     */
     function d3_svg_brushKeyup(e) {
         if (e.keyCode === 32 && d3_svg_brushDrag === 2) {
             d3_svg_brushOffset[0] += d3_svg_brushExtent[1][0];
@@ -796,10 +807,10 @@ define(function (require, exports, module) {
         }
     }
 
-    /*
+    /**
      * function from d3,
      * mouse up and stop brushing.
-     */ 
+     */
     function d3_svg_brushUp(e) {
         if (d3_svg_brushOffset) {
             d3_svg_brushMove(e);
@@ -1030,7 +1041,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's left 
+         * get or set brush's left
          * @param z, a value in brush scale's domain
          */
         brush.left = function (z) {
@@ -1040,7 +1051,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's top 
+         * get or set brush's top
          * @param z, a value in brush scale's domain
          */
         brush.top = function (z) {
@@ -1050,7 +1061,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's width 
+         * get or set brush's width
          * @param z, a value in brush scale's domain
          */
         brush.width = function (z) {
@@ -1060,7 +1071,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's height 
+         * get or set brush's height
          * @param z, a value in brush scale's domain
          */
         brush.height = function (z) {
@@ -1070,7 +1081,7 @@ define(function (require, exports, module) {
         };
 
         /**
-         * get or set brush's x scale 
+         * get or set brush's x scale
          * @param z, d3's sacle object
          */
         brush.x = function (z) {
@@ -1080,7 +1091,7 @@ define(function (require, exports, module) {
         };
       
         /**
-         * get or set brush's y scale 
+         * get or set brush's y scale
          * @param z, d3's sacle object
          */
         brush.y = function (z) {
@@ -1090,7 +1101,7 @@ define(function (require, exports, module) {
         };
       
         /**
-         * get or set brush's extent in scale's domain format. 
+         * get or set brush's extent in scale's domain format.
          * if both x and y exist, @param z's format is [[x0, y0], [x1, y1]]
          * if only one of x and y exists, @param z's format is [x0, x1] or [y0, y1].
          */
@@ -1261,7 +1272,7 @@ define(function (require, exports, module) {
                 "font-size": "12px",
                 "box-shadow": "3px 3px 6px 0px rgba(0,0,0,0.58)",
                 "font-familiy": "宋体",
-                "z-index": 10000, 
+                "z-index": 10000,
                 "text-align": "center",
     
                 "visibility": "hidden",
@@ -1284,5 +1295,5 @@ define(function (require, exports, module) {
 
     DataV.FloatTag = FloatTag;
 
-    module.exports = DataV;
+    return DataV;
 });
