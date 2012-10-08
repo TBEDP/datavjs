@@ -1,15 +1,17 @@
-/*global Raphael */
-/*global d3, $ */
-/*global define*/
-define(function (require, exports, module) {
-    var DataV = require('datav');
-    /*
-     * return true if input is number, or return false
-     */
-    var isNumber = function (n) {
-        // http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    };
+/*global Raphael, d3, $, define */
+;(function (name, definition) {
+    var hasDefine = typeof define === 'function',
+        hasExports = typeof module !== 'undefined' && module.exports;
+
+    if (hasDefine) { // AMD Module
+        define(definition);
+    } else if (hasExports) { // Node.js Module
+        module.exports = definition();
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function require(id) { return this[id];});
+    }
+})('Stream', function (require) {
+    var DataV = require('DataV');
 
     /*
      * constructor
@@ -49,7 +51,7 @@ define(function (require, exports, module) {
             // Canvas
             this.defaults.width = 750;
             this.defaults.height = 360;
-            this.defaults.totalWidth = 820; 
+            this.defaults.totalWidth = 820;
             this.defaults.naviBackWidth = 80;
             this.defaults.legendHeight = 50;
             this.defaults.legendWidth = 150;
@@ -283,7 +285,7 @@ define(function (require, exports, module) {
                         stream.indicatorLine.attr({"stroke": "#000"});
                         stream.highlightLine.attr({"stroke": "white"});
                         stream.floatTag.css({"visibility" : "visible"});
-                        $(stream.canvas.canvas).trigger("mousemove", 
+                        $(stream.canvas.canvas).trigger("mousemove",
                             [stream.coverMouse.x, stream.coverMouse.y]);
                         stream.coverMouse = undefined;
                     }
@@ -515,7 +517,7 @@ define(function (require, exports, module) {
         for (i = 1, l = source.length; i < l; i++) {
             firstColumn[i] = source[i][0];
         }
-        return !firstColumn.every(isNumber);
+        return !firstColumn.every(DataV.isNumber);
     };
 
     Stream.prototype.hasColumnName = function () {
@@ -525,7 +527,7 @@ define(function (require, exports, module) {
         }
         //first row from 2nd column
         firstRow = this.rawData[0].slice(1);
-        return !firstRow.every(isNumber);
+        return !firstRow.every(DataV.isNumber);
     };
 
     Stream.prototype.sort = function (source) {
@@ -1668,7 +1670,7 @@ define(function (require, exports, module) {
                 return d.y0;
             })
             .y1(function (d) {
-                return d.y0 - d.y; 
+                return d.y0 - d.y;
             });
         return area;
     };
@@ -1676,7 +1678,7 @@ define(function (require, exports, module) {
     Stream.prototype.generateArea_old = function () {
         var conf = this.defaults,
             maxX = this.digitData[0].length - 1,
-            maxY = this.getMaxY(), 
+            maxY = this.getMaxY(),
             width = conf.width,
             height = conf.height - conf.topInterval - conf.bottomInterval,
             area = d3.svg.area()
@@ -1687,7 +1689,7 @@ define(function (require, exports, module) {
                     return height - d.y0 * height / maxY;
                 })
                 .y1(function (d) {
-                    return height - (d.y + d.y0) * height / maxY; 
+                    return height - (d.y + d.y0) * height / maxY;
                 });
         return area;
     };
@@ -1788,5 +1790,5 @@ define(function (require, exports, module) {
         }
     };
 
-    module.exports = Stream;
+    return Stream;
 });

@@ -23,15 +23,16 @@
     <div id="chart"></div>
 
     <script type="text/javascript">
+
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
-    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
         alias: {
-            'datav': dir + '/../../datav.js',
-            'stream': dir + '/../../libs/stream.js'
+            'DataV': dir + '/../../datav.js',
+            'Stream': dir + '/../../libs/stream.js'
         }
     });
-    seajs.use(["stream", "datav"], function (Stream, DataV) {
+    seajs.use(["Stream", "DataV"], function (Stream, DataV) {
         DataV.changeTheme("theme0");
         var stream = new Stream("chart", {"width": 800});
         stream.setUserConfig({"more": false});

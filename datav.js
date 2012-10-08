@@ -1,15 +1,14 @@
 /*global d3 */
 ;(function (name, definition) {
-    var theModule = definition(),
-        hasDefine = typeof define === 'function' && define.amd,
+    var hasDefine = typeof define === 'function',
         hasExports = typeof module !== 'undefined' && module.exports;
 
     if (hasDefine) { // AMD Module
-        define(theModule);
+        define(definition);
     } else if (hasExports) { // Node.js Module
-        module.exports = theModule;
+        module.exports = definition();
     } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = theModule;
+        this[name] = definition(function require(id) { return this[id];});
     }
 })('DataV', function () {
     var DataV = function () {};
@@ -245,6 +244,13 @@
         });
     };
 
+    /**
+     * return true if input is number, or return false
+     */
+    DataV.isNumber = function (n) {
+        // http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    };
 
     // Create a new Chart.
     // @example
