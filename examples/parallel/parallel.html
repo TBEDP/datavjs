@@ -70,7 +70,8 @@ svg {
         DataV.csv("cars.csv", function(dataSource) {
             var domains;
             parallel.setSource(dataSource);
-            parallel.chooseDimensions(["economy (mpg)", "cylinders", "displacement (cc)", "power (hp)", "weight (lb)", "0-60 mph (s)", "year"]);
+            parallel.chooseDimensions(["name", "name", "economy (mpg)"]);
+            //parallel.chooseDimensions(["economy (mpg)", "cylinders", "displacement (cc)", "power (hp)", "weight (lb)", "0-60 mph (s)", "year"]);
             parallel.setDimensionType({"cylinders": "ordinal"});
             domains = parallel.getDimensionDomains();
             parallel.setDimensionDomain({"cylinders": domains["cylinders"].sort(d3.ascending),
@@ -87,7 +88,7 @@ svg {
                 $("#info_brushend").html(JSON.stringify(this.statistic));
                 });
             parallel.render();
-            parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
+            //parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
         });
     });
 

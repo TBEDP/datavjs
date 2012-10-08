@@ -54,7 +54,7 @@ define(function (require, exports, module) {
         var conf = this.defaults;
         this.dimensions = [];
         for (var i=0, l=dimen.length; i<l; i++) {
-            if ($.inArray(dimen[i], this.allDimensions)) {
+            if ($.inArray(dimen[i], this.allDimensions) !== -1) {
                 this.dimensions.push(dimen[i]);
             }
         }
@@ -276,7 +276,7 @@ define(function (require, exports, module) {
         this.y = {};
         this.y2 = {};
 
-        this.x.domain(this.dimensions);
+        this.x.domain(d3.range(this.dimensions.length));//allow same dimension
         for(i=0, l=this.dimensions.length; i<l; i++){
             var dimen = this.dimensions[i];
             if(this.dimensionType[dimen] === "quantitative"){
@@ -508,12 +508,12 @@ define(function (require, exports, module) {
         var x = this.x;
         var dimensions = this.dimensions;
         var dimensionType = this.dimensionType;
-        return line(dimensions.map(function(p) {
+        return line(dimensions.map(function(p, i) {
             var yLoc = y[p](d[p]);
             if(dimensionType[p] === "ordinal"){
                 yLoc +=  y[p].rangeBand()/2;
             }
-            return [x(p), yLoc];
+            return [x(i), yLoc];
         }));
     };
 
