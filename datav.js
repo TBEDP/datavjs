@@ -1,25 +1,16 @@
 /*global d3 */
-// Module/Plugin core
-// Note: the wrapper code you see around the module is what enables
-// us to support multiple module formats and specifications by
-// mapping the arguments defined to what a specific format expects
-// to be present. Our actual module functionality is defined lower
-// down, where a named module and exports are demonstrated.
-
 ;(function (name, definition) {
     var theModule = definition(),
-        // this is considered "safe":
         hasDefine = typeof define === 'function' && define.amd,
-        // hasDefine = typeof define === 'function',
         hasExports = typeof module !== 'undefined' && module.exports;
- 
-        if (hasDefine) { // AMD Module
-            define(theModule);
-        } else if (hasExports) { // Node.js Module
-            module.exports = theModule;
-        } else { // Assign to common namespaces or simply the global object (window)
-            this[name] = theModule;
-        }
+
+    if (hasDefine) { // AMD Module
+        define(theModule);
+    } else if (hasExports) { // Node.js Module
+        module.exports = theModule;
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = theModule;
+    }
 })('DataV', function () {
     var DataV = function () {};
     DataV.version = "0.0.1";
@@ -754,7 +745,7 @@
         if (d3_svg_brushOffset) {
             var bgOffset = $(d3_svg_brushTarget).offset();
             var mouse = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
-            
+
             if (!d3_svg_brushDrag) {
                 // If needed, determine the center from the current extent.
                 if (e.altKey) {
@@ -764,7 +755,7 @@
                             (d3_svg_brushExtent[0][1] + d3_svg_brushExtent[1][1]) / 2
                         ];
                     }
-            
+
                     // Update the offset, for when the ALT key is released.
                     d3_svg_brushOffset[0] = d3_svg_brushExtent[+(mouse[0] < d3_svg_brushCenter[0])][0];
                     d3_svg_brushOffset[1] = d3_svg_brushExtent[+(mouse[1] < d3_svg_brushCenter[1])][1];
@@ -773,7 +764,7 @@
                     d3_svg_brushCenter = null;
                 }
             }
-        
+
             // Update the brush extent for each dimension.
             if (d3_svg_brushX) {
                 d3_svg_brushMove1(mouse, d3_svg_brushX, 0);
