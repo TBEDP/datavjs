@@ -1,14 +1,9 @@
 /*global Raphael, d3, $, define */
 ;(function (name, definition) {
-    var hasDefine = typeof define === 'function',
-        hasExports = typeof module !== 'undefined' && module.exports;
-
-    if (hasDefine) { // AMD Module
+    if (typeof define === 'function') { // Module
         define(definition);
-    } else if (hasExports) { // Node.js Module
-        module.exports = definition();
     } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function require(id) { return this[id];});
+        this[name] = definition(function (id) { return this[id];});
     }
 })('Stream', function (require) {
     var DataV = require('DataV');

@@ -1,16 +1,11 @@
 /*global d3 */
 ;(function (name, definition) {
-    var hasDefine = typeof define === 'function',
-        hasExports = typeof module !== 'undefined' && module.exports;
-
-    if (hasDefine) { // AMD Module
+    if (typeof define === 'function') { // Module
         define(definition);
-    } else if (hasExports) { // Node.js Module
-        module.exports = definition();
     } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function require(id) { return this[id];});
+        this[name] = definition(function (id) { return this[id];});
     }
-})('DataV', function () {
+})('DataV', function (require) {
     var DataV = function () {};
     DataV.version = "0.0.1";
 
@@ -35,8 +30,6 @@
     //     //FONT_ARGS: {HEADER_FAMILY:"微软雅黑", HEADER_SIZE: 20, PAGE_FAMILY:"微软雅黑", PAGE_SIZE: 5}
     // };
     DataV.Themes["default"] = DataV.Themes.theme0 = {
-        
-
          COLOR_ARGS: [
             ["#3dc6f4", "#8ce3ff"],
             ["#214fd9", "#7396ff"],
