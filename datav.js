@@ -110,8 +110,8 @@
         return DataV.Themes._currentTheme[key] || DataV.Themes["default"][key];
     };
 
-    /*
-     * set user-define theme
+    /**
+     * Set user-define theme
      * @param themeName: a string
      *        theme: json, contain attribute "COLOR_ARGS", theme.COLOR_ARGS is a 2-d array;
      */
@@ -361,7 +361,7 @@
             tickTextAttr_ = {},
             minorTickAttr_ = {},
             domainAttr_ = {};
-      
+
         /**
          * @param paper: raphael's paper object.
          * @return axisSet: raphael's set object.
@@ -611,7 +611,6 @@
     };
 
     DataV.Axis = Axis;
-
 
 /*******************************************************************************
  * brush
