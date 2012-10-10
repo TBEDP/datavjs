@@ -1,6 +1,12 @@
 /*global EventProxy, d3, Raphael, $ */
-define(function (require, exports, module) {
-    var DataV = require('datav');
+;(function (name, definition) {
+    if (typeof define === 'function') {
+        define(definition);
+    } else {
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Tree', function (require) {
+    var DataV = require('DataV');
     var theme = DataV.Themes;
 
     var Tree = DataV.extend(DataV.Chart, {
@@ -591,5 +597,5 @@ define(function (require, exports, module) {
         //this.canvas.renderfix();
     };
 
-    module.exports = Tree;
+    return Tree;
 });
