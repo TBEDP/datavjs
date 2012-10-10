@@ -20,8 +20,8 @@ if (!Array.prototype.map) {
     // See: http://es5.github.com/#x9.11  
     if ({}.toString.call(callback) != "[object Function]") {  
       throw new TypeError(callback + " is not a function");  
-    }  
-  
+    }
+
     // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.  
     if (thisArg) {  
       T = thisArg;  
