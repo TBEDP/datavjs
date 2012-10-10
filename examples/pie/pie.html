@@ -16,8 +16,8 @@
         <script type="text/javascript">
             seajs.config({
                 alias: {
-                    'datav': '/datav.js',
-                    'pie': '/libs/pie.js'
+                    'DataV': '/datav.js',
+                    'Pie': '/libs/pie.js'
                 }
             });
         </script>
@@ -42,7 +42,7 @@
     <body>
         <div id="chart"></div>
         <script type="text/javascript">
-            seajs.use(["pie", "datav"], function (Pie, DataV) {
+            seajs.use(["Pie", "DataV"], function (Pie, DataV) {
                 // DataV.changeTheme("datav");
                 var pie = new Pie("chart", {
                     width: 1000,

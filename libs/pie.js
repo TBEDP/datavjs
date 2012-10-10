@@ -1,7 +1,12 @@
-/*global Raphael */
-/*global d3 */
-define(function (require, exports, module) {
-    var DataV = require('datav');
+/*global Raphael, d3 */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Pie', function (require) {
+    var DataV = require('DataV');
 
     //构造函数，container参数表示在html的哪个容器中绘制该组件
     //options对象为用户自定义的组件的属性，比如画布大小
@@ -347,5 +352,5 @@ define(function (require, exports, module) {
         }
     };
 
-    module.exports = Pie;
+    return Pie;
 });
