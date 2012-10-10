@@ -11,5 +11,25 @@
 ## Learn more?
 The example site: <http://datavlab.org/datavjs/>
 
+## Contributors
+Thanks goes to the people who have contributed code to this library, see the [GitHub Contributors](https://github.com/TBEDP/datavjs/graphs/contributors) page.
+
+Below is the output from `git-summary`
+
+```
+ project  : datavjs
+ repo age : 7 weeks
+ active   : 12 days
+ commits  : 35
+ files    : 154
+ authors  : 
+    19	Jackson Tian            54.3%
+     7	jdk137                  20.0%
+     4	wxtheseue               11.4%
+     3	Theseue                 8.6%
+     2	xie cong                5.7%
+
+```
+
 ## License
 DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
