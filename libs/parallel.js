@@ -1,7 +1,13 @@
 /*global Raphael */
 /*global d3 */
-define(function (require, exports, module) {
-    var DataV = require('datav');
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Parallel', function (require) {
+    var DataV = require('DataV');
 
     var Parallel = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
@@ -517,5 +523,5 @@ define(function (require, exports, module) {
         }));
     };
 
-    module.exports = Parallel;
+    return Parallel;
 });

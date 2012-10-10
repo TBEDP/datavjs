@@ -44,7 +44,8 @@ svg {
     <script type="text/javascript" src="../../deps/d3.js"></script>
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+    <script type="text/javascript" src="../../datav.js"></script>
+    <script type="text/javascript" src="../../libs/parallel.js"></script>
 
     <div id="chart"></div>
     <p>brushstart</p>
@@ -55,16 +56,7 @@ svg {
     <div id="info_brushend"></div>
     <script type="text/javascript">
 
-    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
-    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
-    seajs.config({
-        alias: {
-            'DataV': dir + '/../../datav.js',
-            'Parallel': dir + '/../../libs/parallel.js'
-        }
-    });
 
-    seajs.use(["Parallel", "DataV"], function (Parallel, DataV) {
         var parallel = new Parallel("chart", {"width": 950, "height": 500});
         
         DataV.csv("cars.csv", function(dataSource) {
@@ -90,8 +82,6 @@ svg {
             parallel.render();
             //parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
         });
-    });
-
 
     </script>
   </body>
