@@ -25,8 +25,8 @@ define(function (require, exports, module) {
             this.defaults.meshInterval = 20;
             // margin order: left, top, right, bottom
             this.defaults.borderMargin = [200, 30, 0, 80];
-            this.defaults.allDimensions = [];   
-            this.defaults.dimensions = [];   
+            this.defaults.allDimensions = [];
+            this.defaults.dimensions = [];
             this.defaults.dimensionType = {};
             this.defaults.dimensionDomain = {};
             this.defaults.dotStrokeColor = {"stroke": "#fff"};
@@ -37,12 +37,12 @@ define(function (require, exports, module) {
                 "fill": "#000",
                 "fill-opacity": 0.6,
                 "stroke-width": 0
-            }
+            };
             this.defaults.skeletonLineAttr = {
                 "stroke": "#000",
                 "stroke-width": 0.5,
                 "stroke-opacity": 0.5
-            }
+            };
             this.defaults.colorBarAttr = {
                 "stroke": "#C9C9C9",
                 "stroke-opacity": 0,
@@ -65,11 +65,11 @@ define(function (require, exports, module) {
         if (!node) {
             throw new Error("Please specify which node to render.");
         }
-        if (typeof (node) === "string") {
+        if (typeof node === "string") {
             return document.getElementById(node);
-        } else if (node.nodeName) { 
+        } else if (node.nodeName) {
             return node;
-        }    
+        }
         throw new Error("Please specify which node to render.");
     };
 
@@ -95,7 +95,7 @@ define(function (require, exports, module) {
         this.backCanvas = new Raphael(this.node, conf.width, conf.height);
         this.foreCanvas = Raphael(this.node, conf.width, conf.height);
             $(this.node).css("position", "relative");
-            $(this.foreCanvas.canvas).css({"position": "absolute", 
+            $(this.foreCanvas.canvas).css({"position": "absolute",
                 "zIndex": 2, "left": m[0], "top": m[1]});
 
         this.canvasF = document.getElementById(this.container);
@@ -119,7 +119,7 @@ define(function (require, exports, module) {
                 }
             }
             return false;
-        }
+        };
         for(var i = 0, l = dimen.length; i < l; i++){
             if(strInArray(dimen[i], conf.allDimensions)) {
                 conf.dimensions.push(dimen[i]);
@@ -128,7 +128,7 @@ define(function (require, exports, module) {
 
         this.timeDimen = conf.dimensions[0];
         this.keyDimen = conf.dimensions[1];
-        this.xDimen = conf.dimensions[2]; 
+        this.xDimen = conf.dimensions[2];
         this.yDimen = conf.dimensions[3];
         this.sizeDimen = conf.dimensions[4];
         this.colorDimen = conf.dimensions[5];
@@ -149,7 +149,7 @@ define(function (require, exports, module) {
         this.startTime = 0;
     };
 
-    // set source, get dimensions data, dimension type, and dimension domain 
+    // set source, get dimensions data, dimension type, and dimension domain
     // default visualization dimension is setted here
     Bubble.prototype.setSource = function (source) {
         var conf = this.defaults;
@@ -181,26 +181,24 @@ define(function (require, exports, module) {
                     break;
                 }
             }
-            conf.dimensionType[conf.allDimensions[i]] = type;           
+            conf.dimensionType[conf.allDimensions[i]] = type;
         }
 
-        // set default dimensionDomain     
+        // set default dimensionDomain
         for(var i = 0, l = conf.allDimensions.length; i < l; i++){
             var dimen = conf.allDimensions[i];
             if(conf.dimensionType[dimen] === "quantitative"){
                 conf.dimensionDomain[dimen] = d3.extent(this.source,
                      function(p){return Math.abs(p[dimen])});
             }else{
-                conf.dimensionDomain[dimen] = 
+                conf.dimensionDomain[dimen] =
                     this.source.map(function(p){return p[dimen]});
             }
         }
 
-
-
         this.timeDimen = conf.dimensions[0];
         this.keyDimen = conf.dimensions[1];
-        this.xDimen = conf.dimensions[2]; 
+        this.xDimen = conf.dimensions[2];
         this.yDimen = conf.dimensions[3];
         this.sizeDimen = conf.dimensions[4];
         this.colorDimen = conf.dimensions[5];
@@ -214,14 +212,14 @@ define(function (require, exports, module) {
         }
 
         this.times.uniq();
-        this.keys.uniq();    
+        this.keys.uniq();
         for (var i = 0,l = this.times.length; i < l; i++) {
             this.timeKeys.push(i);
-        }  
+        }
         this.startTime = 0;
     };
 
-    // different visualization scale is defined here 
+    // different visualization scale is defined here
     Bubble.prototype.getScale = function() {
         var conf = this.defaults;
             m = conf.borderMargin,
@@ -250,7 +248,7 @@ define(function (require, exports, module) {
             .domain(xDomain).range([m[0], m[0] + w]);
         this.y = {};
         this.y[yDimen] = d3.scale.linear()
-            .domain(yDomain).range([h, 0]); 
+            .domain(yDomain).range([h, 0]);
         this.z = {};
         this.z[sizeDimen] = d3.scale.linear()
             .domain(conf.dimensionDomain[sizeDimen]).range([minRadius, maxRadius]); 
@@ -267,7 +265,7 @@ define(function (require, exports, module) {
         var tagArea = [20, (conf.height - m[3] - colorData.length * 23), 200, 220],
             rectBn = backCanvas.set(),
             underBn = [];
-        for (var i = 0, l = colorData.length; i < l;i++) {
+        for (var i = 0, l = colorData.length; i < l; i++) {
             var c = this.c[colorDimen](colorData[i]);
             // background to add interaction
             underBn.push(backCanvas.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 120, 20)
@@ -282,9 +280,9 @@ define(function (require, exports, module) {
             // just for interaction -- selction
             rectBn.push(backCanvas.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 50, 20)
                 .attr({"fill": "white", "fill-opacity": 0, "stroke": "none"})
-                .data("type", i).data("colorType", colorData[i])); 
+                .data("type", i).data("colorType", colorData[i]));
         }
-        
+
         // add interaction for colorbar
         this.interactionType = null;
         that = this;
@@ -305,13 +303,13 @@ define(function (require, exports, module) {
                     if (i === d.data("type")) {
                         underBn[i].hide();
                         that.interactionType = null;
-                    } 
+                    }
                 }
             });
         });
 
         // pause, restart and related control function
-        // var restart = backCanvas.rect(m[0] - conf.colorBarHeight - 2, m[1] + h + 30, conf.colorBarHeight, 
+        // var restart = backCanvas.rect(m[0] - conf.colorBarHeight - 2, m[1] + h + 30, conf.colorBarHeight,
         //     conf.colorBarHeight).attr({"fill": "#aaa", "fill-opacity": 0.9}).attr(conf.dotStrokeColor);
         // var playButtonShadow = backCanvas.rect(0,0,15,15,2).attr({"stroke": "none","fill": "#606060", "fill-opacity":0.4});
         var playButtonBack = backCanvas.rect(0,0,24,24,2).attr({"stroke": "none","fill": "#d6d6d6"});
@@ -371,10 +369,10 @@ define(function (require, exports, module) {
             }
         );
 
-    }
+    };
 
     // draw x-axis, y-axis and related parts
-    Bubble.prototype.renderAxis = function () {       
+    Bubble.prototype.renderAxis = function () {
         var conf = this.defaults;
             m = conf.borderMargin,
             w = conf.width - m[0] - m[2],
