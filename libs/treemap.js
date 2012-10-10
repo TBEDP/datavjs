@@ -1,6 +1,12 @@
 /*global d3, $, define */
-define(function (require, exports, module) {
-    var DataV = require("datav");
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Treemap', function (require) {
+    var DataV = require('DataV');
 
     /*
      * constructor
@@ -783,5 +789,5 @@ define(function (require, exports, module) {
         this.generatePaths();
     };
 
-    module.exports = Treemap;
+    return Treemap;
 });

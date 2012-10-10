@@ -29,13 +29,13 @@
     var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
         alias: {
-            'datav': dir + '/../../datav.js',
-            'treemap': dir + '/../../libs/treemap.js'
+            'DataV': dir + '/../../datav.js',
+            'Treemap': dir + '/../../libs/treemap.js'
         }
     });
     </script>
     <script type="text/javascript">
-    seajs.use(["treemap", "datav"], function (Treemap, DataV) {
+    seajs.use(["Treemap", "DataV"], function (Treemap, DataV) {
         DataV.changeTheme("theme0");
         var treemap = new Treemap("chart", {});
         d3.json("category_ratio.json", function(source) {
