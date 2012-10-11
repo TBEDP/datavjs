@@ -1,6 +1,12 @@
-/*global EventProxy, d3, Raphael, $ */
-define(function (require, exports, module) {
-    var DataV = require('datav');
+/*global Raphael, d3, $, define */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('ScatterplotMatrix', function (require) {
+    var DataV = require('DataV');
 
     var ScatterplotMatrix = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
@@ -645,5 +651,5 @@ define(function (require, exports, module) {
         return [xPos, yPos];
     };
 
-    module.exports = ScatterplotMatrix;
+    return ScatterplotMatrix;
 });

@@ -1,37 +1,46 @@
-/*global Raphael */
-/*global d3 */
-define(function (require, exports, module) {
-    var DataV = require('datav');
-
+/*global Raphael, d3, $, define */
+;
+(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Chord', function (require) {
+    var DataV = require('DataV');
     //构造函数，container参数表示在html的哪个容器中绘制该组件
     //options对象为用户自定义的组件的属性，比如画布大小
-    var Chord = function (container, options) {
-        this.type = "Chord";
-        this.container = container;
-        this.defaults = {};
-        this.matrix = [];
-        this.groupNames = []; //数组：记录每个group的名字
+    var Chord = DataV.extend(DataV.Chart, {
+        initialize: function (container, options) {
+            this.type = "Chord";
+            this.container = container;
+            this.defaults = {};
+            this.matrix = [];
+            this.groupNames = []; //数组：记录每个group的名字
 
-        //图的大小设置
-        this.defaults.tag = true;
-        this.defaults.width = 800;
-        this.defaults.height = 800;
+            //图的大小设置
+            this.defaults.tag = true;
+            this.defaults.width = 800;
+            this.defaults.height = 800;
 
-        //设置用户指定的属性
-        this.setOptions(options);
+            //设置用户指定的属性
+            this.setOptions(options);
 
-        this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-        if (this.defaults.tag) {
-            this.xOffset = this.tagArea[2];
-        } else {
-            this.xOffset = 0;
+            this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.tag) {
+                this.xOffset = this.tagArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.defaults.innerRadius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.38;
+            this.defaults.outerRadius = this.defaults.innerRadius * 1.10;
+            //创建画布
+            this.createCanvas();
         }
-
-        this.defaults.innerRadius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.38;
-        this.defaults.outerRadius = this.defaults.innerRadius * 1.10;
-        //创建画布
-        this.createCanvas();
-    };
+    });
 
     Chord.prototype.checkContainer = function (container) {
         if (!container) {
@@ -78,7 +87,7 @@ define(function (require, exports, module) {
 
     Chord.prototype.render = function () {
         this.layout();
-        if (this.defaults.tag === true) {
+        if (this.defaults.tag) {
             this.tag();
         }
     };
@@ -480,5 +489,5 @@ define(function (require, exports, module) {
          */
     };
 
-    module.exports = Chord;
+    return Chord;
 });
