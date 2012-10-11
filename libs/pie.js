@@ -239,8 +239,7 @@
         var rectBn = this.rectBn;
         this.underBn = [];
         var underBn = this.underBn;
-        var i = 0;
-        for (i = 0; i <= this.groups.length; i++) {
+        for (var i = 0, l = this.groups.length; i < l; i++) {
             //底框
             underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 "fill": "#ebebeb",
