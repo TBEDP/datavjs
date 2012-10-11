@@ -3,43 +3,47 @@
     if (typeof define === 'function') { // Module
         define(definition);
     } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
+        this[name] = definition(function (id) {
+            return this[id];
+        });
     }
 })('Pie', function (require) {
     var DataV = require('DataV');
 
     //构造函数，container参数表示在html的哪个容器中绘制该组件
     //options对象为用户自定义的组件的属性，比如画布大小
-    var Pie = function (container, options) {
-        this.type = "Pie";
-        this.container = container;
-        this.defaults = {};
-        this.sum = 0;
-        this.groupNames = []; //数组：记录每个group的名字
-        this.groupValue = [];
-        this.groups = [];
-        this.click = 0;
+    var Pie = DataV.extend(DataV.Chart, {
+        initialize: function (container, options) {
+            this.type = "Pie";
+            this.container = container;
+            this.defaults = {};
+            this.sum = 0;
+            this.groupNames = []; //数组：记录每个group的名字
+            this.groupValue = [];
+            this.groups = [];
+            this.click = 0;
 
-        //图的大小设置
-        this.defaults.tag = true;
-        this.defaults.width = 800;
-        this.defaults.height = 800;
+            //图的大小设置
+            this.defaults.tag = true;
+            this.defaults.width = 800;
+            this.defaults.height = 800;
 
-        //设置用户指定的属性
-        this.setOptions(options);
+            //设置用户指定的属性
+            this.setOptions(options);
 
-        this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-        if (this.defaults.tag) {
-            this.xOffset = this.tagArea[2];
-        } else {
-            this.xOffset = 0;
+            this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.tag) {
+                this.xOffset = this.tagArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.defaults.radius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.3;
+            this.defaults.protrude = this.defaults.radius * 0.1;
+            //创建画布
+            this.createCanvas();
         }
-
-        this.defaults.radius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.3;
-        this.defaults.protrude = this.defaults.radius * 0.1;
-        //创建画布
-        this.createCanvas();
-    };
+    });
 
     Pie.prototype.checkContainer = function (container) {
         if (!container) {
@@ -118,7 +122,7 @@
                 "visibility": "visible"
             });
             var index = this.data("donutIndex");
-            if (this.data('click') === false) {
+            if (!this.data('click')) {
                 that.underBn[index].attr('opacity', 0.5).show();
             }
             if (that.click === 0) {
@@ -137,14 +141,14 @@
             });
             var index = this.data("donutIndex");
             //fade(this.data("donutIndex"), 0.6);
-            if (this.data('click') === false) {
+            if (!this.data('click')) {
                 that.underBn[index].hide();
             }
             if (that.click === 0) {
                 that.donutGroups.forEach(function (d) {
                     d.attr('fill-opacity', 1);
                 });
-            } else if (this.data('click') === false) {
+            } else if (!this.data('click')) {
 
                 this.attr('fill-opacity', 0.5);
             }
@@ -157,24 +161,24 @@
             var a = 0.5 * ((that.groups[index].startAngle + that.groups[index].endAngle) - Math.PI);
             var nameX = conf.protrude * Math.cos(a);
             var nameY = conf.protrude * Math.sin(a);
-            if (flag === true) {
+            if (flag) {
                 if (that.click === 0) {
                     that.donutGroups.forEach(function (d) {
-                        if (d.data('click') === false) {
+                        if (!d.data('click')) {
                             d.attr('fill-opacity', 0.5);
                         }
                     });
                 }
                 that.underBn[index].attr('opacity', 1).show();
                 this.attr('fill-opacity', 1);
-                this.data('nameTag').translate(0, -conf.protrude);
-                this.data('line').translate(0, -conf.protrude);
+                this.data('nameTag').translate(0, - conf.protrude);
+                this.data('line').translate(0, - conf.protrude);
                 this.translate(nameX, nameY);
                 that.click += 1;
             } else {
                 this.data('nameTag').translate(0, conf.protrude);
                 this.data('line').translate(0, conf.protrude);
-                this.translate(-nameX, -nameY);
+                this.translate(-nameX, - nameY);
                 that.click -= 1;
                 if (that.click > 0) {
                     this.attr('fill-opacity', 0.5);
@@ -221,7 +225,7 @@
         }
 
 
-        if (conf.tag === true) {
+        if (conf.tag) {
             this.tag();
         }
     };
@@ -267,12 +271,12 @@
         }
         rectBn.forEach(function (d, i) {
             d.mouseover(function () {
-                if (that.donutGroups[i].data("click") === false) {
+                if (!that.donutGroups[i].data("click")) {
                     underBn[i].attr('opacity', 0.5);
                     underBn[i].show();
                 }
             }).mouseout(function () {
-                if (that.donutGroups[i].data("click") === false) {
+                if (!that.donutGroups[i].data("click")) {
                     underBn[i].hide();
                 }
             });
@@ -280,25 +284,25 @@
                 var a = 0.5 * ((that.groups[i].startAngle + that.groups[i].endAngle) - Math.PI);
                 var nameX = conf.protrude * Math.cos(a);
                 var nameY = conf.protrude * Math.sin(a);
-                if (that.donutGroups[i].data("click") === false) {
+                if (!that.donutGroups[i].data("click")) {
                     if (that.click === 0) {
                         that.donutGroups.forEach(function (d) {
-                            if (d.data('click') === false) {
+                            if (!d.data('click')) {
                                 d.attr('fill-opacity', 0.5);
                             }
                         });
                     }
                     underBn[i].attr('opacity', 1).show();
                     that.donutGroups[i].data("click", true).attr('fill-opacity', 1);
-                    that.donutGroups[i].data('nameTag').translate(0, -conf.protrude);
-                    that.donutGroups[i].data('line').translate(0, -conf.protrude);
+                    that.donutGroups[i].data('nameTag').translate(0, - conf.protrude);
+                    that.donutGroups[i].data('line').translate(0, - conf.protrude);
                     that.donutGroups[i].translate(nameX, nameY);
                     that.click += 1;
 
-                } else if (that.donutGroups[i].data("click") === true) {
+                } else if (that.donutGroups[i].data("click")) {
                     that.donutGroups[i].data('nameTag').translate(0, conf.protrude);
                     that.donutGroups[i].data('line').translate(0, conf.protrude);
-                    that.donutGroups[i].translate(-nameX, -nameY);
+                    that.donutGroups[i].translate(-nameX, - nameY);
                     that.click -= 1;
                     if (that.click > 0) {
                         that.donutGroups[i].attr('fill-opacity', 0.5);

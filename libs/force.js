@@ -1,46 +1,55 @@
-/*global Raphael */
-/*global d3 */
-define(function (require, exports, module) {
-    var DataV = require('datav');
+/*global Raphael, d3 */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Force', function (require) {
+    var DataV = require('DataV');
 
-    var Force = function (container, options) {
-        this.type = "Force";
-        this.container = container;
-        this.defaults = {};
-        this.net = {};
-        this.linkValeMin = 0;
-        this.linkValeMax = 1;
-        this.nodeValueMin = 0;
-        this.nodeValueMax = 1;
-        this.clicked = false;
-        this.clickedNum = -1;
-        this.tagClicked = false;
+    var Force = DataV.extend(DataV.Chart, {
+        initialize: function (container, options) {
+            this.type = "Force";
+            this.container = container;
+            this.defaults = {};
+            this.net = {};
+            this.linkValeMin = 0;
+            this.linkValeMax = 1;
+            this.nodeValueMin = 0;
+            this.nodeValueMax = 1;
+            this.clicked = false;
+            this.clickedNum = -1;
+            this.tagClicked = false;
 
-        // Properties
-        this.font = {};
+            // Properties
+            this.font = {};
 
-        // Canvas
-        this.defaults.tag = true;
-        this.defaults.width = 500;
-        this.defaults.height = 500;
-        this.defaults.linkLength = 50;
-        this.defaults.linkWidth = 2;
-        this.defaults.classNum = 6;
-        this.defaults.forceValue= 10;
-        this.defaults.iterate = 100;
-        this.defaults.browserName = navigator.appName;
+            // Canvas
+            this.defaults.tag = true;
+            this.defaults.width = 500;
+            this.defaults.height = 500;
+            this.defaults.linkLength = 50;
+            this.defaults.linkWidth = 2;
+            this.defaults.classNum = 6;
+            this.defaults.forceValue = 10;
+            this.defaults.iterate = 100;
+            this.defaults.browserName = navigator.appName;
 
-        this.setOptions(options);
-        this.defaults.charge = -(this.defaults.width + this.defaults.height) / this.defaults.forceValue;
-        this.tagArea = [20, (this.defaults.height - 20 - this.defaults.classNum * 20), 200, 220];
-        if (this.defaults.tag) {
-            this.xOffset = this.tagArea[2];
-        } else {
-            this.xOffset = 0;
+            this.setOptions(options);
+            this.defaults.charge = -(this.defaults.width + this.defaults.height) / this.defaults.forceValue;
+            this.tagArea = [20, (this.defaults.height - 20 - this.defaults.classNum * 20), 200, 220];
+            if (this.defaults.tag) {
+                this.xOffset = this.tagArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.createCanvas();
         }
-
-        this.createCanvas();
-    };
+    });
 
 
     //Strings in CSV to Numbers
@@ -167,7 +176,7 @@ define(function (require, exports, module) {
                 d.data('clicked', false);
             });
             that.clicked = true;
-            if (this.data('clicked') === false) {
+            if (!this.data('clicked')) {
                 if (conf.browserName !== "Microsoft Internet Explorer") {
                     that.force.linkDistance(conf.linkLength * 2).charge(conf.charge * 2).start();
                 }
@@ -208,7 +217,7 @@ define(function (require, exports, module) {
                     d.attr({
                         "opacity": 0.9
                     });
-                    if (d.data('big') === true) {
+                    if (d.data('big')) {
                         d.data('showText', true);
                     } else {
                         d.data('rect').hide();
@@ -242,7 +251,7 @@ define(function (require, exports, module) {
                 d.attr({
                     "opacity": 0.9
                 });
-                if (d.data('big') === true) {
+                if (d.data('big')) {
                     d.data('showText', true);
                 } else {
                     d.data('rect').hide();
@@ -363,7 +372,7 @@ define(function (require, exports, module) {
         nodes.forEach(function (d, i) {
             d.data("node", connectMatrix[i]);
             d.data("link", linkMatrix[i]);
-            if (d.data('big') === true) {
+            if (d.data('big')) {
                 d.data('showText', true);
             } else {
                 d.data('showText', false);
@@ -390,12 +399,12 @@ define(function (require, exports, module) {
                 this.attr({
                     'r': d.data('r') + 5
                 });
-                if (this.data('showText') === false) {
+                if (!this.data('showText')) {
                     //this.attr('title', "");
                     this.data('showText', true);
                     this.data('hover', true);
                 }
-                if (that.underBn[this.data('colorType')].data('clicked') === false) {
+                if (!that.underBn[this.data('colorType')].data('clicked')) {
                     that.underBn[this.data('colorType')].attr('opacity', 0.5).show();
                 }
             }).mouseout(function () {
@@ -403,13 +412,13 @@ define(function (require, exports, module) {
                     'r': d.data('r')
                 });
                 //this.attr('title', this.data('name'));
-                if (this.data('hover') === true && this.data('clicked') === false) {
+                if (this.data('hover') && !this.data('clicked')) {
                     d.data('rect').hide();
                     d.data('text').hide();
                     this.data('showText', false);
                     this.data('hover', false);
                 }
-                if (that.underBn[this.data('colorType')].data('clicked') === false) {
+                if (!that.underBn[this.data('colorType')].data('clicked')) {
                     that.underBn[this.data('colorType')].hide();
                 }
             });
@@ -459,12 +468,12 @@ define(function (require, exports, module) {
         }
         rectBn.forEach(function (d, i) {
             d.mouseover(function () {
-                if (underBn[i].data('clicked') === false) {
+                if (!underBn[i].data('clicked')) {
                     underBn[i].attr('opacity', 0.5);
                     underBn[i].show();
                 }
             }).mouseout(function () {
-                if (underBn[i].data('clicked') === false) {
+                if (!underBn[i].data('clicked')) {
                     underBn[i].hide();
                 }
             });
@@ -560,7 +569,7 @@ define(function (require, exports, module) {
                     nodes.forEach(function (d, i) {
                         var margin = d.data('r');
                         var nd = nodesData[i];
-                        if (d.data('drag') === true) {
+                        if (d.data('drag')) {
                             nd.x = d.data('x');
                             nd.y = d.data('y');
                         }
@@ -571,11 +580,11 @@ define(function (require, exports, module) {
                         var bx = d.data('text').getBBox().width / 2;
                         var by = d.data('text').getBBox().height / 2;
 
-                        if (that.clicked === true) {
+                        if (that.clicked) {
                             var mx = nodesData[that.clickedNum].x;
                             var my = nodesData[that.clickedNum].y;
                             var tx, ty;
-                            if (d.data('clicked') === true) {
+                            if (d.data('clicked')) {
 
                                 if (conf.browserName !== "Microsoft Internet Explorer") {
                                     nd.x = (conf.width + that.xOffset) / 2;
@@ -591,7 +600,7 @@ define(function (require, exports, module) {
                                 });
                                 d.data('rect').show();
                                 d.data('text').show();
-                            } else if (d.data('showText') === true) {
+                            } else if (d.data('showText')) {
                                 var lx = (nd.x - mx);
                                 var ly = (nd.y - my);
                                 var length = Math.sqrt(lx * lx + ly * ly);
@@ -614,7 +623,7 @@ define(function (require, exports, module) {
                                 d.data('rect').show();
                                 d.data('text').show();
                             }
-                        } else if (d.data('showText') === true) {
+                        } else if (d.data('showText')) {
                             d.data('rect').attr({
                                 'x': nd.x - bx,
                                 'y': nd.y - by + 4 + d.data('r')
@@ -662,7 +671,7 @@ define(function (require, exports, module) {
         this.setOptions(options);
         this.canvas.clear();
         this.layout();
-        if (this.defaults.tag === true) {
+        if (this.defaults.tag) {
             this.tag();
         }
         this.update();
@@ -670,5 +679,5 @@ define(function (require, exports, module) {
         this.animate();
     };
 
-    module.exports = Force;
+    return Force;
 });
