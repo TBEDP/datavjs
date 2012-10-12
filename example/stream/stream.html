@@ -28,8 +28,8 @@
     var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
         alias: {
-            'DataV': dir + '/../../datav.js',
-            'Stream': dir + '/../../libs/stream.js'
+            'DataV': dir + '/../../lib/datav.js',
+            'Stream': dir + '/../../lib/charts/stream.js'
         }
     });
     seajs.use(["Stream", "DataV"], function (Stream, DataV) {
