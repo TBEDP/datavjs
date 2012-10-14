@@ -10,5 +10,6 @@
   ],
   "author": "DataV",
   "license": "MIT",
-  "description": "DataV.js is a JavaScript library for data visualization"
+  "description": "DataV.js is a JavaScript library for data visualization",
+  "tracker": "UA-17170593-4"
 }
