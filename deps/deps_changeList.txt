@@ -1,8 +1,0 @@
-d3.js
-
-add function no_dataSciRec(d),
-change function d3_svg_lineLinear(points),
-to solve the problem that IE's vml path can not decode scientific natation like 1e-7;
-if( value <0.0001) { value = 0 ;}
-
-
