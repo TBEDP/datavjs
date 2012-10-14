@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>datavjs Documentation</title>
+    <meta name="keywords" content="DataV" />
+    <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
+    <script src="assets/prettify.js"></script>
+    <script src="assets/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/base.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">datavjs</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li>
+                <a href="./api.html">API Docs</a>
+              </li>
+              
+              <li>
+                <a href="./butterfly.html">butterfly</a>
+              </li>
+              
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+              
+              <li>
+                <a href="./CodingStyle.html">CodingStyle</a>
+              </li>
+              
+              <li>
+                <a href="./force以及chord文档.html">force以及chord文档</a>
+              </li>
+              
+              <li>
+                <a href="./note.html">note</a>
+              </li>
+              
+              <li>
+                <a href="./stream文档.html">stream文档</a>
+              </li>
+              
+              <li>
+                <a href="./treemap文档.html">treemap文档</a>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="jumbotron subhead">
+      <div class="container">
+        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <p class="lead">
+          DataV.js is a JavaScript library for data visualization
+        </p>
+      </div>
+    </header>
+<div class="container content">
+  <div class="row">
+  	<div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav affix">
+
+  <li class="level_1">
+    <a href="#index_Change log" title="Change log">
+      <i class="icon-chevron-right"></i>Change log
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_开发中" title="开发中">
+      <i class="icon-chevron-right"></i>开发中
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_0.1.0" title="0.1.0">
+      <i class="icon-chevron-right"></i>0.1.0
+    </a>
+  </li>
+
+</ul>
+
+    </div>
+    <div class="span9">
+      <section>
+        <h1>Change log</h1>
+
+<h2>开发中</h2>
+
+<ul>
+<li>2012-10-12: 将目录结构从docs变为doc，从libs变为lib，以更适合标准的包结构</li>
+<li>2012-10-8: 添加Underscore作为依赖库，以降低代码量</li>
+<li>2012-10-8: 改动模块定义方式从SeaJS变为可兼容非SeaJS的环境</li>
+</ul>
+
+<h2>0.1.0</h2>
+
+<ul>
+<li>基于D3和Rapheal构建开包即用的可视化组件库。Rapheal用于兼容浏览器，承担渲染的职责。D3负责组件数据结构或模型建立的部分。DataV在此基础上构建可视化方法的实现，致力于可视化方法的落地和推广</li>
+</ul>
+      </section>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="container">
+          <p class="pull-right">
+            <a href="#">Back to top</a>
+          </p>
+          <p>此文档通过doxmate生成。主题借鉴Bootstrap API文档风格，注解基于<a href="https://github.com/visionmedia/dox">Dox</a>。欢迎关注doxmate作者<a href="http://weibo.com/shyvo" target="_blank">@朴灵</a></p>
+          <ul class="footer-links">
+            <li><a href="https://github.com/visionmedia/dox">Dox主页</a></li>
+            <li><a href="http://html5ify.com/doxmate">Doxmate主页</a></li>
+            <li><a href="https://github.com/JacksonTian/doxmate/issues?state=open">提交bug</a></li>
+          </ul>
+      </div>
+    </footer>
+    <script>
+      $(function() {
+        $('pre').addClass('prettyprint');
+        $('td pre').removeClass('prettyprint');
+        prettyPrint();
+        var $window = $(window);
+        $('.bs-docs-sidenav').affix({
+          offset: {
+            top: function () {
+              return $window.width() <= 980 ? 290 : 210
+            },
+            bottom: 270
+          }
+        });
+        $(".content").find('h1, h2, h3, h4, h5, h6').each(function () {
+          var node = $(this);
+          if (!node.attr("id")) {
+            node.attr("id", "index_" + node.text());
+          }
+          node.css("paddingTop", 40);
+        });
+      });
+    </script>
+  
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17170593-4']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  
+  </body>
+</html>

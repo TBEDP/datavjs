@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>datavjs Documentation</title>
+    <meta name="keywords" content="DataV" />
+    <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
+    <script src="assets/prettify.js"></script>
+    <script src="assets/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/base.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">datavjs</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li>
+                <a href="./api.html">API Docs</a>
+              </li>
+              
+              <li>
+                <a href="./butterfly.html">butterfly</a>
+              </li>
+              
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+              
+              <li>
+                <a href="./CodingStyle.html">CodingStyle</a>
+              </li>
+              
+              <li>
+                <a href="./force以及chord文档.html">force以及chord文档</a>
+              </li>
+              
+              <li>
+                <a href="./note.html">note</a>
+              </li>
+              
+              <li>
+                <a href="./stream文档.html">stream文档</a>
+              </li>
+              
+              <li>
+                <a href="./treemap文档.html">treemap文档</a>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="jumbotron subhead">
+      <div class="container">
+        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <p class="lead">
+          DataV.js is a JavaScript library for data visualization
+        </p>
+      </div>
+    </header>
+<div class="container content">
+  <div class="row">
+  	<div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav affix">
+
+</ul>
+
+    </div>
+    <div class="span9">
+      <section>
+        <p>Stream图简介</p>
+
+<p>Stream图通常用来展示多个变量随时间的变化趋势。每个变量用一条色带表示。色带的宽度代表了变量在某时间点处的值或占比的大小。 在DataV的Stream提供了自底向上排列，居中排列，扩展排列，平缓排列4种条带布局方式。鼠标移上条带时，可以高亮响应的条带，并在浮动框中显示相应变量在相应时间点处的值。 绘制Stream的javascript代码如下：</p>
+
+<pre><code>   //创建stream对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
+   var stream = new DataV.Stream("chart"，{“width”: 700, “height”: 500});
+   //设置 stream选项，排列方式为“zero”， 排列顺序为“reverse”。
+   stream.setOptions({“offset”: “zero”, “order”: “reverse”}); //options
+   //设置数据，输入的数据为一个二维数组。
+   stream.setSource(source); //source is a 2-d array
+   //绘制
+   stream.render();
+</code></pre>
+
+<p>创建stream对象时，第一个参数是包含stream的dom结点 或该结点的id， 第二个参数是各种选项，其中最重要的宽和高。</p>
+
+<p>设置 stream选项时，最重要的是offset和order。offset有4个选项：“zero”（从下往上堆叠），“silhouette”（纵向居中堆叠），“expand”（计算占比后堆叠），“wiggle”（前后两个时间点间的变化幅度最小，更平缓）。order有2个选项：“default”和“reverse”。“default”表示个变量以输入数据中的先后顺序从下往上排列；“reverse”表示顺序相反。</p>
+
+<p>stream数据输入的格式为二维数组。例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。</p>
+
+<pre><code>[
+  [1,2,3,9],
+  [3,4,6,3]
+]
+</code></pre>
+
+<p>数组中还可以在第一行和第一列加上列名和行名。下面的数据中加入了人名和季节。</p>
+
+<pre><code>[
+  [“”, “season1”, “season2”, “season3”, “season4”],
+  [“Wang”, 1, 2, 3, 9],
+  [“Li”, 3, 4, 6, 3]
+]
+</code></pre>
+
+<p>以上设置了绘制stream所需的最重要的属性，调用render()就能完成绘制。 </p>
+      </section>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="container">
+          <p class="pull-right">
+            <a href="#">Back to top</a>
+          </p>
+          <p>此文档通过doxmate生成。主题借鉴Bootstrap API文档风格，注解基于<a href="https://github.com/visionmedia/dox">Dox</a>。欢迎关注doxmate作者<a href="http://weibo.com/shyvo" target="_blank">@朴灵</a></p>
+          <ul class="footer-links">
+            <li><a href="https://github.com/visionmedia/dox">Dox主页</a></li>
+            <li><a href="http://html5ify.com/doxmate">Doxmate主页</a></li>
+            <li><a href="https://github.com/JacksonTian/doxmate/issues?state=open">提交bug</a></li>
+          </ul>
+      </div>
+    </footer>
+    <script>
+      $(function() {
+        $('pre').addClass('prettyprint');
+        $('td pre').removeClass('prettyprint');
+        prettyPrint();
+        var $window = $(window);
+        $('.bs-docs-sidenav').affix({
+          offset: {
+            top: function () {
+              return $window.width() <= 980 ? 290 : 210
+            },
+            bottom: 270
+          }
+        });
+        $(".content").find('h1, h2, h3, h4, h5, h6').each(function () {
+          var node = $(this);
+          if (!node.attr("id")) {
+            node.attr("id", "index_" + node.text());
+          }
+          node.css("paddingTop", 40);
+        });
+      });
+    </script>
+  
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17170593-4']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  
+  </body>
+</html>

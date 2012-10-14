@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>datavjs Documentation</title>
+    <meta name="keywords" content="DataV" />
+    <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
+    <script src="assets/prettify.js"></script>
+    <script src="assets/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/base.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">datavjs</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li>
+                <a href="./api.html">API Docs</a>
+              </li>
+              
+              <li>
+                <a href="./butterfly.html">butterfly</a>
+              </li>
+              
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+              
+              <li>
+                <a href="./CodingStyle.html">CodingStyle</a>
+              </li>
+              
+              <li>
+                <a href="./force以及chord文档.html">force以及chord文档</a>
+              </li>
+              
+              <li>
+                <a href="./note.html">note</a>
+              </li>
+              
+              <li>
+                <a href="./stream文档.html">stream文档</a>
+              </li>
+              
+              <li>
+                <a href="./treemap文档.html">treemap文档</a>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="jumbotron subhead">
+      <div class="container">
+        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <p class="lead">
+          DataV.js is a JavaScript library for data visualization
+        </p>
+      </div>
+    </header>
+<div class="container content">
+  <div class="row">
+  	<div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav affix">
+
+</ul>
+
+    </div>
+    <div class="span9">
+      <section>
+        <p>treemap简介</p>
+
+<p>treemap（树图）通常用来展示层次数据的占比关系。图中的每个矩形代表树的一个节点，大矩形中的小矩形代表父节点包含的子节点。不同的节点用不同的颜色加以区分，节点的值用矩形面积的大小表示。 在DataV的treemap中，一次只展现两层节点。第一层的节点用边界较宽的大矩形表示，其中边界较窄的小矩形代表第二层节点。第一层节点下的小矩形都采用同一类颜色，颜色的深浅代表节点的值的大小。点击第一层节点将把该节点下的两层节点放大显示。点击上方导航条中的链接可以回退到上一层节点。</p>
+
+<p>绘制treemap的javascript代码如下：</p>
+
+<pre><code>  //创建treemap对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
+  var treemap = new DataV.Treemap("chart",  {“width”: 700, “height”: 500});
+  //设置数据，输入的数据为一个二维数组，也可以为多层json数据。
+  treemap.setSource(source); //source is a 2-d array or hierarchy json data
+  //绘制
+  treemap.render();
+</code></pre>
+
+<p>创建treemap对象时，第一个参数是包含treemap的dom结点 或该结点的id， 第二个参数是各种选项，其中最重要的宽和高。</p>
+
+<p>stream数据输入的格式可以是二维数组。例如下面的数组表示2000年4个季度的天数。第1季度下面还列出了1-3月的天数。数组的第一行为四个固定的字符串"ID"，"name"，"size"和"parentID"。四列数据分别表示层次数据集中各结点的ID，名称，大小和父节点ID。叶子节点必须有大小，根结点不能有父节点ID。各结点的ID、名称必须要有。</p>
+
+<pre><code>[
+
+  ["ID", "name", "size", "parentID"], 
+  [0, “2000”,  ,  ],
+  [1, “season1”,  , 0],
+  [2, “January”, 31, 1], 
+  [3, “February”, 29, 1],
+  [4, “Match”, 31, 1], 
+  [5, “season2”, 91, 0],
+  [6, “season3”, 92, 0],
+  [7, “season4”, 92, 0]
+</code></pre>
+
+<p>]</p>
+
+<p>数据还可以是json格式。每个结点都有“name”，如果是父节点则还有“children”，如果为叶节点则还有“size”。以上数组数据对应的json数据如下：</p>
+
+<p>{<br /> "name": "2000",<br /> "children": [<br />    {<br />       "name": "season1",<br />       "children": [<br />          {"name": "January", "size": 31},<br />          {"name": "February", "size": 29},<br />          {"name": "Match", "size": 31}<br />       ] <br />     },<br />    {"name": "season2", "size": 91},<br />    {"name": "season3", "size": 92},<br />    {"name": "season4", "size": 92},<br />  ] <br />}</p>
+
+<p>以上设置了绘制treemap所需的最重要的属性，调用render()就能完成绘制。 </p>
+      </section>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="container">
+          <p class="pull-right">
+            <a href="#">Back to top</a>
+          </p>
+          <p>此文档通过doxmate生成。主题借鉴Bootstrap API文档风格，注解基于<a href="https://github.com/visionmedia/dox">Dox</a>。欢迎关注doxmate作者<a href="http://weibo.com/shyvo" target="_blank">@朴灵</a></p>
+          <ul class="footer-links">
+            <li><a href="https://github.com/visionmedia/dox">Dox主页</a></li>
+            <li><a href="http://html5ify.com/doxmate">Doxmate主页</a></li>
+            <li><a href="https://github.com/JacksonTian/doxmate/issues?state=open">提交bug</a></li>
+          </ul>
+      </div>
+    </footer>
+    <script>
+      $(function() {
+        $('pre').addClass('prettyprint');
+        $('td pre').removeClass('prettyprint');
+        prettyPrint();
+        var $window = $(window);
+        $('.bs-docs-sidenav').affix({
+          offset: {
+            top: function () {
+              return $window.width() <= 980 ? 290 : 210
+            },
+            bottom: 270
+          }
+        });
+        $(".content").find('h1, h2, h3, h4, h5, h6').each(function () {
+          var node = $(this);
+          if (!node.attr("id")) {
+            node.attr("id", "index_" + node.text());
+          }
+          node.css("paddingTop", 40);
+        });
+      });
+    </script>
+  
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17170593-4']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  
+  </body>
+</html>

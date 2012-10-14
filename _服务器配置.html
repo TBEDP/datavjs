@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>datavjs Documentation</title>
+    <meta name="keywords" content="DataV" />
+    <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
+    <script src="assets/prettify.js"></script>
+    <script src="assets/jquery-1.8.2.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="assets/base.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="./index.html">datavjs</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li>
+                <a href="./api.html">API Docs</a>
+              </li>
+              
+              <li>
+                <a href="./butterfly.html">butterfly</a>
+              </li>
+              
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+              
+              <li>
+                <a href="./CodingStyle.html">CodingStyle</a>
+              </li>
+              
+              <li>
+                <a href="./force以及chord文档.html">force以及chord文档</a>
+              </li>
+              
+              <li>
+                <a href="./note.html">note</a>
+              </li>
+              
+              <li>
+                <a href="./stream文档.html">stream文档</a>
+              </li>
+              
+              <li>
+                <a href="./treemap文档.html">treemap文档</a>
+              </li>
+              
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="jumbotron subhead">
+      <div class="container">
+        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <p class="lead">
+          DataV.js is a JavaScript library for data visualization
+        </p>
+      </div>
+    </header>
+<div class="container content">
+  <div class="row">
+  	<div class="span3 bs-docs-sidebar">
+      <ul class="nav nav-list bs-docs-sidenav affix">
+
+  <li class="level_1">
+    <a href="#index_服务器端配置" title="服务器端配置">
+      <i class="icon-chevron-right"></i>服务器端配置
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_为何需要服务器？" title="为何需要服务器？">
+      <i class="icon-chevron-right"></i>为何需要服务器？
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_怎么安装？" title="怎么安装？">
+      <i class="icon-chevron-right"></i>怎么安装？
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_下载安装" title="下载安装">
+      <i class="icon-chevron-right"></i>下载安装
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_执行" title="执行">
+      <i class="icon-chevron-right"></i>执行
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_访问服务器" title="访问服务器">
+      <i class="icon-chevron-right"></i>访问服务器
+    </a>
+  </li>
+
+</ul>
+
+    </div>
+    <div class="span9">
+      <section>
+        <h1>服务器端配置</h1>
+
+<h2>为何需要服务器？</h2>
+
+<p>由于我们项目中加载数据文件是通过ajax的方式，ajax在普通从磁盘文件方式打开时，浏览器是不启用ajax功能的，会导致demo无法跑通。</p>
+
+<h2>怎么安装？</h2>
+
+<p>推荐通过Node.js来搭建，十分方便快捷。</p>
+
+<h3>下载安装</h3>
+
+<p>从这里下载<a href="http://nodejs.org/#download"><a href='http://nodejs.org/#download'>http://nodejs.org/#download</a></a>适合你平台的Node二进制文件，并安装。Linux需要编译。</p>
+
+<h3>执行</h3>
+
+<p>通过命令行进入源码的bin目录下，执行如下命令</p>
+
+<div class="highlight"><pre lang="">npm install connect
+</pre></div>
+
+<p>安装完成后，执行<code>node app.js</code>。</p>
+
+<h3>访问服务器</h3>
+
+<p>通过浏览器打开<a href="http://localhost:8001"><a href='http://localhost:8001'>http://localhost:8001</a></a>即可看到目录结构。</p>
+      </section>
+    </div>
+  </div>
+</div>
+      <footer class="footer">
+        <div class="container">
+          <p class="pull-right">
+            <a href="#">Back to top</a>
+          </p>
+          <p>此文档通过doxmate生成。主题借鉴Bootstrap API文档风格，注解基于<a href="https://github.com/visionmedia/dox">Dox</a>。欢迎关注doxmate作者<a href="http://weibo.com/shyvo" target="_blank">@朴灵</a></p>
+          <ul class="footer-links">
+            <li><a href="https://github.com/visionmedia/dox">Dox主页</a></li>
+            <li><a href="http://html5ify.com/doxmate">Doxmate主页</a></li>
+            <li><a href="https://github.com/JacksonTian/doxmate/issues?state=open">提交bug</a></li>
+          </ul>
+      </div>
+    </footer>
+    <script>
+      $(function() {
+        $('pre').addClass('prettyprint');
+        $('td pre').removeClass('prettyprint');
+        prettyPrint();
+        var $window = $(window);
+        $('.bs-docs-sidenav').affix({
+          offset: {
+            top: function () {
+              return $window.width() <= 980 ? 290 : 210
+            },
+            bottom: 270
+          }
+        });
+        $(".content").find('h1, h2, h3, h4, h5, h6').each(function () {
+          var node = $(this);
+          if (!node.attr("id")) {
+            node.attr("id", "index_" + node.text());
+          }
+          node.css("paddingTop", 40);
+        });
+      });
+    </script>
+  
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17170593-4']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  
+  </body>
+</html>
