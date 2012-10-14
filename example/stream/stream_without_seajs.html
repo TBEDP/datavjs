@@ -5,16 +5,18 @@
     <title>Streamgraph</title>
     <script type="text/javascript" src="../../deps/d3.js"></script>
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="../../lib/datav.js"></script>
+    <script type="text/javascript" src="../../lib/charts/axis.js"></script>
     <script type="text/javascript" src="../../lib/charts/stream.js"></script>
-    <style type="text/css">
+<style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
     border-bottom: 1px dashed #F00;
     padding-left: 20px;
 }
-    </style>
+</style>
   </head>
   <body>
 
@@ -25,15 +27,9 @@
     <script type="text/javascript">
         DataV.changeTheme("theme0");
         var stream = new Stream("chart", {"width": 800});
-        stream.setUserConfig({"more": false});
-        //DataV.csv("streamDataExample.csv", function (source) {
+        stream.setOptions({"more": false});
         DataV.csv("streamDataExample.csv", function (source) {
             stream.setSource(source);
-            /*
-            stream.on("mousemove", function(data) {
-                console.log(data.timeIndex + " " + data.pathIndex);
-                });
-            */
             stream.render();
         });
     </script>

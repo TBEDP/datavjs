@@ -5,16 +5,17 @@
     <title>Streamgraph</title>
     <script type="text/javascript" src="../../deps/d3.js"></script>
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
 
-    <style type="text/css">
+<style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
     border-bottom: 1px dashed #F00;
     padding-left: 20px;
 }
-    </style>
+</style>
   </head>
   <body>
 
@@ -29,13 +30,14 @@
     seajs.config({
         alias: {
             'DataV': dir + '/../../lib/datav.js',
+            'Axis': dir + '/../../lib/charts/axis.js',
             'Stream': dir + '/../../lib/charts/stream.js'
         }
     });
     seajs.use(["Stream", "DataV"], function (Stream, DataV) {
         DataV.changeTheme("theme0");
         var stream = new Stream("chart", {"width": 800});
-        stream.setUserConfig({"more": false});
+        stream.setOptions({"more": false});
         //DataV.csv("streamDataExample.csv", function (source) {
         DataV.csv("streamDataExample.csv", function (source) {
             stream.setSource(source);
