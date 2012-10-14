@@ -139,24 +139,19 @@ JacksonTianmatoMacBook-Pro:datav.js jacksontian$ tree -d
 .
 ├── bin
 ├── deps
-├── docs
-├── examples
-├── libs
+├── doc
+├── example
+├── lib
 └── test
 ```
 其中详细说明一下：
 
 - `bin`目录用于存放一些可运行的脚本或者工具，例如`jslint`。
 - `deps`目录用于存放项目的依赖文件，其中有`raphael`和`d3`的相关文件。
-- `docs`目录用于用于存放项目的文档，如API生成文档或一些说明文档。
-- `examples`目录存放案例代码。
-- `libs`目录为组件库具体代码，根据每个图的类型不同，存为对应文件。
+- `doc`目录用于用于存放项目的文档，如API生成文档或一些说明文档。
+- `example`目录存放案例代码。
+- `lib`目录为组件库具体代码，根据每个图的类型不同，存为对应文件。
 - `test`目录存放单元测试代码或自动化测试代码。
-- `datav.js`文件为库的入口代码。
-
-```javascript
-   var jacksontian = fafa;
-```
 
 ## 单元测试
 `DataV`项目采用[`QUnit`](http://docs.jquery.com/QUnit)作为测试框架，详细文档请见。  
@@ -170,7 +165,6 @@ test("Themes.get", function () {
     // 单个断言
     equal(DataV.Themes.get("inexsit"), undefined, "Should get undefined when key is inexsit");
     equal(DataV.Themes.get("COLOR_MODE"), "gradient", "Should get gradient when key is COLOR_MODE");
-
     equal(typeof DataV.Themes.get("COLOR_ARGS"), "object", "COLOR_ARGS should be an object");
     equal(DataV.Themes.get("COLOR_ARGS").length, 2, "COLOR_ARGS should have two items");
 });
@@ -183,12 +177,12 @@ test("Themes.get", function () {
 ```
 /**
  * 设置数据源
- * @param source 数据源数组.
- * @example 举个例字，假设下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
+ * Example 举个例字，假设下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
  * [
  *  [1,2,3,9],
  *  [3,4,6,3]
  * ]
+ * @param {Array} source 数据源数组.
  */
 Stream.prototype.setSource = function (source) {
     // TODO
