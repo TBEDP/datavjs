@@ -28,15 +28,16 @@
         var treemap = new Treemap("chart");
         d3.json("category_ratio.json", function (source) {
             treemap.setSource(source);
-            $info = $("#info");
-            treemap.setLeafNodeClick(function () {
-                $info.html(this.name + " is a leaf node.");
-            });
-            var $hover = $("#hover");
-            treemap.hover(function () {
-                $hover.htm("hover " + this.name);
-            }, function () {
-                $hover.html("leave " + this.name);
+            treemap.setOptions({
+                "leafNodeClick": function () {
+                    $("#info").html(this.name + " is a leaf node.");
+                },
+                "hoverIn": function () {
+                    $("#hover").html("hover " + this.name);
+                },
+                "hoverOut": function () {
+                    $("#hover").html("leave " + this.name);
+                }
             });
             treemap.render();
         });
