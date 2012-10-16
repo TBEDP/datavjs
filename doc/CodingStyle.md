@@ -252,3 +252,43 @@ _.isArray = nativeIsArray || function(obj) {
   return toString.call(obj) == '[object Array]';
 };
 ```
+### 数组去重
+
+```
+// make an array's every element unique by delete other same element 
+Array.prototype.uniq = function () {
+    var temp = {},
+        len = this.length;
+
+    for (var i = 0; i < len; i++) {
+        if (typeof temp[this[i]] == "undefined") {
+            temp[this[i]] = 1;
+        }
+    }
+    this.length = 0;
+    len = 0;
+    for (var i in temp) {
+        this[len++] = i;
+    }
+    return this;
+};
+```
+这里可以调用underscore的uniq方法即可。节省N行代码量
+
+### 元素是否存在数组中
+
+```
+//check if a string is in an array
+var _strInArray = function (str, array) {
+    var i = 0,
+        l = 0;
+    for (i = 0, l = array.length; i < l; i++) {
+        if (array[i] === str) {
+            return true;
+        }
+    }
+    return false;
+};
+```
+换用`_.indexOf(array, value)`可以节省代码量，且返回值比boolean值更有价值
+
