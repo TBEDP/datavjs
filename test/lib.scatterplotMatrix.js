@@ -39,7 +39,7 @@ test("setSource", function () {
     equal(sDefaults.dimensionsY.length, 4, "lenght of dimensionsY should be 4");
     equal(sDefaults.dimensionsY[0], "economy (mpg)", "fisrt element of dimensionsY should be \"economy (mpg)\"");
     equal(sDefaults.dimensionsY[3], "power (hp)", "last element of dimensionsY should be \"power (hp)\"");
-    //test domain 
+    //test domain
     equal(sDefaults.dimensionDomain["economy (mpg)"][0], 13, "the min of \"economy (mpg)\" should be 13");
     equal(sDefaults.dimensionDomain["economy (mpg)"][1], 20, "the max of \"economy (mpg)\" should be 20");
 });
