@@ -1,17 +1,17 @@
 module("Force");
 
-var fdnet = new DataV.Force(document.createElement("div"), {});
+var fdnet = new Force(document.createElement("div"), {});
 
 
 test("prototype.createCanvas", function () {
-	  equal(fdnet.defaults.width, 500, "width should get 500");
-	  equal(fdnet.defaults.height, 500, "height should get 500");
+    equal(fdnet.defaults.width, 500, "width should get 500");
+    equal(fdnet.defaults.height, 500, "height should get 500");
 
     fdnet.createCanvas();
-	
-	  equal(typeof fdnet.canvas, "object", "canvas should be an object");
-	  equal(fdnet.canvas.width, 500, "canvas width should be 500");
-  	equal(fdnet.canvas.height, 500, "canvas height should be 500");
+
+    equal(typeof fdnet.canvas, "object", "canvas should be an object");
+    equal(fdnet.canvas.width, 500, "canvas width should be 500");
+    equal(fdnet.canvas.height, 500, "canvas height should be 500");
 });
 
 test("prototype.setSource", function () {

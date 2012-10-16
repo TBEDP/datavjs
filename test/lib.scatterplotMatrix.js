@@ -1,16 +1,15 @@
-module("DataV.ScatterplotMatrix");
+module("ScatterplotMatrix");
 
-var scatterplotMatrix = new DataV.ScatterplotMatrix(document.createElement("div"),{"width": 522, "height": 522});
+var scatterplotMatrix = new ScatterplotMatrix(document.createElement("div"),{"width": 522, "height": 522});
 
 var testData = [
-            ["name", "economy (mpg)", "cylinders", "displacement (cc)", "power (hp)"],
-            ["A", 13, 8, 360, 175],
-            ["B", 15, 8, 390, 190],
-            ["C", 17, 8, 304, 150],
-            ["D", 20, 6, 232, 90],
-            ["E", 18, 6, 199, 97]
-        ];
-
+    ["name", "economy (mpg)", "cylinders", "displacement (cc)", "power (hp)"],
+    ["A", 13, 8, 360, 175],
+    ["B", 15, 8, 390, 190],
+    ["C", 17, 8, 304, 150],
+    ["D", 20, 6, 232, 90],
+    ["E", 18, 6, 199, 97]
+];
 
 test("createCanvas", function () {
     equal(scatterplotMatrix.defaults.width, 522, "width should get 522");
