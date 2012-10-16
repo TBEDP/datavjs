@@ -8,7 +8,7 @@
 //创建Force对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
 var net = new DataV.Force("chart"，{“width”: 700, “height”: 500});
 //设置net选项，边的目标长度为100。
-net.setOptions({“linkLength”: 100}); //options
+net.setOptions({"linkLength": 100}); //options
 //设置数据，输入的数据为一个二维数组。
 net.setSource(source); //source is a 2-d array
 //绘制
