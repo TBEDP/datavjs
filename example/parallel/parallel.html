@@ -1,48 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta charset="utf-8"/>
     <title>Parallel Coordinates</title>
     <style type="text/css">
-/*
-svg {
-  font: 10px sans-serif;
-}
-
-.background path {
-  fill: none;
-  stroke: #ccc;
-  stroke-opacity: .4;
-  shape-rendering: crispEdges;
-}
-
-.foreground path {
-  fill: none;
-  stroke: steelblue;
-  stroke-opacity: .7;
-}
-
-.brush .extent {
-  fill-opacity: .3;
-  stroke: #fff;
-  shape-rendering: crispEdges;
-}
-
-.axis line, .axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.axis text {
-  text-shadow: 0 1px 0 #fff;
-}
-*/
     </style>
   </head>
   <body>
     <script type="text/javascript" src="../../deps/d3.js"></script>
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
 
@@ -56,42 +23,47 @@ svg {
     <script type="text/javascript">
 
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
-    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
-        alias: {
-            'DataV': dir + '/../../lib/datav.js',
-            'Axis': dir + '/../../lib/charts/axis.js',
-            'Brush': dir + '/../../lib/charts/brush.js',
-            'Parallel': dir + '/../../lib/charts/parallel.js'
-        }
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Axis': dir + '/../../lib/charts/axis.js',
+        'Brush': dir + '/../../lib/charts/brush.js',
+        'Parallel': dir + '/../../lib/charts/parallel.js'
+      }
     });
 
     seajs.use(["Parallel", "DataV"], function (Parallel, DataV) {
-        var parallel = new Parallel("chart", {"width": 950, "height": 500});
-        
-        DataV.csv("cars.csv", function(dataSource) {
-            var domains;
-            parallel.setSource(dataSource);
-            //parallel.chooseDimensions(["name", "name", "economy (mpg)"]);
-            parallel.chooseDimensions(["economy (mpg)", "cylinders", "displacement (cc)", "power (hp)", "weight (lb)", "0-60 mph (s)", "year"]);
-            parallel.setDimensionType({"cylinders": "ordinal"});
-            domains = parallel.getDimensionDomains();
-            parallel.setDimensionDomain({"cylinders": domains["cylinders"].sort(d3.ascending),
-                                        "economy (mpg)": domains["economy (mpg)"].reverse()});
-            parallel.setDimensionExtent({"cylinders": ["6", "3"], "economy (mpg)": [35, 20] });
-
-            parallel.on("brushstart", function() {
-                $("#info_brushstart").html(JSON.stringify(this.statistic));
-                });
-            parallel.on("brush", function() {
-                $("#info_brush").html(JSON.stringify(this.statistic));
-                });
-            parallel.on("brushend", function() {
-                $("#info_brushend").html(JSON.stringify(this.statistic));
-                });
-            parallel.render();
-            //parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
+      var parallel = new Parallel("chart", {"width": 950, "height": 500});
+      DataV.csv("cars.csv", function (dataSource) {
+        parallel.setSource(dataSource);
+        //parallel.chooseDimensions(["name", "name", "economy (mpg)"]);
+        parallel.chooseDimensions([
+          "economy (mpg)", "cylinders", "displacement (cc)", 
+          "power (hp)", "weight (lb)", "0-60 mph (s)", "year"
+        ]);
+        parallel.setDimensionType({"cylinders": "ordinal"});
+        var domains = parallel.getDimensionDomains();
+        parallel.setDimensionDomain({
+          "cylinders": domains["cylinders"].sort(d3.ascending),
+          "economy (mpg)": domains["economy (mpg)"].reverse()
         });
+        parallel.setDimensionExtent({
+          "cylinders": ["6", "3"],
+          "economy (mpg)": [35, 20]
+        });
+
+        parallel.on("brushstart", function() {
+          $("#info_brushstart").html(JSON.stringify(this.statistic));
+        });
+        parallel.on("brush", function() {
+          $("#info_brush").html(JSON.stringify(this.statistic));
+        });
+        parallel.on("brushend", function() {
+          $("#info_brushend").html(JSON.stringify(this.statistic));
+        });
+        parallel.render();
+      });
     });
 
 
