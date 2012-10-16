@@ -1,16 +1,15 @@
-module("DataV.ScatterplotMatrix");
+module("ScatterplotMatrix");
 
-var scatterplotMatrix = new DataV.ScatterplotMatrix(document.createElement("div"),{"width": 522, "height": 522});
+var scatterplotMatrix = new ScatterplotMatrix(document.createElement("div"),{"width": 522, "height": 522});
 
 var testData = [
-            ["name", "economy (mpg)", "cylinders", "displacement (cc)", "power (hp)"],
-            ["A", 13, 8, 360, 175],
-            ["B", 15, 8, 390, 190],
-            ["C", 17, 8, 304, 150],
-            ["D", 20, 6, 232, 90],
-            ["E", 18, 6, 199, 97]
-        ];
-
+    ["name", "economy (mpg)", "cylinders", "displacement (cc)", "power (hp)"],
+    ["A", 13, 8, 360, 175],
+    ["B", 15, 8, 390, 190],
+    ["C", 17, 8, 304, 150],
+    ["D", 20, 6, 232, 90],
+    ["E", 18, 6, 199, 97]
+];
 
 test("createCanvas", function () {
     equal(scatterplotMatrix.defaults.width, 522, "width should get 522");
@@ -39,7 +38,7 @@ test("setSource", function () {
     equal(sDefaults.dimensionsY.length, 4, "lenght of dimensionsY should be 4");
     equal(sDefaults.dimensionsY[0], "economy (mpg)", "fisrt element of dimensionsY should be \"economy (mpg)\"");
     equal(sDefaults.dimensionsY[3], "power (hp)", "last element of dimensionsY should be \"power (hp)\"");
-    //test domain 
+    //test domain
     equal(sDefaults.dimensionDomain["economy (mpg)"][0], 13, "the min of \"economy (mpg)\" should be 13");
     equal(sDefaults.dimensionDomain["economy (mpg)"][1], 20, "the max of \"economy (mpg)\" should be 20");
 });
