@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta charset="utf-8"/>
     <title>Chord Diagram</title>
 
     <script type="text/javascript" src="../../deps/compatible.js"> </script>
@@ -9,20 +9,21 @@
     <script type="text/javascript" src="../../deps/d3.csv.js"></script>
     <script type="text/javascript" src="../../deps/d3.layout.js"></script>
     <script type="text/javascript" src="../../deps/raphael.js"></script>
+    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
 
     <!-- chord -->
     <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
     <script type="text/javascript">
     seajs.config({
-        alias: {
-            'datav': '/datav.js',
-            'chord': '/libs/chord.js'
-        }
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Chord': '/lib/charts/chord.js'
+      }
     });
     </script>
 
-  <STYLE type="text/css">
+  <style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
     border-bottom: 1px dashed #F00;
@@ -37,25 +38,22 @@
     padding: 0.5em;
     width: 750px;
 }
-</STYLE>
+</style>
   </head>
   <body>
-
     <div id="chart"></div>
 
-        <script type="text/javascript">
-
-    seajs.use(["chord", "datav"], function (Chord, DataV) {
-        // DataV.changeTheme("datav");
-        var chord = new Chord("chart",{
-                width: 800
-            });
-        DataV.csv("chord.csv", function (source) {
-            chord.setSource(source);
-            chord.render();
-        });
+    <script type="text/javascript">
+    seajs.use(["Chord", "DataV"], function (Chord, DataV) {
+      // DataV.changeTheme("datav");
+      var chord = new Chord("chart",{
+        width: 800
+      });
+      DataV.csv("chord.csv", function (source) {
+        chord.setSource(source);
+        chord.render();
+      });
     });
-        </script>
     </script>
   </body>
 </html>

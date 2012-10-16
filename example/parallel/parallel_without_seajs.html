@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta charset="utf-8"/>
     <title>Parallel Coordinates</title>
     <style type="text/css">
 /*
@@ -45,6 +45,8 @@ svg {
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="../../lib/datav.js"></script>
+    <script type="text/javascript" src="../../lib/charts/axis.js"></script>
+    <script type="text/javascript" src="../../lib/charts/brush.js"></script>
     <script type="text/javascript" src="../../lib/charts/parallel.js"></script>
 
     <div id="chart"></div>
@@ -55,32 +57,35 @@ svg {
     <p>brushend</p>
     <div id="info_brushend"></div>
     <script type="text/javascript">
-
-
         var parallel = new Parallel("chart", {"width": 950, "height": 500});
-        
-        DataV.csv("cars.csv", function(dataSource) {
-            var domains;
-            parallel.setSource(dataSource);
-            //parallel.chooseDimensions(["name", "name", "economy (mpg)"]);
-            parallel.chooseDimensions(["economy (mpg)", "cylinders", "displacement (cc)", "power (hp)", "weight (lb)", "0-60 mph (s)", "year"]);
-            parallel.setDimensionType({"cylinders": "ordinal"});
-            domains = parallel.getDimensionDomains();
-            parallel.setDimensionDomain({"cylinders": domains["cylinders"].sort(d3.ascending),
-                                        "economy (mpg)": domains["economy (mpg)"].reverse()});
-            parallel.setDimensionExtent({"cylinders": ["6", "3"], "economy (mpg)": [35, 20] });
+        DataV.csv("cars.csv", function (dataSource) {
+          parallel.setSource(dataSource);
+          //parallel.chooseDimensions(["name", "name", "economy (mpg)"]);
+          parallel.chooseDimensions([
+            "economy (mpg)", "cylinders", "displacement (cc)", 
+            "power (hp)", "weight (lb)", "0-60 mph (s)", "year"
+          ]);
+          parallel.setDimensionType({"cylinders": "ordinal"});
+          var domains = parallel.getDimensionDomains();
+          parallel.setDimensionDomain({
+            "cylinders": domains["cylinders"].sort(d3.ascending),
+            "economy (mpg)": domains["economy (mpg)"].reverse()
+          });
+          parallel.setDimensionExtent({
+            "cylinders": ["6", "3"],
+            "economy (mpg)": [35, 20]
+          });
 
-            parallel.on("brushstart", function() {
-                $("#info_brushstart").html(JSON.stringify(this.statistic));
-                });
-            parallel.on("brush", function() {
-                $("#info_brush").html(JSON.stringify(this.statistic));
-                });
-            parallel.on("brushend", function() {
-                $("#info_brushend").html(JSON.stringify(this.statistic));
-                });
-            parallel.render();
-            //parallel.setDimensionExtent({"economy (mpg)": [29, 20], "cylinders": ["6", "4"]});//??
+          parallel.on("brushstart", function() {
+            $("#info_brushstart").html(JSON.stringify(this.statistic));
+          });
+          parallel.on("brush", function() {
+            $("#info_brush").html(JSON.stringify(this.statistic));
+          });
+          parallel.on("brushend", function() {
+            $("#info_brushend").html(JSON.stringify(this.statistic));
+          });
+          parallel.render();
         });
 
     </script>
