@@ -1,8 +1,6 @@
-module("DataV.Stream")
-//4 new function tickAttr, tickTextAttr, minorTickAttr, domainAttr, others are belong to d3
-//view xamples in ../examples/axis/ to know the usage.
+module("Stream");
 
-var stream = new DataV.Stream(document.createElement("div"),100,100);
+var stream = new Stream(document.createElement("div"),100,100);
 test("Stream", function () {
     equal(stream.type, "Stream", "Type should be Stream");
     equal(stream instanceof DataV.Chart, true, "instanceof Chart");
@@ -76,5 +74,3 @@ test("setSource", function () {
             stream.setSource([[,2,3],[4,5,6],[7,8,9]]);
         }, "setSource can not judge column or row situation, throw an error");
 });
-
-
