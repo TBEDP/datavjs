@@ -44,10 +44,6 @@
               </li>
               
               <li>
-                <a href="./note.html">note</a>
-              </li>
-              
-              <li>
                 <a href="./stream文档.html">stream文档</a>
               </li>
               
@@ -184,6 +180,30 @@
   <li class="level_2">
     <a href="#index_事件注入" title="事件注入">
       <i class="icon-chevron-right"></i>事件注入
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_常见错误" title="常见错误">
+      <i class="icon-chevron-right"></i>常见错误
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_判断一个对象是否是数组" title="判断一个对象是否是数组">
+      <i class="icon-chevron-right"></i>判断一个对象是否是数组
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_数组去重" title="数组去重">
+      <i class="icon-chevron-right"></i>数组去重
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_元素是否存在数组中" title="元素是否存在数组中">
+      <i class="icon-chevron-right"></i>元素是否存在数组中
     </a>
   </li>
 
@@ -453,6 +473,66 @@ stream.on("contextmenu", function (event) {
     console.log(this.canvas);
 };
 </code></pre>
+
+<h2>常见错误</h2>
+
+<h3>判断一个对象是否是数组</h3>
+
+<p>下面是宁朗写的：</p>
+
+<div class="highlight"><pre lang="">if (color.constructor !== Array) {
+    throw new Error("The color should be Array");
+}
+</pre></div>
+
+<p>下面是Underscore的方法：</p>
+
+<div class="highlight"><pre lang="">_.isArray = nativeIsArray || function(obj) {
+  return toString.call(obj) == '[object Array]';
+};
+</pre></div>
+
+<h3>数组去重</h3>
+
+<div class="highlight"><pre lang="">// make an array's every element unique by delete other same element 
+Array.prototype.uniq = function () {
+    var temp = {},
+        len = this.length;
+
+<pre><code>for (var i = 0; i &lt; len; i++) {
+    if (typeof temp[this[i]] == "undefined") {
+        temp[this[i]] = 1;
+    }
+}
+this.length = 0;
+len = 0;
+for (var i in temp) {
+    this[len++] = i;
+}
+return this;
+</code></pre>
+
+};
+</pre></div>
+
+<p>这里可以调用underscore的uniq方法即可。节省N行代码量</p>
+
+<h3>元素是否存在数组中</h3>
+
+<div class="highlight"><pre lang="">//check if a string is in an array
+var _strInArray = function (str, array) {
+    var i = 0,
+        l = 0;
+    for (i = 0, l = array.length; i < l; i++) {
+        if (array[i] === str) {
+            return true;
+        }
+    }
+    return false;
+};
+</pre></div>
+
+<p>换用<code>_.indexOf(array, value)</code>可以节省代码量，且返回值比boolean值更有价值</p>
       </section>
     </div>
   </div>

@@ -44,10 +44,6 @@
               </li>
               
               <li>
-                <a href="./note.html">note</a>
-              </li>
-              
-              <li>
                 <a href="./stream文档.html">stream文档</a>
               </li>
               
@@ -1265,8 +1261,8 @@ chart.checkContainer($("#id"));
 
     <tr>
       <td>参数</td>
-      <td>ordinal(domain,)</td>
-      <td colspan="2">scale's range</td>
+      <td>domain(Array)</td>
+      <td colspan="2">ordinal scale's range</td>
     </tr>
   
 
@@ -1958,74 +1954,14 @@ chart.checkContainer($("#id"));
       <a href="#_d3_svg_brushUp">d3_svg_brushUp</a>
     </li>
 
-    <li>
-      <a href="#_down">down</a>
-    </li>
-
-    <li>
-      <a href="#_brush">brush</a>
-    </li>
-
-    <li>
-      <a href="#brush_left">left</a>
-    </li>
-
-    <li>
-      <a href="#brush_top">top</a>
-    </li>
-
-    <li>
-      <a href="#brush_width">width</a>
-    </li>
-
-    <li>
-      <a href="#brush_height">height</a>
-    </li>
-
-    <li>
-      <a href="#brush_x">x</a>
-    </li>
-
-    <li>
-      <a href="#brush_y">y</a>
-    </li>
-
-    <li>
-      <a href="#brush_extent">extent</a>
-    </li>
-
   </ul>
   <hr />
 
   
 
-  <p>lobal d3,Raphael,$</p>
-
   <table class="table">
   
 
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('Brush', function (require) {
-
-    var d3_svg_brush,
-        d3_svg_brushDispatch,
-        d3_svg_brushTarget,
-        d3_svg_brushX,
-        d3_svg_brushY,
-        d3_svg_brushExtent,
-        d3_svg_brushDrag,
-        d3_svg_brushResize,
-        d3_svg_brushCenter,
-        d3_svg_brushOffset,
-        d3_svg_brushEls;</code></pre></td>
-    </tr>
   
   </table>
   
@@ -2067,21 +2003,8 @@ chart.checkContainer($("#id"));
             if (orient === &quot;n&quot; || orient === &quot;s&quot;) {
                 el.attr({&quot;width&quot;: extent[1][0] - extent[0][0]});
             }
-        });</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>g.select(".extent").attr("x", extent[0][0]);<br />        g.selectAll(".n,.s,.w,.nw,.sw").attr("x", extent[0][0] - 2);<br />        g.selectAll(".e,.ne,.se").attr("x", extent[1][0] - 3);<br />        g.selectAll(".extent,.n,.s").attr("width", extent[1][0] - extent[0][0]);</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>}</code></pre></td>
+        });
+    }</code></pre></td>
     </tr>
   
   </table>
@@ -2123,21 +2046,8 @@ chart.checkContainer($("#id"));
             if (orient === &quot;e&quot; || orient === &quot;w&quot;) {
                 el.attr({&quot;height&quot;: extent[1][1] - extent[0][1]});
             }
-        });</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>g.select(".extent").attr("y", extent[0][1]);<br />        g.selectAll(".n,.e,.w,.nw,.ne").attr("y", extent[0][1] - 3);<br />        g.selectAll(".s,.se,.sw").attr("y", extent[1][1] - 4);<br />        g.selectAll(".extent,.e,.w").attr("height", extent[1][1] - extent[0][1]);</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>}</code></pre></td>
+        });
+    }</code></pre></td>
     </tr>
   
   </table>
@@ -2475,566 +2385,22 @@ chart.checkContainer($("#id"));
             top,
             width,
             height,
-            backgroundAttr = {&quot;fill&quot;: &quot;#dddddd&quot;,
-                            &quot;stroke&quot;: &quot;none&quot;,
-                            &quot;cursor&quot;: &quot;crosshair&quot;
-                            },
-            foregroundAttr = {&quot;fill&quot;: &quot;steelblue&quot;,
-                            &quot;stroke&quot;: &quot;none&quot;,
-                            &quot;cursor&quot;: &quot;move&quot;
-                            },
+            backgroundAttr = {
+                &quot;fill&quot;: &quot;#dddddd&quot;,
+                &quot;stroke&quot;: &quot;none&quot;,
+                &quot;cursor&quot;: &quot;crosshair&quot;
+            },
+            foregroundAttr = {
+                &quot;fill&quot;: &quot;steelblue&quot;,
+                &quot;stroke&quot;: &quot;none&quot;,
+                &quot;cursor&quot;: &quot;move&quot;
+            },
             brushStart = function () {},
             brushing = function () {},
             brushEnd = function () {},
 
             brushEls = {},
             brushClass;</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_down">
-    down
-  </h3>
-  
-
-  <p>mouse down and start brushing or dragging.</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>函数</td>
-      <td>down()</td> 
-      <td></td>
-      <td>down</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>function down(e) {
-            var target = e.target,
-                bgOffset;
-            
-            // Store some global state for the duration of the brush gesture.
-            d3_svg_brush = brush;
-            d3_svg_brushTarget = $(brushEls.paper.canvas).parent();
-            d3_svg_brushExtent = extent;
-            bgOffset = $(d3_svg_brushTarget).offset();
-
-            d3_svg_brushOffset = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
-            d3_svg_brushEls = brushEls;
-        
-            // If the extent was clicked on, drag rather than brush;
-            // store the offset between the mouse and extent origin instead.
-            d3_svg_brushDrag = target.__brushNodeType__ === &quot;fg&quot; ? true : false;
-            if (d3_svg_brushDrag) {
-                d3_svg_brushOffset[0] = extent[0][0] - d3_svg_brushOffset[0];
-                d3_svg_brushOffset[1] = extent[0][1] - d3_svg_brushOffset[1];
-            } else if (/^resize/.test(target.__brushNodeType__)) {
-                // If a resizer was clicked on, record which side is to be resized.
-                // Also, set the offset to the opposite side.
-                d3_svg_brushResize = target.__brushNodeType__.split(&quot;_&quot;)[1];
-                d3_svg_brushOffset[0] = extent[+(/w$/.test(d3_svg_brushResize))][0];
-                d3_svg_brushOffset[1] = extent[+(/^n/.test(d3_svg_brushResize))][1];
-            } else if (e.altKey) {
-                // If the ALT key is down when starting a brush, the center is at the mouse.
-                d3_svg_brushCenter = d3_svg_brushOffset.slice();
-            }
-        
-            // Restrict which dimensions are resized.
-            d3_svg_brushX = !/^(n|s)$/.test(d3_svg_brushResize) &amp;&amp; x;
-            d3_svg_brushY = !/^(e|w)$/.test(d3_svg_brushResize) &amp;&amp; y;
-        
-            // Notify listeners.
-            d3_svg_brushDispatch = dispatcher(this, arguments);
-            d3_svg_brushDispatch(&quot;brushstart&quot;);
-            d3_svg_brushMove(e);
-            e.stopPropagation();
-        }</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_brush">
-    brush
-  </h3>
-  
-
-  <p>create brush<br />input a Raphael paper, return a brush object.</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>函数</td>
-      <td>brush()</td> 
-      <td></td>
-      <td>brush</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>function brush(paper) {
-            var resizes = x &amp;&amp; y ? [&quot;n&quot;, &quot;e&quot;, &quot;s&quot;, &quot;w&quot;, &quot;nw&quot;, &quot;ne&quot;, &quot;se&quot;, &quot;sw&quot;]
-                : x ? [&quot;e&quot;, &quot;w&quot;]
-                : y ? [&quot;n&quot;, &quot;s&quot;]
-                : [];
-
-            if (x) {
-                e = d3_scaleRange(x);
-                left = e[0];
-                width = e[1] - e[0];
-            }
-
-            if (y) {
-                e = d3_scaleRange(y);
-                top = e[0];
-                height = e[1] - e[0];
-            }
-
-            brushEls.paper = paper;
-            brushEls.brushSet = paper.set();
-            brushEls.resizerSet = paper.set();
-            brushEls.bg = paper.rect(left, top, width, height)
-                .attr({&quot;fill&quot;: &quot;#dddddd&quot;,
-                        &quot;stroke&quot;: &quot;none&quot;,
-                        &quot;cursor&quot;: &quot;crosshair&quot;
-                        })
-                .attr(backgroundAttr);
-            brushEls.bg.node.__brushNodeType__ = &quot;bg&quot;;
-            brushEls.bg.node.ondragstart = function () { return false; };//firefox drag bug fix;
-
-            brushClass = &quot;brush&quot; + brushEls.bg.id;
-
-            //$(brushEls.bg.node).addClass(&quot;brush bg rvml&quot;);  // fail to svg
-            brushEls.bg.node.setAttribute(&quot;class&quot;, &quot;brush bg rvml &quot; + brushClass);
-            brushEls.bg.node.setAttribute(&quot;className&quot;, &quot;brush bg rvml &quot; + brushClass);// IE 6,7
-
-            brushEls.fg = paper.rect(left, top, (x ? 0 : width), (y ? 0 : height))
-                .attr({&quot;fill&quot;: &quot;steelblue&quot;,
-                        &quot;stroke&quot;: &quot;none&quot;,
-                        &quot;cursor&quot;: &quot;move&quot;
-                        })
-                .attr(foregroundAttr);
-            brushEls.fg.node.__brushNodeType__ = &quot;fg&quot;;
-            brushEls.fg.node.ondragstart = function () { return false; };//firefox drag bug fix;
-            //$(brushEls.fg.node).addClass(&quot;brush fg rvml&quot;);   //fail to svg
-            brushEls.fg.node.setAttribute(&quot;class&quot;, &quot;brush fg rvml &quot; + brushClass);
-            brushEls.fg.node.setAttribute(&quot;className&quot;, &quot;brush fg rvml &quot; + brushClass);// IE 6,7
-
-            resizes.forEach(function (d) {
-                var resizer = paper.rect(left, top, (x ? 6 : width), (y ? 6 : height))
-                                .data(&quot;resizeOrient&quot;, d)
-                                .attr({&quot;cursor&quot;: d3_svg_brushCursor[d],
-                                    &quot;fill&quot;: &quot;white&quot;,
-                                    &quot;stroke&quot;: &quot;black&quot;,
-                                    &quot;opacity&quot;: 0});
-                if (Raphael.vml) {
-                    resizer.attr({&quot;cursor&quot;: vml_brushCursor[d]});
-                }
-                if (brush.empty()) {
-                    //hide all resizers
-                    if (d === &quot;n&quot; || d === &quot;s&quot;) {
-                        resizer.attr({&quot;height&quot;: 0});
-                    } else {
-                        resizer.attr({&quot;width&quot;: 0});
-                    }
-                }
-                resizer.node.__brushNodeType__ = &quot;resizer_&quot; + d;
-                resizer.node.ondragstart = function () { return false; };//firefox drag bug fix;
-                //$(resizer.node).addClass(&quot;brush rvml &quot; + d3_svg_brushCursor[d]);  //fail to svg
-                resizer.node.setAttribute(&quot;class&quot;, &quot;brush rvml &quot; + brushClass + &quot; &quot; + d3_svg_brushCursor[d]);
-                //IE 6,7
-                resizer.node.setAttribute(&quot;className&quot;, &quot;brush rvml &quot; + brushClass + &quot; &quot; + d3_svg_brushCursor[d]);
-                brushEls.resizerSet.push(resizer);
-            });
-            
-            if (x) {
-                d3_svg_brushRedrawX(brushEls, extent);
-            }
-
-            if (y) {
-                d3_svg_brushRedrawY(brushEls, extent);
-            }
-
-            //$(paper.canvas).delegate(&quot;.brush&quot;,&quot;mousedown&quot;, down);
-            //$(paper.canvas).undelegate(&quot;.brush&quot;,&quot;mousedown&quot;, down);
-            //$(paper.canvas).delegate(&quot;.brush&quot;,&quot;mousedown&quot;, down);
-            //$(paper.canvas).off(&quot;mousedown&quot;, &quot;.brush&quot;, down);
-            $(paper.canvas).on(&quot;mousedown&quot;, &quot;.&quot; + brushClass,  down);
-
-            brush.brushElements = brushEls;
-            return brush;
-        }
-
-        // dispatch event, bind data to golbal variant d3.event.
-        var dispatcher = function (that, argumentz) {
-            return function (type) {
-                var e = d3.event;
-                try {
-                    d3.event = {type: type, target: brush};
-                    event[type].apply(that, argumentz);
-                } finally {
-                    d3.event = e;
-                }
-            };
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_left">
-    left
-  </h3>
-  
-
-  <p>get or set brush's left </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.left()</td> 
-      <td>brush</td>
-      <td>left</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>a(z,)</td>
-      <td colspan="2">value in brush scale's domain</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.left = function (z) {
-            if (!arguments.length) { return left; }
-            left = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_top">
-    top
-  </h3>
-  
-
-  <p>get or set brush's top </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.top()</td> 
-      <td>brush</td>
-      <td>top</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>a(z,)</td>
-      <td colspan="2">value in brush scale's domain</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.top = function (z) {
-            if (!arguments.length) { return top; }
-            top = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_width">
-    width
-  </h3>
-  
-
-  <p>get or set brush's width </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.width()</td> 
-      <td>brush</td>
-      <td>width</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>a(z,)</td>
-      <td colspan="2">value in brush scale's domain</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.width = function (z) {
-            if (!arguments.length) { return width; }
-            width = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_height">
-    height
-  </h3>
-  
-
-  <p>get or set brush's height </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.height()</td> 
-      <td>brush</td>
-      <td>height</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>a(z,)</td>
-      <td colspan="2">value in brush scale's domain</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.height = function (z) {
-            if (!arguments.length) { return height; }
-            height = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_x">
-    x
-  </h3>
-  
-
-  <p>get or set brush's x scale </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.x()</td> 
-      <td>brush</td>
-      <td>x</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>d3's(z,)</td>
-      <td colspan="2">sacle object</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.x = function (z) {
-            if (!arguments.length) { return x; }
-            x = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_y">
-    y
-  </h3>
-  
-
-  <p>get or set brush's y scale </p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.y()</td> 
-      <td>brush</td>
-      <td>y</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>d3's(z,)</td>
-      <td colspan="2">sacle object</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.y = function (z) {
-            if (!arguments.length) { return y; }
-            y = z;
-            return brush;
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="brush_extent">
-    extent
-  </h3>
-  
-
-  <p>get or set brush's extent in scale's domain format. <br />if both x and y exist, @param z's format is [[x0, y0], [x1, y1]]<br />if only one of x and y exists, @param z's format is [x0, x1] or [y0, y1].</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>brush.extent()</td> 
-      <td>brush</td>
-      <td>extent</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>brush.extent = function (z) {
-            var x0, x1, y0, y1, t;
-        
-            // Invert the pixel extent to data-space.
-            if (!arguments.length) {
-                if (x) {
-                    x0 = extent[0][0]; x1 = extent[1][0];
-                    if (x.invert) {
-                        x0 = x.invert(x0); x1 = x.invert(x1);
-                    }
-                    if (x1 &lt; x0) {
-                        t = x0; x0 = x1; x1 = t;
-                    }
-                }
-                if (y) {
-                    y0 = extent[0][1]; y1 = extent[1][1];
-                    if (y.invert) {
-                        y0 = y.invert(y0); y1 = y.invert(y1);
-                    }
-                    if (y1 &lt; y0) {
-                        t = y0; y0 = y1; y1 = t;
-                    }
-                }
-                return x &amp;&amp; y ? [[x0, y0], [x1, y1]] : x ? [x0, x1] : y &amp;&amp; [y0, y1];
-            }
-        
-            // Scale the data-space extent to pixels.
-            if (x) {
-                x0 = z[0]; x1 = z[1];
-                if (y) {
-                    x0 = x0[0]; x1 = x1[0];
-                }
-                if (x.invert) {
-                    x0 = x(x0); x1 = x(x1);
-                }
-                if (x1 &lt; x0) {
-                    t = x0; x0 = x1; x1 = t;
-                }
-                extent[0][0] = x0; extent[1][0] = x1;
-            }
-            if (y) {
-                y0 = z[0]; y1 = z[1];
-                if (x) {
-                    y0 = y0[1]; y1 = y1[1];
-                }
-                if (y.invert) {
-                    y0 = y(y0); y1 = y(y1);
-                }
-                if (y1 &lt; y0) {
-                    t = y0; y0 = y1; y1 = t;
-                }
-                extent[0][1] = y0; extent[1][1] = y1;
-            }
-        
-            return brush;
-        };
-     
-        //empty extent and refresh foreground
-        brush.clear = function () {
-            extent[0][0] = extent[0][1] = extent[1][0] = extent[1][1] = 0;
-            brush.refresh();
-            return brush;
-        };
-
-        //refresh foreground
-        brush.refresh = function () {
-            if (x) {
-                d3_svg_brushRedrawX(brushEls, extent);
-            }
-            if (y) {
-                d3_svg_brushRedrawY(brushEls, extent);
-            }
-            return brush;
-        };
-
-        //remove all brush elements, so users can reset brush attributes and redraw it.
-        brush.remove = function () {
-            $(paper.canvas).off(&quot;mousedown&quot;, &quot;.&quot; + brushClass,  down);
-            brushEls.fg.remove();
-            brushEls.bg.remove();
-            brushEls.resizerSet.remove();
-            return brush;
-        };
-
-        // if brush is empty, return true, else false;
-        brush.empty = function () {
-            return (x &amp;&amp; extent[0][0] === extent[1][0]) || (y &amp;&amp; extent[0][1] === extent[1][1]);
-        };
-
-        // set background attribute.
-        brush.backgroundAttr  = function (x) {
-            if (!arguments.length) { return backgroundAttr; }
-            backgroundAttr = x;
-            return brush;
-        };
-        
-        // set foreground attribute.
-        brush.foregroundAttr = function (x) {
-            if (!arguments.length) { return foregroundAttr; }
-            foregroundAttr = x;
-            return brush;
-        };
-
-        $(document).bind(&quot;mousemove&quot;, d3_svg_brushMove)
-            .bind(&quot;mouseup&quot;, d3_svg_brushUp)
-            .bind(&quot;keydown&quot;, d3_svg_brushKeydown)
-            .bind(&quot;keyup&quot;, d3_svg_brushKeyup);
-      
-        return d3.rebind(brush, event, &quot;on&quot;);
-    };
-
-    return Brush;
-});</code></pre></td>
     </tr>
   
   </table>
@@ -3049,28 +2415,74 @@ chart.checkContainer($("#id"));
       <a href="#_Bubble">Bubble</a>
     </li>
 
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
+    <li>
+      <a href="#_chooseDimensions">chooseDimensions</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_getScale">getScale</a>
+    </li>
+
+    <li>
+      <a href="#_renderAxis">renderAxis</a>
+    </li>
+
+    <li>
+      <a href="#_colorDB">colorDB</a>
+    </li>
+
+    <li>
+      <a href="#_generatePaths">generatePaths</a>
+    </li>
+
+    <li>
+      <a href="#_getKeyData">getKeyData</a>
+    </li>
+
+    <li>
+      <a href="#_getColorData">getColorData</a>
+    </li>
+
+    <li>
+      <a href="#_initControls">initControls</a>
+    </li>
+
+    <li>
+      <a href="#_interpolateData">interpolateData</a>
+    </li>
+
+    <li>
+      <a href="#_uniq">uniq</a>
+    </li>
+
+    <li>
+      <a href="#_clearAnimation">clearAnimation</a>
+    </li>
+
+    <li>
+      <a href="#_pause">pause</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
   </ul>
   <hr />
 
   
 
-  <p>lobal Raphael, d3</p>
-
   <table class="table">
   
 
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('Bubble', function (require) {
-    var DataV = require('DataV');
-    var Axis = require('Axis');</code></pre></td>
-    </tr>
   
   </table>
   
@@ -3080,7 +2492,7 @@ chart.checkContainer($("#id"));
   </h3>
   
 
-  <p>Recently, bubble graph can represent five dimensions by xaxis,yaxis,size,color and time.<br />       You can stop animation by pause() method, start animation by initControls method;<br />       you can change animation start time by using global variable  this.startTime;<br />       you can visualize a time point's data by generatePaths(time point) method;<br />       an inside method drawAllTime(key) is designed for interaction.</p>
+  <p>Recently, bubble graph can represent five dimensions by xaxis,yaxis,size,color and time.<br />You can stop animation by pause() method, start animation by initControls method;<br />you can change animation start time by using global variable  this.startTime;<br />you can visualize a time point's data by generatePaths(time point) method;<br />an inside method drawAllTime(key) is designed for interaction.</p>
 
   <table class="table">
   
@@ -3098,7 +2510,7 @@ chart.checkContainer($("#id"));
         initialize: function (node, options) {
             this.type = &quot;Bubble&quot;;
             this.container = node;
-            this.node = this.checkNode(node);
+            this.node = this.checkContainer(node);
             this.defaults = {};
             // setting display width and height, also they can be changed by options
             this.defaults.width = 800;
@@ -3141,58 +2553,74 @@ chart.checkContainer($("#id"));
             this.setOptions(options);
             this.createCanvas();
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
 
-    // check node: if there is no node or the node is incorrect, throw error
-    Bubble.prototype.checkNode = function (node) {
-        if (!node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-        if (typeof node === &quot;string&quot;) {
-            return document.getElementById(node);
-        } else if (node.nodeName) {
-            return node;
-        }
-        throw new Error(&quot;Please specify which node to render.&quot;);
-    };
+  <p>create a backCanvas for the visualization</p>
 
-    // set visualization options
-    Bubble.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
-    };
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
 
-    // create a backCanvas for the visualization
-    Bubble.prototype.createCanvas = function () {
-        if (!this.node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.createCanvas = function () {
         var conf = this.defaults;
             m = conf.borderMargin;
         this.backCanvas = new Raphael(this.node, conf.width, conf.height);
         this.foreCanvas = Raphael(this.node, conf.width, conf.height);
-            $(this.node).css(&quot;position&quot;, &quot;relative&quot;);
-            $(this.foreCanvas.canvas).css({&quot;position&quot;: &quot;absolute&quot;,
-                &quot;zIndex&quot;: 2, &quot;left&quot;: m[0], &quot;top&quot;: m[1]});
 
-        this.canvasF = document.getElementById(this.container);
-        canvasStyle = this.canvasF.style;
+        $(this.node).css(&quot;position&quot;, &quot;relative&quot;);
+        $(this.foreCanvas.canvas).css({&quot;position&quot;: &quot;absolute&quot;,
+            &quot;zIndex&quot;: 2, &quot;left&quot;: m[0], &quot;top&quot;: m[1]});
+
+        canvasStyle = this.node.style;
         canvasStyle.position = &quot;relative&quot;;
-        this.floatTag = DataV.FloatTag()(this.canvasF);
+        this.floatTag = DataV.FloatTag()(this.node);
 
         this.floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
 
-        $(&quot;#&quot; + this.container).append(this.floatTag);
-    };
+        $(this.node).append(this.floatTag);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_chooseDimensions">
+    chooseDimensions
+  </h3>
+  
 
-    // choose bubble graph setted visualization dimens orderly
-    Bubble.prototype.chooseDimensions = function (dimen) {
+  <p>choose bubble graph setted visualization dimens orderly</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.chooseDimensions()</td> 
+      <td></td>
+      <td>chooseDimensions</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
         conf.dimensions = [];
         var strInArray = function (str, array) {
@@ -3203,6 +2631,7 @@ chart.checkContainer($("#id"));
             }
             return false;
         };
+
         for(var i = 0, l = dimen.length; i &lt; l; i++){
             if(strInArray(dimen[i], conf.allDimensions)) {
                 conf.dimensions.push(dimen[i]);
@@ -3226,22 +2655,43 @@ chart.checkContainer($("#id"));
 
         this.times.uniq();
         this.keys.uniq();
-        for (var i = 0,l = this.times.length; i &lt; l; i++) {
+        for (var i = 0, l = this.times.length; i &lt; l; i++) {
             this.timeKeys.push(i);
         }
         this.startTime = 0;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
 
-    // set source, get dimensions data, dimension type, and dimension domain
-    // default visualization dimension is setted here
-    Bubble.prototype.setSource = function (source) {
+  <p>set source, get dimensions data, dimension type, and dimension domain<br />default visualization dimension is setted here</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.setSource = function (source) {
         var conf = this.defaults;
         conf.allDimensions = source[0];
         // by default all dimensions show
         conf.dimensions = source[0];
 
         this.source = [];
-        for(var i=1, l=source.length; i &lt; l; i++){
+        for(var i = 1, l = source.length; i &lt; l; i++){
             var dot = {},
                 dimen = conf.allDimensions;
             for(var j=0, ll=dimen.length; j &lt; ll; j++){
@@ -3296,14 +2746,36 @@ chart.checkContainer($("#id"));
 
         this.times.uniq();
         this.keys.uniq();
-        for (var i = 0,l = this.times.length; i &lt; l; i++) {
+        for (var i = 0, l = this.times.length; i &lt; l; i++) {
             this.timeKeys.push(i);
         }
         this.startTime = 0;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getScale">
+    getScale
+  </h3>
+  
 
-    // different visualization scale is defined here
-    Bubble.prototype.getScale = function() {
+  <p>different visualization scale is defined here</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.getScale()</td> 
+      <td></td>
+      <td>getScale</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.getScale = function() {
         var conf = this.defaults;
             m = conf.borderMargin,
             w = conf.width - m[0] - m[2],
@@ -3326,7 +2798,7 @@ chart.checkContainer($("#id"));
             xDomain = [xMin - xBorder, xMax + xBorder],
             yDomain = [yMin - yBorder, yMax + yBorder];
 
-        this.x = {}; 
+        this.x = {};
         this.x[xDimen] = d3.scale.linear()
             .domain(xDomain).range([m[0], m[0] + w]);
         this.y = {};
@@ -3334,7 +2806,7 @@ chart.checkContainer($("#id"));
             .domain(yDomain).range([h, 0]);
         this.z = {};
         this.z[sizeDimen] = d3.scale.linear()
-            .domain(conf.dimensionDomain[sizeDimen]).range([minRadius, maxRadius]); 
+            .domain(conf.dimensionDomain[sizeDimen]).range([minRadius, maxRadius]);
         this.c = {};
         this.c[colorDimen] = this.colorDB({mode: &quot;random&quot;, ratio: 0.5});
 
@@ -3427,20 +2899,17 @@ chart.checkContainer($("#id"));
                 that.render();
             }
         );
-        playButton.click(
-            function() {
-                if (that.interval) {
-                    stopPattern.attr({&quot;fill-opacity&quot;: 0});
-                    startPattern.attr({&quot;fill-opacity&quot;: 1});
-                    that.pause();
-                } else {
-                    startPattern.attr({&quot;fill-opacity&quot;: 0});
-                    stopPattern.attr({&quot;fill-opacity&quot;: 1});
-                    that.initControls();
-                }
-                    
+        playButton.click(function() {
+            if (that.interval) {
+                stopPattern.attr({&quot;fill-opacity&quot;: 0});
+                startPattern.attr({&quot;fill-opacity&quot;: 1});
+                that.pause();
+            } else {
+                startPattern.attr({&quot;fill-opacity&quot;: 0});
+                stopPattern.attr({&quot;fill-opacity&quot;: 1});
+                that.initControls();
             }
-        );
+        });
         playButton.hover(
             function() {
                 startPattern.attr({&quot;fill&quot;: &quot;#ffffff&quot;});
@@ -3452,10 +2921,32 @@ chart.checkContainer($("#id"));
             }
         );
 
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_renderAxis">
+    renderAxis
+  </h3>
+  
 
-    // draw x-axis, y-axis and related parts
-    Bubble.prototype.renderAxis = function () {
+  <p>draw x-axis, y-axis and related parts</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.renderAxis()</td> 
+      <td></td>
+      <td>renderAxis</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.renderAxis = function () {
         var conf = this.defaults;
             m = conf.borderMargin,
             w = conf.width - m[0] - m[2],
@@ -3504,11 +2995,33 @@ chart.checkContainer($("#id"));
         var xText = backCanvas.text(m[0] + w/2, m[1] + h + 40, this.xDimen);
         xText.attr({&quot;font-size&quot;: &quot;15px&quot;, &quot;font-family&quot;: &quot;Arial&quot;, &quot;fill&quot;: &quot;#000000&quot;});
         var yText = backCanvas.text(m[0] - 50, m[1] + h/2, this.yDimen);
-        yText.attr({&quot;font-size&quot;: &quot;15px&quot;, &quot;font-family&quot;: &quot;Arial&quot;, &quot;fill&quot;: &quot;#000000&quot;}).transform(&quot;r-90&quot;);     
-    };
+        yText.attr({&quot;font-size&quot;: &quot;15px&quot;, &quot;font-family&quot;: &quot;Arial&quot;, &quot;fill&quot;: &quot;#000000&quot;}).transform(&quot;r-90&quot;);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_colorDB">
+    colorDB
+  </h3>
+  
 
-    // color database
-    Bubble.prototype.colorDB = function (colorJson) {
+  <p>color database</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.colorDB()</td> 
+      <td></td>
+      <td>colorDB</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.colorDB = function (colorJson) {
         var colorMatrix = DataV.getColor();
         var color;
         var colorStyle = colorJson || {};
@@ -3535,11 +3048,32 @@ chart.checkContainer($("#id"));
             break;
         }
         return color;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_generatePaths">
+    generatePaths
+  </h3>
+  
 
-    // main visualization method where bubble is drawed inside
-    // a time point is the method's only parameter
-    Bubble.prototype.generatePaths = function (time) {
+  <p>main visualization method where bubble is drawed inside<br />a time point is the method's only parameter</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.generatePaths()</td> 
+      <td></td>
+      <td>generatePaths</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.generatePaths = function (time) {
         var conf = this.defaults,
             m = conf.borderMargin,
             meshInterval = conf.meshInterval,
@@ -3573,7 +3107,7 @@ chart.checkContainer($("#id"));
             meshes.push(foreCanvas.path(&quot;M&quot;+(i * meshInterval)+&quot; &quot;+0+&quot;L&quot;+(i * meshInterval)+
                 &quot; &quot;+(realHeight-1)).attr({&quot;stroke&quot;: &quot;#ebebeb&quot;, &quot;stroke-width&quot;: 1}));
         }
-        for (var i = 1;i &lt; horizontalMeshNUm;i++) {
+        for (var i = 1; i &lt; horizontalMeshNUm; i++) {
             meshes.push(foreCanvas.path(&quot;M&quot;+1+&quot; &quot;+(realHeight - (i * meshInterval))+&quot;L&quot;+realWidth+
                 &quot; &quot;+(realHeight - (i * meshInterval))).attr({&quot;stroke&quot;: &quot;#ebebeb&quot;, &quot;stroke-dasharray&quot;: &quot;-&quot;, &quot;stroke-width&quot;: 0.5}));
         }
@@ -3590,13 +3124,12 @@ chart.checkContainer($("#id"));
         }
 
         var floatTag = this.floatTag;
-        var tip = '&lt;b&gt;' + that.keyDimen + ':{key}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' 
-                    + that.xDimen + ':{xDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
-                    + that.yDimen + ':{yDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
-                    + that.sizeDimen + ':{sizeDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
-                    + that.colorDimen + ':{colorDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
-                    + that.timeDimen + ':{timeDimen}&lt;/b&gt;';
-
+        var tip = '&lt;b&gt;' + that.keyDimen + ':{key}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' +
+            that.xDimen + ':{xDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' +
+            that.yDimen + ':{yDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' +
+            that.sizeDimen + ':{sizeDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' +
+            that.colorDimen + ':{colorDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' +
+            that.timeDimen + ':{timeDimen}&lt;/b&gt;';
 
         // control the time label
         var label = foreCanvas.text(20, m[1] + h + 15, this.times[time.toFixed(0)]);
@@ -3605,7 +3138,7 @@ chart.checkContainer($("#id"));
         dots.sort(function(b,a) { return a.r0 &lt; b.r0 ? -1 : a.r0 &gt; b.r0 ? 1 : 0; });
 
         // draw the circles
-        for (var i = 0, l = dots.length; i &lt; l; i++) {          
+        for (var i = 0, l = dots.length; i &lt; l; i++) {
             var dot = dots[i],
                 x = this.x[xDimen](dot.x0) - m[0],
                 y = this.y[yDimen](dot.y0),
@@ -3627,11 +3160,7 @@ chart.checkContainer($("#id"));
                     tip = tip.replace('{timeDimen}', time);
             d.hover(
                 function () {
-                    floatTag.html ( '&lt;div style = &quot;text-align: left;margin:auto;color:'
-                        //+ jqNode.color
-                        + &quot;#ffffff&quot;
-                        + '&quot;&gt;' + tip + '&lt;/div&gt;'
-                        );
+                    floatTag.html('&lt;div style=&quot;text-align: left;margin:auto;color:#ffffff&quot;&gt;' + tip + '&lt;/div&gt;');
                     floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                     if (!that.choose) {
                         d.attr({&quot;stroke-width&quot;: 1, &quot;stroke&quot;: &quot;#f00&quot;, &quot;fill-opacity&quot;: 0.8});
@@ -3667,7 +3196,7 @@ chart.checkContainer($("#id"));
                     }
                 }
             );
-        }); 
+        });
 
         // colorbar interaction for showing all same color history data
         that = this;
@@ -3677,9 +3206,9 @@ chart.checkContainer($("#id"));
                     drawAllTime(d.data(&quot;key&quot;));
                 }
             });
-        }  
+        }
 
-        // an inside method to visualize a key's all time data 
+        // an inside method to visualize a key's all time data
         function drawAllTime (key, num) {
             if (!that.interval) {
                 that.choose = true;
@@ -3693,7 +3222,7 @@ chart.checkContainer($("#id"));
 
                 meshes.attr({&quot;stroke&quot;: &quot;#d6d6d6&quot;, &quot;stroke-dasharray&quot;: &quot;-&quot;});
 
-                var tip = '&lt;b&gt;' + that.keyDimen + ':{key}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;' 
+                var tip = '&lt;b&gt;' + that.keyDimen + ':{key}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
                     + that.xDimen + ':{xDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
                     + that.yDimen + ':{yDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
                     + that.sizeDimen + ':{sizeDimen}&lt;/b&gt;&lt;br/&gt;&lt;b&gt;'
@@ -3724,11 +3253,7 @@ chart.checkContainer($("#id"));
                         historyBubble.attr({&quot;stroke-width&quot;: 1, &quot;stroke&quot;: &quot;#f00&quot;});
                         historyBubble.hover(
                             function () {
-                                floatTag.html ( '&lt;div style = &quot;text-align: left;margin:auto;color:'
-                                //+ jqNode.color
-                                    + &quot;#ffffff&quot;
-                                    + '&quot;&gt;' + tip + '&lt;/div&gt;'
-                                    );
+                                floatTag.html('&lt;div style=&quot;text-align: left;margin:auto;color:#ffffff&quot;&gt;' + tip + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                                 // meshes.attr({&quot;stroke&quot;: &quot;#d6d6d6&quot;, &quot;stroke-dasharray&quot;: &quot;-&quot;});
                             },
@@ -3737,16 +3262,11 @@ chart.checkContainer($("#id"));
                                 // meshes.attr({&quot;stroke&quot;: &quot;#ebebeb&quot;, &quot;stroke-dasharray&quot;: &quot;-&quot;});
                             }
                         );
-
                     } else {
                         historyBubble.hover(
                             function () {
                                 this.attr({&quot;stroke-width&quot;: 1, &quot;stroke&quot;: &quot;#f00&quot;});
-                                floatTag.html ( '&lt;div style = &quot;text-align: left;margin:auto;color:'
-                                //+ jqNode.color
-                                    + &quot;#ffffff&quot;
-                                    + '&quot;&gt;' + tip + '&lt;/div&gt;'
-                                    );
+                                floatTag.html('&lt;div style=&quot;text-align: left;margin:auto;color:#ffffff&quot;&gt;' + tip + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                                 // meshes.attr({&quot;stroke&quot;: &quot;#d6d6d6&quot;, &quot;stroke-dasharray&quot;: &quot;-&quot;});
                             },
@@ -3758,12 +3278,10 @@ chart.checkContainer($("#id"));
                         );
                     }
 
-                    historyBubble.click(
-                            function () {
-                                that.generatePaths(Math.ceil(time));
-                                that.choose = false;
-                            }
-                        );
+                    historyBubble.click(function () {
+                        that.generatePaths(Math.ceil(time));
+                        that.choose = false;
+                    });
                 }
 
                 var skeletonLineSet = foreCanvas.set();
@@ -3805,11 +3323,7 @@ chart.checkContainer($("#id"));
                         );
                         skeletonCircle.hover(
                             function () {
-                                floatTag.html ( '&lt;div style = &quot;text-align: left;margin:auto;color:'
-                                //+ jqNode.color
-                                    + &quot;#ffffff&quot;
-                                    + '&quot;&gt;' + tip + '&lt;/div&gt;'
-                                    );
+                                floatTag.html('&lt;div style=&quot;text-align: left;margin:auto;color:#ffffff&quot;&gt;' + tip + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                                 skeletonCircleSet.attr({&quot;fill-opacity&quot;: 0.35});
                                 this.attr({&quot;fill-opacity&quot;: 1, &quot;r&quot;: 5});
@@ -3828,11 +3342,7 @@ chart.checkContainer($("#id"));
                     } else {
                         skeletonCircle.hover(
                             function () {
-                                floatTag.html ( '&lt;div style = &quot;text-align: left;margin:auto;color:'
-                                //+ jqNode.color
-                                    + &quot;#ffffff&quot;
-                                    + '&quot;&gt;' + tip + '&lt;/div&gt;'
-                                    );
+                                floatTag.html('&lt;div style=&quot;text-align: left;margin:auto;color:#ffffff&quot;&gt;' + tip + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                                 skeletonCircleSet.attr({&quot;fill-opacity&quot;: 0.35});
                                 this.attr({&quot;fill-opacity&quot;: 1, &quot;r&quot;: 5});
@@ -3853,10 +3363,32 @@ chart.checkContainer($("#id"));
 
             }
         }     
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getKeyData">
+    getKeyData
+  </h3>
+  
 
-    // get key's specific dimension data which include all time points 
-    Bubble.prototype.getKeyData = function(dimen,key) {
+  <p>get key's specific dimension data which include all time points</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.getKeyData()</td> 
+      <td></td>
+      <td>getKeyData</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.getKeyData = function(dimen,key) {
         var data = [];
         for (var i = 0; i &lt; this.source.length; i++) {
             if (this.source[i][this.keyDimen] === key) {
@@ -3864,20 +3396,63 @@ chart.checkContainer($("#id"));
             }
         }
         return data;
-    }; 
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getColorData">
+    getColorData
+  </h3>
+  
 
-    // get a unique color specified by key
-    Bubble.prototype.getColorData = function(key) {
+  <p>get a unique color specified by key</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.getColorData()</td> 
+      <td></td>
+      <td>getColorData</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.getColorData = function(key) {
         for (var i = 0; i &lt; this.source.length; i++) {
             if (this.source[i][this.keyDimen] === key) {
                 return this.source[i][this.colorDimen];
             }
         }
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_initControls">
+    initControls
+  </h3>
+  
 
-    };
+  <p>set up an animation</p>
 
-    // set up an animation
-    Bubble.prototype.initControls = function() {  
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.initControls()</td> 
+      <td></td>
+      <td>initControls</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.initControls = function() {  
         var that = this,
             len = this.times.length -1;
             value = this.startTime;
@@ -3891,10 +3466,32 @@ chart.checkContainer($("#id"));
                 that.interval = 0;
             }
         }, 250);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_interpolateData">
+    interpolateData
+  </h3>
+  
 
-    // interpolated some data between neibourh data point for the animation
-    Bubble.prototype.interpolateData = function(year, years, values) {
+  <p>interpolated some data between neibourh data point for the animation</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.interpolateData()</td> 
+      <td></td>
+      <td>interpolateData</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.interpolateData = function(year, years, values) {
         var index = Math.ceil(year);
         if (year == years[index]) {
             return values[index];
@@ -3908,10 +3505,32 @@ chart.checkContainer($("#id"));
         var p = (year-lowYear) / (highYear-lowYear);
         var value = +lower + +((higher-lower)*p) ;
         return value;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_uniq">
+    uniq
+  </h3>
+  
 
-    // make an array's every element unique by delete other same element 
-    Array.prototype.uniq = function () {
+  <p>make an array's every element unique by delete other same element<br />TODO: 用underscore的uniq替换该方法</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Array.prototype.uniq()</td> 
+      <td></td>
+      <td>uniq</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Array.prototype.uniq = function () {
         var temp = {},
             len = this.length;
 
@@ -3926,32 +3545,95 @@ chart.checkContainer($("#id"));
             this[len++] = i;
         }
         return this;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_clearAnimation">
+    clearAnimation
+  </h3>
+  
 
-    // clear animation and related artifacts 
-    Bubble.prototype.clearAnimation = function () {
+  <p>clear animation and related artifacts</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.clearAnimation()</td> 
+      <td></td>
+      <td>clearAnimation</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.clearAnimation = function () {
         clearInterval(this.interval);
         this.interval = 0;
         this.backCanvas.clear();
         this.foreCanvas.clear();
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_pause">
+    pause
+  </h3>
+  
 
-    // pause the interval
-    Bubble.prototype.pause = function () {
+  <p>pause the interval</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.pause()</td> 
+      <td></td>
+      <td>pause</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.pause = function () {
         clearInterval(this.interval);
         this.interval = 0;
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
 
-    // set the rendering process
-    Bubble.prototype.render = function (options) {
+  <p>set the rendering process</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bubble.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bubble.prototype.render = function (options) {
         clearInterval(this.interval);
-        if (!this.node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
         this.setOptions(options);
         if (!this.interval) {
             this.renderAxis();
-        } 
+        }
         this.foreCanvas.clear();
  	    this.getScale();
         this.initControls();
@@ -3980,321 +3662,6 @@ chart.checkContainer($("#id"));
   
   </table>
   
-  
-
-  <p>lobal d3</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>define(function (require, exports, module) {
-    var DataV = require('datav');
-
-    var Bullet = DataV.extend(DataV.Chart, { 
-        initialize: function (node, options) {
-            this.type = &quot;Bullet&quot;;
-            this.node = this.checkNode(node);
-            this.defaults = {};
-            // Properties
-            this.defaults.orient = &quot;horizonal&quot;; // &quot;horizonal&quot;, &quot;vertical&quot;
-            this.defaults.axisStyle = &quot;linear&quot;; // &quot;linear&quot;, &quot;log&quot;
-            this.defaults.logBase = Math.E;
-            this.defaults.margin = [10, 10, 20, 80];//top, right, bottom, left
-            this.defaults.centerBarRatio = 0.3;
-            this.defaults.markerWidth = 4;
-            this.defaults.markerRatio = 0.7;
-            this.defaults.titleRatio = 0.6; //title's text height : subtitle's text height = 6:4
-            this.defaults.backgroundColor = [&quot;#666&quot;, &quot;#ddd&quot;]; //dark, light
-            this.defaults.measureColor = [&quot;steelblue&quot;, &quot;#B0C4DE&quot;]; //dark, light
-            this.defaults.markerColor = &quot;#000&quot;,
-            this.defaults.tickDivide = 5;</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>users can manupilate these attri below directly<br />            this.axis;<br />            this.scale;<br />            this.logScale; //exist if this.scale is log<br />            this.title;<br />            this.subtitle;<br />            this.data = {<br />                    title: "Sample",<br />                    subtitle: "ratio",<br />                    ranges: [0, 0.5, 0.8, 1],<br />                    measures: [0.7],<br />                    markers: [0.6],<br />                    /<em>* optional *</em> <br />                    rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],<br />                    measureTitles: ["value is 0.7"],<br />                    markerTitles: ["mean is 0.6"]<br />                    }</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>// canvas
-            this.defaults.width = 200;
-            this.defaults.height = 80;
-            this.setOptions(options);
-            this.createCanvas();
-        }
-    });
-
-    Bullet.prototype.checkNode = function (node) {
-        if (!node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-        if (typeof node === &quot;string&quot;) {
-            return document.getElementById(node);
-        } else if (node.nodeName) {//DOM-element
-            return node;
-        }
-        throw new Error(&quot;Please specify which node to render.&quot;);
-    };
-
-    Bullet.prototype.createCanvas = function () {
-        var conf = this.defaults;
-        this.canvas = new Raphael(this.node, conf.width, conf.height);
-    };
-
-    Bullet.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
-    };
-
-    Bullet.prototype.setSource = function (source) {
-        var conf = this.defaults,
-            range,
-            axisOrient;
-        this.data = source;
-        if (conf.orient === &quot;horizonal&quot;) {
-            axisOrient = &quot;bottom&quot;;
-            range = [conf.margin[3], conf.width - conf.margin[1]];
-        } else if (conf.orient === &quot;vertical&quot;) {
-            axisOrient = &quot;left&quot;;
-            range = [conf.height - conf.margin[2], conf.margin[0]];
-        }
-
-        if (conf.axisStyle === &quot;linear&quot;) {
-            this.scale = d3.scale.linear();
-        } else if (conf.axisStyle === &quot;log&quot;) {
-            this.scale = d3.scale.log();
-        }
-
-        this.data.min = this.data.ranges[0];
-        this.data.max = this.data.ranges[this.data.ranges.length - 1];
-        this.scale.domain([this.data.min, this.data.max])
-            .range(range);
-
-        if (conf.axisStyle === &quot;linear&quot;) {
-            this.axis = DataV.Axis().scale(this.scale).orient(axisOrient).ticks(conf.tickDivide).domainAttr({&quot;stroke&quot;: &quot;none&quot;});
-        } else if (conf.axisStyle === &quot;log&quot;) {
-            this.logScale = d3.scale.linear()
-                .domain([Math.log(this.data.min)/Math.log(conf.logBase), Math.log(this.data.max)/Math.log(conf.logBase)])
-                .range(range);
-            this.axis = DataV.Axis()
-                .orient(axisOrient)
-                .scale(this.logScale)
-                .ticks(conf.tickDivide)
-                .tickFormat(function (d) {return Math.round(Math.pow(conf.logBase, d));})
-                .domainAttr({&quot;stroke&quot;: &quot;none&quot;});
-        }
-    };
-
-    Bullet.prototype.generatePaths = function () {
-        var conf = this.defaults;
-        //get color function
-        if (conf.backgroundColor) {
-            this.color = d3.interpolateRgb.apply(null, [conf.backgroundColor[0], conf.backgroundColor[1]]);
-        }
-        if (conf.measureColor) {
-            this.measureColor = d3.interpolateRgb.apply(null, [conf.measureColor[0], conf.measureColor[1]]);
-        }
-
-        if (conf.orient === &quot;horizonal&quot;) {
-            this.paintHorizonal();
-        } else if (conf.orient === &quot;vertical&quot;) {
-            this.paintVertical();
-        }
-    };
-
-    // orient horizonal
-    Bullet.prototype.paintHorizonal = function () {
-        var conf = this.defaults;
-        var paper = this.canvas,
-            data = this.data,
-            m = conf.margin,
-            ranges = [],
-            measures = [],
-            markers = [],
-            rangeTitles = [],
-            i,
-            l,
-            rect,
-            titleRatio,
-            w,
-            h = conf.height - m[0] - m[2],
-            left;
-
-        //axis
-        this.axis(paper).attr({transform: &quot;t&quot; + 0 + ',' + (conf.height - m[2])});
-        //color rect
-        ranges = data.ranges;
-        if (data.rangeTitles) {
-            rangeTitles = data.rangeTitles;
-        }
-        left = m[3];
-        for (i = 0, l = ranges.length - 1; i &lt; l; i++) {
-            w = this.scale(ranges[i + 1]) - this.scale(ranges[i]);
-            rect = paper.rect(left, m[0], w, h)
-                .attr({&quot;stroke&quot;: &quot;none&quot;,
-                        &quot;fill&quot;: this.color(l === 1 ? 1 : i / (l - 1)),
-                        &quot;title&quot;: rangeTitles[i] ? rangeTitles[i] : &quot;&quot;});
-            left += w;
-        }
-
-        //measure bar
-        data.measures.forEach(function (d, i) {
-                var mTitles = data.measureTitles;
-                var mTitle = mTitles &amp;&amp; mTitles[i] ? mTitles[i] : &quot;&quot;;
-                measures.push({measure: d, measureTitle: mTitle});
-                });
-        measures.sort(function (a, b) { return d3.ascending(a.measure, b.measure) });
-        left = this.scale(data.min);
-        for (i = 0, l = measures.length; i &lt; l; i++) {
-            value = Math.max(data.min, Math.min(data.max, measures[i].measure));
-            w = this.scale(value) - left;
-            paper.rect(left,
-                    m[0] + h * (1 - conf.centerBarRatio) / 2,
-                    w,
-                    h * conf.centerBarRatio)
-                .attr({&quot;stroke&quot;: &quot;none&quot;, &quot;fill&quot;: this.measureColor(l === 1 ? 1 : i / (l - 1)), &quot;title&quot;: measures[i].measureTitle});
-            left += w;
-        }
-
-        //marker bar
-        markers = data.markers;
-        for (i = 0, l = markers.length; i &lt; l; i++) {
-            paper.rect(this.scale(markers[i]) - conf.markerWidth / 2,
-                    m[0] + h * (1 - conf.markerRatio) / 2,
-                    conf.markerWidth,
-                    h * conf.markerRatio)
-                .attr({&quot;stroke&quot;: &quot;none&quot;, &quot;fill&quot;: conf.markerColor,
-                        &quot;title&quot;: data.markerTitles &amp;&amp; data.markerTitles[i] ? data.markerTitles[i] : &quot;&quot;});
-        }
-
-        //title
-        if (data.title) {
-            titleRatio = data.subtitle ? conf.titleRatio : 1;
-            this.title = paper.text(m[3] - 5, m[0] + h / 2, data.title)
-            .attr({&quot;text-anchor&quot;: &quot;end&quot;, &quot;font-weight&quot;: &quot;bold&quot;, &quot;font-size&quot;: h * titleRatio * 0.9});
-        }
-
-        //subtitle
-        if (data.subtitle) {
-            this.subtitle = paper.text(m[3] - 5, conf.height - m[2], data.subtitle)
-            .attr({&quot;text-anchor&quot;: &quot;end&quot;, &quot;font-size&quot;: h * (1 - conf.titleRatio) * 0.9});
-        }
-    };
-
-    // orient vertical
-    Bullet.prototype.paintVertical = function () {
-        var conf = this.defaults;
-        var paper = this.canvas,
-            data = this.data,
-            m = conf.margin,
-            ranges = [],
-            measures = [],
-            markers = [],
-            rangeTitles = [],
-            i,
-            l,
-            rect,
-            titleRatio,
-            w = conf.width - m[1] - m[3],
-            h,
-            bottom;
-
-        //axis
-        this.axis(paper).attr({transform: &quot;t&quot; + m[3] + ',' + 0});
-
-        //color rect
-        ranges = data.ranges;
-        if (data.rangeTitles) {
-            rangeTitles = data.rangeTitles;
-        }
-        bottom = conf.height - m[2];
-        for (i = 0, l = ranges.length - 1; i &lt; l; i++) {
-            h = -this.scale(ranges[i + 1]) + this.scale(ranges[i]);
-            rect = paper.rect(m[3], bottom - h, w, h)
-                .attr({&quot;stroke&quot;: &quot;none&quot;,
-                        &quot;fill&quot;: this.color(l === 1 ? 1 : i / (l - 1)),
-                        &quot;title&quot;: rangeTitles[i] ? rangeTitles[i] : &quot;&quot;});
-            bottom -= h;
-        }
-
-        //measure bar
-        data.measures.forEach(function (d, i) {
-                var mTitles = data.measureTitles;
-                var mTitle = mTitles &amp;&amp; mTitles[i] ? mTitles[i] : &quot;&quot;;
-                measures.push({measure: d, measureTitle: mTitle});
-                });
-        measures.sort(function (a, b) { return d3.ascending(a.measure, b.measure) });
-        bottom = this.scale(data.min);
-        for (i = 0, l = measures.length; i &lt; l; i++) {
-            value = Math.max(data.min, Math.min(data.max, measures[i].measure));
-            h = -this.scale(value) + bottom;
-            paper.rect(m[3] + w * (1 - conf.centerBarRatio) / 2,
-                    bottom - h,
-                    w * conf.centerBarRatio,
-                    h)
-                .attr({&quot;stroke&quot;: &quot;none&quot;, &quot;fill&quot;: this.measureColor(l === 1 ? 1 : i / (l - 1)), &quot;title&quot;: measures[i].measureTitle});
-            bottom -= h;
-        }
-
-        //marker bar
-        markers = data.markers;
-        for (i = 0, l = markers.length; i &lt; l; i++) {
-            paper.rect(m[3] + w * (1 - conf.markerRatio) / 2,
-                    this.scale(markers[i]) - conf.markerWidth / 2,
-                    w * conf.markerRatio,
-                    conf.markerWidth)
-                .attr({&quot;stroke&quot;: &quot;none&quot;, &quot;fill&quot;: conf.markerColor,
-                        &quot;title&quot;: data.markerTitles &amp;&amp; data.markerTitles[i] ? data.markerTitles[i] : &quot;&quot;});
-        }
-
-        //title
-        if (data.title) {
-            titleRatio = data.subtitle ? conf.titleRatio : 1;
-            m[0] *= 0.9; //some ratio adjust;
-            this.title = paper.text((conf.width + m[3] - m[1])/ 2, m[0] * titleRatio / 2, data.title)
-            .attr({&quot;text-anchor&quot;: &quot;middle&quot;, &quot;font-weight&quot;: &quot;bold&quot;, &quot;font-size&quot;: m[0] * titleRatio * 0.8});
-        }
-
-        //subtitle
-        if (data.subtitle) {
-            this.subtitle = paper.text((conf.width + m[3] - m[1])/ 2, m[0] * (1 - (1 - titleRatio) / 2), data.subtitle)
-            .attr({&quot;text-anchor&quot;: &quot;middle&quot;, &quot;font-size&quot;: m[0] * (1 - titleRatio) * 0.8});
-        }
-    };
-
-    //clean canvas
-    Bullet.prototype.clearCanvas = function () {
-        this.canvas.clear();
-    };
-
-    //render bullet
-    Bullet.prototype.render = function (options) {
-        if (!this.node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-        this.setOptions(options);
-        this.generatePaths();
-    };
-
-    module.exports = Bullet;
-});</code></pre></td>
-    </tr>
-  
-  </table>
-  
 </section>
       
         <section id="api_charts/bundle" class="api">
@@ -4302,7 +3669,31 @@ chart.checkContainer($("#id"));
   <ul class="indexs">
   
     <li>
-      <a href="#_mouseoverNode">mouseoverNode</a>
+      <a href="#_Bundle">Bundle</a>
+    </li>
+
+    <li>
+      <a href="#_setOptions">setOptions</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
+    <li>
+      <a href="#_layout">layout</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
+    <li>
+      <a href="#_generatePaths">generatePaths</a>
     </li>
 
   </ul>
@@ -4310,26 +3701,33 @@ chart.checkContainer($("#id"));
 
   
 
-  <p>lobal EventProxy, d3, Raphael, self, packages, $</p>
-
   <table class="table">
   
 
   
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>// 弦+文字+高亮某弦
-;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('Bundle', function (require) {
-    var DataV = require('DataV');
+  </table>
+  
+  
+  <h3 id="_Bundle">
+    Bundle
+  </h3>
+  
 
-    //构造函数，container参数表示在html的哪个容器中绘制该组件
-    //options对象为用户自定义的组件的属性，比如画布大小
-    var Bundle = DataV.extend(DataV.Chart, {
+  <p>构造函数，container参数表示在html的哪个容器中绘制该组件<br />options对象为用户自定义的组件的属性，比如画布大小</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Bundle</td> 
+      <td></td>
+      <td>Bundle</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Bundle = DataV.extend(DataV.Chart, {
         initialize: function (container, options) {
             this.type = &quot;Bundle&quot;;
             this.container = this.checkContainer(container);
@@ -4354,10 +3752,32 @@ chart.checkContainer($("#id"));
             this.setOptions(options);
             this.createCanvas();
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setOptions">
+    setOptions
+  </h3>
+  
 
-    //设置用户自定义属性
-    Bundle.prototype.setOptions = function (options) {
+  <p>设置用户自定义属性</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.setOptions()</td> 
+      <td></td>
+      <td>setOptions</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.setOptions = function (options) {
         if (options) {
             var prop;
             for (prop in options) {
@@ -4380,10 +3800,32 @@ chart.checkContainer($("#id"));
                 }
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
 
-    //对原始数据进行处理
-    Bundle.prototype.setSource = function (source) {
+  <p>对原始数据进行处理</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.setSource = function (source) {
         if (source[0] &amp;&amp; source[0] instanceof Array) {
             // csv or 2d array source
             if (source[0][0] === &quot;name&quot;) {
@@ -4411,16 +3853,62 @@ chart.checkContainer($("#id"));
             // json source
             this.jsn = source;
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
 
-    Bundle.prototype.createCanvas = function () {
+  <p>创建画布</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.createCanvas = function () {
         var conf = this.defaults;
         this.canvas = new Raphael(this.container, conf.diameter, conf.diameter);
 
         //var c = this.canvas.circle(50, 50, 40);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_layout">
+    layout
+  </h3>
+  
 
-    Bundle.prototype.layout = function () {
+  <p>布局</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.layout()</td> 
+      <td></td>
+      <td>layout</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.layout = function () {
         var packages = {
             // Lazily construct the package hierarchy from class names.
             root: function (classes) {
@@ -4475,19 +3963,61 @@ chart.checkContainer($("#id"));
             });
         this.nodes = cluster.nodes(packages.root(this.jsn));
         this.links = packages.imports(this.nodes);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
 
-    Bundle.prototype.render = function () {
+  <p>渲染弦图</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.render = function () {
         this.layout();
         this.generatePaths();
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_generatePaths">
+    generatePaths
+  </h3>
+  
 
-    Bundle.prototype.generatePaths = function (options) {
+  <p>生成路径</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bundle.prototype.generatePaths()</td> 
+      <td></td>
+      <td>generatePaths</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.generatePaths = function (options) {
         var that = this;
-
-        if (!this.container) {
-            throw new Error(&quot;Please specify on which container to render the chart.&quot;);
-        }
 
         var canvas = this.canvas;
         var rNodes = canvas.set();
@@ -4551,32 +4081,9 @@ chart.checkContainer($("#id"));
                 .attr(&quot;stroke-width&quot;, 2)
                 .attr(&quot;stroke-opacity&quot;, 1.0)
                 .toFront(); //把当前弦移到画布最上层
-        };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_mouseoverNode">
-    mouseoverNode
-  </h3>
-  
+        };
 
-  <p>var mouseoutLink = function () {<br />            var current = this;<br />            //var color = that.data("color");<br />            current.attr("stroke", that.defaults.color.defaultLineColor)<br />                .attr("stroke-width", 1)<br />                .attr("stroke-opacity", 0.6);<br />        };</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>函数</td>
-      <td>mouseoverNode()</td> 
-      <td></td>
-      <td>mouseoverNode</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>var mouseoverNode = function () {
+        var mouseoverNode = function () {
             var relatedEl = this.data(&quot;relatedElements&quot;);
             //高亮所选节点的文字颜色
             this.data(&quot;relatedNode&quot;).attr({&quot;fill&quot;: that.defaults.color.nodeHoverColor,
@@ -4807,24 +4314,9 @@ chart.checkContainer($("#id"));
 
   
 
-  <p>lobal Raphael, d3, $, define</p>
-
   <table class="table">
   
 
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) {
-            return this[id];
-        });
-    }
-})('Chord', function (require) {
-    var DataV = require('DataV');</code></pre></td>
-    </tr>
   
   </table>
   
@@ -5524,26 +5016,49 @@ chart.checkContainer($("#id"));
   <h2>charts/flow: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_Flow">Flow</a>
+    </li>
+
+    <li>
+      <a href="#_on">on</a>
+    </li>
+
   </ul>
   <hr />
 
   
 
-  <p>lobal EventProxy, d3, Raphael, $</p>
-
   <table class="table">
   
 
   
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>define(function (require, exports, module) {
-    var DataV = require('datav');
-    var theme = DataV.Themes;
+  </table>
+  
+  
+  <h3 id="_Flow">
+    Flow
+  </h3>
+  
 
-    var Flow = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+  <p>Flow构造函数</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Flow</td> 
+      <td></td>
+      <td>Flow</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Flow = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
             this.type = &quot;Flow&quot;;
-            this.container = container;
+            this.node = this.checkContainer(node);
             this.defaults = {};
 
             // Properties
@@ -5562,21 +5077,33 @@ chart.checkContainer($("#id"));
             this.emitter = new EventProxy();
             this.createCanvas();
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_on">
+    on
+  </h3>
+  
 
-    Flow.prototype.on = function (eventName, callback) {
+  <p>侦听事件</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Flow.prototype.on()</td> 
+      <td></td>
+      <td>on</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Flow.prototype.on = function (eventName, callback) {
         this.emitter.on(eventName, callback);
-    };
-
-    Flow.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
     };
 
     Flow.prototype.setSource = function (source) {
@@ -5600,7 +5127,7 @@ chart.checkContainer($("#id"));
             } else {
                 remapData.push({id: data[i][0], name: data[i][1], value: data[i][2], pid: data[i][3], child: [], deep: 0});
             }
-        } 
+        }
 
         var conf = this.defaults;
         var width = conf.width;
@@ -5618,7 +5145,7 @@ chart.checkContainer($("#id"));
                 if (remapData[i].deep &gt; depth) {
                     depth = remapData[i].deep;
                 }
-            } 
+            }
             // remapData[remapData[i].pid].child.push(remapData[i].id);
         }
 
@@ -5628,10 +5155,7 @@ chart.checkContainer($("#id"));
         for (i = 0; i &lt; dataLength; i++){
             remapData[i].percent = remapData[i].value / total;
             remapData[i].radius = radius * remapData[i].percent;
-            console.log(&quot;r:&quot; + remapData[i].radius + &quot; p:&quot; + remapData[i].percent);
         }
-
-        console.log(remapData);
         return remapData;
         // return data;
     };
@@ -5687,7 +5211,7 @@ chart.checkContainer($("#id"));
             that.emitter.trigger(&quot;dblclick&quot;, event);
         });
 
-        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;  
+        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
             that.emitter.trigger(&quot;mousewheel&quot;, event);
         });
@@ -5720,10 +5244,10 @@ chart.checkContainer($("#id"));
         var c2x = tx - (tx - fx) / 4;
         var c2y = ty - (ty - fy) / 2;
 
-        var link_path = [[&quot;M&quot;, fx, fy], 
+        var link_path = [[&quot;M&quot;, fx, fy],
             [&quot;S&quot;, c1x, c1y, tx, ty]];
 
-        return link_path;  
+        return link_path;
     };
 
     Flow.prototype.generatePaths = function () {
@@ -5745,7 +5269,7 @@ chart.checkContainer($("#id"));
         canvas.path().attr({stroke:  &quot;#cdcdcd&quot;, &quot;stroke-width&quot;: 2}).attr({path: getLinkPath(crilceData[2].x, crilceData[2].y, crilceData[3].x, crilceData[3].y)});
         canvas.path().attr({stroke:  &quot;#cdcdcd&quot;, &quot;stroke-width&quot;: 2}).attr({path: getLinkPath(crilceData[2].x, crilceData[2].y, crilceData[4].x, crilceData[4].y)});
 
-        var i, d
+        var i, d;
         var thisRadius;
         var thisColor;
         var titelPath = [];
@@ -5763,7 +5287,7 @@ chart.checkContainer($("#id"));
             canvas.circle(d.x, d.y, thisRadius)
             .attr({&quot;stroke&quot;: &quot;none&quot;, fill: thisColor});
             titelPath.push(canvas.text(0, 0, d.name).attr({'font-size': 12}));
-            if (i &lt; l - 2) { 
+            if (i &lt; l - 2) {
                 titelPath[i].transform(&quot;t&quot; + d.x + &quot;,&quot; + (d.y - thisRadius - titelPath[i].getBBox().height/2 - 5));
             } else {
                 titelPath[i].transform(&quot;t&quot; + d.x + &quot;,&quot; + (d.y - thisRadius - titelPath[i].getBBox().height/2 - 5)).attr({&quot;text-anchor&quot;: &quot;start&quot;});
@@ -5786,9 +5310,7 @@ chart.checkContainer($("#id"));
         var textpath = [];
         
         var tree = this;
-
     };
-    
 
     Flow.prototype.render = function (options) {
         var st = new Date().getTime();
@@ -5807,7 +5329,7 @@ chart.checkContainer($("#id"));
         //this.canvas.renderfix();
     };
 
-    module.exports = Flow;
+    return Flow;
 });</code></pre></td>
     </tr>
   
@@ -5860,10 +5382,6 @@ chart.checkContainer($("#id"));
     </li>
 
     <li>
-      <a href="#_setOptions">setOptions</a>
-    </li>
-
-    <li>
       <a href="#_render">render</a>
     </li>
 
@@ -5872,24 +5390,9 @@ chart.checkContainer($("#id"));
 
   
 
-  <p>lobal Raphael, d3</p>
-
   <table class="table">
   
 
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) {
-            return this[id];
-        });
-    }
-})('Force', function (require) {
-    var DataV = require('DataV');</code></pre></td>
-    </tr>
   
   </table>
   
@@ -5913,7 +5416,7 @@ chart.checkContainer($("#id"));
 
     <tr>
       <td>参数</td>
-      <td>container(Object)</td>
+      <td>node(Object)</td>
       <td colspan="2">表示在html的哪个容器中绘制该组件</td>
     </tr>
   
@@ -5928,9 +5431,9 @@ chart.checkContainer($("#id"));
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>var Force = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+        initialize: function (node, options) {
             this.type = &quot;Force&quot;;
-            this.container = container;
+            this.node = this.checkContainer(node);
             this.defaults = {};
             this.net = {};
             this.linkValeMin = 0;
@@ -6082,7 +5585,7 @@ chart.checkContainer($("#id"));
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Force.prototype.createCanvas = function () {
         var conf = this.defaults;
-        this.canvas = new Raphael(this.container, conf.width, conf.height);
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
         //var c = this.canvas.circle(50, 50, 40);
     };</code></pre></td>
     </tr>
@@ -6320,7 +5823,7 @@ chart.checkContainer($("#id"));
                 this.data('clicked', false);
                 that.underBn[this.data('colorType')].hide();
             }
-        }
+        };
 
         var onCanvasClick = function () {
             that.tagClicked = false;
@@ -6654,7 +6157,7 @@ chart.checkContainer($("#id"));
                 }
             });
         });
-    }</code></pre></td>
+    };</code></pre></td>
     </tr>
   
   </table>
@@ -6809,47 +6312,6 @@ chart.checkContainer($("#id"));
   </table>
   
   
-  <h3 id="_setOptions">
-    setOptions
-  </h3>
-  
-
-  <p>设定用户自定义的属性</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Force.prototype.setOptions()</td> 
-      <td></td>
-      <td>setOptions</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>options(Object)</td>
-      <td colspan="2">用户属性</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Force.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
   <h3 id="_render">
     render
   </h3>
@@ -6877,9 +6339,6 @@ chart.checkContainer($("#id"));
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Force.prototype.render = function (options) {
-        if (!this.container) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
         this.setOptions(options);
         this.canvas.clear();
         this.layout();
@@ -6887,7 +6346,6 @@ chart.checkContainer($("#id"));
             this.tag();
         }
         this.update();
-        var i;
         this.animate();
     };
 
@@ -6903,26 +6361,49 @@ chart.checkContainer($("#id"));
   <h2>charts/matrix: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_Matrix">Matrix</a>
+    </li>
+
+    <li>
+      <a href="#_on">on</a>
+    </li>
+
   </ul>
   <hr />
 
   
 
-  <p>lobal EventProxy, d3, Raphael, $</p>
-
   <table class="table">
   
 
   
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>define(function (require, exports, module) {
-    var DataV = require('datav');
-    var theme = DataV.Themes;
+  </table>
+  
+  
+  <h3 id="_Matrix">
+    Matrix
+  </h3>
+  
 
-    var Matrix = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+  <p>构造函数</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Matrix</td> 
+      <td></td>
+      <td>Matrix</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Matrix = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
             this.type = &quot;Matrix&quot;;
-            this.container = container;
+            this.node = this.checkContainer(node);
             this.defaults = {};
 
             // Properties
@@ -6938,21 +6419,33 @@ chart.checkContainer($("#id"));
             this.createCanvas();
             this.move = false;
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_on">
+    on
+  </h3>
+  
 
-    Matrix.prototype.on = function (eventName, callback) {
+  <p>侦听自定义事件</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Matrix.prototype.on()</td> 
+      <td></td>
+      <td>on</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Matrix.prototype.on = function (eventName, callback) {
         this.emitter.on(eventName, callback);
-    };
-
-    Matrix.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
     };
 
     Matrix.prototype.getDataTable = function (table) {
@@ -6985,11 +6478,6 @@ chart.checkContainer($("#id"));
         this.hasSort = false;
         // this.source = this.remapSource(source);
     };
-
-    // Matrix.prototype.remapSource = function (data) {
-    //     return this.getDataTable(data);
-    //     // return data;
-    // };
 
     Matrix.prototype.layout = function () {
         var conf = this.defaults;
@@ -7033,8 +6521,8 @@ chart.checkContainer($("#id"));
         var length = colorMatrix.length;
         var num = i % length;
         //var color = '#939598';
-        var color = '#FFFFFF'
-        
+        var color = '#FFFFFF';
+
         if (num !== 0) {
             color = colorMatrix[num][0];
         }
@@ -7044,7 +6532,7 @@ chart.checkContainer($("#id"));
 
     Matrix.prototype.createCanvas = function () {
         var conf = this.defaults;
-        this.canvas = new Raphael(this.container, conf.width, conf.height);
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
 
         this.DOMNode = $(this.canvas.canvas);
         var that = this;
@@ -7056,7 +6544,7 @@ chart.checkContainer($("#id"));
             that.emitter.trigger(&quot;dblclick&quot;, event);
         });
 
-        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;  
+        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
             that.emitter.trigger(&quot;mousewheel&quot;, event);
         });
@@ -7122,11 +6610,10 @@ chart.checkContainer($("#id"));
                 for (j = 0; j &lt; sort.length; j++) {
                     if (sort[j] === i) {
                         a = j;
-                    } 
+                    }
                 }
             }
             var rowRect = canvas.set();
-            //rowRect.push(canvas.path(&quot;M0 0L&quot; + width + &quot; 0&quot;).attr({stroke: &quot;#ffffff&quot;}));
             canvas.path(&quot;M&quot; + startX + &quot; &quot; + (startY + cellWidth * i) + &quot;L&quot; + (startX + matrixWidth + 10 + cellWidth) + &quot; &quot;
              + (startY + cellWidth * i)).attr({stroke: &quot;#D1D1D1&quot;, &quot;stroke-width&quot;: 1});
             rowRect.push(canvas.text(-20, cellWidth / 2, title[i])
@@ -7137,7 +6624,7 @@ chart.checkContainer($("#id"));
                     &quot;font-size&quot;: 12}));
 
             for (j = 0; j &lt; tableWidth; j++) {
-                if (!this.hasSort){ 
+                if (!this.hasSort) {
                     color = this.getColor(source[i][j]);
                 } else {
                     color = this.getColor(source[i][sort[j]]);
@@ -7164,7 +6651,7 @@ chart.checkContainer($("#id"));
                 for (j = 0; j &lt; sort.length; j++) {
                     if (sort[j] === i) {
                         a = j;
-                    } 
+                    }
                 }
             }
             columnLine.push(canvas.path(&quot;M0 0L0 &quot; + matrixWidth + 10 + cellWidth)
@@ -7177,13 +6664,6 @@ chart.checkContainer($("#id"));
                     //&quot;font-weight&quot;: &quot;bold&quot;,
                     &quot;font-size&quot;: 12})
                 .transform(&quot;t&quot; + (startX + cellWidth * a) + &quot;, &quot; + startY + &quot;r90&quot;));
-
-            // for (j = i * (tableWidth - 1); j &lt; (i + 1) * (tableWidth - 1); j++){
-            //     columnRect.push(rects[j]);
-            // }
-
-            //columnRect.transform(&quot;t&quot; + (startX + cellWidth * i) + &quot;, &quot; + startY);
-            // column.push(columnRect);
         }
 
         columnLine.push(canvas.path(&quot;M0 0L0 &quot; + matrixWidth + 10 + cellWidth)
@@ -7260,7 +6740,7 @@ chart.checkContainer($("#id"));
 
 
         return matrixR;
-    }
+    };
     
     Matrix.prototype.update = function () {
         var i, j;
@@ -7307,7 +6787,7 @@ chart.checkContainer($("#id"));
             this.hasSort = true;
         }
 
-        if (!this.move) { 
+        if (!this.move) {
             this.move = true;
             var rects = this.rects;
             var num;
@@ -7337,7 +6817,7 @@ chart.checkContainer($("#id"));
                 num = sort[i];
                 // if (num != i) {
                 //columnLineAnim = Raphael.animation({transform: [&quot;t&quot;, (startX + cellWidth * i), startY]}, 1000, &quot;&lt;&gt;&quot;);
-                columnTextAnim = Raphael.animation({transform: [&quot;t&quot;, (startX + cellWidth * i), startY, &quot;r&quot;, 90]}, 
+                columnTextAnim = Raphael.animation({transform: [&quot;t&quot;, (startX + cellWidth * i), startY, &quot;r&quot;, 90]},
                     200, &quot;&lt;&gt;&quot;);
                 //this.columnLine[num].animate(columnLineAnim.delay(500 * (i + sort.length + 1)));
                 this.columnText[num].animate(columnTextAnim.delay(100 * (i + sort.length + 1)));
@@ -7355,23 +6835,16 @@ chart.checkContainer($("#id"));
         }
     };
 
-
     Matrix.prototype.render = function (options) {
-        if (!this.container) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-
         if (!this.move) {
             this.canvas.clear();
             this.setOptions(options);
             this.layout();
             this.generatePaths();
         }
-
-        //this.canvas.renderfix();
     };
-    
-    module.exports = Matrix;
+
+    return Matrix;
 });</code></pre></td>
     </tr>
   
@@ -7383,6 +6856,14 @@ chart.checkContainer($("#id"));
   <h2>charts/parallel: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_Parallel">Parallel</a>
+    </li>
+
+    <li>
+      <a href="#_on">on</a>
+    </li>
+
   </ul>
   <hr />
 
@@ -7395,29 +6876,36 @@ chart.checkContainer($("#id"));
   </table>
   
   
+  <h3 id="_Parallel">
+    Parallel
+  </h3>
+  
 
-  <p>lobal d3</p>
+  <p>构造函数</p>
 
   <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Parallel</td> 
+      <td></td>
+      <td>Parallel</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>node(Node,String,jQuery)</td>
+      <td colspan="2">容器节点，文档节点、ID或者通过jQuery查询出来的对象</td>
+    </tr>
   
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('Parallel', function (require) {
-    var DataV = require('DataV');
-    var Axis = require('Axis');
-    var Brush = require('Brush');
-
-    var Parallel = DataV.extend(DataV.Chart, {
+      <td>代码</td><td colspan="3"><pre><code>var Parallel = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
             this.type = &quot;Parallel&quot;;
-            this.node = this.checkNode(node);
+            this.node = this.checkContainer(node);
             this.defaults = {};
 
             // Properties
@@ -7430,18 +6918,18 @@ chart.checkContainer($("#id"));
             // Canvas
             this.defaults.width = 750;
             this.defaults.height = 500;
-            this.defaults.marginWidth = [20,20,20,20];
+            this.defaults.marginWidth = [20, 20, 20, 20];
             this.defaults.backgroundAttr = {&quot;fill&quot;: &quot;none&quot;, &quot;stroke&quot;: &quot;#ccc&quot;, &quot;stroke-opacity&quot;: 0.4};
             this.defaults.foregroundAttr = {&quot;fill&quot;: &quot;none&quot;, &quot;stroke&quot;: &quot;steelblue&quot;, &quot;stroke-opacity&quot;: 0.7};
             this.defaults.domainAttr = {&quot;stroke&quot;: &quot;#000&quot;};
             this.defaults.tickAttr = {&quot;stroke&quot;: &quot;#000&quot;};
             this.defaults.tickTextAttr = {};
-            this.defaults.titleAttr ={};
+            this.defaults.titleAttr = {};
 
             this.customEvent = {
-                &quot;brushstart&quot;: function(){},
-                &quot;brushend&quot;: function(){},
-                &quot;brush&quot;: function(){}
+                &quot;brushstart&quot;: function () {},
+                &quot;brushend&quot;: function () {},
+                &quot;brush&quot;: function () {}
             };
 
             this.setOptions(options);
@@ -7449,22 +6937,10 @@ chart.checkContainer($("#id"));
         }
     });
 
-    Parallel.prototype.checkNode = function (node) {
-        if (!node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-        if(typeof(node) === &quot;string&quot;) {
-            return document.getElementById(node);
-        } else if (node.nodeName) {//DOM-element
-            return node;
-        }
-        throw new Error(&quot;Please specify which node to render.&quot;);
-    };
-
     Parallel.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
         this.dimensions = [];
-        for (var i=0, l=dimen.length; i&lt;l; i++) {
+        for (var i = 0, l = dimen.length; i&lt;l; i++) {
             if ($.inArray(dimen[i], this.allDimensions) !== -1) {
                 this.dimensions.push(dimen[i]);
             }
@@ -7603,26 +7079,34 @@ chart.checkContainer($("#id"));
                 }
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_on">
+    on
+  </h3>
+  
 
-    Parallel.prototype.on = function (eventName, callback) {
-        if (eventName === &quot;brushstart&quot;) {
+  <p>侦听自定义事件</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.on()</td> 
+      <td></td>
+      <td>on</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.on = function (eventName, callback) {
+        if (_.indexOf([&quot;brushstart&quot;, &quot;brushend&quot;, &quot;brush&quot;], eventName)) {
             this.customEvent[&quot;brushstart&quot;] = callback;
-        } else if (eventName === &quot;brushend&quot;) {
-            this.customEvent[&quot;brushend&quot;] = callback;
-        } else if (eventName === &quot;brush&quot;) {
-            this.customEvent[&quot;brush&quot;] = callback;
-        }
-    };
-
-    Parallel.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
         }
     };
 
@@ -7635,7 +7119,7 @@ chart.checkContainer($("#id"));
         //by default all dimensions show
         this.dimensions = source[0];
 
-        //this.source is array of line; key is dimension, value is line's value in that dimension 
+        //this.source is array of line; key is dimension, value is line's value in that dimension
         this.source = [];
         for(var i=1, l=source.length; i&lt;l; i++){
             var line = {},
@@ -7647,17 +7131,13 @@ chart.checkContainer($("#id"));
         }
 
         //judge dimesions type auto
-        //if all number, quantitative else ordinal    
+        //if all number, quantitative else ordinal
         this.dimensionType = {};
-        function isNumber(n) {
-            // http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric
-            return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
-        }
-        for(var i=0, l=this.allDimensions.length; i&lt;l; i++){
+        for (var i = 0, l = this.allDimensions.length; i &lt; l; i++) {
             var type = &quot;quantitative&quot;;
-            for(var j=1, ll=source.length; j&lt;ll; j++){
+            for (var j=1, ll = source.length; j&lt;ll; j++) {
                 var d = source[j][i];
-                if(d &amp;&amp; (! isNumber(d))){
+                if(d &amp;&amp; (!DataV.isNumeric(d))){
                     type = &quot;ordinal&quot;;
                     break;
                 }
@@ -7676,9 +7156,8 @@ chart.checkContainer($("#id"));
             i,
             j,
             l,
-            ll,
-            domain;
-        
+            ll;
+
         var m = conf.marginWidth,
             w = conf.width - m[1] - m[3],
             h = conf.height - m[0] - m[2];
@@ -7795,21 +7274,9 @@ chart.checkContainer($("#id"));
                     } else {
                         that.fg[j].attr({&quot;stroke&quot;: &quot;none&quot;});
                     }
-                }</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
+                }
 
-  <p>//set extent;<br />                brush = d3.event.target;<br />                dimen = brush.dimension;</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>that.customEvent[&quot;brush&quot;].call(that);
+                that.customEvent[&quot;brush&quot;].call(that);
             },
             brushstart = function () {
                 that.customEvent[&quot;brushstart&quot;].call(that);
@@ -7833,21 +7300,8 @@ chart.checkContainer($("#id"));
             if (typeof this.dimensionExtent[dimen] !== 'undefined') {
                 if (this.dimensionType[dimen] === &quot;quantitative&quot;) {
                     b.extent(this.dimensionExtent[dimen]);
-                } else {</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>start = this.dimensionDomain[dimen].itemIndex[this.dimensionExtent[dimen][0]];<br />                    end = this.dimensionDomain[dimen].itemIndex[this.dimensionExtent[dimen][1]];<br />                    if (start > end) {<br />                        temp = start;<br />                        start = end;<br />                        end = temp;<br />                    }<br />                    start = Math.max(0, start + 0.5 - 0.5);<br />                    end = Math.min(this.dimensionDomain[dimen].length, end + 0.5 + 0.5);<br />                    b.extent([start, end]);</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>b.extent(this._getOrdinalExtent(dimen, this.dimensionExtent[dimen]));
+                } else {
+                    b.extent(this._getOrdinalExtent(dimen, this.dimensionExtent[dimen]));
                 }
             }
 
@@ -8486,92 +7940,54 @@ chart.checkContainer($("#id"));
   <h2>charts/scatterplotMatrix: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_setDimensionsX">setDimensionsX</a>
+    </li>
+
+    <li>
+      <a href="#_setDimensionsY">setDimensionsY</a>
+    </li>
+
+    <li>
+      <a href="#_setAxis">setAxis</a>
+    </li>
+
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
   </ul>
   <hr />
 
   
 
-  <p>lobal Raphael, d3, $, define</p>
-
   <table class="table">
   
 
   
+  </table>
+  
+  
+  <h3 id="_setDimensionsX">
+    setDimensionsX
+  </h3>
+  
+
+  <p>设置X轴的维度</p>
+
+  <table class="table">
+  
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('ScatterplotMatrix', function (require) {
-    var DataV = require('DataV');
+      <td>方法</td>
+      <td>ScatterplotMatrix.prototype.setDimensionsX()</td> 
+      <td></td>
+      <td>setDimensionsX</td>
+    </tr>
+  
 
-    var ScatterplotMatrix = DataV.extend(DataV.Chart, {
-        initialize: function (node, options) {
-            this.type = &quot;ScatterplotMatrix&quot;;
-            this.container = node;
-            this.node = this.checkNode(node);
-            this.defaults = {};
-
-            // Properties
-            this.defaults.allDimensions = [];
-            this.defaults.dimensionsX = []; //dimension of X axis(horizonal).  array type
-            this.defaults.demensionsY = []; //dimension of Y axis(vertical).  array type
-            this.defaults.dimensionDomain = {};
-            this.defaults.typeNames = [];
-
-            // canvas parameters
-            this.defaults.width = 522;
-            this.defaults.height = 522;
-            this.defaults.margin = 50;
-            this.defaults.gap = 15;
-            this.defaults.squareWidth = 150;
-            this.defaults.circleR = 3;
-
-            //图例区域的左上顶点坐标x，y，宽，高
-            this.defaults.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-            //简介区域的左上角顶点坐标x，y，宽，高
-            this.defaults.introArea = [20, 20, 200, 200];
-            //散点矩阵区域的左上顶点坐标x，y，宽，高
-            this.defaults.diagramArea = [240, 20, (this.defaults.width - 260), (this.defaults.height - 40)];
-
-            this.defaults.typeName = &quot;NoTypeDefinition&quot;; //默认情况是没有分类
-            this.defaults.tagDimen = &quot;NoTagDimen&quot;;
-
-
-            this.setOptions(options);
-            this.createCanvas();
-        }
-    });
-
-    //check the DOM node to draw
-    ScatterplotMatrix.prototype.checkNode = function (node) {
-        if (!node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
-        if (typeof (node) === &quot;string&quot;) {
-            return document.getElementById(node);
-        } else if (node.nodeName) { //DOM-element
-            return node;
-        }
-        throw new Error(&quot;Please specify which node to render.&quot;);
-    };
-
-    //check if a string is in an array
-    var _strInArray = function (str, array) {
-        var i = 0,
-            l = 0;
-        for (i = 0, l = array.length; i &lt; l; i++) {
-            if (array[i] === str) {
-                return true;
-            }
-        }
-        return false;
-    };
-
-    //设置X轴的维度
-    ScatterplotMatrix.prototype.setDimensionsX = function (dimen) {
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>ScatterplotMatrix.prototype.setDimensionsX = function (dimen) {
         if (!dimen) {
             throw new Error(&quot;Please specify the dimensions.&quot;);
         }
@@ -8580,14 +7996,36 @@ chart.checkContainer($("#id"));
         var i = 0,
             l = 0;
         for (i = 0, l = dimen.length; i &lt; l; i++) {
-            if (_strInArray(dimen[i], conf.allDimensions)) {
+            if (_.indexOf(conf.allDimensions, dimen[i]) !== -1) {
                 conf.dimensionsX.push(dimen[i]);
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setDimensionsY">
+    setDimensionsY
+  </h3>
+  
 
-    //设置Y轴的维度
-    ScatterplotMatrix.prototype.setDimensionsY = function (dimen) {
+  <p>设置Y轴的维度</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>ScatterplotMatrix.prototype.setDimensionsY()</td> 
+      <td></td>
+      <td>setDimensionsY</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>ScatterplotMatrix.prototype.setDimensionsY = function (dimen) {
         if (!dimen) {
             throw new Error(&quot;Please specify the dimensions.&quot;);
         }
@@ -8596,7 +8034,7 @@ chart.checkContainer($("#id"));
         var i = 0,
             l = 0;
         for (i = 0, l = dimen.length; i &lt; l; i++) {
-            if (_strInArray(dimen[i], conf.allDimensions)) {
+            if (_.indexOf(conf.allDimensions, dimen[i]) !== -1) {
                 conf.dimensionsY.push(dimen[i]);
             }
         }
@@ -8607,17 +8045,6 @@ chart.checkContainer($("#id"));
         this.defaults.typeNames = types;
     };
 
-    //额外选项
-    ScatterplotMatrix.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
-    };
     //设置源数据
     ScatterplotMatrix.prototype.setSource = function (source) {
         var i, j, l, ll;
@@ -8630,11 +8057,11 @@ chart.checkContainer($("#id"));
             yTemp[i - 1] = source[0][i];
         }
         conf.allDimensions = source[0];
-        //默认情况下，所有维度都显示
+        // 默认情况下，所有维度都显示
         conf.dimensionsX = xTemp;
         conf.dimensionsY = yTemp;
 
-        //this.source is array of line; key is dimension, value is line's value in that dimension 
+        // this.source is array of line; key is dimension, value is line's value in that dimension
         this.source = [];
 
         for (i = 1, l = source.length; i &lt; l; i++) {
@@ -8645,7 +8072,7 @@ chart.checkContainer($("#id"));
             this.source.push(line);
         }
 
-        //设置默认的定义域
+        // 设置默认的定义域
         var getExtent = function (s, dimen) {
             return d3.extent(s, function (p) {
                 return +p[dimen];
@@ -8656,29 +8083,37 @@ chart.checkContainer($("#id"));
             dimen = conf.allDimensions[i];
             conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
         }
-    };
-
-    //设置X轴和Y轴
-    ScatterplotMatrix.prototype.setAxis = function () {
-        var conf = this.defaults;
-
-        conf.tagArea = [20, (conf.height - 20 - 220), 200, 220];
-        conf.introArea = [20, 20, 200, 200];
-        conf.diagramArea = [240, 20,</code></pre></td>
+    };</code></pre></td>
     </tr>
   
   </table>
   
   
+  <h3 id="_setAxis">
+    setAxis
+  </h3>
+  
 
-  <p>00, 500</p>
+  <p>设置X轴和Y轴</p>
 
   <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>ScatterplotMatrix.prototype.setAxis()</td> 
+      <td></td>
+      <td>setAxis</td>
+    </tr>
   
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>(conf.width - 260), (conf.height - 40)];
+      <td>代码</td><td colspan="3"><pre><code>ScatterplotMatrix.prototype.setAxis = function () {
+        var conf = this.defaults;
+
+        conf.tagArea = [20, (conf.height - 20 - 220), 200, 220];
+        conf.introArea = [20, 20, 200, 200];
+        conf.diagramArea = [240, 20, (conf.width - 260), (conf.height - 40)];
 
         var w = conf.diagramArea[2] - 2 * conf.margin,
             h = conf.diagramArea[3] - conf.margin,
@@ -8739,9 +8174,9 @@ chart.checkContainer($("#id"));
         var browserName = navigator.appName;
         var that = this;
 
-        $(&quot;#&quot; + this.containers).append(this.floatTag);
+        $(this.node).append(this.floatTag);
 
-        //画背景点------------------------------------------------------------------------//
+        //画背景点
         var circlesBg = paper.set(); //背景点
         var centerPos;
 
@@ -8757,11 +8192,10 @@ chart.checkContainer($("#id"));
                         }));
                     }
                 }
-            } 
+            }
         }
-        
 
-        //画矩形框 ------------------------------------------------------------------------// 
+        // 画矩形框
         var squares = paper.set();
         var x1, y1;
         for (i = 0; i &lt; lx; i++) {
@@ -8778,7 +8212,7 @@ chart.checkContainer($("#id"));
             &quot;stroke-width&quot;: '1px'
         });
 
-        //画虚线 --------------------------------------------------------------------//
+        //画虚线
         var reLines = paper.set(),
             tickText = paper.set();
         var tickAr = [10], //set the number of ticks
@@ -8790,7 +8224,7 @@ chart.checkContainer($("#id"));
         var reLineGap = sw / 7; //每个矩形框中画6条虚线
         var reLinePos;
 
-        //画纵向的虚线 ---------------------------------------------------------------------//
+        //画纵向的虚线
         for (i = 0; i &lt; lx; i++) {
             ticks = x[dimensionsX[i]].ticks;
             for (j = 0; j &lt; ticks.length; j++) {
@@ -8811,7 +8245,7 @@ chart.checkContainer($("#id"));
                 }));
             }
         }
-        //画横向的虚线 ---------------------------------------------------------------------//
+        //画横向的虚线
         for (i = 0; i &lt; ly; i++) {
             //draw reference lines
             ticks = y[dimensionsY[i]].ticks;
@@ -8834,7 +8268,7 @@ chart.checkContainer($("#id"));
             }
         }
 
-        //坐标轴名称 --------------------------------------------------------------------------// 
+        //坐标轴名称
         var axText = paper.set();
         var xPos, yPos;
         var pos = y[dimensionsY[0]].range()[1] - 10;
@@ -8865,8 +8299,8 @@ chart.checkContainer($("#id"));
             }).rotate(-90, pos, yPos));
         }
 
-        //画前景点 ---------------------------------------------------------------------------// 
-        var circlesFg = []; //circles in foreground   
+        // 画前景点
+        var circlesFg = []; //circles in foreground
         var circleType = -1;
         var typeMax = -1;
 
@@ -8917,39 +8351,38 @@ chart.checkContainer($("#id"));
             }
         }
 
-        //图例--- ------------------------------------------------------------------//
-        
-            var tagArea = this.defaults.tagArea;
-            var rectBn = paper.set();
-            var underBn = [];
-            for (i = 0; i &lt;= typeMax; i++) {
-                //底框
-                underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                    &quot;fill&quot;: &quot;#ebebeb&quot;,
-                    &quot;stroke&quot;: &quot;none&quot;
-                }).hide());
-                //色框
-                paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
-                    &quot;fill&quot;: this.getColor(i),
-                    &quot;stroke&quot;: &quot;none&quot;
-                });
-                //文字
-                paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
-                    &quot;fill&quot;: &quot;black&quot;,
-                    &quot;fill-opacity&quot;: 1,
-                    &quot;font-family&quot;: &quot;Verdana&quot;,
-                    &quot;font-size&quot;: 12
-                }).attr({
-                    &quot;text-anchor&quot;: &quot;start&quot;
-                });
-                //选框
-                rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                    &quot;fill&quot;: &quot;white&quot;,
-                    &quot;fill-opacity&quot;: 0,
-                    &quot;stroke&quot;: &quot;none&quot;
-                    //&quot;r&quot;: 3
-                }).data(&quot;type&quot;, i)).data(&quot;clicked&quot;, 0);
-            }
+        //图例
+        var tagArea = this.defaults.tagArea;
+        var rectBn = paper.set();
+        var underBn = [];
+        for (i = 0; i &lt;= typeMax; i++) {
+            //底框
+            underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                &quot;fill&quot;: &quot;#ebebeb&quot;,
+                &quot;stroke&quot;: &quot;none&quot;
+            }).hide());
+            //色框
+            paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                &quot;fill&quot;: this.getColor(i),
+                &quot;stroke&quot;: &quot;none&quot;
+            });
+            //文字
+            paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
+                &quot;fill&quot;: &quot;black&quot;,
+                &quot;fill-opacity&quot;: 1,
+                &quot;font-family&quot;: &quot;Verdana&quot;,
+                &quot;font-size&quot;: 12
+            }).attr({
+                &quot;text-anchor&quot;: &quot;start&quot;
+            });
+            //选框
+            rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                &quot;fill&quot;: &quot;white&quot;,
+                &quot;fill-opacity&quot;: 0,
+                &quot;stroke&quot;: &quot;none&quot;
+                //&quot;r&quot;: 3
+            }).data(&quot;type&quot;, i)).data(&quot;clicked&quot;, 0);
+        }
 
         if (browserName !== &quot;Microsoft Internet Explorer&quot;) {
             rectBn.forEach(function (d, i) {
@@ -9002,7 +8435,7 @@ chart.checkContainer($("#id"));
                 });
             });
 
-            //Bursh函数定义 --------------------------------------------------------------//
+            //Bursh函数定义
             var curBrush;
 
             function brushstart() {
@@ -9057,12 +8490,12 @@ chart.checkContainer($("#id"));
                 }
             }
 
-            //Brush交互 -----------------------------------------------------------------------//
+            //Brush交互
             var brushes = [];
             var b;
             for (i = 0; i &lt; lx; i++) {
                 for (j = 0; j &lt; ly; j++) {
-                    b = DataV.Brush().x(x[dimensionsX[i]]).y(y[dimensionsY[j]]).backgroundAttr({
+                    b = Brush().x(x[dimensionsX[i]]).y(y[dimensionsY[j]]).backgroundAttr({
                         &quot;opacity&quot;: 0, //背景颜色：白色、全透明
                         &quot;fill&quot;: &quot;white&quot;
                     }).foregroundAttr({ //选框颜色
@@ -9075,7 +8508,7 @@ chart.checkContainer($("#id"));
                     brushes.push(b);
                 }
             }
-            //hover交互 -------------------------------------------------------------------------//
+            //hover交互
             //var preIndex = &quot;start&quot;;
             var floatTag = this.floatTag;
             $(paper.canvas).bind(&quot;mousemove&quot;, function (e) {
@@ -9098,11 +8531,7 @@ chart.checkContainer($("#id"));
                             that.lineH.translate(0, center[1] - that.linePosition[1]).attr('stroke', that.getColor(circlesFg[i].data('colorType'))).show();
                             that.linePosition = center;
                             if (conf.tagDimen !== &quot;NoTagDimen&quot;) {
-                                floatTag.html ( '&lt;div style = &quot;text-align: center;margin:auto;color:'
-                                //+ jqNode.color
-                                + &quot;#ffffff&quot;
-                                + '&quot;&gt;' + circlesFg[i].data(&quot;tag&quot;) + '&lt;/div&gt;'
-                                );
+                                floatTag.html('&lt;div style=&quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + circlesFg[i].data(&quot;tag&quot;) + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                             }
                             that.preIndex = i;
@@ -9112,19 +8541,36 @@ chart.checkContainer($("#id"));
                 }
             });
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
 
-    //创建canvas
-    ScatterplotMatrix.prototype.createCanvas = function () {
-        if (!this.node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
+  <p>创建canvas</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>ScatterplotMatrix.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>ScatterplotMatrix.prototype.createCanvas = function () {
         var conf = this.defaults;
         this.node.style.position = &quot;relative&quot;;
         this.canvas = new Raphael(this.node, conf.width, conf.height);
-
-        this.canvasF = document.getElementById(this.container);
-        this.floatTag = DataV.FloatTag()(this.canvasF);
+        this.floatTag = DataV.FloatTag()(this.node);
         this.floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
     };
 
@@ -9136,10 +8582,6 @@ chart.checkContainer($("#id"));
 
     //绘制函数
     ScatterplotMatrix.prototype.render = function (options) {
-        //var dBegin = new Date();   //for time-testing
-        if (!this.node) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
         this.setOptions(options);
         this.canvas.clear();
         this.setAxis();
@@ -11299,6 +10741,10 @@ chart.checkContainer($("#id"));
   <h2>charts/tree: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
   </ul>
   <hr />
 
@@ -11322,9 +10768,9 @@ chart.checkContainer($("#id"));
     var theme = DataV.Themes;
 
     var Tree = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+        initialize: function (node, options) {
             this.type = &quot;Tree&quot;;
-            this.container = container;
+            this.node = this.checkContainer(node);
             this.defaults = {};
 
             this.addlink = {};
@@ -11347,17 +10793,6 @@ chart.checkContainer($("#id"));
 
     Tree.prototype.on = function (eventName, callback) {
         this.emitter.on(eventName, callback);
-    };
-
-    Tree.prototype.setOptions = function (options) {
-        var prop;
-        if (options) {
-            for (prop in options) {
-                if (options.hasOwnProperty(prop)) {
-                    this.defaults[prop] = options[prop];
-                }
-            }
-        }
     };
 
     Tree.prototype.hierarchyTableToJson = function (table) {
@@ -11431,12 +10866,14 @@ chart.checkContainer($("#id"));
                 if (isNaN(parseFloat(record.size))) {
                     throw new Error(&quot;Leaf node's size is not a number(ID:&quot; + (rootID + 1) + &quot;).&quot;);
                 } else {
-                    return {name: record.name, 
-                        size: record.size, 
-                        num: record.id, 
-                        children: null, 
-                        draw: false, 
-                        value: record.value};
+                    return {
+                        name: record.name,
+                        size: record.size,
+                        num: record.id,
+                        children: null,
+                        draw: false,
+                        value: record.value
+                    };
                 }
             } else {
                 var childNode = [];
@@ -11502,9 +10939,6 @@ chart.checkContainer($("#id"));
     };
 
     Tree.prototype.getColor = function () {
-        //var conf = this.defaults;
-        //var treedepth = this.treeDepth;
-
         var colorMatrix = DataV.getColor();
         var color;
         if (colorMatrix.length &gt; 1 &amp;&amp; colorMatrix[0].length &gt; 1) {
@@ -11512,44 +10946,15 @@ chart.checkContainer($("#id"));
         } else {
             color = colorMatrix[0];
         }
-        //var colorRow_Num = colorRow.length - 1;
 
         return DataV.gradientColor(color, &quot;special&quot;);
-        
-        // return function(d){
-        //     var color;
-
-        //     if ((treedepth * 2 - 1 )&gt; colorRow_Num) {
-        //         if (d &gt; colorRow_Num) {
-        //             color = colorRow[colorRow_Num];
-        //         } else {
-        //             color = colorRow[d];
-        //         }
-        //     } else {
-        //         if (d == 0) {
-        //             color = colorRow[0];
-        //         } else {
-        //             color = colorRow[d * 2 - 1];
-        //         }
-        //     }
-
-        //     return color;
-        // }
     };
-
-    // Tree.prototype.getFont = function () {
-    //     //var conf = this.defaults;
-
-    //     return DataV.getFont();
-    // };
 
     Tree.prototype.createCanvas = function () {
         var conf = this.defaults;
-        this.canvas = new Raphael(this.container, conf.width, conf.height);
-        this.canvasF = document.getElementById(this.container);
-        canvasStyle = this.canvasF.style;
-        canvasStyle.position = &quot;relative&quot;;
-        this.floatTag = DataV.FloatTag()(this.canvasF);
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+        this.node.style.position = &quot;relative&quot;;
+        this.floatTag = DataV.FloatTag()(this.node);
 
         this.floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
 
@@ -11562,7 +10967,7 @@ chart.checkContainer($("#id"));
             that.emitter.trigger(&quot;dblclick&quot;, event);
         });
 
-        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;  
+        var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
             that.emitter.trigger(&quot;mousewheel&quot;, event);
         });
@@ -11586,14 +10991,8 @@ chart.checkContainer($("#id"));
     };
 
     Tree.prototype.zoom = function (d) {
-        var multiple = 2;
-
-        if (d !== null) {
-            multiple = d;
-        }
-
+        var multiple = d || 2;
         var conf = this.defaults;
-
         conf.width = conf.width * multiple;
 
         if (conf.height &lt;= this.treeDepth * conf.deep) {
@@ -11617,10 +11016,10 @@ chart.checkContainer($("#id"));
         var c2x = tx;
         var c2y = ty - (ty - fy) / 2;
 
-        var link_path = [[&quot;M&quot;, fx, fy + conf.radius], 
+        var link_path = [[&quot;M&quot;, fx, fy + conf.radius],
             [&quot;C&quot;, c1x, c1y, c2x, c2y, tx, ty - conf.radius]];
 
-        return link_path;    
+        return link_path;
     };
 
     Tree.prototype.generatePaths = function () {
@@ -11651,7 +11050,7 @@ chart.checkContainer($("#id"));
             tree.update(this.data(&quot;num&quot;));
         };
 
-        $(&quot;#&quot; + this.container).append(this.floatTag);
+        $(this.node).append(this.floatTag);
 
         var i, nodesLength;
         for (i = 0, nodesLength = nodesData.length; i &lt; nodesLength;  i++) {
@@ -11668,7 +11067,7 @@ chart.checkContainer($("#id"));
                                 .attr({ stroke:  &quot;#939598&quot;, &quot;stroke-width&quot;: 0.5});
                         }
                     }
-                } 
+                }
             }
 
             var startX;
@@ -11687,10 +11086,10 @@ chart.checkContainer($("#id"));
 
             nodes.push(
                 canvas.circle(startX, startY, radius)
-                    .attr({fill: color(d.depth / treedepth), 
-                        stroke:  &quot;#ffffff&quot;, 
-                        &quot;stroke-width&quot;: 1, 
-                        &quot;fill-opacity&quot;: 0.4, 
+                    .attr({fill: color(d.depth / treedepth),
+                        stroke: &quot;#ffffff&quot;,
+                        &quot;stroke-width&quot;: 1,
+                        &quot;fill-opacity&quot;: 0.4,
                         &quot;data&quot;: 12})
                     .data(&quot;num&quot;, i)
                     .animate({cx: d.x, cy: d.y}, 500, &quot;backOut&quot;)
@@ -11701,11 +11100,13 @@ chart.checkContainer($("#id"));
             }
 
             if (d._children) {
-                nodes[i].attr({stroke:  color(d.depth / treedepth), 
-                    &quot;stroke-width&quot;: radius, 
-                    &quot;stroke-opacity&quot;: 0.4, 
-                    &quot;fill-opacity&quot;: 1, 
-                    &quot;r&quot;: radius / 2});
+                nodes[i].attr({
+                    stroke: color(d.depth / treedepth),
+                    &quot;stroke-width&quot;: radius,
+                    &quot;stroke-opacity&quot;: 0.4,
+                    &quot;fill-opacity&quot;: 1,
+                    &quot;r&quot;: radius / 2
+                });
             }
 
             if (d.children) {
@@ -11743,7 +11144,7 @@ chart.checkContainer($("#id"));
                     this.animate({r: thisradius + 2, &quot;fill-opacity&quot;: 0.75}, 100);
                 } else {
                     this.animate({r: thisradius + 2, &quot;stroke-opacity&quot;: 0.75}, 100);
-                } 
+                }
 
                 textpath[i].attr({'font-size': 20});
 
@@ -11764,7 +11165,7 @@ chart.checkContainer($("#id"));
                         }
                         getFline(parent, num);
                     }
-                }
+                };
 
                 getFline(nodesData[i], 0.9);
 
@@ -11778,11 +11179,7 @@ chart.checkContainer($("#id"));
                 }
 
                 console.log(nodesData[i]);
-                floatTag.html ( '&lt;div style = &quot;text-align: center;margin:auto;color:'
-                    //+ jqNode.color
-                    + &quot;#ffffff&quot;
-                    + '&quot;&gt;' + nodesData[i].name + '&lt;/div&gt;'
-                    );
+                floatTag.html('&lt;div style = &quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + nodesData[i].name + '&lt;/div&gt;');
                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
             })
             .mouseout(function () {
@@ -11791,7 +11188,7 @@ chart.checkContainer($("#id"));
                     this.animate({r: thisradius, &quot;fill-opacity&quot;: 0.4}, 100);
                 } else {
                     this.animate({r: thisradius, &quot;stroke-width&quot;: thisstrokewidth, &quot;stroke-opacity&quot;: 0.4}, 100);
-                } 
+                }
                 textpath[i].attr({'font-size': 12});
                 textpath[i].animate({'y': textY}, 100, &quot;backOut&quot;);
 
@@ -11801,7 +11198,7 @@ chart.checkContainer($("#id"));
                         path[node.id - 1].attr({&quot;stroke-width&quot;: 0.5, &quot;stroke-opacity&quot;: 1});
                         getFline(parent);
                     }
-                }
+                };
                 getFline(nodesData[i]);
 
                 var thisparent = nodesData[i].parent;
@@ -11839,17 +11236,14 @@ chart.checkContainer($("#id"));
                                 addlink[node.num].path[j].attr({path: link_path});
                             }
                         }
-                    } 
+                    }
                 }
             }
         });
-        
+
         this.nodes = nodes;
         this.path = path;
         this.textpath = textpath;
-        // this.link_paths = link_paths;
-        // this.circle_paths = circle_paths;
-        // this.text_paths = text_paths;
     };
     
     Tree.prototype.update = function (i) {
@@ -11890,20 +11284,36 @@ chart.checkContainer($("#id"));
         this.source.x0 = conf.width / 2;
         this.source.y0 = conf.radius * 2;
         this.render();
-    };
-    
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
 
+  <p>渲染Tree</p>
 
-    Tree.prototype.render = function (options) {
-        // var st = new Date().getTime();
-        if (!this.container) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Tree.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Tree.prototype.render = function (options) {
         this.canvas.clear();
         this.setOptions(options);
         this.layout();
         // var st2 = new Date().getTime();
-
         this.generatePaths();
         // var et = new Date().getTime();
         //this.canvas.renderfix();
