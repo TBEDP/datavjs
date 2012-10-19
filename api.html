@@ -7,50 +7,67 @@
     <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
     <script src="assets/prettify.js"></script>
     <script src="assets/jquery-1.8.2.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/base.css" />
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <a class="brand" href="./index.html">datavjs</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
+            
               <li>
                 <a href="./api.html">API Docs</a>
               </li>
-              
+            
+              <li>
+                <a href="./bullet文档.html">bullet文档</a>
+              </li>
+            
               <li>
                 <a href="./butterfly.html">butterfly</a>
               </li>
-              
+            
               <li>
                 <a href="./changelog.html">changelog</a>
               </li>
-              
+            
               <li>
                 <a href="./CodingStyle.html">CodingStyle</a>
               </li>
-              
+            
               <li>
                 <a href="./force文档.html">force文档</a>
               </li>
-              
+            
               <li>
-                <a href="./stream文档.html">stream文档</a>
+                <a href="./parallel文档.html">parallel文档</a>
               </li>
-              
-              <li>
-                <a href="./treemap文档.html">treemap文档</a>
+            
+            
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 <b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu">
+                
+                  <li>
+                    <a href="./stream文档.html">stream文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./treemap文档.html">treemap文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./服务器配置.html">服务器配置</a>
+                  </li>
+                
+                </ul>
               </li>
-              
+            
             </ul>
           </div>
         </div>
@@ -155,6 +172,14 @@
     </li>
 
     <li>
+      <a href="#DataV.Themes_get">get</a>
+    </li>
+
+    <li>
+      <a href="#DataV.Themes_add">add</a>
+    </li>
+
+    <li>
       <a href="#DataV_changeTheme">changeTheme</a>
     </li>
 
@@ -196,6 +221,14 @@
 
     <li>
       <a href="#_setOptions">setOptions</a>
+    </li>
+
+    <li>
+      <a href="#_plug">plug</a>
+    </li>
+
+    <li>
+      <a href="#_unplug">unplug</a>
     </li>
 
     <li>
@@ -293,122 +326,21 @@
   </table>
   
   
-
-  <p>默认主题</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>DataV.Themes[&quot;default&quot;] = DataV.Themes.theme0 = {
-         COLOR_ARGS: [
-            [&quot;#3dc6f4&quot;, &quot;#8ce3ff&quot;],
-            [&quot;#214fd9&quot;, &quot;#7396ff&quot;],
-            [&quot;#4f21d9&quot;, &quot;#9673ff&quot;],
-            [&quot;#c43df2&quot;, &quot;#e38cff&quot;],
-            [&quot;#d8214f&quot;, &quot;#ff7396&quot;],
-            [&quot;#f3c53c&quot;, &quot;#ffe38c&quot;]
-        ]
-
-        //FONT_ARGS: {HEADER_FAMILY:&quot;微软雅黑&quot;, HEADER_SIZE: 20, PAGE_FAMILY:&quot;微软雅黑&quot;, PAGE_SIZE: 5}
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>主题1</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>DataV.Themes.theme1 = {
-        COLOR_ARGS: [
-            [&quot;#e72e8b&quot;, &quot;#ff7fbf&quot;],
-            [&quot;#d94f21&quot;, &quot;#ff9673&quot;],
-            [&quot;#f3c53c&quot;, &quot;#ffe38c&quot;],
-            [&quot;#8be62f&quot;, &quot;#bfff7f&quot;],
-            [&quot;#14cc14&quot;, &quot;#66ff66&quot;],
-            [&quot;#2fe68a&quot;, &quot;#7fffc0&quot;]
-        ]
-
-        //FONT_ARGS: {HEADER_FAMILY:&quot;微软雅黑&quot;, HEADER_SIZE: 20, PAGE_FAMILY:&quot;微软雅黑&quot;, PAGE_SIZE: 5}
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-
-  <p>主题2</p>
-
-  <table class="table">
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>DataV.Themes.theme2 = {
-        COLOR_ARGS: [
-            [&quot;#2f8ae7&quot;, &quot;#7fc0ff&quot;],
-            [&quot;#8a2ee7&quot;, &quot;#bf7fff&quot;],
-            [&quot;#f33dc6&quot;, &quot;#ff8ce3&quot;],
-            [&quot;#8be62f&quot;, &quot;#bfff7f&quot;],
-            [&quot;#14cc14&quot;, &quot;#66ff66&quot;],
-            [&quot;#2fe68a&quot;, &quot;#7fffc0&quot;]
-        ]
-        //FONT_ARGS: {HEADER_FAMILY:&quot;微软雅黑&quot;, HEADER_SIZE: 20, PAGE_FAMILY:&quot;微软雅黑&quot;, PAGE_SIZE: 10}
-    };
-    DataV.Themes.theme3 = {
-        COLOR_ARGS: [
-            [&quot;#2f8ae7&quot;, &quot;#896DA3&quot;],
-            [&quot;#8e34df&quot;, &quot;#FFADA6&quot;],
-            [&quot;#f738c0&quot;, &quot;#65FCFC&quot;],
-            [&quot;#84e653&quot;, &quot;#555566&quot;],
-            [&quot;#0cc53e&quot;, &quot;#db3f7c&quot;],
-            [&quot;#00e793s&quot;, &quot;#db3f7c&quot;]
-        ]
-        //FONT_ARGS: {HEADER_FAMILY:&quot;微软雅黑&quot;, HEADER_SIZE: 20, PAGE_FAMILY:&quot;微软雅黑&quot;, PAGE_SIZE: 10}
-    };
-    DataV.Themes.theme4 = {
-        COLOR_ARGS: [
-            [&quot;#d94f21&quot;, &quot;#7a88d1&quot;],
-            [&quot;#579ce2&quot;, &quot;#87bdf4&quot;],
-            [&quot;#3bb4df&quot;, &quot;#7fd1ef&quot;],
-            [&quot;#a380ff&quot;, &quot;#baa0ff&quot;],
-            [&quot;#a164c5&quot;, &quot;#c28fe1&quot;],
-            [&quot;#d93a92&quot;, &quot;#ec74b6&quot;],
-            [&quot;#b82377&quot;, &quot;#d569a7&quot;],
-            [&quot;#bb3ca3&quot;, &quot;#d381c2&quot;],
-            [&quot;#da2d57&quot;, &quot;#ec6b8a&quot;],
-            [&quot;#4ca716&quot;, &quot;#4ca716&quot;],
-            [&quot;#5b63c2&quot;, &quot;#8e93d7&quot;],
-            [&quot;#15a9a3&quot;, &quot;#4ecac5&quot;],
-            [&quot;#a9ab48&quot;, &quot;#e8c670&quot;],
-            [&quot;#2aa5f5&quot;, &quot;#73c4fa&quot;],
-            [&quot;#f67e10&quot;, &quot;#feb648&quot;],
-            [&quot;#1faa77&quot;, &quot;#62c8a2&quot;],
-            [&quot;#eb4f20&quot;, &quot;#f58563&quot;],
-            [&quot;#ffc000&quot;, &quot;#ffd659&quot;],
-            [&quot;#f16ebc&quot;, &quot;#f6a1d3&quot;],
-            [&quot;#d23457&quot;, &quot;#e27b92&quot;]
-        ]
-    };
-
-    DataV.Themes.current = &quot;default&quot;;
-    DataV.Themes._currentTheme = null;</code></pre></td>
-    </tr>
-  
-  </table>
-  
+  <h3 id="DataV.Themes_get">
+    get
+  </h3>
   
 
   <p>获取当前主题的属性</p>
 
   <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>DataV.Themes.get()</td> 
+      <td>DataV.Themes</td>
+      <td>get</td>
+    </tr>
   
 
     <tr>
@@ -421,20 +353,32 @@
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>DataV.Themes.get = function (key) {
+        var themeName = DataV.Themes.current || &quot;default&quot;;
         if (!DataV.Themes._currentTheme) {
-            DataV.Themes._currentTheme = DataV.Themes[DataV.Themes.current];
+            DataV.Themes._currentTheme = DataV.Themes[themeName];
         }
-        return DataV.Themes._currentTheme[key] || DataV.Themes[&quot;default&quot;][key];
+        return DataV.Themes._currentTheme[key];
     };</code></pre></td>
     </tr>
   
   </table>
   
   
+  <h3 id="DataV.Themes_add">
+    add
+  </h3>
+  
 
-  <p>设置自定义主题</p>
+  <p>添加自定义主题</p>
 
   <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>DataV.Themes.add()</td> 
+      <td>DataV.Themes</td>
+      <td>add</td>
+    </tr>
   
 
     <tr>
@@ -453,7 +397,9 @@
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>DataV.Themes.set = function (themeName, theme) {
+      <td>代码</td><td colspan="3"><pre><code>DataV.Themes.add = function () {
+        var args = [].slice.call(arguments, 0);
+        theme = args.pop();
         if (arguments.length &lt; 2) {
             throw new Error(&quot;Arguments format error. should be: (themsName, theme)&quot;);
         } else if (typeof theme !== &quot;object&quot;) {
@@ -465,7 +411,13 @@
         } else if (!(theme[&quot;COLOR_ARGS&quot;][0] instanceof Array)) {
             throw new Error(&quot;theme.COLOR_ARGS[0] should be an array&quot;);
         }
-        DataV.Themes[themeName] = theme;
+        for (var i = 0, l = args.length; i &lt; l; i++) {
+            var _themeName = args[i];
+            if (DataV.Themes.hasOwnProperty(_themeName)) {
+                throw new Error(&quot;The &quot; + _themeName + &quot; has been defined&quot;);
+            }
+            DataV.Themes[_themeName] = theme;
+        }
     };</code></pre></td>
     </tr>
   
@@ -861,6 +813,7 @@
       <td>代码</td><td colspan="3"><pre><code>var Chart = function () {
         this.type = &quot;Chart&quot;;
         this.defaults = {};
+        this.plugins = {};
     };</code></pre></td>
     </tr>
   
@@ -1001,6 +954,101 @@ chart.checkContainer($("#id"));
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Chart.prototype.setOptions = function (options) {
         return _.extend(this.defaults, options);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_plug">
+    plug
+  </h3>
+  
+
+  <p>添加插件方法到实例对象上</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Chart.prototype.plug()</td> 
+      <td></td>
+      <td>plug</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>name(String)</td>
+      <td colspan="2">plugin name</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>fn(Function)</td>
+      <td colspan="2">plugin function</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2">A reference to the host object</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Chart.prototype.plug = function (name, fn) {
+        this[name] = fn;
+        this.plugins[name] = fn;
+        return this;
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_unplug">
+    unplug
+  </h3>
+  
+
+  <p>从实例上移除插件方法</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Chart.prototype.unplug()</td> 
+      <td></td>
+      <td>unplug</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>plugin(String)</td>
+      <td colspan="2">The namespace of the plugin</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2">A reference to the host object</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Chart.prototype.unplug = function (name) {
+        if (this.plugins.hasOwnProperty(name)) {
+            delete this.plugins[name];
+            delete this[name];
+        }
+        return this;
     };
 
     DataV.Chart = Chart;</code></pre></td>
@@ -3651,6 +3699,18 @@ chart.checkContainer($("#id"));
   <h2>charts/bullet: API索引</h2>
   <ul class="indexs">
   
+    <li>
+      <a href="#_Bullet">Bullet</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
   </ul>
   <hr />
 
@@ -3659,6 +3719,207 @@ chart.checkContainer($("#id"));
   <table class="table">
   
 
+  
+  </table>
+  
+  
+  <h3 id="_Bullet">
+    Bullet
+  </h3>
+  
+
+  <p>Bullet构造函数</p>
+
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code> 宽度，默认为节点宽度</li>
+</ul>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">//Create bullet in a dom node with id "chart", width is 500; height is 600px;
+var bullet = new Bullet("chart",
+         {"width": 500,
+         "height": 600,
+         "margin": [10, 10, 20, 70]});
+//Create bullet with log base;
+var log = new Bullet("chart2", 
+         {width: 300, height: 60, 
+         margin : [10, 10, 20, 70],
+         backgroundColor: ["#66f", "#ddf"],
+         measureColor: ["#000", "#000"],
+         markerColor: "#44f",
+         axisStyle: "log",
+         logBase: 10});
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Bullet</td> 
+      <td></td>
+      <td>Bullet</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>node(Mix)</td>
+      <td colspan="2">The dom node or dom node Id</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(Object)</td>
+      <td colspan="2">options json object for determin stream style.</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Bullet = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = &quot;Bullet&quot;;
+            this.node = this.checkContainer(node);
+            this.defaults = {};
+            // Properties
+            this.defaults.orient = &quot;horizonal&quot;; // &quot;horizonal&quot;, &quot;vertical&quot;
+            this.defaults.axisStyle = &quot;linear&quot;; // &quot;linear&quot;, &quot;log&quot;
+            this.defaults.logBase = Math.E;
+            this.defaults.margin = [10, 10, 20, 80];//top, right, bottom, left
+            this.defaults.centerBarRatio = 0.3;
+            this.defaults.markerWidth = 4;
+            this.defaults.markerRatio = 0.7;
+            this.defaults.titleRatio = 0.6; //title's text height : subtitle's text height = 6:4
+            this.defaults.backgroundColor = [&quot;#666&quot;, &quot;#ddd&quot;]; //dark, light
+            this.defaults.measureColor = [&quot;steelblue&quot;, &quot;#B0C4DE&quot;]; //dark, light
+            this.defaults.markerColor = &quot;#000&quot;;
+            this.defaults.tickDivide = 5;
+
+            // canvas
+            this.defaults.width = 200;
+            this.defaults.height = 80;
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
+
+  <p>设置数据源</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">bullet.setSource({    title: "Sample",
+     subtitle: "ratio",
+     ranges: [0, 0.5, 0.8, 1],
+     measures: [0.7, 0.9],
+     markers: [0.6],
+     rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
+     measureTitles: ["value is 0.7", "value is 0.9"],
+     markerTitles: ["mean is 0.6"] 
+})
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bullet.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>source(Object)</td>
+      <td colspan="2"></td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bullet.prototype.setSource = function (source) {
+        var conf = this.defaults,
+            range,
+            axisOrient;
+        this.data = source;
+        if (conf.orient === &quot;horizonal&quot;) {
+            axisOrient = &quot;bottom&quot;;
+            range = [conf.margin[3], conf.width - conf.margin[1]];
+        } else if (conf.orient === &quot;vertical&quot;) {
+            axisOrient = &quot;left&quot;;
+            range = [conf.height - conf.margin[2], conf.margin[0]];
+        }
+
+        if (conf.axisStyle === &quot;linear&quot;) {
+            this.scale = d3.scale.linear();
+        } else if (conf.axisStyle === &quot;log&quot;) {
+            this.scale = d3.scale.log();
+        }
+
+        this.data.min = this.data.ranges[0];
+        this.data.max = this.data.ranges[this.data.ranges.length - 1];
+        this.scale.domain([this.data.min, this.data.max])
+            .range(range);
+
+        if (conf.axisStyle === &quot;linear&quot;) {
+            this.axis = Axis().scale(this.scale).orient(axisOrient).ticks(conf.tickDivide).domainAttr({&quot;stroke&quot;: &quot;none&quot;});
+        } else if (conf.axisStyle === &quot;log&quot;) {
+            this.logScale = d3.scale.linear()
+                .domain([Math.log(this.data.min)/Math.log(conf.logBase), Math.log(this.data.max)/Math.log(conf.logBase)])
+                .range(range);
+            this.axis = Axis()
+                .orient(axisOrient)
+                .scale(this.logScale)
+                .ticks(conf.tickDivide)
+                .tickFormat(function (d) {return Math.round(Math.pow(conf.logBase, d));})
+                .domainAttr({&quot;stroke&quot;: &quot;none&quot;});
+        }
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
+
+  <p>render bullet</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Bullet.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Bullet.prototype.render = function (options) {
+        this.setOptions(options);
+        this.generatePaths();
+    };
+
+    return Bullet;
+});</code></pre></td>
+    </tr>
   
   </table>
   
@@ -6861,7 +7122,43 @@ chart.checkContainer($("#id"));
     </li>
 
     <li>
+      <a href="#_chooseDimensions">chooseDimensions</a>
+    </li>
+
+    <li>
+      <a href="#_setDimensionType">setDimensionType</a>
+    </li>
+
+    <li>
+      <a href="#_getDimensionExtents">getDimensionExtents</a>
+    </li>
+
+    <li>
+      <a href="#_setDimensionExtent">setDimensionExtent</a>
+    </li>
+
+    <li>
+      <a href="#_getDimensionTypes">getDimensionTypes</a>
+    </li>
+
+    <li>
+      <a href="#_getDimensionDomains">getDimensionDomains</a>
+    </li>
+
+    <li>
+      <a href="#_setDimensionDomain">setDimensionDomain</a>
+    </li>
+
+    <li>
       <a href="#_on">on</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
     </li>
 
   </ul>
@@ -6935,9 +7232,39 @@ chart.checkContainer($("#id"));
             this.setOptions(options);
             this.createCanvas();
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_chooseDimensions">
+    chooseDimensions
+  </h3>
+  
 
-    Parallel.prototype.chooseDimensions = function (dimen) {
+  <p>choose dimension</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.chooseDimensions()</td> 
+      <td></td>
+      <td>chooseDimensions</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>dimen(array)</td>
+      <td colspan="2">Array of column names</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
         this.dimensions = [];
         for (var i = 0, l = dimen.length; i&lt;l; i++) {
@@ -6945,9 +7272,44 @@ chart.checkContainer($("#id"));
                 this.dimensions.push(dimen[i]);
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setDimensionType">
+    setDimensionType
+  </h3>
+  
 
-    Parallel.prototype.setDimensionType = function (dimenType) {
+  <p>set dimension type, ordinal or quantitative</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang=""> parallel.setDimensionType({"cylinders": "ordinal", "year": "quantitative"});
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.setDimensionType()</td> 
+      <td></td>
+      <td>setDimensionType</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>dimenType(Object)</td>
+      <td colspan="2">dimension type obj</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.setDimensionType = function (dimenType) {
         var conf = this.defaults,
             prop,
             type;
@@ -6965,13 +7327,81 @@ chart.checkContainer($("#id"));
                 }
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getDimensionExtents">
+    getDimensionExtents
+  </h3>
+  
 
-    Parallel.prototype.getDimensionExtents = function () {
+  <p>get dimensions extents</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.getDimensionExtents()</td> 
+      <td></td>
+      <td>getDimensionExtents</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2">{key: dimension name(column name); value: dimenType(&quot;ordinal&quot; or &quot;quantitativ&quot;)}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.getDimensionExtents = function () {
         return $.extend({}, this.dimensionExtent);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setDimensionExtent">
+    setDimensionExtent
+  </h3>
+  
 
-    Parallel.prototype.setDimensionExtent = function (dimenExtent) {
+  <p>set dimension extent, if chart has been rendered, then refresh the chart;</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang=""> parallel.setDimensionExtent({
+   "cylinders": ["6", "3"],
+   "economy (mpg)": [35, 20]
+ });
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.setDimensionExtent()</td> 
+      <td></td>
+      <td>setDimensionExtent</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>dimenExtent(Object)</td>
+      <td colspan="2">{key: dimension name(column name); value: extent array;}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.setDimensionExtent = function (dimenExtent) {
         var conf = this.defaults;
         var dimen, i, l, extent;
         var rebrushNeeded = false;
@@ -7017,40 +7447,115 @@ chart.checkContainer($("#id"));
                 this.brush();
             }
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getDimensionTypes">
+    getDimensionTypes
+  </h3>
+  
 
-    Parallel.prototype.getDimensionTypes = function () {
+  <p>get dimension types</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.getDimensionTypes()</td> 
+      <td></td>
+      <td>getDimensionTypes</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2">{key: dimension name(column name); value: dimenType(&quot;ordinal&quot; or &quot;quantitativ&quot;)}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.getDimensionTypes = function () {
         return $.extend({}, this.dimensionType);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getDimensionDomains">
+    getDimensionDomains
+  </h3>
+  
 
-    Parallel.prototype.getDimensionDomains = function () {
+  <p>get dimension domain</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.getDimensionDomains()</td> 
+      <td></td>
+      <td>getDimensionDomains</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Object</td>
+      <td colspan="2">{key: dimension name(column name); value: extent array;}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.getDimensionDomains = function () {
         return $.extend({}, this.dimensionDomain);
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setDimensionDomain">
+    setDimensionDomain
+  </h3>
+  
 
-    Parallel.prototype._setOrdinalDomain = function (a) {
-        var uniq = [];
-        var index = {};
-        var i = -1, n = a.length, ai;
-        while (++i &lt; n) {
-            if (typeof index[ai = a[i]] === 'undefined') {
-                index[ai] = uniq.push(ai) - 1;
-            }
-        }
-        uniq.itemIndex = index;
-        return uniq;
-    };
+  <p>set dimension domain</p>
 
-    Parallel.prototype._setDefaultDimensionDomain = function (dimen) {
-        var conf = this.defaults;
-        if(this.dimensionType[dimen] === &quot;quantitative&quot;){
-            this.dimensionDomain[dimen] = d3.extent(this.source, function(p){return +p[dimen]});
-        } else {
-            this.dimensionDomain[dimen] = this._setOrdinalDomain(this.source.map(function(p){return p[dimen]}));
-        }
-    };
+<h2>Examples</h2>
 
-    //quant or ordinal different
-    Parallel.prototype.setDimensionDomain = function (dimenDomain) {
+<div class="highlight"><pre lang=""> parallel.setDimensionDomain({
+   "cylinders": [4, 8], //quantitative
+   "year": ["75", "79", "80"] //ordinal
+ });
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.setDimensionDomain()</td> 
+      <td></td>
+      <td>setDimensionDomain</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>dimenDomain(Object)</td>
+      <td colspan="2">{key: dimension name(column name); value: domain array (quantitative domain is digit array whose length is 2, ordinal domain is string array whose length could be larger than 2;}</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.setDimensionDomain = function (dimenDomain) {
         //set default dimensionDomain, extent for quantitative type, item array for ordinal type
         var conf = this.defaults;
         var dimen, i, l, domain;
@@ -7108,9 +7613,50 @@ chart.checkContainer($("#id"));
         if (_.indexOf([&quot;brushstart&quot;, &quot;brushend&quot;, &quot;brush&quot;], eventName)) {
             this.customEvent[&quot;brushstart&quot;] = callback;
         }
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
 
-    Parallel.prototype.setSource = function (source) {
+  <p>设置数据源</p>
+
+<h2>Examples</h2>
+
+<p>第一行为列名</p>
+
+<div class="highlight"><pre lang="">[
+ ["name", "weight", "year"],
+ ["AMC", "2000", "79"],
+ ["Buick", "2100", "80"]
+]
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>source(Array)</td>
+      <td colspan="2">二维数组的数据源</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.setSource = function (source) {
         //source is 2-dimension array
 
         var conf = this.defaults;
@@ -7147,244 +7693,36 @@ chart.checkContainer($("#id"));
 
         this.setDimensionDomain();
 
-    };
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
 
-    Parallel.prototype.layout = function () {
-        //create x and y dimensions
-        var conf = this.defaults,
-            domain,
-            i,
-            j,
-            l,
-            ll;
+  <p>绘制图表</p>
 
-        var m = conf.marginWidth,
-            w = conf.width - m[1] - m[3],
-            h = conf.height - m[0] - m[2];
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Parallel.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
 
-        this.x = d3.scale.ordinal().rangePoints([0, w], 1),
-        this.y = {};
-        this.y2 = {};
-
-        this.x.domain(d3.range(this.dimensions.length));//allow same dimension
-        for(i=0, l=this.dimensions.length; i&lt;l; i++){
-            var dimen = this.dimensions[i];
-            if(this.dimensionType[dimen] === &quot;quantitative&quot;){
-                this.y[dimen] = d3.scale.linear()
-                .domain(this.dimensionDomain[dimen])
-                .range([h + m[0], m[0]]);
-                this.y2[dimen] = d3.scale.linear()
-                .domain(this.dimensionDomain[dimen])
-                .range([h + m[0], m[0]]);
-            }else{
-                this.y[dimen] = d3.scale.ordinal()
-                .domain(this.dimensionDomain[dimen])
-                .rangeBands([h + m[0], m[0]]);
-                this.y2[dimen] = d3.scale.linear()
-                .domain([0, this.dimensionDomain[dimen].length])
-                .range([h + m[0], m[0]]);
-            }
-        }
-    };
-
-    Parallel.prototype.generatePaths = function () {
-        var conf = this.defaults;
-        var axis = Axis().orient(&quot;left&quot;);
-
-        var m = conf.marginWidth;
-
-        var paper = this.canvas;
-
-        this.bg = paper.set();
-        var i, l;
-        for (i = 0, l = this.source.length; i&lt;l; i++) {
-            var line = this.source[i];
-            this.bg.push(paper.path(this.path(line)));
-        }
-        this.bg.attr(conf.backgroundAttr).attr({transform: &quot;t&quot; + m[3] + ',0'});
-        
-        this.fg = paper.set();
-        for (i = 0, l = this.source.length; i&lt;l; i++) {
-            var line = this.source[i];
-            this.fg.push(paper.path(this.path(line)));
-        }
-        this.fg.attr(conf.foregroundAttr).attr({transform: &quot;t&quot; + m[3] + ',0'});
-
-        var dimensions = this.dimensions;
-        
-        for(i = 0, l = dimensions.length; i&lt;l; i++){
-            var ax=axis.scale(this.y[dimensions[i]])(paper);
-            ax.push(paper.text(0, m[0] - 12, dimensions[i]).attr({&quot;text-anchor&quot;: &quot;middle&quot;}));
-            ax.attr({transform: &quot;t&quot; + (m[3] + this.x.range()[i] ) + ',0'});
-        }
-
-        var xInterval = Math.min(this.x.range()[1] - this.x.range()[0] - 20, 16);
-        var brushs = [];
-
-        this.statistic = {};
-        this.statistic[&quot;selected&quot;] = 0;
-        this.statistic[&quot;all&quot;] = this.source.length;
-        this.statistic[&quot;items&quot;] = {};
-        var that = this;
-        this.brush = function() {
-                var statistic = that.statistic;
-                var dimensionExtents = that.dimensionExtent;
-                var actives = that.dimensions.filter(function(p) {
-                        var empty = that.y[p].brush.empty();
-                        if (empty) {
-                            statistic.items[p] = -1;
-                            dimensionExtents[p] = undefined;
-                        } else {
-                            statistic.items[p] = 0;
-                        }
-                        return !empty;
-                    }),
-                    extents = actives.map(function(p) {
-                            var extent = that.y[p].brush.extent();
-                            if (that.dimensionType[p] === &quot;quantitative&quot;) {
-                                that.dimensionExtent[p] = extent;
-                            } else {
-                                that.dimensionExtent[p] = [
-                                    that.dimensionDomain[p][Math.ceil(extent[0] - 0.5)],
-                                    that.dimensionDomain[p][Math.floor(extent[1] - 0.5)]
-                                ];
-                            }
-                            return extent;
-                        });
-                var i, j, l, ll, p;
-                var d, value, inExtent, selected;
-                //var brush, dimen;
-
-                statistic[&quot;selected&quot;] = 0;
-                
-                for (j=0, l=that.fg.length; j&lt;l; j++) {
-                    d = that.source[j];
-                    selected = true;
-                    for (i = 0, ll = actives.length; i &lt; ll; i++) {
-                        p = actives[i];
-                        value = that.dimensionType[p] === &quot;quantitative&quot; ?
-                                d[p] : that.dimensionDomain[p].itemIndex[d[p]] + 0.5;
-                        inExtent = extents[i][0] &lt;= value &amp;&amp; value &lt;= extents[i][1];
-                        if (inExtent) { statistic.items[p] += 1;}
-                        if (!inExtent) {selected = false;}
-                    }
-                    if (selected) {
-                        statistic[&quot;selected&quot;] += 1;
-                        that.fg[j].attr({&quot;stroke&quot;: &quot;steelblue&quot;});
-                    } else {
-                        that.fg[j].attr({&quot;stroke&quot;: &quot;none&quot;});
-                    }
-                }
-
-                that.customEvent[&quot;brush&quot;].call(that);
-            },
-            brushstart = function () {
-                that.customEvent[&quot;brushstart&quot;].call(that);
-            },
-            brushend = function () {
-                that.customEvent[&quot;brushend&quot;].call(that);
-            };
-
-        var b, start, end, temp;
-
-        for (var i = 0, l = dimensions.length; i&lt;l; i++) {
-            dimen = dimensions[i];
-            b = Brush().y(this.y2[dimen])
-                .left(m[3] + this.x.range()[i] - xInterval/2)
-                .width(xInterval)
-                .backgroundAttr({&quot;opacity&quot;: 0, &quot;fill&quot;: &quot;white&quot;})
-                .foregroundAttr({&quot;opacity&quot;: 0.5, &quot;fill&quot;: &quot;gray&quot;})
-                .on(&quot;brushstart&quot;, brushstart)
-                .on(&quot;brush&quot;, this.brush)
-                .on(&quot;brushend&quot;, brushend);
-            if (typeof this.dimensionExtent[dimen] !== 'undefined') {
-                if (this.dimensionType[dimen] === &quot;quantitative&quot;) {
-                    b.extent(this.dimensionExtent[dimen]);
-                } else {
-                    b.extent(this._getOrdinalExtent(dimen, this.dimensionExtent[dimen]));
-                }
-            }
-
-            this.y[dimen].brush = b(paper);
-            //this.y[dimensions[i]].brush.dimension = dimensions[i];
-        }
-        if (!$.isEmptyObject(this.dimensionExtent)) {
-            this.brush();
-        }
-    };
-
-    Parallel.prototype._getOrdinalExtent = function (dimen, stringArray) {
-        start = this.dimensionDomain[dimen].itemIndex[stringArray[0]];
-        end = this.dimensionDomain[dimen].itemIndex[stringArray[1]];
-        if (start &gt; end) {
-            temp = start;
-            start = end;
-            end = temp;
-        }
-        start = Math.max(0, start + 0.5 - 0.5);
-        end = Math.min(this.dimensionDomain[dimen].length, end + 0.5 + 0.5);
-        return [start, end];
-    };
-
-    Parallel.prototype.createCanvas = function () {
-        var conf = this.defaults;
-        this.node.style.position = &quot;relative&quot;;
-        this.canvas = Raphael(this.node, conf.width, conf.height);
-
-        //console.log(this.canvas);
-    };
-
-    Parallel.prototype.getColor = function (colorJson) {
-        var colorM = DataV.getColor();
-        var color;
-        var colorStyle = colorJson ? colorJson : {};
-        var colorMode = colorStyle.mode ? colorStyle.mode : 'default';
-        switch (colorMode){
-            case &quot;gradient&quot;:
-                var index = colorJson.index ? colorJson.index : 0;
-                index = index &lt;0 ? 0 : (index&gt;colorM.length-1 ? colorM.length-1 : index);
-                color = d3.interpolateRgb.apply(null, [colorM[index][0],colorM[index][1]]);
-                break;
-            case &quot;random&quot;:
-            case &quot;default&quot;:
-                var ratio = colorStyle.ratio ? colorStyle.ratio : 0;
-                if(ratio &lt;0 ){ratio=0;}
-                if(ratio &gt; 1) { ratio =1;}
-                var colorArray =[];
-                for (var i=0, l=colorM.length; i&lt;l; i++) {
-                    var colorFunc = d3.interpolateRgb.apply(null, [colorM[i][0],colorM[i][1]]);
-                    colorArray[colorArray.length]=colorFunc(ratio);
-                }
-                color = d3.scale.ordinal().range(colorArray);
-                break;
-        }
-        return color;
-    };
-
-    Parallel.prototype.render = function (options) {
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.render = function (options) {
         this.setOptions(options);
         this.layout();
         this.generatePaths();
-    };
-
-    Parallel.prototype.path = function (d) {
-        var line = d3.svg.line();
-        var conf = this.defaults;
-        var y = this.y;
-        var x = this.x;
-        var dimensions = this.dimensions;
-        var dimensionType = this.dimensionType;
-        return line(dimensions.map(function(p, i) {
-            var yLoc = y[p](d[p]);
-            if(dimensionType[p] === &quot;ordinal&quot;){
-                yLoc +=  y[p].rangeBand()/2;
-            }
-            return [x(i), yLoc];
-        }));
-    };
-
-    return Parallel;
-});</code></pre></td>
+    };</code></pre></td>
     </tr>
   
   </table>
@@ -8623,23 +8961,7 @@ chart.checkContainer($("#id"));
     </li>
 
     <li>
-      <a href="#_createCanvas">createCanvas</a>
-    </li>
-
-    <li>
       <a href="#_setOptions">setOptions</a>
-    </li>
-
-    <li>
-      <a href="#_hasRowName">hasRowName</a>
-    </li>
-
-    <li>
-      <a href="#_hasColumnName">hasColumnName</a>
-    </li>
-
-    <li>
-      <a href="#_sort">sort</a>
     </li>
 
     <li>
@@ -8840,217 +9162,6 @@ chart.checkContainer($("#id"));
   </table>
   
   
-  <h3 id="_createCanvas">
-    createCanvas
-  </h3>
-  
-
-  <p>创建画布</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Stream.prototype.createCanvas()</td> 
-      <td></td>
-      <td>createCanvas</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Stream.prototype.createCanvas = function () {
-        var conf = this.defaults,
-            canvasFatherContainer = document.createElement(&quot;div&quot;),
-            coverStyle,
-            naviStyle,
-            naviTraceStyle,
-            naviBackStyle,
-            percentageStyle,
-            axisStyle,
-            brushStyle,
-            getBack;
-
-        this.node.style.position = &quot;relative&quot;;
-        this.node.style.width = conf.totalWidth + &quot;px&quot;;
-
-        this.legend = document.createElement(&quot;div&quot;);
-        //this.legendPaper = new Raphael(this.legend, conf.legendWidth - conf.legendIndent, 500);
-        $(this.legend).css({&quot;overflow&quot;: &quot;hidden&quot;,
-                            &quot;width&quot;: conf.legendWidth - conf.legendIndent + &quot;px&quot;,
-                            &quot;padding&quot;: &quot;10px 0 10px 0&quot;
-                            });
-
-        this.navi = document.createElement(&quot;div&quot;);
-        $(this.navi).css({
-            //&quot;width&quot;: conf.totalWidth + &quot;px&quot;,
-            &quot;border-top&quot;: &quot;1px solid #ddd&quot;,
-            &quot;border-bottom&quot;: &quot;1px solid #ddd&quot;,
-            //&quot;height&quot;: &quot;22px&quot;,
-            &quot;padding-top&quot;: &quot;5px&quot;,
-            &quot;padding-bottom&quot;: &quot;10px&quot;,
-            &quot;padding-left&quot;: &quot;10px&quot;,
-            &quot;padding-right&quot;: &quot;10px&quot;,
-            &quot;font&quot;: (conf.fontSize + 1) + &quot;px 宋体&quot;
-        });
-        this.naviTrace = document.createElement(&quot;div&quot;);
-        $(this.naviTrace).css({
-            &quot;width&quot;: conf.totalWidth - conf.naviBackWidth - 50 + &quot;px&quot;,
-            &quot;margin-top&quot;: &quot;5px&quot;
-        });
-
-        this.naviBack = document.createElement(&quot;div&quot;);
-        this.naviBack.innerHTML = &quot;返回上层&quot;;
-        $(this.naviBack).css({
-            &quot;width&quot;: conf.naviBackWidth + &quot;px&quot;,
-            &quot;float&quot;: &quot;right&quot;,
-            &quot;background-color&quot;: &quot;#f4f4f4&quot;,
-            &quot;padding-top&quot;: &quot;4px&quot;,
-            &quot;padding-bottom&quot;: &quot;4px&quot;,
-            &quot;border&quot;: &quot;1px solid #ddd&quot;,
-            &quot;border-radius&quot;: &quot;2px&quot;,
-            &quot;cursor&quot;: &quot;pointer&quot;,
-            &quot;text-align&quot;: &quot;center&quot;,
-            &quot;visibility&quot;: &quot;hidden&quot;
-        });
-        //naviBackStyle.float = &quot;right&quot;;
-        //naviBackStyle.visibility = &quot;hidden&quot;;
-        this.navi.appendChild(this.naviBack);
-        this.navi.appendChild(this.naviTrace);
-
-        this.percentage = document.createElement(&quot;div&quot;);
-        if (this.userConfig.more) {
-            this.percentagePaper = new Raphael(this.percentage, conf.margin[3], conf.height);
-        }
-        percentageStyle = this.percentage.style;
-        percentageStyle.width = conf.margin[3] + &quot;px&quot;;
-        percentageStyle.height = conf.height + &quot;px&quot;;
-        $(this.percentage).css({
-            &quot;float&quot;: &quot;left&quot;,
-            &quot;margin-bottom&quot;: &quot;0px&quot;,
-            &quot;border-bottom&quot;: &quot;0px&quot;,
-            &quot;padding-bottom&quot;: &quot;0px&quot;
-        });
-
-        this.canvasContainer = document.createElement(&quot;div&quot;);
-        $(this.canvasContainer).css({
-            &quot;float&quot;: &quot;left&quot;,
-            &quot;width&quot;: conf.width + &quot;px&quot;,
-            &quot;margin-bottom&quot;: &quot;0px&quot;,
-            &quot;border-bottom&quot;: &quot;0px&quot;,
-            &quot;padding-bottom&quot;: &quot;0px&quot;
-        })
-            .append($(canvasFatherContainer).css({&quot;position&quot;: &quot;relative&quot;}));
-        this.canvas = new Raphael(canvasFatherContainer, conf.width, conf.height);
-        $(this.canvasContainer).height(conf.height);
-
-        this.floatTag = DataV.FloatTag()(canvasFatherContainer);
-        this.floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
-
-        // cover can block stream canvas when animating to prevent some default mouse event
-        this.cover = document.createElement(&quot;div&quot;);
-        coverStyle = this.cover.style;
-        coverStyle.position = &quot;absolute&quot;;
-        coverStyle.width = conf.width + &quot;px&quot;;
-        coverStyle.height = conf.height + &quot;px&quot;;
-        coverStyle.zIndex = 100;
-        coverStyle.visibility = &quot;hidden&quot;;
-        $(this.cover).bind(&quot;mousemove&quot;, {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.coverMouse = {x: e.pageX, y: e.pageY};
-        });
-        $(this.cover).bind(&quot;mouseleave&quot;, {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.coverMouse = undefined;
-        });
-
-        this.axis = document.createElement(&quot;div&quot;);
-        this.axisPaper = new Raphael(this.axis, conf.totalWidth - conf.legendWidth, conf.axisHeight);
-        //axisStyle = this.axis.style;
-        $(this.axis).css({
-            &quot;margin-top&quot;: &quot;0px&quot;,
-            &quot;border-top&quot;: &quot;1px solid #ddd&quot;,
-            &quot;height&quot;: conf.axisHeight + &quot;px&quot;
-        });
-
-        this.leftContainer = document.createElement(&quot;div&quot;);
-        this.rightContainer = document.createElement(&quot;div&quot;);
-
-        this.leftContainer.appendChild(this.legend);
-
-        this.rightContainer.appendChild(this.navi);
-        this.middleContainer = document.createElement(&quot;div&quot;);
-        $(this.middleContainer).css(&quot;height&quot;, conf.height);
-        this.middleContainer.appendChild(this.percentage);
-        this.middleContainer.appendChild(this.canvasContainer);
-        this.middleContainer.appendChild(this.cover);
-        $(this.canvasFatherContainer).append(this.floatTag);
-        this.rightContainer.appendChild(this.middleContainer);
-        this.rightContainer.appendChild(this.axis);
-
-        this.node.appendChild(this.rightContainer);
-        this.node.appendChild(this.leftContainer);
-        $(this.rightContainer).css({&quot;float&quot;: &quot;right&quot;,
-                                    //&quot;border&quot;: &quot;solid 1px&quot;,
-                                    &quot;width&quot;: conf.totalWidth - conf.legendWidth
-                                    });
-        $(this.leftContainer).css({ &quot;width&quot;: conf.legendWidth - 4 + &quot;px&quot;,
-                                    //&quot;float&quot;: &quot;left&quot;,
-                                    //&quot;border&quot;: &quot;solid 1px&quot;,
-                                    //&quot;margin-left&quot;: &quot;-5px&quot;,
-                                    //&quot;height&quot;: 300,
-                                    //&quot;max-height&quot;: 300,
-                                    //&quot;overflow-y&quot;: &quot;scroll&quot;,
-                                    &quot;overflow-x&quot;: &quot;hidden&quot;
-                                    });
-
-        getBack = function (stream) {
-            stream.cover.style.visibility = &quot;visible&quot;;
-            stream.coverMouse = undefined;
-            stream.getLevelSource();
-            stream.reRender();
-
-            //hidden
-            stream.indicatorLine.attr({&quot;stroke&quot;: &quot;none&quot;});
-            stream.highlightLine.attr({&quot;stroke&quot;: &quot;none&quot;});
-            stream.floatTag.css({&quot;visibility&quot; : &quot;hidden&quot;});
-
-            stream.paths.forEach(function (d, i, array) {
-                d.attr({transform: &quot;s1,0.001,0,0&quot;});
-                d.label.hide();
-                d.animate({transform: &quot;t0,0&quot;}, 750, &quot;linear&quot;, function () {
-                    stream.cover.style.visibility = &quot;hidden&quot;;
-                    if (typeof stream.coverMouse !== 'undefined') {
-                        stream.indicatorLine.attr({&quot;stroke&quot;: &quot;#000&quot;});
-                        stream.highlightLine.attr({&quot;stroke&quot;: &quot;white&quot;});
-                        stream.floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
-                        $(stream.canvas.canvas).trigger(&quot;mousemove&quot;,
-                            [stream.coverMouse.x, stream.coverMouse.y]);
-                        stream.coverMouse = undefined;
-                    }
-                    if (d.labelLoc.showLabel) {
-                        d.label.show();
-                    }
-                });
-            });
-        };
-        $(this.naviTrace).on(&quot;click&quot;, &quot;.navi&quot;, {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.level = e.target.data.level;
-            getBack(stream);
-        });
-
-        $(this.naviBack).on(&quot;click&quot;, {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.level -= 1;
-            getBack(stream);
-        });
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
   <h3 id="_setOptions">
     setOptions
   </h3>
@@ -9084,155 +9195,6 @@ chart.checkContainer($("#id"));
                 this.defaults.autoHeight = false;
             }
         }
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_hasRowName">
-    hasRowName
-  </h3>
-  
-
-  <p>检测行名</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Stream.prototype.hasRowName()</td> 
-      <td></td>
-      <td>hasRowName</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Stream.prototype.hasRowName = function () {
-        var i,
-            l,
-            firstColumn = [],
-            source = this.rawData;
-
-        if ((typeof this.defaults.rowNameUsed) === &quot;boolean&quot;) {
-            return this.defaults.rowNameUsed;
-        }
-        //first column from 2nd row
-        for (i = 1, l = source.length; i &lt; l; i++) {
-            firstColumn[i] = source[i][0];
-        }
-        return !firstColumn.every(DataV.isNumeric);
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_hasColumnName">
-    hasColumnName
-  </h3>
-  
-
-  <p>检测列名</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Stream.prototype.hasColumnName()</td> 
-      <td></td>
-      <td>hasColumnName</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Stream.prototype.hasColumnName = function () {
-        var firstRow;
-        if ((typeof this.defaults.columnNameUsed) === &quot;boolean&quot;) {
-            return this.defaults.columnNameUsed;
-        }
-        //first row from 2nd column
-        firstRow = this.rawData[0].slice(1);
-        return !firstRow.every(DataV.isNumeric);
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_sort">
-    sort
-  </h3>
-  
-
-  <p>排序</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Stream.prototype.sort()</td> 
-      <td></td>
-      <td>sort</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>source(Array)</td>
-      <td colspan="2">待排序的二维数组</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Stream.prototype.sort = function (source) {
-        var i, j, l, ll;
-        var rowSum = [];
-        var columnSum = [];
-        var newSource = [];
-        var rowName = [];
-        var that = this;
-
-        for (j = 0, ll = source[0].length; j &lt; ll; j++) {
-            columnSum[j] = 0;
-        }
-
-        for (i = 0, l = source.length; i &lt; l; i++) {
-            rowSum[i] = 0;
-            for (j = 0, ll = source[0].length; j &lt; ll; j++) {
-                rowSum[i] += source[i][j];
-                columnSum[j] += source[i][j];
-            }
-            rowSum[i] = [rowSum[i]];
-            rowSum[i].index = i;
-        }
-
-        rowSum.sort(function (a, b) {
-            return b[0] - a[0];
-        });
-
-        rowSum.forEach(function (d, i) {
-            newSource[i] = source[d.index];
-			if (that.rowName) {
-                rowName[i] = that.rowName[d.index];
-			}
-        });
-
-        for (i = 0, l = rowSum.length; i &lt; l; i++) {
-            rowSum[i] = rowSum[i][0];
-        }
-
-        //this.mergeOthe
-
-		this.rowName = rowName;
-        this.rowSum = rowSum;
-        this.columnSum = columnSum;
-        this.total = d3.sum(this.rowSum);
-
-        return newSource;
     };</code></pre></td>
     </tr>
   

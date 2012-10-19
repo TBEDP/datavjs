@@ -87,8 +87,8 @@
       <ul class="nav nav-list bs-docs-sidenav affix">
 
   <li class="level_1">
-    <a href="#index_(代号：Butterfly)DataV项目进展计划" title="(代号：Butterfly)DataV项目进展计划">
-      <i class="icon-chevron-right"></i>(代号：Butterfly)DataV项目进展计划
+    <a href="#index_" title="">
+      <i class="icon-chevron-right"></i>
     </a>
   </li>
 
@@ -97,25 +97,19 @@
     </div>
     <div class="span9">
       <section>
-        <h1>(代号：Butterfly)DataV项目进展计划</h1>
+        <h1>平行坐标轴简介</h1>
 
-<p>DataV项目的一期工作已经完成，8个组件已经顺利完成。如果您有兴趣，可以查看<a href="http://datavlab.org/datavjs/">demo</a>。第二期工作的主要目标是提升组件库的易用性，尽管8个组件已经顺利产出了，但是我们知道我们做的还不够，到达一流组件还有很长的路很长的过程需要去优化，所以本期计划的目标是<strong>化茧成蝶</strong>，代号：<strong>蝴蝶</strong>。  </p>
+<p>平行坐标轴(parallel)通常用来展示一组数据在多个维度上的分布情况以及它们相互之间的关系。每个变量用一条线表示，每个维度用一个坐标轴表示。用户可以设置坐标轴的数据类型（离散数据还是连续数据）以及各坐标轴的相互顺序。鼠标在坐标轴上拖动圈选区间，高亮显示该区间内的线。 绘制parallel的javascript代码如下：</p>
 
-<p>第二期的任务，大致罗列如下：</p>
+<div class="highlight"><pre lang="javascript">//创建parallel对象，包含于id为"chart"的dom结点，宽、高分别为950、500px。
+var parallel = new Parallel("chart", {"width": 950, "height": 500});
+//设置数据，输入的数据为一个二维数组, 第一项为列名数组。
+parallel.setSource(dataSource);
+//渲染
+parallel.render();
+</pre></div>
 
-<ul>
-<li>提升组件的易用性
-<ul><li>改进接口</li>
-<li>提炼交互</li></ul></li>
-<li>改进SeaJS的依赖方式，使SeaJS是可选的</li>
-<li>增加基础组件
-<ul><li>线图</li>
-<li>柱状图</li>
-<li>饼图</li></ul></li>
-<li>线上demo，有趣的应用（非核心，周边应用）</li>
-<li>性能优化
-<ul><li>需要给出图表性能数据</li></ul></li>
-</ul>
+<p>更详细的设置坐标轴区间，圈选区域，设置事件响应等请参考exmaple目录中的parallel的demo示例。 </p>
       </section>
     </div>
   </div>

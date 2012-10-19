@@ -7,50 +7,67 @@
     <meta name="description" content="DataV.js is a JavaScript library for data visualization" />
     <script src="assets/prettify.js"></script>
     <script src="assets/jquery-1.8.2.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" />
     <link rel="stylesheet" type="text/css" href="assets/base.css" />
   </head>
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <a class="brand" href="./index.html">datavjs</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
+            
               <li>
                 <a href="./api.html">API Docs</a>
               </li>
-              
+            
+              <li>
+                <a href="./bullet文档.html">bullet文档</a>
+              </li>
+            
               <li>
                 <a href="./butterfly.html">butterfly</a>
               </li>
-              
+            
               <li>
                 <a href="./changelog.html">changelog</a>
               </li>
-              
+            
               <li>
                 <a href="./CodingStyle.html">CodingStyle</a>
               </li>
-              
+            
               <li>
                 <a href="./force文档.html">force文档</a>
               </li>
-              
+            
               <li>
-                <a href="./stream文档.html">stream文档</a>
+                <a href="./parallel文档.html">parallel文档</a>
               </li>
-              
-              <li>
-                <a href="./treemap文档.html">treemap文档</a>
+            
+            
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 <b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu">
+                
+                  <li>
+                    <a href="./stream文档.html">stream文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./treemap文档.html">treemap文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./_服务器配置.html">_服务器配置</a>
+                  </li>
+                
+                </ul>
               </li>
-              
+            
             </ul>
           </div>
         </div>
@@ -114,7 +131,7 @@
 
 <h2>为何需要服务器？</h2>
 
-<p>由于我们项目中加载数据文件是通过ajax的方式，ajax在普通从磁盘文件方式打开时，浏览器是不启用ajax功能的，会导致demo无法跑通。</p>
+<p>由于我们项目中加载数据文件是通过ajax的方式，Ajax在普通从磁盘文件方式打开时，浏览器是不启用ajax功能的，会导致demo无法跑通。</p>
 
 <h2>怎么安装？</h2>
 
@@ -126,16 +143,14 @@
 
 <h3>执行</h3>
 
-<p>通过命令行进入源码的bin目录下，执行如下命令</p>
-
-<div class="highlight"><pre lang="">npm install connect
+<div class="highlight"><pre lang="">npm install anywhere -g
 </pre></div>
 
-<p>安装完成后，执行<code>node app.js</code>。</p>
+<p>安装完成后，执行到目录下执行<code>anywhere</code>即可。</p>
 
 <h3>访问服务器</h3>
 
-<p>通过浏览器打开<a href="http://localhost:8001"><a href='http://localhost:8001'>http://localhost:8001</a></a>即可看到目录结构。</p>
+<p>执行命令后，可以看到服务器已经执行起来，通过浏览器打开<a href="http://localhost:8080"><a href='http://localhost:8080'>http://localhost:8080</a></a>即可看到目录结构。</p>
       </section>
     </div>
   </div>
