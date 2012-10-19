@@ -40,11 +40,11 @@
     <script type="text/javascript">
     seajs.config({
       alias: {
-        'datav': '/lib/datav.js',
-        'matrix': '/lib/charts/matrix.js'
+        'DataV': '/lib/datav.js',
+        'Matrix': '/lib/charts/matrix.js'
       }
     });
-    seajs.use(["matrix", "datav"], function (Matrix, DataV) {
+    seajs.use(["Matrix", "DataV"], function (Matrix, DataV) {
       var matrix = new Matrix("chart", {});
       DataV.csv("DataExample.csv", function(source){
         matrix.setSource(source);

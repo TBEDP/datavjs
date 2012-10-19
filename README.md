@@ -14,7 +14,14 @@ DataV.js is a JavaScript library for data visualization
 
 ## Examples
 - Pie
-- 
+- Treemap
+- Tree
+- Stream
+- ScatterplotMatrix
+- Force
+- Matrix
+- Bubble
+- Chord
 
 ## Contributors
 Thanks goes to the people who have contributed code to this library, see the [GitHub Contributors](https://github.com/TBEDP/datavjs/graphs/contributors) page.
