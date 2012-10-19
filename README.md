@@ -9,7 +9,12 @@ DataV.js is a JavaScript library for data visualization
 * [Sea.js](https://github.com/seajs/seajs).
 
 ## Learn more?
-The example site: <http://datavlab.org/datavjs/>
+- The example site: <http://datavlab.org/datavjs/>
+- [API Docs](http://tbedp.github.com/datavjs/)
+
+## Examples
+- Pie
+- 
 
 ## Contributors
 Thanks goes to the people who have contributed code to this library, see the [GitHub Contributors](https://github.com/TBEDP/datavjs/graphs/contributors) page.
