@@ -18,16 +18,18 @@ Below is the output from `git-summary`
 
 ```
  project  : datavjs
- repo age : 7 weeks
- active   : 12 days
- commits  : 35
- files    : 154
+ repo age : 8 weeks
+ active   : 34 days
+ commits  : 116
+ files    : 155
  authors  : 
-    19	Jackson Tian            54.3%
-     7	jdk137                  20.0%
-     4	wxtheseue               11.4%
-     3	Theseue                 8.6%
-     2	xie cong                5.7%
+    87	Jackson Tian            75.0%
+    14	jdk137                  12.1%
+     5	Theseue                 4.3%
+     4	wxtheseue               3.4%
+     2	unknown                 1.7%
+     2	xie cong                1.7%
+     2	xiecong                 1.7%
 
 ```
 

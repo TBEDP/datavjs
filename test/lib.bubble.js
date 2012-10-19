@@ -1,6 +1,6 @@
-module("DataV.Bubble")
+module("Bubble");
 
-var bubble = new DataV.Bubble(document.createElement("div"), {"width": 100, "height": 200});
+var bubble = new Bubble(document.createElement("div"), {"width": 100, "height": 200});
 
 test("defaults", function() {
     ok(bubble.defaults.width === 100, "set canvas width ok");
@@ -28,13 +28,12 @@ var source = [
     ["1990", "Iran", "0.9352", "4.82", "54870583", "Arab"],
     ["1990", "Indonesia", "0.915", "3.12", "184345939", "Asia"],
     ["1990", "India", "0.8852", "3.92", "873785449", "Asia"],
-    ["1990", "Iceland", "0.9937", "2.16", "254793", "Europe"],
+    ["1990", "Iceland", "0.9937", "2.16", "254793", "Europe"]
     ];
 
 test("setSource", function () {
     bubble.setSource(source);
-    equal(bubble.defaults.allDimensions,  
-        source[0], "set allDimensions ok");
+    equal(bubble.defaults.allDimensions, source[0], "set allDimensions ok");
     equal(bubble.defaults.dimensions, bubble.defaults.allDimensions, "set dimensions ok");
     equal(bubble.timeDimen, bubble.defaults.dimensions[0], "set time dimension ok");
     equal(bubble.keyDimen, bubble.defaults.dimensions[1], "set key dimension ok");

@@ -1,11 +1,11 @@
-module("DataV.Axis")
+module("Axis");
 //4 new function tickAttr, tickTextAttr, minorTickAttr, domainAttr, others are belong to d3
 //view xamples in ../examples/axis/ to know the usage.
 
 var paper = Raphael(document.createElement("div"),900,100);
 
-var x = d3.scale.linear().domain([.05, .95]).range([0, 900]);
-var axis = DataV.Axis().scale(x);
+var x = d3.scale.linear().domain([0.05, 0.95]).range([0, 900]);
+var axis = Axis().scale(x);
 
 test("tickAttr", function () {
 	axis.tickAttr({"stroke": "#000"});

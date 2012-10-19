@@ -9,25 +9,27 @@
     <div id="chart"></div>
     <script type="text/javascript" src="../../deps/d3.js"></script>
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
+    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
-    <script type="text/javascript">   
+    <script type="text/javascript">
     seajs.config({
-        alias: {
-            'datav': '/lib/datav.js',
-            'bubble': '/lib/charts/bubble.js'
-        }
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Axis': '/lib/charts/axis.js',
+        'Bubble': '/lib/charts/bubble.js'
+      }
     });
 
-    seajs.use(["bubble", "datav"], function (Bubble, DataV) {
-        var bubble = new Bubble("chart", {"width": 1200, "height": 800});
-        DataV.csv("nations2.csv", function(dataSource) {
-            bubble.setSource(dataSource);
-            // the dimension order is time, key, xaxis,yaxis,size,color dimension
-            // if you don't input next line, your source dimensions's order should be like above order
-            // bubble.chooseDimensions(["year", "country", "survival", "children", "population", "region"]);
-            bubble.render();
-        });
+    seajs.use(["Bubble", "DataV"], function (Bubble, DataV) {
+      var bubble = new Bubble("chart", {"width": 1200, "height": 800});
+      DataV.csv("nations2.csv", function(dataSource) {
+        bubble.setSource(dataSource);
+        // the dimension order is time, key, xaxis,yaxis,size,color dimension
+        // if you don't input next line, your source dimensions's order should be like above order
+        // bubble.chooseDimensions(["year", "country", "survival", "children", "population", "region"]);
+        bubble.render();
+      });
     });
     </script>
   </body>
