@@ -5,12 +5,12 @@
 绘制弦图的javascript代码如下：
 
 ```javascript
-    //创建Chord对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
-    var chord = new DataV.Chord("chart", {“width”: 700, “height”: 500});        
-    //设置数据，输入的数据为一个二维数组。
-    chord.setSource(source); //source is a 2-d array
-    //绘制
-    chord.render();
+//创建Chord对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
+var chord = new DataV.Chord("chart", {“width”: 700, “height”: 500});        
+//设置数据，输入的数据为一个二维数组。
+chord.setSource(source); //source is a 2-d array
+//绘制
+chord.render();
 ```
 
 设置 Chord选项时，可以设置如下属性：
@@ -22,12 +22,12 @@
 ##数据说明
 
 ```
-    [
-        [北京,上海,广州],
-        [0,11880,5147],
-        [19757,0,19250],
-        [5278,11157,0,0]
-    ]
+[
+    [北京,上海,广州],
+    [0,11880,5147],
+    [19757,0,19250],
+    [5278,11157,0,0]
+]
 ```
 
 如上数据表示了三个节点北京,上海,广州之间两两关系的对应值。第一行对应弦外圈N个元素名称。第二行开始的N行中，每个数据所在的i行，j列的值，表示第i个元素到第j个元素对于的弦的值。
