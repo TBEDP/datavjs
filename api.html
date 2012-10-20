@@ -37,6 +37,10 @@
               </li>
             
               <li>
+                <a href="./chord文档.html">chord文档</a>
+              </li>
+            
+              <li>
                 <a href="./CodingStyle.html">CodingStyle</a>
               </li>
             
@@ -44,14 +48,14 @@
                 <a href="./force文档.html">force文档</a>
               </li>
             
-              <li>
-                <a href="./parallel文档.html">parallel文档</a>
-              </li>
-            
             
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 <b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu">
+                
+                  <li>
+                    <a href="./parallel文档.html">parallel文档</a>
+                  </li>
                 
                   <li>
                     <a href="./stream文档.html">stream文档</a>
@@ -208,6 +212,10 @@
     </li>
 
     <li>
+      <a href="#DataV_extend">extend</a>
+    </li>
+
+    <li>
       <a href="#_Chart">Chart</a>
     </li>
 
@@ -229,10 +237,6 @@
 
     <li>
       <a href="#_unplug">unplug</a>
-    </li>
-
-    <li>
-      <a href="#DataV_extend">extend</a>
     </li>
 
     <li>
@@ -778,6 +782,71 @@
   </table>
   
   
+  <h3 id="DataV_extend">
+    extend
+  </h3>
+  
+
+  <p>继承</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>DataV.extend()</td> 
+      <td>DataV</td>
+      <td>extend</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>parent(Function)</td>
+      <td colspan="2">父类</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>properties(Object)</td>
+      <td colspan="2">新属性</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>Function</td>
+      <td colspan="2">新的子类</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>DataV.extend = function (parent, properties) {
+        if (typeof parent !== &quot;function&quot;) {
+            properties = parent;
+            parent = function () {};
+        }
+
+        properties = properties || {};
+        var sub = function () {
+            // Call the parent constructor.
+            parent.apply(this, arguments);
+            // Only call initialize in self constructor.
+            if (this.constructor === parent &amp;&amp; this.initialize) {
+                this.initialize.apply(this, arguments);
+            }
+        };
+        sub.prototype = new parent();
+        sub.prototype.constructor = parent;
+        $.extend(sub.prototype, properties);
+        return sub;
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
   <h3 id="_Chart">
     Chart
   </h3>
@@ -801,8 +870,8 @@
   <table class="table">
   
     <tr>
-      <td>函数</td>
-      <td>Chart()</td> 
+      <td>声明</td>
+      <td>Chart</td> 
       <td></td>
       <td>Chart</td>
     </tr>
@@ -810,11 +879,13 @@
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>var Chart = function () {
-        this.type = &quot;Chart&quot;;
-        this.defaults = {};
-        this.plugins = {};
-    };</code></pre></td>
+      <td>代码</td><td colspan="3"><pre><code>var Chart = DataV.extend(EventProxy, {
+        type: &quot;Chart&quot;,
+        initialize: function (node, options) {
+            this.defaults = {};
+            this.plugins = {};
+        }
+    });</code></pre></td>
     </tr>
   
   </table>
@@ -859,7 +930,7 @@
   </h3>
   
 
-  <p>If node is string, return Element by string as id. If node is Dom element, return node.</p>
+  <p>如果node是字符串，会当作ID进行查找。<br />如果是DOM元素，直接返回该元素。<br />如果是jQuery对象，返回对象中的第一个元素。<br />如果节点不存在，则抛出异常</p>
 
 <h2>Examples</h2>
 
@@ -895,17 +966,19 @@ chart.checkContainer($("#id"));
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Chart.prototype.checkContainer = function (node) {
-        if (!node) {
+        var ret = null;
+
+        if (typeof node === &quot;string&quot;) {
+            ret = document.getElementById(node);
+        } else if (node.nodeName) { //DOM-element
+            ret = node;
+        } else if (node instanceof jQuery &amp;&amp; node.size() &gt; 0) {
+            ret = node[0];
+        }
+        if (!ret) {
             throw new Error(&quot;Please specify which node to render.&quot;);
         }
-        if (typeof node === &quot;string&quot;) {
-            return document.getElementById(node);
-        } else if (node.nodeName) {//DOM-element
-            return node;
-        } else if (node instanceof jQuery &amp;&amp; node.size() &gt; 0) {
-            return node[0];
-        }
-        throw new Error(&quot;Please specify which node to render.&quot;);
+        return ret;
     };</code></pre></td>
     </tr>
   
@@ -1052,71 +1125,6 @@ chart.checkContainer($("#id"));
     };
 
     DataV.Chart = Chart;</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="DataV_extend">
-    extend
-  </h3>
-  
-
-  <p>继承</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>DataV.extend()</td> 
-      <td>DataV</td>
-      <td>extend</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>parent(Function)</td>
-      <td colspan="2">父类</td>
-    </tr>
-  
-
-    <tr>
-      <td>参数</td>
-      <td>properties(Object)</td>
-      <td colspan="2">新属性</td>
-    </tr>
-  
-
-    <tr>
-      <td>返回</td>
-      <td>Function</td>
-      <td colspan="2">新的子类</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>DataV.extend = function (parent, properties) {
-        if (typeof parent !== &quot;function&quot;) {
-            properties = parent;
-            parent = function () {};
-        }
-
-        properties = properties || {};
-        var sub = function () {
-            // Call the parent constructor.
-            parent.apply(this, arguments);
-            // Only call initialize in self constructor.
-            if (this.constructor === parent &amp;&amp; this.initialize) {
-                this.initialize.apply(this, arguments);
-            }
-        };
-        sub.prototype = new parent();
-        sub.prototype.constructor = parent;
-        $.extend(sub.prototype, properties);
-        return sub;
-    };</code></pre></td>
     </tr>
   
   </table>
@@ -2557,9 +2565,8 @@ chart.checkContainer($("#id"));
       <td>代码</td><td colspan="3"><pre><code>var Bubble = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
             this.type = &quot;Bubble&quot;;
-            this.container = node;
             this.node = this.checkContainer(node);
-            this.defaults = {};
+
             // setting display width and height, also they can be changed by options
             this.defaults.width = 800;
             this.defaults.height = 600;
@@ -2596,7 +2603,7 @@ chart.checkContainer($("#id"));
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;雅黑&quot;,
                 &quot;font-size&quot;: 12
-                };
+            };
 
             this.setOptions(options);
             this.createCanvas();
@@ -3739,19 +3746,22 @@ chart.checkContainer($("#id"));
 <h2>Examples</h2>
 
 <div class="highlight"><pre lang="">//Create bullet in a dom node with id "chart", width is 500; height is 600px;
-var bullet = new Bullet("chart",
-         {"width": 500,
-         "height": 600,
-         "margin": [10, 10, 20, 70]});
+var bullet = new Bullet("chart", {
+    "width": 500,
+    "height": 600,
+    "margin": [10, 10, 20, 70]
+});
 //Create bullet with log base;
-var log = new Bullet("chart2", 
-         {width: 300, height: 60, 
-         margin : [10, 10, 20, 70],
-         backgroundColor: ["#66f", "#ddf"],
-         measureColor: ["#000", "#000"],
-         markerColor: "#44f",
-         axisStyle: "log",
-         logBase: 10});
+var log = new Bullet("chart2", {
+    width: 300,
+    height: 60,
+    margin: [10, 10, 20, 70],
+    backgroundColor: ["#66f", "#ddf"],
+    measureColor: ["#000", "#000"],
+    markerColor: "#44f",
+    axisStyle: "log",
+    logBase: 10
+});
 </pre></div>
 
   <table class="table">
@@ -3784,7 +3794,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Bullet&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
             // Properties
             this.defaults.orient = &quot;horizonal&quot;; // &quot;horizonal&quot;, &quot;vertical&quot;
             this.defaults.axisStyle = &quot;linear&quot;; // &quot;linear&quot;, &quot;log&quot;
@@ -3820,14 +3829,15 @@ var log = new Bullet("chart2",
 
 <h2>Examples</h2>
 
-<div class="highlight"><pre lang="">bullet.setSource({    title: "Sample",
-     subtitle: "ratio",
-     ranges: [0, 0.5, 0.8, 1],
-     measures: [0.7, 0.9],
-     markers: [0.6],
-     rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
-     measureTitles: ["value is 0.7", "value is 0.9"],
-     markerTitles: ["mean is 0.6"] 
+<div class="highlight"><pre lang="">bullet.setSource({
+   title: "Sample",
+   subtitle: "ratio",
+   ranges: [0, 0.5, 0.8, 1],
+   measures: [0.7, 0.9],
+   markers: [0.6],
+   rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
+   measureTitles: ["value is 0.7", "value is 0.9"],
+   markerTitles: ["mean is 0.6"]
 })
 </pre></div>
 
@@ -3844,7 +3854,7 @@ var log = new Bullet("chart2",
     <tr>
       <td>参数</td>
       <td>source(Object)</td>
-      <td colspan="2"></td>
+      <td colspan="2">数据源</td>
     </tr>
   
 
@@ -3974,7 +3984,7 @@ var log = new Bullet("chart2",
   </h3>
   
 
-  <p>构造函数，container参数表示在html的哪个容器中绘制该组件<br />options对象为用户自定义的组件的属性，比如画布大小</p>
+  <p>构造函数，node参数表示在html的哪个容器中绘制该组件<br />options对象为用户自定义的组件的属性，比如画布大小</p>
 
   <table class="table">
   
@@ -3989,11 +3999,10 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>var Bundle = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+        initialize: function (node, options) {
             this.type = &quot;Bundle&quot;;
-            this.container = this.checkContainer(container);
-            this.defaults = {};
-            this.jsn = {};
+            this.node = this.checkContainer(node);
+            this.json = {};
     
             // 图的半径
             this.defaults.diameter = 960;
@@ -4072,7 +4081,7 @@ var log = new Bullet("chart2",
   </h3>
   
 
-  <p>对原始数据进行处理</p>
+  <p>对原始数据进行处理<br />TODO: 改进为获取值时运算</p>
 
   <table class="table">
   
@@ -4109,10 +4118,10 @@ var log = new Bullet("chart2",
                     imports: imports
                 };
             });
-            this.jsn = nData;
+            this.json = nData;
         } else {
             // json source
-            this.jsn = source;
+            this.json = source;
         }
     };</code></pre></td>
     </tr>
@@ -4141,7 +4150,7 @@ var log = new Bullet("chart2",
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Bundle.prototype.createCanvas = function () {
         var conf = this.defaults;
-        this.canvas = new Raphael(this.container, conf.diameter, conf.diameter);
+        this.canvas = new Raphael(this.node, conf.diameter, conf.diameter);
 
         //var c = this.canvas.circle(50, 50, 40);
     };</code></pre></td>
@@ -4222,7 +4231,7 @@ var log = new Bullet("chart2",
             .value(function (d) {
                 return d.size;
             });
-        this.nodes = cluster.nodes(packages.root(this.jsn));
+        this.nodes = cluster.nodes(packages.root(this.json));
         this.links = packages.imports(this.nodes);
     };</code></pre></td>
     </tr>
@@ -4555,7 +4564,7 @@ var log = new Bullet("chart2",
     </li>
 
     <li>
-      <a href="#_tag">tag</a>
+      <a href="#_legend">legend</a>
     </li>
 
     <li>
@@ -4601,7 +4610,7 @@ var log = new Bullet("chart2",
 
     <tr>
       <td>参数</td>
-      <td>container(Object)</td>
+      <td>node(Object)</td>
       <td colspan="2">表示在html的哪个容器中绘制该组件</td>
     </tr>
   
@@ -4616,24 +4625,23 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>var Chord = DataV.extend(DataV.Chart, {
-        initialize: function (container, options) {
+        initialize: function (node, options) {
             this.type = &quot;Chord&quot;;
-            this.node = this.checkContainer(container);
-            this.defaults = {};
+            this.node = this.checkContainer(node);
             this.matrix = [];
             this.groupNames = []; //数组：记录每个group的名字
 
             //图的大小设置
-            this.defaults.tag = true;
+            this.defaults.legend = true;
             this.defaults.width = 800;
             this.defaults.height = 800;
 
             //设置用户指定的属性
             this.setOptions(options);
 
-            this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-            if (this.defaults.tag) {
-                this.xOffset = this.tagArea[2];
+            this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
             } else {
                 this.xOffset = 0;
             }
@@ -4745,8 +4753,8 @@ var log = new Bullet("chart2",
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Chord.prototype.render = function () {
         this.layout();
-        if (this.defaults.tag) {
-            this.tag();
+        if (this.defaults.legend) {
+            this.legend();
         }
     };</code></pre></td>
     </tr>
@@ -4754,8 +4762,8 @@ var log = new Bullet("chart2",
   </table>
   
   
-  <h3 id="_tag">
-    tag
+  <h3 id="_legend">
+    legend
   </h3>
   
 
@@ -4765,35 +4773,35 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>方法</td>
-      <td>Chord.prototype.tag()</td> 
+      <td>Chord.prototype.legend()</td> 
       <td></td>
-      <td>tag</td>
+      <td>legend</td>
     </tr>
   
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>Chord.prototype.tag = function () {
+      <td>代码</td><td colspan="3"><pre><code>Chord.prototype.legend = function () {
         var that = this;
         var paper = this.canvas;
-        var tagArea = this.tagArea;
+        var legendArea = this.legendArea;
         var rectBn = paper.set();
         this.underBn = [];
         var underBn = this.underBn;
         for (i = 0; i &lt;= this.groupNum; i++) {
             //底框
-            underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;#ebebeb&quot;,
                 &quot;stroke&quot;: &quot;none&quot;
                 //&quot;r&quot;: 3
             }).hide());
             //色框
-            paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
                 &quot;fill&quot;: this.getColor(i),
                 &quot;stroke&quot;: &quot;none&quot;
             });
             //文字
-            paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
                 &quot;fill&quot;: &quot;black&quot;,
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;Verdana&quot;,
@@ -4802,7 +4810,7 @@ var log = new Bullet("chart2",
                 &quot;text-anchor&quot;: &quot;start&quot;
             });
             //选框
-            rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;white&quot;,
                 &quot;fill-opacity&quot;: 0,
                 &quot;stroke&quot;: &quot;none&quot;
@@ -5035,7 +5043,7 @@ var log = new Bullet("chart2",
         that.chordGroups = that.canvas.set();
         that.donutGroups = that.canvas.set();
 
-        $(&quot;#&quot; + this.container).append(this.floatTag);
+        $(this.node).append(this.floatTag);
 
         //计算某条弦被赋值为target或source的颜色
         var colorCalc = function (index) {
@@ -5281,10 +5289,6 @@ var log = new Bullet("chart2",
       <a href="#_Flow">Flow</a>
     </li>
 
-    <li>
-      <a href="#_on">on</a>
-    </li>
-
   </ul>
   <hr />
 
@@ -5320,7 +5324,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Flow&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
 
             // Properties
             this.font = {};
@@ -5335,37 +5338,9 @@ var log = new Bullet("chart2",
             this.defaults.yStart = 50;
 
             this.setOptions(options);
-            this.emitter = new EventProxy();
             this.createCanvas();
         }
-    });</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_on">
-    on
-  </h3>
-  
-
-  <p>侦听事件</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Flow.prototype.on()</td> 
-      <td></td>
-      <td>on</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Flow.prototype.on = function (eventName, callback) {
-        this.emitter.on(eventName, callback);
-    };
+    });
 
     Flow.prototype.setSource = function (source) {
         var conf = this.defaults;
@@ -5461,36 +5436,36 @@ var log = new Bullet("chart2",
 
     Flow.prototype.createCanvas = function () {
         var conf = this.defaults;
-        this.canvas = new Raphael(this.container, conf.width, conf.height);
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
 
         this.DOMNode = $(this.canvas.canvas);
         var that = this;
         this.DOMNode.click(function (event) {
-            that.emitter.trigger(&quot;click&quot;, event);
+            that.trigger(&quot;click&quot;, event);
         });
         this.DOMNode.dblclick(function (event) {
-            that.emitter.trigger(&quot;dblclick&quot;, event);
+            that.trigger(&quot;dblclick&quot;, event);
         });
 
         var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
-            that.emitter.trigger(&quot;mousewheel&quot;, event);
+            that.trigger(&quot;mousewheel&quot;, event);
         });
 
         this.DOMNode.bind(&quot;contextmenu&quot;, function (event) {
-            that.emitter.trigger(&quot;contextmenu&quot;, event);
+            that.trigger(&quot;contextmenu&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;click&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_click&quot;, event);
+            that.trigger(&quot;circle_click&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseover&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseover&quot;, event);
+            that.trigger(&quot;circle_mouseover&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseout&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseout&quot;, event);
+            that.trigger(&quot;circle_mouseout&quot;, event);
         });
 
         //console.log(this.canvas);
@@ -5575,9 +5550,6 @@ var log = new Bullet("chart2",
 
     Flow.prototype.render = function (options) {
         var st = new Date().getTime();
-        if (!this.container) {
-            throw new Error(&quot;Please specify which node to render.&quot;);
-        }
         this.canvas.clear();
         this.setOptions(options);
         this.layout();
@@ -5631,7 +5603,7 @@ var log = new Bullet("chart2",
     </li>
 
     <li>
-      <a href="#_tag">tag</a>
+      <a href="#_legend">legend</a>
     </li>
 
     <li>
@@ -5695,7 +5667,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Force&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
             this.net = {};
             this.linkValeMin = 0;
             this.linkValeMax = 1;
@@ -5703,13 +5674,13 @@ var log = new Bullet("chart2",
             this.nodeValueMax = 1;
             this.clicked = false;
             this.clickedNum = -1;
-            this.tagClicked = false;
+            this.legendClicked = false;
 
             // Properties
             this.font = {};
 
             // Canvas
-            this.defaults.tag = true;
+            this.defaults.legend = true;
             this.defaults.width = 500;
             this.defaults.height = 500;
             this.defaults.linkLength = 50;
@@ -5721,9 +5692,9 @@ var log = new Bullet("chart2",
 
             this.setOptions(options);
             this.defaults.charge = -(this.defaults.width + this.defaults.height) / this.defaults.forceValue;
-            this.tagArea = [20, (this.defaults.height - 20 - this.defaults.classNum * 20), 200, 220];
-            if (this.defaults.tag) {
-                this.xOffset = this.tagArea[2];
+            this.legendArea = [20, (this.defaults.height - 20 - this.defaults.classNum * 20), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
             } else {
                 this.xOffset = 0;
             }
@@ -6021,7 +5992,7 @@ var log = new Bullet("chart2",
         conf.iterate = (nodesNum + linksNum) * 2;
 
         var onMouseClick = function () {
-            that.tagClicked = false;
+            that.legendClicked = false;
             that.underBn.forEach(function (d) {
                 d.hide();
                 d.data('clicked', false);
@@ -6087,7 +6058,7 @@ var log = new Bullet("chart2",
         };
 
         var onCanvasClick = function () {
-            that.tagClicked = false;
+            that.legendClicked = false;
             that.underBn.forEach(function (d) {
                 d.hide();
                 d.data('clicked', false);
@@ -6281,8 +6252,8 @@ var log = new Bullet("chart2",
   </table>
   
   
-  <h3 id="_tag">
-    tag
+  <h3 id="_legend">
+    legend
   </h3>
   
 
@@ -6292,38 +6263,38 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>方法</td>
-      <td>Force.prototype.tag()</td> 
+      <td>Force.prototype.legend()</td> 
       <td></td>
-      <td>tag</td>
+      <td>legend</td>
     </tr>
   
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>Force.prototype.tag = function () {
+      <td>代码</td><td colspan="3"><pre><code>Force.prototype.legend = function () {
         var that = this;
         var conf = this.defaults;
         var paper = this.canvas;
-        var tagArea = this.tagArea;
+        var legendArea = this.legendArea;
         var rectBn = paper.set();
         this.underBn = [];
         var underBn = this.underBn;
         for (i = 0; i &lt;= conf.classNum - 1; i++) {
             //底框
-            underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;#ebebeb&quot;,
                 &quot;stroke&quot;: &quot;none&quot;,
                 'opacity': 1
             }).data('clicked', false).hide());
             //色框
-            paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
                 &quot;fill&quot;: that.getColor(i),
                 &quot;stroke&quot;: &quot;none&quot;
             });
             //文字
             var min = Math.floor(this.nodeValueMin + i * (this.nodeValueMax - this.nodeValueMin) / conf.classNum);
             var max = Math.floor(min + (this.nodeValueMax - this.nodeValueMin) / conf.classNum);
-            paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, min + &quot; ~ &quot; + max).attr({
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, min + &quot; ~ &quot; + max).attr({
                 &quot;fill&quot;: &quot;black&quot;,
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;Verdana&quot;,
@@ -6332,7 +6303,7 @@ var log = new Bullet("chart2",
                 &quot;text-anchor&quot;: &quot;start&quot;
             });
             //选框
-            rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;white&quot;,
                 &quot;fill-opacity&quot;: 0,
                 &quot;stroke&quot;: &quot;none&quot;
@@ -6368,7 +6339,7 @@ var log = new Bullet("chart2",
                     }
                 });
                 if (d.data(&quot;clicked&quot;) === 0) {
-                    that.tagClicked = true;
+                    that.legendClicked = true;
                     underBn[i].attr('opacity', 1);
                     underBn[i].data('clicked', true);
                     underBn[i].show();
@@ -6394,7 +6365,7 @@ var log = new Bullet("chart2",
                     });
                     d.data(&quot;clicked&quot;, 1);
                 } else if (d.data(&quot;clicked&quot;) === 1) {
-                    that.tagClicked = false;
+                    that.legendClicked = false;
                     underBn[i].data('clicked', false);
                     underBn[i].hide();
                     d.data(&quot;clicked&quot;, 0);
@@ -6603,8 +6574,8 @@ var log = new Bullet("chart2",
         this.setOptions(options);
         this.canvas.clear();
         this.layout();
-        if (this.defaults.tag) {
-            this.tag();
+        if (this.defaults.legend) {
+            this.legend();
         }
         this.update();
         this.animate();
@@ -6624,10 +6595,6 @@ var log = new Bullet("chart2",
   
     <li>
       <a href="#_Matrix">Matrix</a>
-    </li>
-
-    <li>
-      <a href="#_on">on</a>
     </li>
 
   </ul>
@@ -6665,7 +6632,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Matrix&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
 
             // Properties
             this.font = {};
@@ -6676,38 +6642,10 @@ var log = new Bullet("chart2",
             this.defaults.axisWidth = 40;
 
             this.setOptions(options);
-            this.emitter = new EventProxy();
             this.createCanvas();
             this.move = false;
         }
-    });</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_on">
-    on
-  </h3>
-  
-
-  <p>侦听自定义事件</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Matrix.prototype.on()</td> 
-      <td></td>
-      <td>on</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Matrix.prototype.on = function (eventName, callback) {
-        this.emitter.on(eventName, callback);
-    };
+    });
 
     Matrix.prototype.getDataTable = function (table) {
         var title = table[0];
@@ -6798,32 +6736,32 @@ var log = new Bullet("chart2",
         this.DOMNode = $(this.canvas.canvas);
         var that = this;
         this.DOMNode.click(function (event) {
-            that.emitter.trigger(&quot;click&quot;, event);
+            that.trigger(&quot;click&quot;, event);
             that.update();
         });
         this.DOMNode.dblclick(function (event) {
-            that.emitter.trigger(&quot;dblclick&quot;, event);
+            that.trigger(&quot;dblclick&quot;, event);
         });
 
         var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
-            that.emitter.trigger(&quot;mousewheel&quot;, event);
+            that.trigger(&quot;mousewheel&quot;, event);
         });
 
         this.DOMNode.bind(&quot;contextmenu&quot;, function (event) {
-            that.emitter.trigger(&quot;contextmenu&quot;, event);
+            that.trigger(&quot;contextmenu&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;click&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_click&quot;, event);
+            that.trigger(&quot;circle_click&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseover&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseover&quot;, event);
+            that.trigger(&quot;circle_mouseover&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseout&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseout&quot;, event);
+            that.trigger(&quot;circle_mouseout&quot;, event);
         });
     };
 
@@ -7203,7 +7141,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Parallel&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
 
             // Properties
             this.allDimensions = [];
@@ -7738,6 +7675,10 @@ var log = new Bullet("chart2",
     </li>
 
     <li>
+      <a href="#Pie_dimension">dimension</a>
+    </li>
+
+    <li>
       <a href="#_createCanvas">createCanvas</a>
     </li>
 
@@ -7750,7 +7691,7 @@ var log = new Bullet("chart2",
     </li>
 
     <li>
-      <a href="#_tag">tag</a>
+      <a href="#_legend">legend</a>
     </li>
 
     <li>
@@ -7807,10 +7748,9 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>var Pie = DataV.extend(DataV.Chart, {
+        type: &quot;Pie&quot;,
         initialize: function (container, options) {
-            this.type = &quot;Pie&quot;;
             this.node = this.checkContainer(container);
-            this.defaults = {};
             this.sum = 0;
             this.groupNames = []; //数组：记录每个group的名字
             this.groupValue = [];
@@ -7818,16 +7758,16 @@ var log = new Bullet("chart2",
             this.click = 0;
 
             //图的大小设置
-            this.defaults.tag = true;
+            this.defaults.legend = true;
             this.defaults.width = 800;
             this.defaults.height = 800;
 
             //设置用户指定的属性
             this.setOptions(options);
 
-            this.tagArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-            if (this.defaults.tag) {
-                this.xOffset = this.tagArea[2];
+            this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
             } else {
                 this.xOffset = 0;
             }
@@ -7838,6 +7778,65 @@ var log = new Bullet("chart2",
             this.createCanvas();
         }
     });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="Pie_dimension">
+    dimension
+  </h3>
+  
+
+  <p>饼图纬度描述</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>属性</td>
+      <td>Pie.dimension</td> 
+      <td>Pie</td>
+      <td>dimension</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Pie.dimension = {};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>标签纬度</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Pie.dimension.label = {
+        type: &quot;string&quot;,
+        required: false
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>值纬度</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Pie.dimension.value = {
+        type: &quot;number&quot;,
+        required: true
+    };</code></pre></td>
     </tr>
   
   </table>
@@ -8065,8 +8064,8 @@ var log = new Bullet("chart2",
         }
 
 
-        if (conf.tag) {
-            this.tag();
+        if (conf.legend) {
+            this.legend();
         }
     };</code></pre></td>
     </tr>
@@ -8074,8 +8073,8 @@ var log = new Bullet("chart2",
   </table>
   
   
-  <h3 id="_tag">
-    tag
+  <h3 id="_legend">
+    legend
   </h3>
   
 
@@ -8085,37 +8084,37 @@ var log = new Bullet("chart2",
   
     <tr>
       <td>方法</td>
-      <td>Pie.prototype.tag()</td> 
+      <td>Pie.prototype.legend()</td> 
       <td></td>
-      <td>tag</td>
+      <td>legend</td>
     </tr>
   
 
   
     <tr>
-      <td>代码</td><td colspan="3"><pre><code>Pie.prototype.tag = function () {
+      <td>代码</td><td colspan="3"><pre><code>Pie.prototype.legend = function () {
         var that = this;
         var conf = this.defaults;
         var paper = this.canvas;
-        var tagArea = this.tagArea;
+        var legendArea = this.legendArea;
         this.rectBn = paper.set();
         var rectBn = this.rectBn;
         this.underBn = [];
         var underBn = this.underBn;
         for (var i = 0, l = this.groups.length; i &lt; l; i++) {
             //底框
-            underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;#ebebeb&quot;,
                 &quot;stroke&quot;: &quot;none&quot;
                 //&quot;r&quot;: 3
             }).hide());
             //色框
-            paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
                 &quot;fill&quot;: this.getColor(i),
                 &quot;stroke&quot;: &quot;none&quot;
             });
             //文字
-            paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
                 &quot;fill&quot;: &quot;black&quot;,
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;Verdana&quot;,
@@ -8124,7 +8123,7 @@ var log = new Bullet("chart2",
                 &quot;text-anchor&quot;: &quot;start&quot;
             });
             //选框
-            rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;white&quot;,
                 &quot;fill-opacity&quot;: 0,
                 &quot;stroke&quot;: &quot;none&quot;
@@ -8449,7 +8448,7 @@ var log = new Bullet("chart2",
       <td>代码</td><td colspan="3"><pre><code>ScatterplotMatrix.prototype.setAxis = function () {
         var conf = this.defaults;
 
-        conf.tagArea = [20, (conf.height - 20 - 220), 200, 220];
+        conf.legendArea = [20, (conf.height - 20 - 220), 200, 220];
         conf.introArea = [20, 20, 200, 200];
         conf.diagramArea = [240, 20, (conf.width - 260), (conf.height - 40)];
 
@@ -8680,9 +8679,9 @@ var log = new Bullet("chart2",
                         &quot;fill&quot;: this.getColor(circleType)
                     });
                     //如果制定了hover要显示的文字，则hover显示的文字
-                    if (conf.tagDimen !== &quot;NoTagDimen&quot;) {
-                        hoverTag = conf.tagDimen + &quot;: &quot; + sourceData[k][conf.tagDimen];
-                        circle.data(&quot;tag&quot;, hoverTag);
+                    if (conf.legendDimen !== &quot;NoTagDimen&quot;) {
+                        hoverTag = conf.legendDimen + &quot;: &quot; + sourceData[k][conf.legendDimen];
+                        circle.data(&quot;legend&quot;, hoverTag);
                     }
                     circlesFg.push(circle);
                 }
@@ -8690,22 +8689,22 @@ var log = new Bullet("chart2",
         }
 
         //图例
-        var tagArea = this.defaults.tagArea;
+        var legendArea = this.defaults.legendArea;
         var rectBn = paper.set();
         var underBn = [];
         for (i = 0; i &lt;= typeMax; i++) {
             //底框
-            underBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;#ebebeb&quot;,
                 &quot;stroke&quot;: &quot;none&quot;
             }).hide());
             //色框
-            paper.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
                 &quot;fill&quot;: this.getColor(i),
                 &quot;stroke&quot;: &quot;none&quot;
             });
             //文字
-            paper.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
                 &quot;fill&quot;: &quot;black&quot;,
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;Verdana&quot;,
@@ -8714,7 +8713,7 @@ var log = new Bullet("chart2",
                 &quot;text-anchor&quot;: &quot;start&quot;
             });
             //选框
-            rectBn.push(paper.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
                 &quot;fill&quot;: &quot;white&quot;,
                 &quot;fill-opacity&quot;: 0,
                 &quot;stroke&quot;: &quot;none&quot;
@@ -8724,13 +8723,13 @@ var log = new Bullet("chart2",
 
         if (browserName !== &quot;Microsoft Internet Explorer&quot;) {
             rectBn.forEach(function (d, i) {
-                underBn[i].data('tagclicked', false);
+                underBn[i].data('legendclicked', false);
                 d.mouseover(function () {
-                    if (underBn[i].data('tagclicked') === false) {
+                    if (underBn[i].data('legendclicked') === false) {
                         underBn[i].attr('opacity', 0.5).show();
                     }
                 }).mouseout(function () {
-                    if (underBn[i].data('tagclicked') === false) {
+                    if (underBn[i].data('legendclicked') === false) {
                         underBn[i].hide();
                     }
                 });
@@ -8750,7 +8749,7 @@ var log = new Bullet("chart2",
                     });
                     if (d.data(&quot;clicked&quot;) === 0) {
                         underBn[i].attr('opacity', 1).show();
-                        underBn[i].data('tagclicked', true);
+                        underBn[i].data('legendclicked', true);
                         circlesFg.forEach(function (ec) {
                             if (ec.data(&quot;type&quot;) !== d.data(&quot;type&quot;)) {
                                 ec.hide();
@@ -8763,7 +8762,7 @@ var log = new Bullet("chart2",
                         d.data(&quot;clicked&quot;, 1);
                     } else if (d.data(&quot;clicked&quot;) === 1) {
                         underBn[i].hide();
-                        underBn[i].data('tagclicked', false);
+                        underBn[i].data('legendclicked', false);
                         d.data(&quot;clicked&quot;, 0);
                         circlesFg.forEach(function (ec) {
                             ec.show();
@@ -8856,7 +8855,7 @@ var log = new Bullet("chart2",
                 if (that.preIndex !== &quot;start&quot;) {
                     that.lineV.hide();
                     that.lineH.hide();
-                    if (conf.tagDimen !== &quot;NoTagDimen&quot;) {
+                    if (conf.legendDimen !== &quot;NoTagDimen&quot;) {
                         floatTag.css({&quot;visibility&quot; : &quot;hidden&quot;});
                     }
                 }
@@ -8868,8 +8867,8 @@ var log = new Bullet("chart2",
                             that.lineV.translate(center[0] - that.linePosition[0], 0).attr('stroke', that.getColor(circlesFg[i].data('colorType'))).show();
                             that.lineH.translate(0, center[1] - that.linePosition[1]).attr('stroke', that.getColor(circlesFg[i].data('colorType'))).show();
                             that.linePosition = center;
-                            if (conf.tagDimen !== &quot;NoTagDimen&quot;) {
-                                floatTag.html('&lt;div style=&quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + circlesFg[i].data(&quot;tag&quot;) + '&lt;/div&gt;');
+                            if (conf.legendDimen !== &quot;NoTagDimen&quot;) {
+                                floatTag.html('&lt;div style=&quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + circlesFg[i].data(&quot;legend&quot;) + '&lt;/div&gt;');
                                 floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
                             }
                             that.preIndex = i;
@@ -8958,6 +8957,10 @@ var log = new Bullet("chart2",
   
     <li>
       <a href="#_Stream">Stream</a>
+    </li>
+
+    <li>
+      <a href="#Stream_dimension">dimension</a>
     </li>
 
     <li>
@@ -9114,8 +9117,6 @@ var log = new Bullet("chart2",
             this.node = this.checkContainer(node);
 
             this.level = 0;
-
-            this.defaults = {};
             // Properties
             this.defaults.offset = &quot;zero&quot;;//&quot;expand&quot;;
             this.defaults.order = &quot;default&quot;;
@@ -9157,6 +9158,82 @@ var log = new Bullet("chart2",
             this.createCanvas();
         }
     });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="Stream_dimension">
+    dimension
+  </h3>
+  
+
+  <p>Stream图纬度描述</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>属性</td>
+      <td>Stream.dimension</td> 
+      <td>Stream</td>
+      <td>dimension</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Stream.dimension = {};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>流向纬度，例如，时间</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Stream.dimension.stream = {
+        type: &quot;string&quot;,
+        required: true
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>堆叠纬度，例如，按类目</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Stream.dimension.stack = {
+        type: &quot;string&quot;,
+        required: true
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>值纬度，在流向和堆叠纬度上的值</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Stream.dimension.value = {
+        type: &quot;number&quot;,
+        required: true
+    };</code></pre></td>
     </tr>
   
   </table>
@@ -10733,7 +10810,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Tree&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
 
             this.addlink = {};
 
@@ -10748,14 +10824,9 @@ var log = new Bullet("chart2",
             this.defaults.radius = 15;
 
             this.setOptions(options);
-            this.emitter = new EventProxy();
             this.createCanvas();
         }
     });
-
-    Tree.prototype.on = function (eventName, callback) {
-        this.emitter.on(eventName, callback);
-    };
 
     Tree.prototype.hierarchyTableToJson = function (table) {
         if (table[0][0] === &quot;ID&quot;) {
@@ -10923,33 +10994,32 @@ var log = new Bullet("chart2",
         this.DOMNode = $(this.canvas.canvas);
         var that = this;
         this.DOMNode.click(function (event) {
-            that.emitter.trigger(&quot;click&quot;, event);
+            that.trigger(&quot;click&quot;, event);
         });
         this.DOMNode.dblclick(function (event) {
-            that.emitter.trigger(&quot;dblclick&quot;, event);
+            that.trigger(&quot;dblclick&quot;, event);
         });
 
         var mousewheel = document.all ? &quot;mousewheel&quot; : &quot;DOMMouseScroll&quot;;
         this.DOMNode.bind(mousewheel, function (event) {
-            that.emitter.trigger(&quot;mousewheel&quot;, event);
+            that.trigger(&quot;mousewheel&quot;, event);
         });
 
         this.DOMNode.bind(&quot;contextmenu&quot;, function (event) {
-            that.emitter.trigger(&quot;contextmenu&quot;, event);
+            that.trigger(&quot;contextmenu&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;click&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_click&quot;, event);
+            that.trigger(&quot;circle_click&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseover&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseover&quot;, event);
+            that.trigger(&quot;circle_mouseover&quot;, event);
         });
 
         this.DOMNode.delegate(&quot;circle&quot;, &quot;mouseout&quot;, function (event) {
-            that.emitter.trigger(&quot;circle_mouseout&quot;, event);
+            that.trigger(&quot;circle_mouseout&quot;, event);
         });
-
     };
 
     Tree.prototype.zoom = function (d) {
@@ -11385,7 +11455,6 @@ var log = new Bullet("chart2",
         initialize: function (node, options) {
             this.type = &quot;Treemap&quot;;
             this.node = this.checkContainer(node);
-            this.defaults = {};
 
             // Properties
             this.selectedTreeNodes = [];//array of nodes on the path from root to recent node

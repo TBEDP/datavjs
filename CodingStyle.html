@@ -37,6 +37,10 @@
               </li>
             
               <li>
+                <a href="./chord文档.html">chord文档</a>
+              </li>
+            
+              <li>
                 <a href="./CodingStyle.html">CodingStyle</a>
               </li>
             
@@ -44,14 +48,14 @@
                 <a href="./force文档.html">force文档</a>
               </li>
             
-              <li>
-                <a href="./parallel文档.html">parallel文档</a>
-              </li>
-            
             
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">更多 <b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu">
+                
+                  <li>
+                    <a href="./parallel文档.html">parallel文档</a>
+                  </li>
                 
                   <li>
                     <a href="./stream文档.html">stream文档</a>
@@ -466,30 +470,30 @@ stream.on("contextmenu", function (event) {
 });
 </pre></div>
 
-<p>组件的内部实现是通过<code>EventProxy</code>提供自定义方式，在创建画布后，就绑定一些必要的事件到画布节点上，然后将事件触发出去。如果用户如上文，侦听了这些业务事件，将会调用执行。</p>
+<p>组件的内部实现是通过继承<code>EventProxy</code>提供自定义方式，在创建画布后，就绑定一些必要的事件到画布节点上，然后将事件触发出去。如果用户如上文，侦听了这些业务事件，将会调用执行。</p>
 
-<pre><code>Stream.prototype.createCanvas = function () {
+<div class="highlight"><pre lang="">Stream.prototype.createCanvas = function () {
     var conf = this.defaults;
     this.canvas = Raphael(this.node, conf.width, conf.height);
     this.DOMNode = $(this.canvas.canvas);
     var that = this;
     this.DOMNode.click(function (event) {
-        that.emitter.trigger("click", event);
+        that.trigger("click", event);
     });
     this.DOMNode.dblclick(function (event) {
-        that.emitter.trigger("dblclick", event);
+        that.trigger("dblclick", event);
     });
     this.DOMNode.bind("contextmenu", function (event) {
-        that.emitter.trigger("contextmenu", event);
+        that.trigger("contextmenu", event);
     });
 
-    this.DOMNode.delegate("path", "click", function (event) {
-        that.emitter.trigger("path_click", event);
-    });
-
-    console.log(this.canvas);
-};
+<pre><code>this.DOMNode.delegate("path", "click", function (event) {
+    that.trigger("path_click", event);
+});
 </code></pre>
+
+};
+</pre></div>
 
 <h2>常见错误</h2>
 
