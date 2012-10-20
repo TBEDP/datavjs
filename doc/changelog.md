@@ -1,6 +1,8 @@
 Change log
-===
+==========
 ## 开发中
+- 2012-10-21: 重构defaults和checkContainer方法，容器在构造时检查
+- 2012-10-21: 所有Chart继承EventProxy，自带`on`和`trigger`事件
 - 2012-10-12: 将目录结构从docs变为doc，从libs变为lib，以更适合标准的包结构
 - 2012-10-8: 添加Underscore作为依赖库，以降低代码量
 - 2012-10-8: 改动模块定义方式从SeaJS变为可兼容非SeaJS的环境

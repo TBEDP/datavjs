@@ -229,7 +229,6 @@ Stream.prototype.createCanvas = function () {
     this.DOMNode.bind("contextmenu", function (event) {
         that.trigger("contextmenu", event);
     });
-
     this.DOMNode.delegate("path", "click", function (event) {
         that.trigger("path_click", event);
     });
