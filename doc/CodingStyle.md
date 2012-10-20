@@ -212,29 +212,29 @@ stream.on("contextmenu", function (event) {
 });
 ```
 
-组件的内部实现是通过`EventProxy`提供自定义方式，在创建画布后，就绑定一些必要的事件到画布节点上，然后将事件触发出去。如果用户如上文，侦听了这些业务事件，将会调用执行。
+组件的内部实现是通过继承`EventProxy`提供自定义方式，在创建画布后，就绑定一些必要的事件到画布节点上，然后将事件触发出去。如果用户如上文，侦听了这些业务事件，将会调用执行。
 
-    Stream.prototype.createCanvas = function () {
-        var conf = this.defaults;
-        this.canvas = Raphael(this.node, conf.width, conf.height);
-        this.DOMNode = $(this.canvas.canvas);
-        var that = this;
-        this.DOMNode.click(function (event) {
-            that.emitter.trigger("click", event);
-        });
-        this.DOMNode.dblclick(function (event) {
-            that.emitter.trigger("dblclick", event);
-        });
-        this.DOMNode.bind("contextmenu", function (event) {
-            that.emitter.trigger("contextmenu", event);
-        });
+```
+Stream.prototype.createCanvas = function () {
+    var conf = this.defaults;
+    this.canvas = Raphael(this.node, conf.width, conf.height);
+    this.DOMNode = $(this.canvas.canvas);
+    var that = this;
+    this.DOMNode.click(function (event) {
+        that.trigger("click", event);
+    });
+    this.DOMNode.dblclick(function (event) {
+        that.trigger("dblclick", event);
+    });
+    this.DOMNode.bind("contextmenu", function (event) {
+        that.trigger("contextmenu", event);
+    });
 
-        this.DOMNode.delegate("path", "click", function (event) {
-            that.emitter.trigger("path_click", event);
-        });
-
-        console.log(this.canvas);
-    };
+    this.DOMNode.delegate("path", "click", function (event) {
+        that.trigger("path_click", event);
+    });
+};
+```
 
 ## 常见错误
 ### 判断一个对象是否是数组
