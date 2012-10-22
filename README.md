@@ -24,7 +24,7 @@ DataV.js is a JavaScript library for data visualization
 ## Quick start
 此处以Pie图为例。
 
-1. 引入依赖
+### 引入依赖
 
 ```
 <script src="path/to/deps/compatible.js"></script>
@@ -36,7 +36,7 @@ DataV.js is a JavaScript library for data visualization
 <script src="path/to/datav.js"></script>
 <script src="path/to/charts/pie.js"></script>
 ```
-2. 准备数据
+### 准备数据
 
 ```
 var source = [
@@ -52,7 +52,7 @@ var source = [
   '乌鲁木齐', 6695
 ];
 ```
-3. 渲染图表
+### 渲染图表
 
 ```
 // 初始化组件
@@ -63,7 +63,7 @@ pie.setSource(source);
 pie.render();
 ```
 
-4. 结果
+### 结果
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
 
 ## Plan
