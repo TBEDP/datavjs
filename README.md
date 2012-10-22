@@ -29,14 +29,17 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 ### 引入依赖
 
 ```
-<script src="path/to/deps/compatible.js"></script>
-<script src="path/to/deps/d3.min.js"></script>
-<script src="path/to/deps/raphael.min.js"></script>
-<script src="path/to/deps/eventproxy.js"></script>
-<script src="path/to/deps/underscore-1.4.2.js"></script>
-<script src="path/to/deps/jquery-1.7.1.min.js"></script>
-<script src="path/to/datav.js"></script>
-<script src="path/to/charts/pie.js"></script>
+// 依赖
+path/to/deps/compatible.js
+path/to/deps/d3.min.js
+path/to/deps/raphael.min.js
+path/to/deps/eventproxy.js
+path/to/deps/underscore-1.4.2.js
+path/to/deps/jquery-1.7.1.min.js
+// DataV
+path/to/datav.js
+// Pie
+path/to/charts/pie.js
 ```
 ### 准备数据
 
