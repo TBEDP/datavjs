@@ -36,7 +36,6 @@ DataV.js is a JavaScript library for data visualization
 <script src="path/to/datav.js"></script>
 <script src="path/to/charts/pie.js"></script>
 ```
-
 2. 准备数据
 
 ```
@@ -65,7 +64,6 @@ pie.render();
 ```
 
 4. 结果
-
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
 
 ## Plan
