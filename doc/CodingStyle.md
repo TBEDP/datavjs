@@ -200,15 +200,15 @@ stream.render();
 
 ```
 stream.on("click", function (event) {
-    console.log(event);
+  console.log(event);
 });
 
 stream.on("dblclick", function (event) {
-    alert("double click");
+  alert("double click");
 });
 
 stream.on("contextmenu", function (event) {
-    alert("mouse right");
+  alert("mouse right");
 });
 ```
 
@@ -216,22 +216,22 @@ stream.on("contextmenu", function (event) {
 
 ```
 Stream.prototype.createCanvas = function () {
-    var conf = this.defaults;
-    this.canvas = Raphael(this.node, conf.width, conf.height);
-    this.DOMNode = $(this.canvas.canvas);
-    var that = this;
-    this.DOMNode.click(function (event) {
-        that.trigger("click", event);
-    });
-    this.DOMNode.dblclick(function (event) {
-        that.trigger("dblclick", event);
-    });
-    this.DOMNode.bind("contextmenu", function (event) {
-        that.trigger("contextmenu", event);
-    });
-    this.DOMNode.delegate("path", "click", function (event) {
-        that.trigger("path_click", event);
-    });
+  var conf = this.defaults;
+  this.canvas = Raphael(this.node, conf.width, conf.height);
+  this.DOMNode = $(this.canvas.canvas);
+  var that = this;
+  this.DOMNode.click(function (event) {
+    that.trigger("click", event);
+  });
+  this.DOMNode.dblclick(function (event) {
+    that.trigger("dblclick", event);
+  });
+  this.DOMNode.bind("contextmenu", function (event) {
+    that.trigger("contextmenu", event);
+  });
+  this.DOMNode.delegate("path", "click", function (event) {
+    that.trigger("path_click", event);
+  });
 };
 ```
 
@@ -241,7 +241,7 @@ Stream.prototype.createCanvas = function () {
 
 ```
 if (color.constructor !== Array) {
-    throw new Error("The color should be Array");
+  throw new Error("The color should be Array");
 }
 ```
 下面是Underscore的方法：
@@ -256,20 +256,20 @@ _.isArray = nativeIsArray || function(obj) {
 ```
 // make an array's every element unique by delete other same element 
 Array.prototype.uniq = function () {
-    var temp = {},
-        len = this.length;
+  var temp = {},
+    len = this.length;
 
-    for (var i = 0; i < len; i++) {
-        if (typeof temp[this[i]] == "undefined") {
-            temp[this[i]] = 1;
-        }
+  for (var i = 0; i < len; i++) {
+    if (typeof temp[this[i]] == "undefined") {
+      temp[this[i]] = 1;
     }
-    this.length = 0;
-    len = 0;
-    for (var i in temp) {
-        this[len++] = i;
-    }
-    return this;
+  }
+  this.length = 0;
+  len = 0;
+  for (var i in temp) {
+    this[len++] = i;
+  }
+  return this;
 };
 ```
 这里可以调用underscore的uniq方法即可。节省N行代码量
@@ -279,14 +279,14 @@ Array.prototype.uniq = function () {
 ```
 //check if a string is in an array
 var _strInArray = function (str, array) {
-    var i = 0,
-        l = 0;
-    for (i = 0, l = array.length; i < l; i++) {
-        if (array[i] === str) {
-            return true;
-        }
+  var i = 0,
+    l = 0;
+  for (i = 0, l = array.length; i < l; i++) {
+    if (array[i] === str) {
+      return true;
     }
-    return false;
+  }
+  return false;
 };
 ```
 换用`_.indexOf(array, value)`可以节省代码量，且返回值比boolean值更有价值
