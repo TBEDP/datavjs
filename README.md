@@ -27,18 +27,16 @@ DataV.js is a JavaScript library for data visualization
 1. 引入依赖
 
 ```
-<!-- Dependencies -->
-<script type="text/javascript" src="path/to/deps/compatible.js"></script>
-<script type="text/javascript" src="path/to/deps/d3.min.js"></script>
-<script type="text/javascript" src="path/to/deps/raphael.min.js"></script>
-<script type="text/javascript" src="path/to/deps/eventproxy.js"></script>
-<script type="text/javascript" src="path/to/deps/underscore-1.4.2.js"></script>
-<script type="text/javascript" src="path/to/deps/jquery-1.7.1.min.js"></script>
-<!-- DataV -->
-<script type="text/javascript" src="path/to/datav.js"></script>
-<!-- Pie -->
-<script type="text/javascript" src="path/to/charts/pie.js"></script>
+<script src="path/to/deps/compatible.js"></script>
+<script src="path/to/deps/d3.min.js"></script>
+<script src="path/to/deps/raphael.min.js"></script>
+<script src="path/to/deps/eventproxy.js"></script>
+<script src="path/to/deps/underscore-1.4.2.js"></script>
+<script src="path/to/deps/jquery-1.7.1.min.js"></script>
+<script src="path/to/datav.js"></script>
+<script src="path/to/charts/pie.js"></script>
 ```
+
 2. 准备数据
 
 ```
@@ -67,7 +65,9 @@ pie.render();
 ```
 
 4. 结果
+
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
+
 ## Plan
 * [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). Welcome join us.
 
