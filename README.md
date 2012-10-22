@@ -13,16 +13,24 @@ DataV.js is a JavaScript library for data visualization
 - [API Docs](http://tbedp.github.com/datavjs/)
 
 ## Examples
-- Pie
-
-- Treemap
-- Tree
-- Stream
-- ScatterplotMatrix
-- Force
-- Matrix
-- Bubble
-- Chord
+- [Pie](http://datavlab.org/datavjs/#pie)
+![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
+- [Treemap](http://datavlab.org/datavjs/#treemap)
+![Treemap图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/treemap.jpg)
+- [Tree](http://datavlab.org/datavjs/#tree)
+![Tree图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/tree.jpg)
+- [Stream](http://datavlab.org/datavjs/#stream)
+![Stream图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/stream.jpg)
+- [ScatterplotMatrix](http://datavlab.org/datavjs/#scatterplotMatrix)
+![ScatterplotMatrix图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/scatterplotMatrix.jpg)
+- [Force](http://datavlab.org/datavjs/#force)
+![Force图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/force.jpg)
+- [Matrix](http://datavlab.org/datavjs/#matrix)
+![Matrix图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/matrix.jpg)
+- [Bubble](http://datavlab.org/datavjs/#bubble)
+![Bubble图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/bubble.jpg)
+- [Chord](http://datavlab.org/datavjs/#chord)
+![Chord图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/chord.jpg)
 
 ## Contributors
 Thanks goes to the people who have contributed code to this library, see the [GitHub Contributors](https://github.com/TBEDP/datavjs/graphs/contributors) page.
