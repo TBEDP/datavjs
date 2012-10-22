@@ -1,5 +1,7 @@
-DataV.js is a JavaScript library for data visualization
-======
+DataV.js
+============
+DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
+> 凡有数据在处，皆能可视化
 
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
@@ -67,7 +69,7 @@ pie.render();
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
 
 ## Plan
-* [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). Welcome join us.
+* [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). 欢迎Fork，欢迎Contribute.
 
 ## Requirements:
 * [D3.js](https://github.com/mbostock/d3).
