@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>Histogram</title>
+        <style type="text/css"></style>
+    </head>
+    
+    <body>
+        <script type="text/javascript" src="../../deps/d3.js"></script>
+        <script type="text/javascript" src="../../deps/raphael.js"></script>
+        <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+        <script type="text/javascript" src="../../deps/eventproxy.js"></script>
+        <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
+        
+        <script type="text/javascript">
+            var dir = location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+            seajs.config({
+                alias: {
+                    'DataV': dir + '/../../lib/datav.js',
+                    'Histogram': dir + '/../../lib/charts/Histogram.js'
+                }
+            });
+        </script>
+        <div id="chart"></div>
+        <script type="text/javascript">
+            seajs.use(["DataV", "Histogram"], function (DataV, Histogram) {
+                var Histogram = new Histogram("chart", {
+                    "width": 1024,
+                    "height": 600,
+                    "margin": 30,
+                    "typeNames": ["Y", "Z"]
+                });
+                DataV.csv("DataExample.csv", function (dataSource) {
+                    Histogram.setSource(dataSource);
+                    //scatterplotMatrix.setDimensionsX(["年龄", "交易总额", "交易笔数"]);
+                    //scatterplotMatrix.setDimensionsY(["年龄", "交易总额", "交易笔数"]);
+                    //scatterplotMatrix.setTypeName(["等级1", "等级2", "等级3", "等级4", "等级5", "等级6", "等级7"]);
+                    Histogram.render();
+                });
+            });
+        </script>
+    </body>
+
+</html>
