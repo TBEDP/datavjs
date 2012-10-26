@@ -7,6 +7,7 @@
     <script type="text/javascript" src="../../deps/raphael.min.js"></script>
     <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
     <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="../../deps/eventproxy.js"></script>
     <script type="text/javascript" src="../../lib/datav.js"></script>
     <script type="text/javascript" src="../../lib/charts/treemap.js"></script>
 <style type="text/css">
@@ -28,17 +29,31 @@
         var treemap = new Treemap("chart");
         d3.json("category_ratio.json", function (source) {
             treemap.setSource(source);
+            /*
             treemap.setOptions({
-                "leafNodeClick": function () {
-                    $("#info").html(this.name + " is a leaf node.");
-                },
-                "hoverIn": function () {
-                    $("#hover").html("hover " + this.name);
-                },
-                "hoverOut": function () {
-                    $("#hover").html("leave " + this.name);
+                customEvent : {
+                    "leafNodeClick": function () {
+                        $("#info").html(this.name + " is a leaf node.");
+                    },
+                    "hoverIn": function () {
+                        $("#hover").html("hover " + this.name);
+                    },
+                    "hoverOut": function () {
+                        $("#hover").html("leave " + this.name);
+                    }
                 }
             });
+            */
+            treemap.on("leafNodeClick", function () {
+                $("#info").html(this.name + " is a leaf node.");
+            });
+            treemap.on("hoverIn", function () {
+                $("#hover").html("hover " + this.name);
+            });
+            treemap.on("hoverOut", function () {
+                $("#hover").html("leave " + this.name);
+            });
+            
             treemap.render();
         });
     </script>
