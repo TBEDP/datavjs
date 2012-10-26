@@ -7,11 +7,7 @@
 //创建bullet对象，包含于id为"chart"的dom结点，宽、高分别为950、500px。
 var bullet = new Bullet("chart", {"width": 950, "height": 500});
 //设置数据
-<<<<<<< HEAD
 bullet.setSource({
-=======
-bullet.setSource({  
->>>>>>> 60236977503d408f5fdcba8083aa1465a54fadbb
     title: "Revenue",
     subtitle: "US.$(1,000s)", 
     ranges: [0, 150, 225, 300],
