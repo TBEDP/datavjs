@@ -7,15 +7,15 @@
     </style>
   </head>
   <body>
-    <script type="text/javascript" src="../../deps/d3.js"></script>
-    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
-    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-    <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="../../deps/eventproxy.js"></script>
-    <script type="text/javascript" src="../../lib/datav.js"></script>
-    <script type="text/javascript" src="../../lib/charts/axis.js"></script>
-    <script type="text/javascript" src="../../lib/charts/brush.js"></script>
-    <script type="text/javascript" src="../../lib/charts/parallel.js"></script>
+    <script src="../../deps/d3.js"></script>
+    <script src="../../deps/raphael.min.js"></script>
+    <script src="../../deps/underscore-1.4.2.js"></script>
+    <script src="../../deps/jquery-1.7.1.min.js"></script>
+    <script src="../../deps/eventproxy.js"></script>
+    <script src="../../lib/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/brush.js"></script>
+    <script src="../../lib/charts/parallel.js"></script>
 
     <div id="chart"></div>
     <p>brushstart</p>
@@ -24,7 +24,7 @@
     <div id="info_brush"></div>
     <p>brushend</p>
     <div id="info_brushend"></div>
-    <script type="text/javascript">
+    <script>
       //创建parallel对象，包含于id为"chart"的dom结点，宽、高分别为950、500px。
       var parallel = new Parallel("chart", {"width": 950, "height": 500});
       DataV.csv("cars.csv", function (dataSource) {

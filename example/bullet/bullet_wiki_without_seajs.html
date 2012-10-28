@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  	<meta charset="utf-8">
 	<title>wiki bullet examples</title>
-    <script type="text/javascript" src="../../deps/d3.js"></script>
-    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
-    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-    <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="../../deps/eventproxy.js"></script>
-    <script type="text/javascript" src="../../lib/datav.js"></script>
-    <script type="text/javascript" src="../../lib/charts/axis.js"></script>
-    <script type="text/javascript" src="../../lib/charts/bullet.js"></script>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/bullet.js"></script>
 
     <style type="text/css">
 #horizonal {
@@ -23,7 +18,7 @@
 .horizonal {
     float: left;
     width: 400px;
-    #border: solid 1px;
+    border: solid 1px;
     margin: 2px;
 }
 
@@ -48,7 +43,7 @@
     <div id="vertical">
     </div>
 
-    <script type="text/javascript">
+    <script>
         var data0 = {
             title: "Revenue",
             subtitle: "US.$(1,000s)", 

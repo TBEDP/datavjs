@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
     <title>treemap</title>
-    <script type="text/javascript" src="../../deps/d3.js"></script>
-    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
-    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-    <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="../../deps/eventproxy.js"></script>
-    <script type="text/javascript" src="../../lib/datav.js"></script>
-    <script type="text/javascript" src="../../lib/charts/treemap.js"></script>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/treemap.js"></script>
 <style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
@@ -23,7 +18,7 @@
     <div id="hover">hover node info</div>
     <div id="info">click leaf node info</div>
     <div id="chart"></div>
-    <script type="text/javascript">
+    <script>
         DataV.changeTheme("theme0");
         var treemap = new Treemap("chart");
         d3.json("category_ratio.json", function (source) {

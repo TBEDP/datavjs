@@ -1,26 +1,23 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-    
+
     <head>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta charset="utf-8" />
         <title>Histogram</title>
-        <style type="text/css"></style>
     </head>
-    
     <body>
         <script src="../../deps/d3.js"></script>
         <script src="../../deps/raphael.js"></script>
-        <script src="../../deps/jquery-1.7.1.min.js"></script>
-        <script src="../../deps/seajs/sea.js"></script>
         <script src="../../deps/eventproxy.js"></script>
         <script src="../../deps/underscore-1.4.2.js"></script>
-        
+        <script src="../../deps/jquery-1.7.1.min.js"></script>
+        <script src="../../deps/seajs/sea.js"></script>
         <script>
             var dir = location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
             seajs.config({
                 alias: {
                     'DataV': dir + '/../../lib/datav.js',
-                    'Histogram': dir + '/../../lib/charts/Histogram.js'
+                    'Histogram': dir + '/../../lib/charts/histogram.js'
                 }
             });
         </script>
@@ -35,6 +32,9 @@
                 });
                 DataV.csv("DataExample.csv", function (dataSource) {
                     Histogram.setSource(dataSource);
+                    //scatterplotMatrix.setDimensionsX(["ÄêÁä", "½»Ò××Ü¶î", "½»Ò×±ÊÊý"]);
+                    //scatterplotMatrix.setDimensionsY(["ÄêÁä", "½»Ò××Ü¶î", "½»Ò×±ÊÊý"]);
+                    //scatterplotMatrix.setTypeName(["µÈ¼¶1", "µÈ¼¶2", "µÈ¼¶3", "µÈ¼¶4", "µÈ¼¶5", "µÈ¼¶6", "µÈ¼¶7"]);
                     Histogram.render();
                 });
             });
