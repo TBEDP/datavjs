@@ -7,7 +7,7 @@ var version = require('../package.json').version;
 
 exports.minify = function (input) {
   var ast = uglify.ast_squeeze(uglify.ast_mangle(parser.parse(input)));
-  return uglify.gen_code(ast);  
+  return uglify.gen_code(ast);
 };
 
 exports.getInput = function (name) {
@@ -28,3 +28,8 @@ exports.build = function (name, withVersion, minify) {
 exports.build('datav');
 exports.build('datav', "version");
 exports.build('datav', "version", "minify");
+
+exports.build('deps');
+
+exports.build('all');
+exports.build('all', "version", "minify");
