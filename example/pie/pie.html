@@ -3,15 +3,10 @@
     <head>
         <meta charset="utf-8" />
         <title>Pie Chart</title>
-        <script type="text/javascript" src="../../deps/compatible.js"></script>
-        <script type="text/javascript" src="../../deps/d3.js"></script>
-        <script type="text/javascript" src="../../deps/raphael.js"></script>
-        <script type="text/javascript" src="../../deps/eventproxy.js"></script>
-        <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-        <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
+        <script src="../../build/deps.js"></script>
         <!-- chord -->
-        <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
-        <script type="text/javascript">
+        <script src="../../deps/seajs/sea.js"></script>
+        <script>
             seajs.config({
                 alias: {
                     'DataV': '/lib/datav.js',
@@ -39,7 +34,7 @@
 
     <body>
         <div id="chart"></div>
-        <script type="text/javascript">
+        <script>
             seajs.use(["Pie", "DataV"], function (Pie, DataV) {
                 // DataV.changeTheme("datav");
                 var pie = new Pie("chart", {

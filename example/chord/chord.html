@@ -4,17 +4,10 @@
     <meta charset="utf-8"/>
     <title>Chord Diagram</title>
 
-    <script type="text/javascript" src="../../deps/compatible.js"> </script>
-    <script type="text/javascript" src="../../deps/d3.js"></script>
-    <script type="text/javascript" src="../../deps/d3.csv.js"></script>
-    <script type="text/javascript" src="../../deps/d3.layout.js"></script>
-    <script type="text/javascript" src="../../deps/raphael.js"></script>
-    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
-
     <!-- chord -->
-    <script type="text/javascript" src="../../deps/seajs/sea.js"></script>
-    <script type="text/javascript">
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+    <script>
     seajs.config({
       alias: {
         'DataV': '/lib/datav.js',
@@ -43,7 +36,7 @@
   <body>
     <div id="chart"></div>
 
-    <script type="text/javascript">
+    <script>
     seajs.use(["Chord", "DataV"], function (Chord, DataV) {
       // DataV.changeTheme("datav");
       var chord = new Chord("chart",{

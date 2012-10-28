@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Diff Graph</title>
+
+    <script src="../../build/deps.js"></script>
+
+    <!-- chord -->
+    <script src="../../deps/seajs/sea.js"></script>
+    <script>
+    seajs.config({
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Diff': '/lib/charts/diff.js'
+      }
+    });
+    </script>
+
+  <style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+  <body>
+    <div id="chart"></div>
+
+    <script>
+    seajs.use(["Diff", "DataV"], function (Diff, DataV) {
+      // DataV.changeTheme("datav");
+      // var a = [1, 2, 3, 4, 5, 6, 7, 8, 99, 10];
+      // var b = [7, 5, 6, 30, 8, 9, 10, 11, 12, 13];
+      var a = [ '  3211617953 ',
+      ' 18090332173 ',
+      '  1392823209 ',
+      ' 12937446809 ',
+      ' 15789190002 ',
+      '  2444376327 ',
+      ' 17009143172 ',
+      ' 12478136878 ',
+      '  1277304359 ',
+      ' 15662173046 ' ].map(function (item) {
+        return item.trim();
+      });
+    var b = [ ' 15789190002 ',
+      ' 18090332173 ',
+      '  3211617953 ',
+      ' 17009143172 ',
+      ' 12478136878 ',
+      ' 15662173046 ',
+      '  1392823209 ',
+      ' 19639284542 ',
+      ' 12937446809 ',
+      '  2444376327 ' ].map(function (item) {
+        return item.trim();
+      });
+
+      $.get('data.txt', function (text) {
+        var data = text.split('_________________').map(function (block) {
+          return block.split(/\n/ig);
+        });
+        var diff = new Diff("chart");
+        diff.setSource(data[0], data[1]);
+        diff.render();
+      });
+    });
+    </script>
+  </body>
+</html>
