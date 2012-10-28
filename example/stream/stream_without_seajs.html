@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8" />
     <title>Streamgraph</title>
-    <script type="text/javascript" src="../../deps/d3.js"></script>
-    <script type="text/javascript" src="../../deps/raphael.min.js"></script>
-    <script type="text/javascript" src="../../deps/underscore-1.4.2.js"></script>
-    <script type="text/javascript" src="../../deps/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="../../deps/eventproxy.js"></script>
-    <script type="text/javascript" src="../../lib/datav.js"></script>
-    <script type="text/javascript" src="../../lib/charts/axis.js"></script>
-    <script type="text/javascript" src="../../lib/charts/stream.js"></script>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/stream.js"></script>
 <style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
@@ -25,7 +20,7 @@
     <div id="hoverInfo">hoverInfo</div>
     <div id="chart"></div>
 
-    <script type="text/javascript">
+    <script>
         DataV.changeTheme("theme0");
         var stream = new Stream("chart", {"width": 800});
         stream.setOptions({"more": false});

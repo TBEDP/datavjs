@@ -1,0 +1,55 @@
+exports.process = function (folder, ignoresList, callback) {
+  if (!callback) {
+    callback = ignoresList;
+    ignoresList = ignores;
+  }
+  var list = [];
+  var walker = new Walker();
+  var ignoresReg = new RegExp('\/(' + ignoresList.join('|') + ')\/', "ig");
+  walker.on('file', function (filename) {
+    if (ignoresReg.test(filename)) {
+      return;
+    }
+    if (path.extname(filename) === '.js') {
+      list = list.concat(exports.parse(filename));
+    }
+  });
+  walker.on('error', function (err) {
+    walker.removeAllListeners('error');
+    callback(err);
+  });
+  walker.on('end', function () {
+    callback(null, list);
+  });
+  walker.walk(folder);
+};
+
+exports.version = require('../package.json').version;
+_________________
+exports.process = function (folder, ignoresList, callback) {
+  if (!callback) {
+    callback = ignoresList;
+    ignoresList = ignores;
+  }
+  var list = [];
+  var walker = new Walker();
+  var ignoresReg = new RegExp('\/(' + ignoresList.join('|') + ')\/', "ig");
+  walker.on('file', function (filename) {
+    if (filename.match(ignoresReg)) {
+      return;
+    }
+    if (path.extname(filename) === '.js') {
+      list = list.concat(exports.parse(filename));
+    }
+  });
+  walker.on('error', function (err) {
+    walker.removeAllListeners('error');
+    callback(err);
+  });
+  walker.on('end', function () {
+    callback(null, list);
+  });
+  walker.walk(folder);
+};
+
+exports.version = require('../package.json').version;

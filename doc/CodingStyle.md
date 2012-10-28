@@ -291,3 +291,18 @@ var _strInArray = function (str, array) {
 ```
 换用`_.indexOf(array, value)`可以节省代码量，且返回值比boolean值更有价值
 
+### meta
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+希望大家潮一点，别在写上面那行代码了。下面的表达方式更简洁，且无任何副作用。
+
+    <meta charset="utf-8" />
+
+### script标签的type属性
+
+  <script type="text/javascript" src="../../deps/d3.js"></script>
+
+如果是默认的text/javascript的话，就可以直接省略掉。变成下面这样子：
+
+  <script src="../../deps/d3.js"></script>
