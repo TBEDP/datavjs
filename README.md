@@ -32,18 +32,11 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 
 ```
 // 依赖
-path/to/deps/compatible.js
-path/to/deps/d3.min.js
-path/to/deps/raphael.min.js
-path/to/deps/eventproxy.js
-path/to/deps/underscore-1.4.2.js
-path/to/deps/jquery-1.7.1.min.js
 // DataV
-path/to/datav.js
+path/to/build/datav.js
 // Pie
 path/to/charts/pie.js
 ```
-问题？[依赖库也太多了吧？]()
 ### 准备数据
 
 ```
