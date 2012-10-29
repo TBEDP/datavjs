@@ -25,15 +25,7 @@
               </li>
             
               <li>
-                <a href="./bullet文档.html">bullet文档</a>
-              </li>
-            
-              <li>
-                <a href="./butterfly.html">butterfly</a>
-              </li>
-            
-              <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./Architecture.html">Architecture</a>
               </li>
             
               <li>
@@ -45,7 +37,15 @@
               </li>
             
               <li>
-                <a href="./force文档.html">force文档</a>
+                <a href="./dataFormat.html">dataFormat</a>
+              </li>
+            
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+            
+              <li>
+                <a href="./Getting Start.html">Getting Start</a>
               </li>
             
             
@@ -54,7 +54,15 @@
                 <ul class="dropdown-menu" role="menu">
                 
                   <li>
+                    <a href="./Load DataV.html">Load DataV</a>
+                  </li>
+                
+                  <li>
                     <a href="./parallel文档.html">parallel文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./Pie文档.html">Pie文档</a>
                   </li>
                 
                   <li>
@@ -62,11 +70,23 @@
                   </li>
                 
                   <li>
+                    <a href="./butterfly.html">butterfly</a>
+                  </li>
+                
+                  <li>
                     <a href="./treemap文档.html">treemap文档</a>
                   </li>
                 
                   <li>
+                    <a href="./bullet文档.html">bullet文档</a>
+                  </li>
+                
+                  <li>
                     <a href="./服务器配置.html">服务器配置</a>
+                  </li>
+                
+                  <li>
+                    <a href="./force文档.html">force文档</a>
                   </li>
                 
                 </ul>
@@ -91,8 +111,8 @@
       <ul class="nav nav-list bs-docs-sidenav affix">
 
   <li class="level_1">
-    <a href="#index_" title="">
-      <i class="icon-chevron-right"></i>
+    <a href="#index_平行坐标轴简介" title="平行坐标轴简介">
+      <i class="icon-chevron-right"></i>平行坐标轴简介
     </a>
   </li>
 
@@ -102,18 +122,19 @@
     <div class="span9">
       <section>
         <h1>平行坐标轴简介</h1>
+<p>平行坐标轴(parallel)通常用来展示一组数据在多个维度上的分布情况以及它们相互之间的关系。每个变量用一条线表示，每个维度用一个坐标轴表示。用户可以设置坐标轴的数据类型（离散数据还是连续数据）以及各坐标轴的相互顺序。鼠标在坐标轴上拖动圈选区间，高亮显示该区间内的线。 绘制parallel的javascript代码如下：
 
-<p>平行坐标轴(parallel)通常用来展示一组数据在多个维度上的分布情况以及它们相互之间的关系。每个变量用一条线表示，每个维度用一个坐标轴表示。用户可以设置坐标轴的数据类型（离散数据还是连续数据）以及各坐标轴的相互顺序。鼠标在坐标轴上拖动圈选区间，高亮显示该区间内的线。 绘制parallel的javascript代码如下：</p>
-
-<div class="highlight"><pre lang="javascript">//创建parallel对象，包含于id为"chart"的dom结点，宽、高分别为950、500px。
-var parallel = new Parallel("chart", {"width": 950, "height": 500});
+</p>
+<pre><code class="lang-javascript">//创建parallel对象，包含于id为&quot;chart&quot;的dom结点，宽、高分别为950、500px。
+var parallel = new Parallel(&quot;chart&quot;, {&quot;width&quot;: 950, &quot;height&quot;: 500});
 //设置数据，输入的数据为一个二维数组, 第一项为列名数组。
 parallel.setSource(dataSource);
 //渲染
-parallel.render();
-</pre></div>
+parallel.render();</code></pre>
+<p>更详细的设置坐标轴区间，圈选区域，设置事件响应等请参考exmaple目录中的parallel的demo示例。 
 
-<p>更详细的设置坐标轴区间，圈选区域，设置事件响应等请参考exmaple目录中的parallel的demo示例。 </p>
+</p>
+
       </section>
     </div>
   </div>

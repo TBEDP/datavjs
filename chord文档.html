@@ -25,15 +25,7 @@
               </li>
             
               <li>
-                <a href="./bullet文档.html">bullet文档</a>
-              </li>
-            
-              <li>
-                <a href="./butterfly.html">butterfly</a>
-              </li>
-            
-              <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./Architecture.html">Architecture</a>
               </li>
             
               <li>
@@ -45,7 +37,15 @@
               </li>
             
               <li>
-                <a href="./force文档.html">force文档</a>
+                <a href="./dataFormat.html">dataFormat</a>
+              </li>
+            
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+            
+              <li>
+                <a href="./Getting Start.html">Getting Start</a>
               </li>
             
             
@@ -54,7 +54,15 @@
                 <ul class="dropdown-menu" role="menu">
                 
                   <li>
+                    <a href="./Load DataV.html">Load DataV</a>
+                  </li>
+                
+                  <li>
                     <a href="./parallel文档.html">parallel文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./Pie文档.html">Pie文档</a>
                   </li>
                 
                   <li>
@@ -62,11 +70,23 @@
                   </li>
                 
                   <li>
+                    <a href="./butterfly.html">butterfly</a>
+                  </li>
+                
+                  <li>
                     <a href="./treemap文档.html">treemap文档</a>
                   </li>
                 
                   <li>
+                    <a href="./bullet文档.html">bullet文档</a>
+                  </li>
+                
+                  <li>
                     <a href="./服务器配置.html">服务器配置</a>
+                  </li>
+                
+                  <li>
+                    <a href="./force文档.html">force文档</a>
                   </li>
                 
                 </ul>
@@ -108,42 +128,42 @@
     <div class="span9">
       <section>
         <h1>弦图(Chord)简介</h1>
-
-<p>弦图通常用来展示多个节点间的连结关系。它使用环内的弦链接外圈的元素，以表示外圈元素之间的关联性。</p>
-
+<p>弦图通常用来展示多个节点间的连结关系。它使用环内的弦链接外圈的元素，以表示外圈元素之间的关联性。
+</p>
 <h2>绘制弦图</h2>
+<p>绘制弦图的javascript代码如下：
 
-<p>绘制弦图的javascript代码如下：</p>
-
-<div class="highlight"><pre lang="javascript">//创建Chord对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
-var chord = new DataV.Chord("chart", {“width”: 700, “height”: 500});        
+</p>
+<pre><code class="lang-javascript">//创建Chord对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
+var chord = new DataV.Chord(&quot;chart&quot;, {“width”: 700, “height”: 500});        
 //设置数据，输入的数据为一个二维数组。
 chord.setSource(source); //source is a 2-d array
 //绘制
-chord.render();
-</pre></div>
+chord.render();</code></pre>
+<p>设置 Chord选项时，可以设置如下属性：
 
-<p>设置 Chord选项时，可以设置如下属性：</p>
-
+</p>
 <ul>
 <li><code>width</code>：画布宽度，默认500px</li>
 <li><code>height</code>：画布高度，默认500px</li>
 <li><code>legend</code>： 是否有图例。默认true。</li>
 </ul>
-
 <h2>数据说明</h2>
-
-<div class="highlight"><pre lang="">[
+<pre><code>[
     [北京,上海,广州],
     [0,11880,5147],
     [19757,0,19250],
     [5278,11157,0,0]
-]
-</pre></div>
+]</code></pre>
+<p>如上数据表示了三个节点北京,上海,广州之间两两关系的对应值。第一行对应弦外圈N个元素名称。第二行开始的N行中，每个数据所在的i行，j列的值，表示第i个元素到第j个元素对于的弦的值。
 
-<p>如上数据表示了三个节点北京,上海,广州之间两两关系的对应值。第一行对应弦外圈N个元素名称。第二行开始的N行中，每个数据所在的i行，j列的值，表示第i个元素到第j个元素对于的弦的值。</p>
+</p>
+<p>以上设置了绘制Chord所需的最重要的属性，调用render()就能完成绘制。
+交互包括：对弦与外围圆环的鼠标悬浮。对图例的点击。
 
-<p>以上设置了绘制Chord所需的最重要的属性，调用render()就能完成绘制。<br />交互包括：对弦与外围圆环的鼠标悬浮。对图例的点击。</p>
+
+</p>
+
       </section>
     </div>
   </div>

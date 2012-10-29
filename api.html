@@ -25,15 +25,7 @@
               </li>
             
               <li>
-                <a href="./bullet文档.html">bullet文档</a>
-              </li>
-            
-              <li>
-                <a href="./butterfly.html">butterfly</a>
-              </li>
-            
-              <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./Architecture.html">Architecture</a>
               </li>
             
               <li>
@@ -45,7 +37,15 @@
               </li>
             
               <li>
-                <a href="./force文档.html">force文档</a>
+                <a href="./dataFormat.html">dataFormat</a>
+              </li>
+            
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+            
+              <li>
+                <a href="./Getting Start.html">Getting Start</a>
               </li>
             
             
@@ -54,7 +54,15 @@
                 <ul class="dropdown-menu" role="menu">
                 
                   <li>
+                    <a href="./Load DataV.html">Load DataV</a>
+                  </li>
+                
+                  <li>
                     <a href="./parallel文档.html">parallel文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./Pie文档.html">Pie文档</a>
                   </li>
                 
                   <li>
@@ -62,11 +70,23 @@
                   </li>
                 
                   <li>
+                    <a href="./butterfly.html">butterfly</a>
+                  </li>
+                
+                  <li>
                     <a href="./treemap文档.html">treemap文档</a>
                   </li>
                 
                   <li>
+                    <a href="./bullet文档.html">bullet文档</a>
+                  </li>
+                
+                  <li>
                     <a href="./服务器配置.html">服务器配置</a>
+                  </li>
+                
+                  <li>
+                    <a href="./force文档.html">force文档</a>
                   </li>
                 
                 </ul>
@@ -119,11 +139,23 @@
   </li>
 
   <li>
+    <a href="#api_charts/diff"><i class="icon-chevron-right"></i>charts/diff</a>
+  </li>
+
+  <li>
     <a href="#api_charts/flow"><i class="icon-chevron-right"></i>charts/flow</a>
   </li>
 
   <li>
     <a href="#api_charts/force"><i class="icon-chevron-right"></i>charts/force</a>
+  </li>
+
+  <li>
+    <a href="#api_charts/histogram"><i class="icon-chevron-right"></i>charts/histogram</a>
+  </li>
+
+  <li>
+    <a href="#api_charts/line"><i class="icon-chevron-right"></i>charts/line</a>
   </li>
 
   <li>
@@ -3761,7 +3793,20 @@ chart.checkContainer($("#id"));
 <h2>Options</h2>
 
 <ul>
-<li><code>width</code> 宽度，默认为节点宽度</li>
+<li><code>width</code> 数字，图片宽度，默认为200，表示图片高200px</li>
+<li><code>height</code> 数字，图片高度，默认为80</li>
+<li><code>orient</code> string，图片方向，默认为"horizonal"，表示水平方向。若为"vertical"，则表示垂直方向</li>
+<li><code>axisStyle</code> string, 坐标系类型，默认为"linear"，表示坐标系为线性坐标系。若为"log"，则表示对数坐标系</li>
+<li><code>logBase</code> 数字, 采用对数坐标系时的对数基，默认为Math.E</li>
+<li><code>tickDivide</code> 数字，表示坐标的标尺的分段数，默认为5</li>
+<li><code>margin</code> 数字数组，表示图片上、右、下、左的边距，默认为 [20, 20, 20, 20]</li>
+<li><code>centerBarRatio</code> 数字，表示中间的测度条的高度与背景条高度的比值， 默认为0.3</li>
+<li><code>markerWidth</code> 数字，表示标记条的宽度， 默认为4，单位为像素</li>
+<li><code>markerRatio</code> 数字，表示标记条的高度与背景条高度的比值，默认为0.7</li>
+<li><code>titleRatio</code> 数字，表示子弹图title的高度与背景条高度的比值，默认为0.6，此时title与subtitle的比值</li>
+<li><code>backgroundColor</code> string数组，表示背景条颜色的渐变数组，默认为["#666", "#ddd"],背景条颜色就是这两种颜色的渐变</li>
+<li><code>measureColor</code> string数组，表示测度条颜色的渐变数组，默认为["steelblue", "#B0C4DE"],测度条颜色就是这两种颜色的渐变</li>
+<li><code>markerColor</code> string，表示标记条的颜色，默认为"#000"</li>
 </ul>
 
 <h2>Examples</h2>
@@ -3819,6 +3864,7 @@ var log = new Bullet("chart2", {
             this.defaults.orient = &quot;horizonal&quot;; // &quot;horizonal&quot;, &quot;vertical&quot;
             this.defaults.axisStyle = &quot;linear&quot;; // &quot;linear&quot;, &quot;log&quot;
             this.defaults.logBase = Math.E;
+            this.defaults.tickDivide = 5;
             this.defaults.margin = [10, 10, 20, 80];//top, right, bottom, left
             this.defaults.centerBarRatio = 0.3;
             this.defaults.markerWidth = 4;
@@ -3827,11 +3873,11 @@ var log = new Bullet("chart2", {
             this.defaults.backgroundColor = [&quot;#666&quot;, &quot;#ddd&quot;]; //dark, light
             this.defaults.measureColor = [&quot;steelblue&quot;, &quot;#B0C4DE&quot;]; //dark, light
             this.defaults.markerColor = &quot;#000&quot;;
-            this.defaults.tickDivide = 5;
 
             // canvas
             this.defaults.width = 200;
             this.defaults.height = 80;
+
             this.setOptions(options);
             this.createCanvas();
         }
@@ -4889,7 +4935,7 @@ var log = new Bullet("chart2", {
                 }
             });
         });
-    }</code></pre></td>
+    };</code></pre></td>
     </tr>
   
   </table>
@@ -4950,7 +4996,6 @@ var log = new Bullet("chart2", {
         for (r = 0; r &lt; groupNum; r++) {
             that.matrix[r] = group[r];
         }
-
     };</code></pre></td>
     </tr>
   
@@ -4991,7 +5036,7 @@ var log = new Bullet("chart2", {
   </h3>
   
 
-  <p>ar see = [<br />            [11975, 5871, 8916, 2868],<br />            [1951, 10048, 2060, 6171],<br />            [8010, 16145, 8090, 8045],<br />            [1013, 990, 940, 6907] <br /><br />        ];</p>
+  <p>ar see = [<br />            [11975, 5871, 8916, 2868],<br />            [1951, 10048, 2060, 6171],<br />            [8010, 16145, 8090, 8045],<br />            [1013, 990, 940, 6907]<br />        ];</p>
 
   <table class="table">
   
@@ -5119,10 +5164,7 @@ var log = new Bullet("chart2", {
         };
 
         var mouseoverChord = function () {
-            floatTag.html('&lt;div style = &quot;text-align: center;margin:auto;color:'
-            //+ jqNode.color
-            +
-            &quot;#ffffff&quot; + '&quot;&gt;' + this.data('text') + '&lt;/div&gt;');
+            floatTag.html('&lt;div style=&quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + this.data('text') + '&lt;/div&gt;');
             floatTag.css({
                 &quot;visibility&quot;: &quot;visible&quot;
             });
@@ -5295,6 +5337,258 @@ var log = new Bullet("chart2", {
       <td>代码</td><td colspan="3"><pre><code>};
 
     return Chord;
+});</code></pre></td>
+    </tr>
+  
+  </table>
+  
+</section>
+      
+        <section id="api_charts/diff" class="api">
+  <h2>charts/diff: API索引</h2>
+  <ul class="indexs">
+  
+    <li>
+      <a href="#_Diff">Diff</a>
+    </li>
+
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_layout">layout</a>
+    </li>
+
+  </ul>
+  <hr />
+
+  
+
+  <table class="table">
+  
+
+  
+  </table>
+  
+  
+  <h3 id="_Diff">
+    Diff
+  </h3>
+  
+
+  <p>构造函数</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Diff</td> 
+      <td></td>
+      <td>Diff</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>node(Object)</td>
+      <td colspan="2">表示在html的哪个容器中绘制该组件</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(Object)</td>
+      <td colspan="2">为用户自定义的组件的属性，比如画布大小</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Diff = DataV.extend(DataV.Chart, {
+        type: &quot;Diff&quot;,
+        initialize: function (node, options) {
+            this.node = this.checkContainer(node);
+
+            //图的大小设置
+            this.defaults.width = 900;
+            this.defaults.height = 800;
+
+            //设置用户指定的属性
+            this.setOptions(options);
+
+            //创建画布
+            this.createCanvas();
+        }
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
+
+  <p>创建画布</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Diff.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Diff.prototype.createCanvas = function () {
+        this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
+
+  <p>绘制弦图</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Diff.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Diff.prototype.render = function () {
+        this.layout();
+    };
+
+    // 计算顺序的相似度
+    var diffMap = function (list1, list2) {
+      var map = [];
+      var hit = 0;
+      var lastIndex = -1;
+      for (var i = 0; i &lt; list1.length; i++) {
+        var index = _.indexOf(list2, list1[i]);
+        if (index === -1) {
+          continue;
+        } else {
+          if (index &gt; lastIndex) {
+            lastIndex = index;
+            map.push([i, index]);
+          }
+          hit++;
+        }
+      }
+      console.log(map);
+      console.log(map.length / list1.length);
+      console.log(hit / list1.length);
+      return map;
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
+
+  <p>对原始数据进行处理</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Diff.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>table(Array)</td>
+      <td colspan="2">将要被绘制成饼图的二维表数据</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Diff.prototype.setSource = function (table1, table2) {
+        this.rawData = [table1, table2];
+        this.diffMap = diffMap(table1, table2);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_layout">
+    layout
+  </h3>
+  
+
+  <p>创建chord布局</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Diff.prototype.layout()</td> 
+      <td></td>
+      <td>layout</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Diff.prototype.layout = function () {
+        var that = this;
+        var canvas = that.canvas;
+
+        var paddingLeft = 10;
+        var paddingTop = 10;
+        var height = 20;
+        var distance = 50;
+        var width = (this.defaults.width - 2 * paddingLeft - distance) / 2;
+
+        for (var j = 0, k = this.rawData.length; j &lt; k; j++) {
+            var maped = _.pluck(this.diffMap, j);
+            for (var i = 0, l = this.rawData[j].length; i &lt; l; i++) {
+                canvas.rect(paddingLeft + j * (width + distance), paddingTop + height * i, width, height).attr({fill: _.indexOf(maped, i) !== -1 ? &quot;#00ff00&quot; : &quot;#ff0000&quot;});
+                canvas.text(paddingLeft + j * (width + distance), paddingTop + height * i + height / 2, this.rawData[j][i]).attr({'text-anchor': 'start'});
+            }
+        }
+        for (var i = 0, l = this.diffMap.length; i &lt; l; i++) {
+            var line = this.diffMap[i];
+            canvas.path(&quot;M&quot; + (paddingLeft + width) + ' ' + (paddingTop + height * line[0] + height / 2) + &quot;L&quot; + (paddingLeft + width + distance) + &quot; &quot; + (paddingTop + height * line[1] + height / 2)).attr({stroke: '#00ff00'});
+        }
+    };
+
+    return Diff;
 });</code></pre></td>
     </tr>
   
@@ -6610,6 +6904,1473 @@ var log = new Bullet("chart2", {
   
 </section>
       
+        <section id="api_charts/histogram" class="api">
+  <h2>charts/histogram: API索引</h2>
+  <ul class="indexs">
+  
+    <li>
+      <a href="#_Histogram">Histogram</a>
+    </li>
+
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_setAxis">setAxis</a>
+    </li>
+
+    <li>
+      <a href="#_drawDiagram">drawDiagram</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
+  </ul>
+  <hr />
+
+  
+
+  <p>lobal Raphael, d3, $, define</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Histogram', function (require) {
+    var DataV = require('DataV');</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_Histogram">
+    Histogram
+  </h3>
+  
+
+  <p>Histogram构造函数<br />Create histogram in a dom node with id "chart", default width is 522; height is 522px;</p>
+
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code> 宽度，默认为节点宽度</li>
+<li><code>typeNames</code> 指定y轴上数据类目</li>
+</ul>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">var histogram = new Histogram("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Histogram</td> 
+      <td></td>
+      <td>Histogram</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>node(Mix)</td>
+      <td colspan="2">The dom node or dom node Id</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(Object)</td>
+      <td colspan="2">options json object for determin histogram style.</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Histogram = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = &quot;Histogram&quot;;
+            this.node = this.checkContainer(node);
+            this.defaults = {};
+
+            // Properties
+            this.defaults.dimensionX = {}; //dimension of X axis(horizonal).  array type
+            this.defaults.demensionY = {}; //dimension of Y axis(vertical).  array type
+            this.defaults.allDimensions = {};
+            this.defaults.dimensionDomain = {};
+            this.defaults.typeNames = [];
+
+            // canvas parameters
+            this.defaults.width = 522;
+            this.defaults.height = 522;
+            this.defaults.margin = 50;
+            this.defaults.gap = 15;
+            this.defaults.circleR = 3;
+            this.defaults.barColor = [&quot;#308BE6&quot;,&quot;#8EEC00&quot;];
+            
+            //图例区域的左上顶点坐标x，y，宽，高
+            this.defaults.legendArea = [422, 50, 472, 220];
+            //散点矩阵区域的左上顶点坐标x，y，宽，高
+            this.defaults.diagramArea = [50, 50, 422, 472];
+
+            this.defaults.typeName = &quot;undefined&quot;; //默认情况是没有分类
+            this.defaults.tagDimen = &quot;undefined&quot;;
+
+
+            this.setOptions(options);
+            this.createCanvas();
+        }   
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
+
+  <p>创建画布</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Histogram.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Histogram.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.node.style.position = &quot;relative&quot;;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+
+        this.canvasF = document.getElementById(this.container);
+        this.floatTag = DataV.FloatTag()(this.canvasF);
+        this.floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
+	};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
+
+  <p>设置数据源</p>
+
+<p>Examples：</p>
+
+<div class="highlight"><pre lang="">histogram.setSource(source);
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Histogram.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>source(Array)</td>
+      <td colspan="2">数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Histogram.prototype.setSource = function (source) {
+        var conf = this.defaults;
+        var i, j, l;
+        var xTemp = [],
+            yTemp = [];
+        xTemp = source[0][0];
+        yTemp = source[0][1];
+        
+        conf.allDimensions = source[0];
+        conf.dimensionX = xTemp;
+        conf.dimensionY = yTemp;
+        conf.xAxisData = [];
+        this.source = [];
+        
+        for (i = 1, l = source.length; i &lt; l; i++) {
+            if (conf.typeNames.length == 1) {
+                var line = {}, dimenT = conf.allDimensions;
+                for (j = 0, ll = dimenT.length; j &lt; ll; j++) {
+                    line[dimenT[j]] = source[i][j]; //each line is an array, contains value for each dimension
+                }
+                this.source.push(line);
+            }
+            else if (conf.typeNames.length == 2) {
+                var lineY = {}, lineZ = {}, dimenT = conf.allDimensions;
+                lineY[dimenT[0]] = i;
+                lineY[dimenT[1]] = source[i][1];
+                this.source.push(lineY);
+                lineZ[dimenT[0]] = i;
+                lineZ[dimenT[1]] = source[i][2];
+                this.source.push(lineZ);
+                conf.xAxisData.push(source[i][0]);
+            }
+        }
+        //设置默认的定义域
+        var getExtent = function (s, dimen) {
+            return d3.extent(s, function (p) {
+                return +p[dimen];
+            });
+        };
+        var dimen;
+        for (i = 0, l = conf.allDimensions.length; i &lt; l; i++) {
+            dimen = conf.allDimensions[i];
+            conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
+            conf.dimensionDomain[dimen][0] = 0;
+        }
+	};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setAxis">
+    setAxis
+  </h3>
+  
+
+  <p>设置坐标轴</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Histogram.prototype.setAxis()</td> 
+      <td></td>
+      <td>setAxis</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Histogram.prototype.setAxis = function () {
+        var conf = this.defaults;
+        var tagWidth = conf.width / 5 &gt; 50 ? 50 : conf.width / 5;
+        conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
+        conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
+    
+        var w = conf.diagramArea[2] - 2 * conf.margin;
+        var h = conf.diagramArea[3] - conf.margin;
+		
+        this.x = {};
+        this.y = {};
+        var x = this.x,
+            y = this.y;
+        var tickAr = [5];
+        //设置x轴
+        x[conf.dimensionX] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionX]).range([conf.margin, w]);
+        x[conf.dimensionX].ticks = x[conf.dimensionX].ticks.apply(x[conf.dimensionX], tickAr);
+        //设置y轴
+        y[conf.dimensionY] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionY]).range([h, conf.margin]);
+        y[conf.dimensionY].ticks = y[conf.dimensionY].ticks.apply(y[conf.dimensionY], tickAr);
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_drawDiagram">
+    drawDiagram
+  </h3>
+  
+
+  <p>进行柱状图的绘制</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Histogram.prototype.drawDiagram()</td> 
+      <td></td>
+      <td>drawDiagram</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Histogram.prototype.drawDiagram = function () {
+        var that = this;
+        var conf = this.defaults;
+        var paper = this.canvas;
+        var x = this.x;
+        var y = this.y;
+        var i, j, k, l;
+        //画坐标轴
+        var axisLines = paper.set();
+        var tickText = paper.set();
+        var hLines = paper.set();
+        var dimenX = conf.dimensionX;
+        var dimenY = conf.dimensionY;
+        var leftPos = x[dimenX].range()[0],
+            rightPos = x[dimenX].range()[1],
+            upPos = y[dimenY].range()[1],
+            downPos = y[dimenY].range()[0];
+        var linePos,
+            lineGap;
+        //X轴
+        ticks = x[dimenX].ticks;
+        for (j = 1; j &lt; ticks.length; j++) {
+            tickText.push(paper.text(x[dimenX](ticks[j]), downPos+10, conf.xAxisData[ticks[j]-1]).attr({
+                &quot;fill&quot;: &quot;#878791&quot;,
+                &quot;fill-opacity&quot;: 0.7,
+                &quot;font-family&quot;: &quot;雅黑&quot;,
+                &quot;font-size&quot;: 12
+            }).attr({
+                &quot;text-anchor&quot;: &quot;middle&quot;
+            }).rotate(0, x[dimenX](ticks[j]), upPos));
+            axisLines.push(paper.path(&quot;M&quot; + x[dimenX](ticks[j]) + &quot;,&quot; + downPos + &quot;L&quot; + x[dimenX](ticks[j]) + &quot;,&quot; + (downPos+5)).attr({
+                &quot;stroke&quot;: &quot;#D7D7D7&quot;,
+                &quot;stroke-width&quot;: 2
+            }));
+        }
+        axisLines.push(paper.path(&quot;M&quot; + leftPos + &quot;,&quot; + upPos + &quot;L&quot; + leftPos + &quot;,&quot; + downPos).attr({
+            &quot;stroke&quot;: &quot;#D7D7D7&quot;,
+            &quot;stroke-width&quot;: 2
+        }));
+        //Y轴
+        ticks = y[dimenY].ticks;
+        for (j = 0; j &lt; ticks.length; j++) {
+            tickText.push(paper.text(leftPos - 10, y[dimenY](ticks[j]), ticks[j]).attr({
+                &quot;fill&quot;: &quot;#878791&quot;,
+                &quot;fill-opacity&quot;: 0.7,
+                &quot;font-family&quot;: &quot;雅黑&quot;,
+                &quot;font-size&quot;: 12
+            }).attr({
+                &quot;text-anchor&quot;: &quot;end&quot;
+            }).rotate(0, rightPos + 6, y[dimenY](ticks[j])));
+            axisLines.push(paper.path(&quot;M&quot; + leftPos + &quot;,&quot; + y[dimenY](ticks[j]) + &quot;L&quot; + (leftPos - 5) + &quot;,&quot; + y[dimenY](ticks[j])).attr({
+                &quot;stroke&quot;: &quot;#D7D7D7&quot;,
+                &quot;stroke-width&quot;: 2
+            }));
+        }
+        axisLines.push(paper.path(&quot;M&quot; + leftPos + &quot;,&quot; + downPos + &quot;L&quot; + rightPos + &quot;,&quot; + downPos).attr({
+            &quot;stroke&quot;: &quot;#D7D7D7&quot;,
+            &quot;stroke-width&quot;: 2
+        }));
+        var numOfHLine = d3.round((downPos - upPos)/30-1);
+        for (j = 1; j &lt;= numOfHLine; j++) {
+            hLinesPos = downPos - j * 30;
+            hLines.push(paper.path(&quot;M&quot; + leftPos + &quot;,&quot; + hLinesPos + &quot;L&quot; + rightPos + &quot;,&quot; + hLinesPos).attr({
+                &quot;stroke&quot;: &quot;#ECECEC&quot;,
+                &quot;stroke-width&quot;:1
+            }));
+        }
+        //定义变量
+        //bars
+        var barWidth = 8;
+        this.defaults.bars = paper.set();
+        var bars = paper.set();
+        //legend
+        var legendArea = this.defaults.legendArea;
+        var rectBn = paper.set();
+        var underBn = [];
+        var temp;
+        //绘制
+        //bars
+        var mouseOverBar = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum - this.data.seqNum % 2;
+            var rectBn = this.data.rectBn;
+            var clicked = false;
+            var typeSeq = -1;
+            var typeNum = this.data.typeNum;
+            var xPos, yPos;
+            var temp;
+            var paper = bars[0].paper;
+            for(i = 0, j = rectBn.length; i &lt; j; i++)
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    typeSeq = i;
+                }
+            //hover
+            if(clicked) {
+                if(typeSeq != this.data.seqNum % typeNum)
+                    return;
+                for(i = this.data.seqNum % typeNum, j = bars.length; i &lt; j; i+=typeNum) {
+                    bars[i].attr({
+                        &quot;fill-opacity&quot;:0.3
+                    });
+                }
+                bars[this.data.seqNum].attr({
+                    &quot;fill-opacity&quot;:1
+                });
+            } else {
+                for(i = 0, j = bars.length; i &lt; j; i++) {
+                    if(i == seq) {
+                        i++;
+                    }
+                    else {
+                        
+                            bars[i].attr({
+                                &quot;fill-opacity&quot;:0.3
+                            });
+                    }
+                }
+            }
+            //pins
+            xPos = bars[seq].attrs.x + 4 * typeNum;
+            yPos = bars[seq].attrs.y + bars[seq].attrs.height;
+            //axis x text
+            temp = paper.text(xPos, yPos, this.data.xAxisLabel).attr({
+                &quot;file&quot;: &quot;#ffffff&quot;,
+                &quot;fill-opacity&quot;: 0.7,
+                &quot;font-family&quot;: &quot;雅黑&quot;,
+                &quot;font-size&quot;: 12,
+                &quot;text-anchor&quot;: &quot;middle&quot;
+            });
+            var textWidth = temp.node.clientWidth + 8;
+            temp.remove();
+            //axis x rect
+            temp = paper.rect(xPos - textWidth/2, yPos, textWidth, 20, 2).attr({
+                &quot;fill&quot;: &quot;#5f5f5f&quot;,
+                &quot;fill-opacity&quot;: 1,
+                &quot;stroke&quot;: &quot;none&quot;
+            });;
+            bars.push(temp);
+            temp = paper.text(xPos, yPos + 10, this.data.xAxisLabel).attr({
+                &quot;file&quot;: &quot;#abcdef&quot;,
+                &quot;fill-opacity&quot;: 0.7,
+                &quot;font-family&quot;: &quot;雅黑&quot;,
+                &quot;font-size&quot;: 12,
+                &quot;text-anchor&quot;: &quot;middle&quot;
+            });
+            bars.push(temp);
+        };
+        
+        var mouseOutBar = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum - this.data.seqNum % 2;
+            var rectBn = this.data.rectBn;
+            var clicked = false;
+            var typeSeq = -1;
+            var typeNum = this.data.typeNum;
+            var temp;
+            for(i = 0, j = rectBn.length; i &lt; j; i++)
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    typeSeq = i;
+                }
+            //hover
+            if(clicked) {
+                if(typeSeq != this.data.seqNum % typeNum)
+                    return;
+                for(i = this.data.seqNum % typeNum, j = bars.length; i &lt; j; i+=typeNum) {
+                    bars[i].attr({
+                        &quot;fill-opacity&quot;:1
+                    });
+                }
+            } else {
+                for(i = 0, j = bars.length; i &lt; j; i++) {
+                    if(i == seq) {
+                        i++;
+                    }
+                    else {
+                        bars[i].attr({
+                            &quot;fill-opacity&quot;:1
+                        });
+                    }
+                }
+            }
+            //pins
+            temp = bars.pop();
+            temp.remove();
+            temp = bars.pop();
+            temp.remove();
+        };
+        
+        for (i = 0, j = this.source.length; i &lt; j; i++) {
+            for (k = 0, l = conf.typeNames.length; k &lt; l; k++)
+                if(i%l == k) {
+                    temp = paper.rect((x[dimenX](this.source[i][dimenX])-barWidth * (l / 2 - i % l)), y[dimenY](this.source[i][dimenY]), 
+                        barWidth, downPos - y[dimenY](this.source[i][dimenY])).attr({
+                            &quot;fill&quot;: conf.barColor[k],
+                            &quot;fill-opacity&quot;: 1,
+                            &quot;stroke&quot;: &quot;none&quot;
+                            });
+                    temp.data = {};
+                    temp.data.container = bars;
+                    temp.data.seqNum = i;
+                    temp.data.rectBn = rectBn;
+                    temp.data.typeNum = conf.typeNames.length;
+                    temp.data.xAxisLabel = conf.xAxisData[d3.round((i-1)/l)];
+                    temp.data.yAxisLabel = this.source[i][dimenY];
+                    temp.mouseover(mouseOverBar);
+                    temp.mouseout(mouseOutBar);
+                    bars.push(temp);
+                }
+        }
+        //legend
+        var mouseOverLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var rectBn = this.data.rectBn;
+            for(i = 0, j = rectBn.length; i &lt; j; i++)
+                if(rectBn[i].data.isClicked)
+                    return;
+            //
+            for(i = (seq + 1)%2, j = bars.length; i &lt; j; i+=2) {
+                bars[i].attr({
+                    &quot;fill-opacity&quot;:0.3
+                });
+            }
+            this.data.underBn[seq].attr({
+                &quot;fill-opacity&quot;:0.5
+            });
+        };
+        var mouseOutLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var rectBn = this.data.rectBn;
+            for(i = 0, j = rectBn.length; i &lt; j; i++)
+                if(rectBn[i].data.isClicked)
+                    return;
+            //
+            for(i = (seq + 1)%2, j = bars.length; i &lt; j; i+=2) {
+                bars[i].attr({
+                    &quot;fill-opacity&quot;:1
+                });
+            }
+            this.data.underBn[seq].attr({
+                &quot;fill-opacity&quot;:0
+            });
+        };
+        var clickLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var clicked = false;
+            var underBn = this.data.underBn;
+            var rectBn = this.data.rectBn;
+            var lastClickedSeq;
+            var typeNum = this.data.typeNum;
+            //check if any legend has been already clicked
+            for(i = 0, j = rectBn.length; i &lt; j; i++) {
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    lastClickedSeq = i;
+                    break;
+                }
+            }
+            if(this.data.isClicked) {
+                for(i = 0; i &lt; typeNum; i++) {
+                    if(i != seq % typeNum) {
+                        for(var j = i, m = bars.length; j &lt; m; j+=typeNum)
+                            bars[j].attr({
+                                &quot;fill-opacity&quot;:0.3
+                            });
+                    }
+                }
+                this.data.isClicked = false;
+            } else if(!clicked) {
+                for(i = 0; i &lt; typeNum; i++) {
+                    if(i != seq % typeNum) {
+                        for(j = i, m = bars.length; j &lt; m; j+=typeNum)
+                            bars[j].attr({
+                                &quot;fill-opacity&quot;:0.1
+                            });
+                    }
+                }
+                this.data.isClicked = true;
+            } else {
+                //cancle the clicked button
+                underBn[lastClickedSeq].attr({
+                    &quot;fill-opacity&quot;:0
+                });
+                for(i = lastClickedSeq % typeNum, j = bars.length; i &lt; j; i+=typeNum)
+                    bars[i].attr({
+                        &quot;fill-opacity&quot;:0.1
+                    });
+                for(i = seq % typeNum, j = bars.length; i &lt; j; i+=typeNum)
+                    bars[i].attr({
+                        &quot;fill-opacity&quot;:1
+                    });
+                this.data.rectBn[lastClickedSeq].data.isClicked = false;
+                this.data.isClicked = true;
+            }
+            this.data.underBn[seq].attr({
+                &quot;fill-opacity&quot;:(this.data.isClicked?1:0)
+            });
+        };
+        for (i = 0; i &lt; conf.typeNames.length; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                &quot;fill&quot;: &quot;#ebebeb&quot;,
+                &quot;fill-opacity&quot;:0,
+                &quot;stroke&quot;: &quot;none&quot;
+            }));
+            //色框
+            temp = paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                &quot;fill&quot;: conf.barColor[i],
+                &quot;stroke&quot;: &quot;none&quot;
+            });
+            //文字
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
+                &quot;fill&quot;: &quot;black&quot;,
+                &quot;fill-opacity&quot;: 1,
+                &quot;font-family&quot;: &quot;Verdana&quot;,
+                &quot;font-size&quot;: 12
+            }).attr({
+                &quot;text-anchor&quot;: &quot;start&quot;
+            });
+            //选框
+            temp = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                &quot;fill&quot;: &quot;white&quot;,
+                &quot;fill-opacity&quot;: 0,
+                &quot;stroke&quot;: &quot;none&quot;
+                //&quot;r&quot;: 3
+            }).data(&quot;type&quot;, i);
+            temp.mouseover(mouseOverLegend);
+            temp.mouseout(mouseOutLegend);
+            temp.click(clickLegend);
+            temp.data = {};
+            temp.data.seqNum = i;
+            temp.data.container = bars;
+            temp.data.rectBn = rectBn;
+            temp.data.isClicked = false;
+            temp.data.underBn = underBn;
+            temp.data.typeNum = conf.typeNames.length;
+            rectBn.push(temp);
+        }
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
+
+  <p>绘制柱状图</p>
+
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code> 宽度，默认为节点宽度</li>
+<li><code>typeNames</code> 指定y轴上数据类目</li>
+</ul>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">histogram.render({"width": 1024})
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Histogram.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(Object)</td>
+      <td colspan="2">options json object for determin histogram style.</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Histogram.prototype.render = function (options) {
+        this.setOptions(options);
+        this.canvas.clear();
+        this.setAxis();
+        this.drawDiagram();
+	};
+	return Histogram;
+});</code></pre></td>
+    </tr>
+  
+  </table>
+  
+</section>
+      
+        <section id="api_charts/line" class="api">
+  <h2>charts/line: API索引</h2>
+  <ul class="indexs">
+  
+    <li>
+      <a href="#_Line">Line</a>
+    </li>
+
+    <li>
+      <a href="#_createCanvas">createCanvas</a>
+    </li>
+
+    <li>
+      <a href="#_setSource">setSource</a>
+    </li>
+
+    <li>
+      <a href="#_getColor">getColor</a>
+    </li>
+
+    <li>
+      <a href="#_setXaxis">setXaxis</a>
+    </li>
+
+    <li>
+      <a href="#_setYaxis">setYaxis</a>
+    </li>
+
+    <li>
+      <a href="#_setBackground">setBackground</a>
+    </li>
+
+    <li>
+      <a href="#_render">render</a>
+    </li>
+
+    <li>
+      <a href="#_interactive">interactive</a>
+    </li>
+
+  </ul>
+  <hr />
+
+  
+  <h3 id="_Line">
+    Line
+  </h3>
+  
+
+  <p>Line构造函数<br />Create line in a dom node with id "chart", width is 500px; height is 600px;</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">var line = new Line("chart", {"width": 500, "height": 600});
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Line</td> 
+      <td></td>
+      <td>Line</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>node(Mix)</td>
+      <td colspan="2">The dom node or dom node Id</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(Object)</td>
+      <td colspan="2">options json object for determin line style.</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Line = DataV.extend(DataV.Chart, {
+    initialize: function (node, options) {
+      this.type = &quot;Line&quot;;
+      this.node = this.checkContainer(node);
+
+      this.defaults = {};
+
+      this.defaults.width = 960;
+      this.defaults.height = 500;
+
+      //Properties
+      this.defaults.hasDataTitle = true;
+      this.defaults.margin = [10, 40, 40, 40];
+      this.defaults.title = null;
+      this.defaults.subtitle = null;
+      this.defaults.tagDepDomain = [];
+
+      this.defaults.clickMode = true;
+      this.defaults.hoverMode = true;
+
+      //绘制属性
+      this.defaults.lineSize = 2;
+      this.defaults.nodeMode = true;
+      this.defaults.nodeRadius = 2;
+      this.defaults.hasMackLine = true;
+      this.defaults.hasXAxis = true;
+      this.defaults.hasYAxis = true;
+      this.defaults.XAxisTick = 10;
+      this.defaults.YAxisTick = 4;
+      this.defaults.XAxisOrient = &quot;bottom&quot;;
+      this.defaults.YAxisOrient = &quot;left&quot;;
+      this.defaults.XAxisPadding = 10;
+      this.defaults.YAxisPadding = 10;
+      this.defaults.XAxisDomain = [];
+      this.defaults.YAxisDomain = [];
+      this.defaults.XAxisFontSize = 10;
+      this.defaults.YAxisFontSize = 10;
+      this.defaults.YAxisStartDy = 20;
+      this.defaults.hasXGrid = true;
+      this.defaults.hasYGrid = true;
+
+      //Color
+      this.defaults.titleColor = &quot;#000&quot;;
+      this.defaults.subtitleColor = &quot;#000&quot;;
+      this.defaults.AxisColor = &quot;#000&quot;;
+      this.defaults.gridColor = &quot;#efefef&quot;;
+
+      //设置用户指定属性
+      this.setOptions(options);
+
+      //创建画布
+      this.createCanvas();
+    }
+  });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_createCanvas">
+    createCanvas
+  </h3>
+  
+
+  <p>创建画布</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.createCanvas()</td> 
+      <td></td>
+      <td>createCanvas</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.createCanvas = function () {
+    var conf = this.defaults;
+
+    this.canvas = new Raphael(this.node, conf.width, conf.height);
+
+    this.canvasF = this.node;
+
+    var canvasStyle = this.canvasF.style;
+    canvasStyle.position = &quot;relative&quot;;
+    this.floatTag = DataV.FloatTag()(this.canvasF);
+    this.floatTag.css({
+      &quot;visibility&quot;: &quot;hidden&quot;
+    });
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setSource">
+    setSource
+  </h3>
+  
+
+  <p>对原始数据进行处理</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.setSource()</td> 
+      <td></td>
+      <td>setSource</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.setSource = function (source) {
+    var conf = this.defaults;
+    var tagDepDomain = conf.tagDepDomain;
+    var dataTable;
+    var titles = [];
+    var linesData = [];
+
+    if (conf.hasDataTitle) {
+      titles = source[0];
+      dataTable = source.slice(1);
+    } else {
+      dataTable = source;
+    }
+
+    var j, l;
+    var max, min;
+    var maxList = [], minList = [];
+    var maxLength = 0;
+    dataTable.forEach(function (d, i) {
+      // initialize the nodes of line
+      maxLength = Math.max(maxLength, d.length);
+      var line = {name: d[0], id: i, data: [], tags: []};
+      for (j = 1, l = d.length; j &lt; l; j++) {
+        var nodeData = d[j];
+        line.data.push(nodeData);
+        if (j === 1) {
+          maxList[i] = nodeData;
+          minList[i] = nodeData;
+        } else {
+          maxList[i] = Math.max(maxList[i], nodeData);
+          minList[i] = Math.min(minList[i], nodeData);
+        }
+      }
+
+      // initialize tag content
+      l = tagDepDomain.length;
+      if (l) {
+        var tag = [];
+        for (j = 0; j &lt; l; j++){
+          var num  = tagDepDomain[j];
+          tag = {name: null, data: d[num]};
+          var name = titles[num];
+          if (name){
+            tag.name = name;
+          }
+          tags.push(tag);
+        }
+      }
+
+      linesData.push(line);
+
+      if (i === 0) {
+        max = maxList[0];
+        min = minList[0];
+      } else {
+        max = Math.max(maxList[i], max);
+        min = Math.min(minList[i], min);
+      }
+    });
+
+    var margin = conf.margin;
+    this.xWidth = conf.width - margin[1] - margin[3];
+    this.yHeight = conf.height - margin[0] - margin[2];
+
+    this.titles = titles;
+    this.maxLength = maxLength - 1;
+    this.linesData = linesData;
+    this.max = max;
+    this.min = min;
+    this.maxList = maxList;
+    this.minList = minList;
+
+    this.chosen = false;
+    this.chosenNum = -1;
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_getColor">
+    getColor
+  </h3>
+  
+
+  <p>获取颜色函数</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.getColor()</td> 
+      <td></td>
+      <td>getColor</td>
+    </tr>
+  
+
+    <tr>
+      <td>返回</td>
+      <td>function</td>
+      <td colspan="2">DataV根据主题获取随机离散色函数</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.getColor = function () {
+    var colorFunction = DataV.getDiscreteColor();
+    return colorFunction;
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setXaxis">
+    setXaxis
+  </h3>
+  
+
+  <p>绘制X轴</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.setXaxis()</td> 
+      <td></td>
+      <td>setXaxis</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.setXaxis = function (titles) {
+    var conf = this.defaults;
+    var canvas = this.canvas;
+
+    if (conf.hasXAxis) {
+      var axisColor = conf.AxisColor;
+      var gridColor = conf.gridColor;
+      var hasDataTitle = conf.hasDataTitle;
+      var XAxisPadding = conf.XAxisPadding;
+      var margin = conf.margin;
+      var startX = margin[3];
+      var startY = conf.height - margin[2];
+      var xWidth = this.xWidth;
+      var maxLength = this.maxLength;
+      var yHeight = this.yHeight;
+      var fontSize = conf.XAxisFontSize;
+
+      var tickLength;
+      if (conf.hasXGrid) {
+        tickLength = yHeight;
+      } else {
+        tickLength = 5;
+      }
+
+      var tick = conf.XAxisTick;
+      var tickStep;
+      if (tick % maxLength === 0) {
+        tickStep = xWidth / tick;
+      } else {
+        tickStep = xWidth / this.maxLength;
+        tick = this.maxLength;
+      }
+
+      var xAxis = canvas.set();
+      var xAxisText = canvas.set();
+      xAxis.push(canvas.path(&quot;M&quot; + startX + &quot;,&quot; + startY + &quot;L&quot; + (startX + xWidth) + &quot;,&quot; + startY));
+
+      var l = titles.length;
+      for (var i = 0; i &lt; tick; i++) {
+        xAxis.push(canvas.path(&quot;M&quot; + (startX + i * tickStep) + &quot;,&quot; + startY + &quot;L&quot; + (startX + i * tickStep) + &quot;,&quot; + (startY - tickLength))
+          .attr({&quot;stroke&quot;: gridColor}));
+        if (hasDataTitle &amp;&amp; i &lt; l - 1) {
+          xAxisText.push(canvas.text((startX + i * tickStep), startY + XAxisPadding, titles[i + 1]));
+        }
+      }
+
+      xAxis.attr({fill: axisColor, &quot;stroke-width&quot;:2});
+      xAxisText.attr({&quot;font-size&quot;: fontSize});
+      this.xAxis = xAxis;
+      this.xAxisText = xAxisText;
+      this.xTick = xWidth / maxLength;
+    }
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setYaxis">
+    setYaxis
+  </h3>
+  
+
+  <p>绘制Y轴</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.setYaxis()</td> 
+      <td></td>
+      <td>setYaxis</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.setYaxis = function () {
+    var conf = this.defaults;
+    var canvas = this.canvas;
+
+    if (conf.hasYAxis) {
+      var axisColor = conf.AxisColor;
+      var gridColor = conf.gridColor;
+      var margin = conf.margin;
+      var YAxisStartDy = conf.YAxisStartDy;
+      var yHeight = this.yHeight - YAxisStartDy;
+      var xWidth = this.xWidth;
+      var startX = margin[3];
+      var startY = margin[0] + yHeight;
+      var YAxisPadding = conf.YAxisPadding;
+      var max = this.max;
+      var min = this.min;
+      var fontSize = conf.YAxisFontSize;
+
+      var tick = conf.YAxisTick;
+      var tickStep = yHeight / tick;
+
+      var d = (max - min) % (tick - 1);
+      if (d !== 0) {
+        max = max + (tick - 1) - d;
+      }
+      d = (max - min) / (tick - 1);
+
+      var tickLength;
+      if (conf.hasYGrid) {
+        tickLength = xWidth;
+      } else {
+        tickLength = 5;
+      }
+
+      var yAxis = canvas.set();
+      var yAxisText = canvas.set();
+      var dx = 
+      yAxis.push(canvas.path(&quot;M&quot; + startX + &quot;,&quot; + (startY + YAxisStartDy) + &quot;L&quot; + startX + &quot;,&quot; + (startY - yHeight)));
+
+      for (var i = 0; i &lt; tick; i++) {
+        yAxis.push(canvas.path(&quot;M&quot; + startX+ &quot;,&quot; + (startY - i * tickStep) + &quot;L&quot; + (startX + tickLength) + &quot;,&quot; + (startY - i * tickStep))
+          .attr({&quot;stroke&quot;: gridColor}));
+        yAxisText.push(canvas.text(startX - YAxisPadding, (startY - i * tickStep), (min + i * d)));
+      }
+
+      yAxis.attr({fill: axisColor, &quot;stroke-width&quot;:2});
+      yAxisText.attr({&quot;font-size&quot;: fontSize});
+      this.yAxis = yAxis;
+      this.yAxisText = yAxisText;
+      this.yHeight = yHeight;
+
+      this.yMatchNum = tickStep / d;
+      this.y0 = startY;
+    }
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_setBackground">
+    setBackground
+  </h3>
+  
+
+  <p>绘制背景</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.setBackground()</td> 
+      <td></td>
+      <td>setBackground</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.setBackground = function () {
+    var conf = this.defaults;
+    var canvas = this.canvas;
+    var xWidth = this.xWidth;
+    var yHeight = this.yHeight;
+    var x0 = conf.margin[3];
+    var y0 = this.y0;
+
+    var rect = canvas.rect(x0, (y0 - yHeight), xWidth, yHeight).attr({&quot;fill&quot;: &quot;#fff&quot;,&quot;fill-opacity&quot;: 0, &quot;stroke&quot;: &quot;none&quot;});
+    this.background = rect;
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_render">
+    render
+  </h3>
+  
+
+  <p>渲染折线图</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">var line = new Line("chart");
+line.setSource(source);
+line.render();
+</pre></div>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.render()</td> 
+      <td></td>
+      <td>render</td>
+    </tr>
+  
+
+    <tr>
+      <td>参数</td>
+      <td>options(object)</td>
+      <td colspan="2">options json object for determin line style.</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.render = function (options) {
+    this.canvas.clear();
+    this.createCanvas();
+    var conf = this.defaults;
+    var linesData = this.linesData;
+    var nodesList = [];
+
+    this.setXaxis(this.titles);
+    this.setYaxis();
+
+    this.setBackground();
+
+    var canvas = this.canvas;
+    var nodeMode = conf.nodeMode;
+    var getColor = this.getColor();
+    var lineSize = conf.lineSize;
+    var max = this.max;
+    var min = this.min;
+    var xTick = this.xTick;
+    var yMatchNum = this.yMatchNum;
+    var yHeight = this.yHeight;
+    var x0 = conf.margin[3];
+    var y0 = this.y0;
+    var YAxisStartDy = conf.YAxisStartDy;
+    var radius = conf.nodeRadius;
+
+    var j, l;
+    var lines = canvas.set();
+    linesData.forEach(function (d, i) {
+      var nodeData = d.data;
+      var nodes = canvas.set();
+      var color = getColor(i);
+      var linePath = &quot;M&quot;;
+
+      for (j = 0, l = nodeData.length; j &lt; l; j++) {
+        var x = x0 + xTick * (j);
+        var y = y0 - ((nodeData[j] - min) * yMatchNum);
+
+        linePath = linePath + x + &quot;,&quot; + y;
+        
+        if (j &lt; l - 1) {
+          linePath = linePath + &quot;L&quot;;
+        }
+
+        if (nodeMode) {
+          var thisNode = canvas.circle(x, y, radius * 2).attr({fill: color, &quot;stroke&quot;: &quot;none&quot;});
+          thisNode.data('num', j);
+          thisNode.data('lineNum', i);
+          thisNode.data('data', nodeData[j]);
+          nodes.push(thisNode);
+        }
+      }
+
+      lines.push(canvas.path(linePath).attr({&quot;stroke&quot;: color, &quot;stroke-width&quot;: lineSize}).data('num', i));
+      if (nodeMode) {
+        nodesList.push(nodes.toFront());
+      }
+    });
+
+    this.lines = lines;
+    this.nodesList = nodesList;
+
+    this.interactive();
+  };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_interactive">
+    interactive
+  </h3>
+  
+
+  <p>添加交互选项</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Line.prototype.interactive()</td> 
+      <td></td>
+      <td>interactive</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Line.prototype.interactive = function () {
+    var that = this;
+    var conf = this.defaults;
+    var hoverMode = conf.hoverMode;
+    var clickMode = conf.clickMode;
+    var nodeMode = conf.nodeMode;
+    var chosen = this.chosen;
+    var chosenNum = this.chosenNum;
+    var lines = this.lines;
+    var nodesList = this.nodesList;
+    var xAxisText = this.xAxisText;
+    var XAxisFontSize = conf.XAxisFontSize;
+
+    var highLight = function (num) {
+      var line = lines[num];
+      lines.attr({&quot;stroke-opacity&quot;: 0.2});
+
+      nodesList.forEach(function (d) {
+        d.attr({&quot;fill-opacity&quot;: 0.2});
+      });
+
+      line.attr({&quot;stroke-opacity&quot;: 1}).toFront();
+      nodesList[num].attr({&quot;fill-opacity&quot;: 1}).toFront();
+    };
+
+    var unhighLinght = function () {
+      lines.forEach(function (d) {
+        d.attr({&quot;stroke-opacity&quot;: 1});
+      });
+      nodesList.forEach(function (d) {
+        d.attr({&quot;fill-opacity&quot;: 1});
+      });
+    };
+
+    var background = this.background;
+
+    if (clickMode){
+      background.click(function () {
+        if (chosen) {
+          unhighLinght();
+          chosen = false;
+          that.chosen = chosen;
+        }
+      });
+    }
+
+    var floatTag = this.floatTag;
+    $(this.node).append(this.floatTag);
+    // if (hoverMode) {
+    //  background.mouseover(function () {
+        
+  //    }).mouseout(function () {
+  //      floatTag.css({&quot;visibility&quot; : &quot;hidden&quot;});
+  //    });
+    // }
+
+    lines.forEach(function (d) {
+      if (hoverMode) {
+        d.mouseover(function () {
+          if (!chosen) {
+            highLight(d.data('num'));
+          }
+        }).mouseout(function () {
+          if (!chosen) {
+            unhighLinght();
+          }
+        });
+      }
+
+      if (clickMode){
+        d.click(function () {
+          chosenNum = d.data('num');
+          highLight(chosenNum);
+
+          chosen = true;
+          that.chosen = chosen;
+        });
+      }
+    });
+
+    if (nodeMode){
+      var radius = conf.nodeRadius;
+
+      nodesList.forEach(function (d) {
+        d.forEach (function (d) {
+          if (hoverMode) {
+            d.mouseover(function () {
+              d.animate({r: (radius + 2) * 2}, 100);
+              xAxisText[d.data('num')].animate({'font-size': XAxisFontSize * 2}, 100);
+              floatTag.html('&lt;div style=&quot;text-align: center;margin:auto;color:#ffffff&quot;&gt;' + d.data('data') + '&lt;/div&gt;');
+                floatTag.css({&quot;visibility&quot;: &quot;visible&quot;});
+              if (!chosen) {
+                highLight(d.data(&quot;lineNum&quot;));
+              }
+            }).mouseout(function () {
+              d.animate({r: radius * 2}, 100);
+              xAxisText[d.data('num')].animate({'font-size': XAxisFontSize}, 100);
+              floatTag.css({&quot;visibility&quot;: &quot;hidden&quot;});
+              if (!chosen) {
+                unhighLinght();             
+              }
+            });
+          }
+
+          if (clickMode){
+            d.click(function () {
+              chosenNum = d.data('lineNum');
+              highLight(chosenNum);
+
+              chosen = true;
+              that.chosen = chosen;
+            });
+          }
+        });
+      });
+    }
+  };
+
+  return Line;
+});</code></pre></td>
+    </tr>
+  
+  </table>
+  
+</section>
+      
         <section id="api_charts/matrix" class="api">
   <h2>charts/matrix: API索引</h2>
   <ul class="indexs">
@@ -7139,6 +8900,18 @@ var log = new Bullet("chart2", {
 
   <p>构造函数</p>
 
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code> 数字，图片宽度，默认为750，表示图片高750px</li>
+<li><code>height</code> 数字，图片高度，默认为500</li>
+<li><code>marginWidth</code> 数组，表示图片上、右、下、左的边距，默认为 [20, 20, 20, 20]</li>
+<li><code>backgroundAttr</code> 对象，没有选中的线的样式，默认为{"fill": "none", "stroke": "#ccc", "stroke-opacity": 0.4}， 具体设置方式请参考Raphael手册：<a href='http://raphaeljs.com/reference.html#Element.attr'>http://raphaeljs.com/reference.html#Element.attr</a></li>
+<li><code>foregroundAttr</code> 对象，被选中的线的样式，默认为{"fill": "none", "stroke": "steelblue", "stroke-opacity": 0.7}， 具体设置方式请参考Raphael手册：<a href='http://raphaeljs.com/reference.html#Element.attr'>http://raphaeljs.com/reference.html#Element.attr</a></li>
+<li><code>axisStyle</code> 对象，设置坐标轴属性。3中坐标轴属性：domainAttr表示坐标轴线属性。tickAttr表示坐标轴标尺属性。tickTextAttr表示坐标轴文字属性。具体设置方式请参考Raphael手册：<a href='http://raphaeljs.com/reference.html#Element.attr'>http://raphaeljs.com/reference.html#Element.attr</a></li>
+<li><code>customEvent</code> 函数对象，其中有3个自定义函数。<code>brushstart</code> 函数，表示刚开始拖选区间的事件响应，默认为空函数; <code>brushend</code> 函数，表示拖选结束后的事件响应，默认为空函数; <code>brush</code> 函数，表示拖选时的事件响应，默认为空函数; 这些函数可以在创建对象或setOption()时一起设置，也可以通过on()函数单独设置。</li>
+</ul>
+
   <table class="table">
   
     <tr>
@@ -7176,12 +8949,14 @@ var log = new Bullet("chart2", {
             this.defaults.marginWidth = [20, 20, 20, 20];
             this.defaults.backgroundAttr = {&quot;fill&quot;: &quot;none&quot;, &quot;stroke&quot;: &quot;#ccc&quot;, &quot;stroke-opacity&quot;: 0.4};
             this.defaults.foregroundAttr = {&quot;fill&quot;: &quot;none&quot;, &quot;stroke&quot;: &quot;steelblue&quot;, &quot;stroke-opacity&quot;: 0.7};
-            this.defaults.domainAttr = {&quot;stroke&quot;: &quot;#000&quot;};
-            this.defaults.tickAttr = {&quot;stroke&quot;: &quot;#000&quot;};
-            this.defaults.tickTextAttr = {};
-            this.defaults.titleAttr = {};
 
-            this.customEvent = {
+            this.defaults.axisStyle = {
+                domainAttr : {&quot;stroke&quot;: &quot;#000&quot;},//坐标轴线
+                tickAttr : {&quot;stroke&quot;: &quot;#000&quot;},//坐标轴标尺
+                tickTextAttr : {}//坐标轴文字
+            }
+
+            this.defaults.customEvent = {
                 &quot;brushstart&quot;: function () {},
                 &quot;brushend&quot;: function () {},
                 &quot;brush&quot;: function () {}
@@ -7568,8 +9343,8 @@ var log = new Bullet("chart2", {
   
     <tr>
       <td>代码</td><td colspan="3"><pre><code>Parallel.prototype.on = function (eventName, callback) {
-        if (_.indexOf([&quot;brushstart&quot;, &quot;brushend&quot;, &quot;brush&quot;], eventName)) {
-            this.customEvent[&quot;brushstart&quot;] = callback;
+        if ($.inArray(eventName, [&quot;brushstart&quot;, &quot;brushend&quot;, &quot;brush&quot;]) !== -1) {
+            this.defaults.customEvent[eventName] = callback;
         }
     };</code></pre></td>
     </tr>
@@ -7754,7 +9529,7 @@ var log = new Bullet("chart2", {
 
     <tr>
       <td>参数</td>
-      <td>container(Object)</td>
+      <td>node(Object)</td>
       <td colspan="2">表示在html的哪个容器中绘制该组件</td>
     </tr>
   
@@ -7770,8 +9545,8 @@ var log = new Bullet("chart2", {
     <tr>
       <td>代码</td><td colspan="3"><pre><code>var Pie = DataV.extend(DataV.Chart, {
         type: &quot;Pie&quot;,
-        initialize: function (container, options) {
-            this.node = this.checkContainer(container);
+        initialize: function (node, options) {
+            this.node = this.checkContainer(node);
             this.sum = 0;
             this.groupNames = []; //数组：记录每个group的名字
             this.groupValue = [];
@@ -7965,7 +9740,10 @@ var log = new Bullet("chart2", {
         var groups = this.groups;
 
         //由内外半径、起始角度计算路径字符串
-        var pathCalc = d3.svg.arc().innerRadius(conf.radius).outerRadius(0).startAngle(function (d) {
+        var pathCalc = d3.svg.arc()
+        .innerRadius(conf.radius)
+        .outerRadius(0)
+        .startAngle(function (d) {
             return d.startAngle;
         }).endAngle(function (d) {
             return d.endAngle;
@@ -7982,7 +9760,7 @@ var log = new Bullet("chart2", {
         //添加透明效果
 
         var mouseOver = function () {
-            floatTag.html('&lt;div style = &quot;text-align: center;margin:auto;color:' + &quot;#ffffff&quot; + '&quot;&gt;' + this.data('text') + '&lt;/div&gt;');
+            floatTag.html('&lt;div style=&quot;text-align:center;margin:auto;color:#ffffff&quot;&gt;' + this.data('text') + '&lt;/div&gt;');
             floatTag.css({
                 &quot;visibility&quot;: &quot;visible&quot;
             });
@@ -8063,11 +9841,17 @@ var log = new Bullet("chart2", {
             spline = pathCalc(groups[i]);
             tips = that.groupNames[i] + &quot;: &quot; + Math.round(groups[i].value) + &quot; &quot; + (groups[i].value * 100 / this.sum).toFixed(2) + &quot;%&quot;;
 
-            donutEle = that.canvas.path(spline).translate((conf.width - this.xOffset) / 2 + this.xOffset, conf.height / 2).data(&quot;donutIndex&quot;, i).attr({
+            donutEle = that.canvas.path(spline)
+            .translate((conf.width - this.xOffset) / 2 + this.xOffset, conf.height / 2)
+            .data(&quot;donutIndex&quot;, i)
+            .attr({
                 &quot;path&quot;: spline,
                 &quot;fill&quot;: that.getColor(i),
                 &quot;stroke&quot;: '#ffffff'
-            }).mouseover(mouseOver).mouseout(mouseOut).click(mouseClick);
+            })
+            .mouseover(mouseOver)
+            .mouseout(mouseOut)
+            .click(mouseClick);
 
             //每个donut上显示名称
             ro = (groups[i].startAngle + groups[i].endAngle) * 90 / Math.PI;
@@ -8081,9 +9865,7 @@ var log = new Bullet("chart2", {
 
             donutEle.data('text', tips).data('click', false).data('nameTag', nameTag).data('line', line);
             that.donutGroups.push(donutEle);
-
         }
-
 
         if (conf.legend) {
             this.legend();
@@ -8139,8 +9921,7 @@ var log = new Bullet("chart2", {
                 &quot;fill&quot;: &quot;black&quot;,
                 &quot;fill-opacity&quot;: 1,
                 &quot;font-family&quot;: &quot;Verdana&quot;,
-                &quot;font-size&quot;: 12
-            }).attr({
+                &quot;font-size&quot;: 12,
                 &quot;text-anchor&quot;: &quot;start&quot;
             });
             //选框
@@ -10800,6 +12581,14 @@ var log = new Bullet("chart2", {
   <ul class="indexs">
   
     <li>
+      <a href="#_Tree">Tree</a>
+    </li>
+
+    <li>
+      <a href="#Tree_dimension">dimension</a>
+    </li>
+
+    <li>
       <a href="#_render">render</a>
     </li>
 
@@ -10808,24 +12597,47 @@ var log = new Bullet("chart2", {
 
   
 
-  <p>lobal EventProxy, d3, Raphael, $</p>
-
   <table class="table">
   
 
   
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>;(function (name, definition) {
-    if (typeof define === 'function') {
-        define(definition);
-    } else {
-        this[name] = definition(function (id) { return this[id];});
-    }
-})('Tree', function (require) {
-    var DataV = require('DataV');
-    var theme = DataV.Themes;
+  </table>
+  
+  
+  <h3 id="_Tree">
+    Tree
+  </h3>
+  
 
-    var Tree = DataV.extend(DataV.Chart, {
+  <p>Tree的构造函数</p>
+
+<h2>Examples</h2>
+
+<div class="highlight"><pre lang="">var tree = new Tree("container");
+tree.setSource(source);
+tree.render();
+</pre></div>
+
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code>: 画布的宽度</li>
+<li><code>height</code>: 画布的高度</li>
+</ul>
+
+  <table class="table">
+  
+    <tr>
+      <td>声明</td>
+      <td>Tree</td> 
+      <td></td>
+      <td>Tree</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>var Tree = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
             this.type = &quot;Tree&quot;;
             this.node = this.checkContainer(node);
@@ -10845,7 +12657,66 @@ var log = new Bullet("chart2", {
             this.setOptions(options);
             this.createCanvas();
         }
-    });
+    });</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="Tree_dimension">
+    dimension
+  </h3>
+  
+
+  <p>饼图纬度描述</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>属性</td>
+      <td>Tree.dimension</td> 
+      <td>Tree</td>
+      <td>dimension</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Tree.dimension = {};</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>ID标签</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Tree.dimension.id = {
+        type: &quot;string&quot;,
+        required: true
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+
+  <p>父ID标签</p>
+
+  <table class="table">
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Tree.dimension.pid = {
+        type: &quot;string&quot;,
+        required: true
+    };
 
     Tree.prototype.hierarchyTableToJson = function (table) {
         if (table[0][0] === &quot;ID&quot;) {
@@ -10855,6 +12726,14 @@ var log = new Bullet("chart2", {
         var rootID;
         var hierarchy = {};
         var addlink = {}; //for multi-fathernode
+        // var ids = _.pluck(table, 0);
+        // var pids = _.pluck(table, 3);
+        // var roots = _.difference(pids, ids);
+        // if (roots.length === 0) {
+        //     throw new Error(&quot;root node is empty&quot;);
+        // } else if (roots.length &gt; 1) {
+        //     throw new Error(&quot;root nodes are too many&quot;);
+        // }
 
         table.forEach(function (d, i) {
             if (d[0] === &quot;&quot;) {
@@ -10890,13 +12769,13 @@ var log = new Bullet("chart2", {
         table.forEach(function (d, i) {
             if (d[3]) {
                 var record;
-                var ids = d[3].split('.');
+                var ids = d[3].split(',');
                 if (ids.length === 1) {
                     record = hierarchy[d[3]];
                     record.child.push(d[0]);
                 } else {
                     record = hierarchy[ids[0]];
-                     record.child.push(d[0]);
+                    record.child.push(d[0]);
                     addlink[d[0]] = {child: [], path: [], pnode: []};
 
                     var j, length;
@@ -11399,14 +13278,6 @@ var log = new Bullet("chart2", {
     </li>
 
     <li>
-      <a href="#_layout">layout</a>
-    </li>
-
-    <li>
-      <a href="#_generatePaths">generatePaths</a>
-    </li>
-
-    <li>
       <a href="#_clearCanvas">clearCanvas</a>
     </li>
 
@@ -11416,6 +13287,10 @@ var log = new Bullet("chart2", {
 
     <li>
       <a href="#_render">render</a>
+    </li>
+
+    <li>
+      <a href="#_on">on</a>
     </li>
 
   </ul>
@@ -11436,6 +13311,19 @@ var log = new Bullet("chart2", {
   
 
   <p>Treemap构造函数，继承自Chart</p>
+
+<h2>Options</h2>
+
+<ul>
+<li><code>width</code> 数字，图片宽度，默认为750，表示图片高750px</li>
+<li><code>height</code> 数字，图片高度，默认为500</li>
+<li><code>showBackTag</code> 布尔值，回退操作导航条是否显示，默认为 true, 显示；设为false则不显示</li>
+<li><code>backHeight</code> 数字，回退操作导航条宽度，默认为20</li>
+<li><code>level1BorderWidth</code> 数字，一级方框的边框宽度，默认为1(1px),不建议修改</li>
+<li><code>level2BorderWidth</code> 数字，二级方框的边框宽度，默认为1(1px)，不建议修改</li>
+<li><code>fontSizeRatio</code> 数字，表示图中文字大小。默认为1.0(1倍), 若设为2.0，字体大小会加倍;</li>
+<li><code>customEvent</code> 函数对象，其中有4个自定义函数。<code>leafNodeClick</code> 函数，表示点击叶子节点的事件响应，默认为空函数; <code>hoverIn</code> 函数，表示鼠标移进方框的事件响应，默认为空函数; <code>hoverOut</code> 函数，表示鼠标移出方框的事件响应，默认为空函数; <code>mouseover</code> 函数，表示在方框内移动鼠标的事件响应，默认为设置浮框的内容，可以替换它修改浮框内容; 这些函数可以在创建对象或setOption()时一起设置，也可以通过on函数单独设置。</li>
+</ul>
 
 <h2>Examples</h2>
 
@@ -11479,22 +13367,39 @@ var log = new Bullet("chart2", {
             this.selectedTreeNodes = [];//array of nodes on the path from root to recent node
             this.treeNodeJson = {};
             this.level_ = 2;
-            this.defaults.level1BorderWidth = 1;
-            this.defaults.level2BorderWidth = 1;
 
-            this.defaults.fontSizeRatio = 1.0;
+            this.floatTag;//浮框对象，这是个可操作的对象。
 
             // Canvas
+            this.defaults.width = 750;
+            this.defaults.height = 500;
+
             this.defaults.showBackTag = true;
             this.defaults.backHeight = 20;
-            this.defaults.width = 750;
+
+            this.defaults.level1BorderWidth = 1;
+            this.defaults.level2BorderWidth = 1;
+            this.defaults.fontSizeRatio = 1.0;
 
             //event
-            this.defaults.leafNodeClick = function () {};
-            this.defaults.hoverIn = function () {};
-            this.defaults.hoverOut = function () {};
+            this.defaults.customEvent = {
+                leafNodeClick : function () {},
+                hoverIn : function () {},
+                hoverOut : function () {},
+                mousemove : function () {
+                    var jqNode = this.jqNode,
+                        treemap = jqNode.treemap,
+                        floatTag = treemap.floatTag;
+    
+                    //set floatTag content
+                    floatTag.html('&lt;div style = &quot;text-align: center;margin:auto;color:' +
+                        //+ jqNode.color
+                        '&quot;#fff&quot;&gt;' + jqNode.treemapNode.name + '&lt;/div&gt;' +
+                        '&lt;div style = &quot;text-align: center; margin:auto;color:' +
+                        '&quot;#fff&quot;&gt;' + jqNode.treemapNode.value + '&lt;/div&gt;');
+                }
+            };
 
-            this.defaults.height = 500;
             this.setOptions(options);
             this.createCanvas();
         }
@@ -11739,302 +13644,6 @@ var log = new Bullet("chart2", {
   </table>
   
   
-  <h3 id="_layout">
-    layout
-  </h3>
-  
-
-  <p>d3 treemap layout</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Treemap.prototype.layout()</td> 
-      <td></td>
-      <td>layout</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Treemap.prototype.layout = function () {
-        var treemap = this._createTreemap()
-            .sort(function (a, b) { return a.value - b.value; });
-        this.nodes = treemap.nodes(this.treeNodeJson);
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
-  <h3 id="_generatePaths">
-    generatePaths
-  </h3>
-  
-
-  <p>生成绘制路径</p>
-
-  <table class="table">
-  
-    <tr>
-      <td>方法</td>
-      <td>Treemap.prototype.generatePaths()</td> 
-      <td></td>
-      <td>generatePaths</td>
-    </tr>
-  
-
-  
-    <tr>
-      <td>代码</td><td colspan="3"><pre><code>Treemap.prototype.generatePaths = function () {
-        //add interactive need
-        var canvas = this.canvas,
-            conf = this.defaults,
-            color,
-            leafIndex = 0,
-            leafCount,
-            colorRatio,
-            level1Node,
-            level1NodeArray = [],
-            funcArray = {},
-            i,
-            l,
-            level1Count = 0,
-            level1ColorFun,
-            goIn = function (event) {
-                var treemap = event.data.treemap,
-                    treemapNode = event.data.treemapNode,
-                    jqueryNode = event.data.jqueryNode;
-                jqueryNode.css({'z-index': 30,
-                            &quot;backgroundColor&quot;: jqueryNode.color})
-                    .animate({
-                        left : 0,
-                        top : 0,
-                        width : treemap.defaults.width,
-                        height : treemap.defaults.height
-                    }, 1000, function () {
-                        treemap._goToLeaf(treemapNode);
-                    });
-            },
-
-            goOut = function (event) {
-                var treemap = event.data.treemap;
-                if (treemap.selectedTreeNodes.length &gt; 1) {
-                    treemap._goToRoot(treemap.selectedTreeNodes.length - 2);
-                }
-                return false;
-            },
-
-            level1HoverIn = function (index, level1NodeArray) {
-                return function () {
-                    level1NodeArray.forEach(function (d, i, Array) {
-                        if (i === index) {
-                            d.css(&quot;font-size&quot;, Array[i].fontSizeValue * 6 / 5 + &quot;px&quot;);
-                            if (d.treemapNode.children) {
-                                Array[i].css(&quot;backgroundColor&quot;, '');
-                            }
-                        } else {
-                            Array[i].css(&quot;backgroundColor&quot;,
-                                d3.interpolateRgb.apply(null, [Array[i].color, &quot;#fff&quot;])(0.4));
-                        }
-                    });
-                    level1NodeArray[0].treemap.floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
-                };
-            },
-
-            level1HoverOut = function (level1NodeArray) {
-                return function () {
-                    level1NodeArray.forEach(function (d, i, Array) {
-                        Array[i].css(&quot;backgroundColor&quot;, Array[i].color)
-                            .css(&quot;font-size&quot;, Array[i].fontSizeValue + &quot;px&quot;);
-                    });
-                    level1NodeArray[0].treemap.floatTag.css({&quot;visibility&quot; : &quot;hidden&quot;});
-                };
-            },
-
-            level0HoverIn = function () {
-                this.jqNode.treemap.floatTag.css({&quot;visibility&quot; : &quot;visible&quot;});
-            },
-
-            level0HoverOut = function () {
-                this.jqNode.treemap.floatTag.css({&quot;visibility&quot; : &quot;hidden&quot;});
-            },
-
-            mousemove = function () {
-                var jqNode = this.jqNode,
-                    treemap = jqNode.treemap,
-                    floatTag = treemap.floatTag;
-
-                //set floatTag content
-                floatTag.html('&lt;div style = &quot;text-align: center;margin:auto;color:' +
-                    //+ jqNode.color
-                    '&quot;#fff&quot;&gt;' + jqNode.treemapNode.name + '&lt;/div&gt;' +
-                    '&lt;div style = &quot;text-align: center; margin:auto;color:' +
-                    '&quot;#fff&quot;&gt;' + jqNode.treemapNode.value + '&lt;/div&gt;');
-            },
-
-            customEvent = function (f, o) {
-                return function () {
-                    f.call(o);
-                };
-            };
-
-        $(canvas).append(this.floatTag);//canvas clear before draw, add floatTag.
-
-        for (i = 0, l = this.nodes.length; i &lt; l; i++) {
-            var d = this.nodes[i],//treemap node
-                borderWidth,
-                w,
-                h,
-                left,
-                top,
-                depthColor,
-                depthColorHsl,
-                jqNode = $(document.createElement(&quot;div&quot;));
-
-            if (!(d.parent &amp;&amp; d.parent.parent)) {
-                //level 0 and 1
-                color = this.getColor({mode: &quot;gradient&quot;, index: this._changeLevel1NodeColorIndex(d.name)});
-                leafIndex = -1;
-                leafCount = d.children ? d.children.length : 0;
-                colorRatio = 0.5;
-
-                if (d.parent) {
-                    //only level 1
-                    level1NodeArray.push(jqNode);
-                    level1Node = jqNode;
-                }
-                jqNode.color = color(colorRatio);
-                if (d.parent) {
-                    //level 1
-                    if (this.selectedTreeNodes.length === 1) {
-                        //root
-                        if (!level1ColorFun) {
-                            level1ColorFun = this.getColor({mode: &quot;multiColorGradient&quot;});
-                        }
-                    } else {
-                        if (!level1ColorFun) {
-                            depthColor = this.selectedTreeNodes[this.selectedTreeNodes.length - 1].color;
-                            depthColorHsl = d3.hsl(depthColor);
-                            level1ColorFun = d3.interpolateHsl.apply(null, [
-                                d3.hsl((depthColorHsl.h + 180) % 360, depthColorHsl.s, depthColorHsl.l).toString(),
-                                depthColor
-                            ]);
-                        }
-                    }
-                    jqNode.color = d.parent.children.length === 1 
-                        ? level1ColorFun(0)
-                        : level1ColorFun((level1Count++) / (d.parent.children.length - 1));
-                    color = d3.interpolateRgb.apply(null, [jqNode.color,
-                            d3.interpolateRgb.apply(null, [jqNode.color, &quot;#fff&quot;])(0.5)]);
-                } else {
-                    //level 0
-                    if (this.selectedTreeNodes.length &gt; 1) {
-                        jqNode.color = this.selectedTreeNodes[this.selectedTreeNodes.length - 1].color;
-                    }
-                }
-            } else {
-                //level 2
-                leafIndex += 1;
-                colorRatio = leafCount === 1 ? 0 : leafIndex / (leafCount - 1);
-                jqNode.color = color(colorRatio);
-            }
-            jqNode.treemapNode = d;
-            d.color = jqNode.color;
-            jqNode.treemap = this;
-            jqNode[0].jqNode = jqNode;
-            jqNode.appendTo($(canvas));
-
-            jqNode.css(&quot;borderStyle&quot;, &quot;solid&quot;)
-                .css(&quot;borderColor&quot;, &quot;#d6d6d6&quot;)
-                .css(&quot;overflow&quot;, &quot;hidden&quot;)
-                .css(&quot;fontFamily&quot;, '黑体')
-                //.css(&quot;fontFamily&quot;, 'sans-serif')
-                .css(&quot;position&quot;, &quot;absolute&quot;)
-                .css(&quot;textIndent&quot;, &quot;2px&quot;)
-                .css(&quot;backgroundColor&quot;, jqNode.color)
-                //.css(&quot;color&quot;, &quot;#fff&quot;);
-                .css(&quot;color&quot;, &quot;white&quot;);
-                //.css(&quot;textAlign&quot;, &quot;center&quot;);
-
-            if (!d.parent) {
-                // level 0 node
-                if (!d.children) {
-                    jqNode.html(d.name);
-                }
-            } else if (d.parent &amp;&amp; !d.parent.parent) {
-                // level 1 node
-                jqNode.html(d.name)
-                    .css(&quot;zIndex&quot;, 20);
-                if (d.children) {
-                    //jqNode.css(&quot;backgroundColor&quot;, '');
-                    jqNode.css(&quot;backgroundColor&quot;, jqNode.color);
-                }
-            } else {
-                // level 2 node
-                jqNode.css(&quot;borderColor&quot;, &quot;rgba(255, 255, 255, 0.5)&quot;);
-            }
-
-            // position
-            // border do not need adjust, still 1 px;
-            borderWidth = 1;
-            w = Math.max(0, d.dx - borderWidth);
-            h = Math.max(0, d.dy - borderWidth);
-            jqNode.fontSizeValue = Math.max(conf.fontSizeRatio
-                    * parseInt(60 * Math.sqrt(w * h / conf.width / conf.height), 10),
-                    12);
-            jqNode.css(&quot;borderWidth&quot;, borderWidth + &quot;px&quot;)
-                .css(&quot;left&quot;, d.x + &quot;px&quot;)
-                .css(&quot;top&quot;, d.y + &quot;px&quot;)
-                .css(&quot;width&quot;, w + &quot;px&quot;)
-                .css(&quot;height&quot;, h + &quot;px&quot;)
-                .css(&quot;fontSize&quot;, jqNode.fontSizeValue + &quot;px&quot;);
-                //.css(&quot;lineHeight&quot;, Math.max(0, d.dy - borderWidth ) + &quot;px&quot;);
-
-            if (d.parent &amp;&amp; !d.parent.parent) {
-                //level 1
-                jqNode.css(&quot;cursor&quot;, &quot;pointer&quot;);
-                jqNode.clone().insertBefore(jqNode).css(&quot;opacity&quot;, 0.01);
-                jqNode.click({&quot;treemap&quot;: this, &quot;treemapNode&quot;: d, &quot;jqueryNode&quot;: jqNode}, goIn);
-                jqNode.mouseover(level1HoverIn(level1NodeArray.length - 1, level1NodeArray));
-                jqNode.mouseout(level1HoverOut(level1NodeArray));
-                jqNode.mousemove(mousemove);
-            }
-
-            if (!d.parent) {
-                //level 0; leaf node
-                jqNode.mouseover(level0HoverIn);
-                jqNode.mouseout(level0HoverOut);
-                jqNode.mousemove(mousemove);
-            }
-
-            jqNode.bind(&quot;contextmenu&quot;, {&quot;treemap&quot;: this}, goOut);
-
-            // custom interacitves
-            var o = {treemapNode : d,
-                node : jqNode,
-                name : d.name,
-                parent : d.parent,
-                value : d.value
-                };
-
-            if (d.parent &amp;&amp; (!d.parent.parent) &amp;&amp; (!d.children)) {
-                jqNode.click(customEvent(this.defaults.leafNodeClick, o));
-            }
-    
-            jqNode.mouseover(customEvent(this.defaults.hoverIn, o));
-    
-            jqNode.mouseout(customEvent(this.defaults.hoverOut, o));
-
-            //canvas.appendChild(jqNode[0]);
-        }
-    };</code></pre></td>
-    </tr>
-  
-  </table>
-  
-  
   <h3 id="_clearCanvas">
     clearCanvas
   </h3>
@@ -12123,6 +13732,35 @@ var log = new Bullet("chart2", {
         this.layout();
         this._setBackTag();
         this.generatePaths();
+    };</code></pre></td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3 id="_on">
+    on
+  </h3>
+  
+
+  <p>设置自定义事件</p>
+
+  <table class="table">
+  
+    <tr>
+      <td>方法</td>
+      <td>Treemap.prototype.on()</td> 
+      <td></td>
+      <td>on</td>
+    </tr>
+  
+
+  
+    <tr>
+      <td>代码</td><td colspan="3"><pre><code>Treemap.prototype.on = function (eventName, callback) {
+        if ($.inArray(eventName, [&quot;leafNodeClick&quot;, &quot;hoverIn&quot;, &quot;hoverOut&quot;, &quot;mousemove&quot;]) !== -1) {
+            this.defaults.customEvent[eventName] = callback;
+        }
     };</code></pre></td>
     </tr>
   

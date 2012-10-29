@@ -25,15 +25,7 @@
               </li>
             
               <li>
-                <a href="./bullet文档.html">bullet文档</a>
-              </li>
-            
-              <li>
-                <a href="./butterfly.html">butterfly</a>
-              </li>
-            
-              <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./Architecture.html">Architecture</a>
               </li>
             
               <li>
@@ -45,7 +37,15 @@
               </li>
             
               <li>
-                <a href="./force文档.html">force文档</a>
+                <a href="./dataFormat.html">dataFormat</a>
+              </li>
+            
+              <li>
+                <a href="./changelog.html">changelog</a>
+              </li>
+            
+              <li>
+                <a href="./Getting Start.html">Getting Start</a>
               </li>
             
             
@@ -54,7 +54,15 @@
                 <ul class="dropdown-menu" role="menu">
                 
                   <li>
+                    <a href="./Load DataV.html">Load DataV</a>
+                  </li>
+                
+                  <li>
                     <a href="./parallel文档.html">parallel文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./Pie文档.html">Pie文档</a>
                   </li>
                 
                   <li>
@@ -62,11 +70,23 @@
                   </li>
                 
                   <li>
+                    <a href="./butterfly.html">butterfly</a>
+                  </li>
+                
+                  <li>
                     <a href="./treemap文档.html">treemap文档</a>
                   </li>
                 
                   <li>
+                    <a href="./bullet文档.html">bullet文档</a>
+                  </li>
+                
+                  <li>
                     <a href="./服务器配置.html">服务器配置</a>
+                  </li>
+                
+                  <li>
+                    <a href="./force文档.html">force文档</a>
                   </li>
                 
                 </ul>
@@ -91,8 +111,8 @@
       <ul class="nav nav-list bs-docs-sidenav affix">
 
   <li class="level_1">
-    <a href="#index_" title="">
-      <i class="icon-chevron-right"></i>
+    <a href="#index_Stream图简介" title="Stream图简介">
+      <i class="icon-chevron-right"></i>Stream图简介
     </a>
   </li>
 
@@ -102,57 +122,116 @@
     <div class="span9">
       <section>
         <h1>Stream图简介</h1>
+<p>Stream图通常用来展示多个变量随时间的变化趋势。每个变量用一条色带表示。色带的宽度代表了变量在某时间点处的值或占比的大小。 在DataV的Stream提供了自底向上排列，居中排列，扩展排列，平缓排列4种条带布局方式。鼠标移上条带时，可以高亮响应的条带，并在浮动框中显示相应变量在相应时间点处的值。 绘制Stream的javascript代码如下：
 
-<p>Stream图通常用来展示多个变量随时间的变化趋势。每个变量用一条色带表示。色带的宽度代表了变量在某时间点处的值或占比的大小。 在DataV的Stream提供了自底向上排列，居中排列，扩展排列，平缓排列4种条带布局方式。鼠标移上条带时，可以高亮响应的条带，并在浮动框中显示相应变量在相应时间点处的值。 绘制Stream的javascript代码如下：</p>
-
-<div class="highlight"><pre lang="javascript">//创建stream对象，包含于id为"chart"的dom结点，宽、高分别为700、500px。
-var stream = new DataV.Stream("chart"，{"width": 700, "height": 500});
-//设置 stream选项，排列方式为"zero"， 排列顺序为"reverse"。
-stream.setOptions({"offset": "zero", "order": "reverse"}); //options
+</p>
+<pre><code class="lang-javascript">//创建stream对象，包含于id为&quot;chart&quot;的dom结点，宽、高分别为700、500px。
+var stream = new DataV.Stream(&quot;chart&quot;，{&quot;width&quot;: 700, &quot;height&quot;: 500});
+//设置 stream选项，排列方式为&quot;zero&quot;， 排列顺序为&quot;reverse&quot;。
+stream.setOptions({&quot;offset&quot;: &quot;zero&quot;, &quot;order&quot;: &quot;reverse&quot;}); //options
 //设置数据，输入的数据为一个二维数组。
 stream.setSource(source); //source is a 2-d array
 //绘制
-stream.render();
-</pre></div>
+stream.render();</code></pre>
+<p>创建stream对象时，第一个参数是包含stream的dom结点 或该结点的id， 第二个参数是各种选项，其中最重要的是宽和高。
 
-<p>创建stream对象时，第一个参数是包含stream的dom结点 或该结点的id， 第二个参数是各种选项，其中最重要的是宽和高。</p>
+</p>
+<p>设置 stream选项时，最重要的是offset和order。
 
-<p>设置 stream选项时，最重要的是offset和order。</p>
+</p>
+<p>offset有4个选项：
 
-<p>offset有4个选项：</p>
-
+</p>
 <ul>
-<li>"zero"（从下往上堆叠），</li>
-<li>"silhouette"（纵向居中堆叠），</li>
-<li>"expand"（计算占比后堆叠），</li>
-<li>"wiggle"（前后两个时间点间的变化幅度最小，更平缓）。</li>
+<li>&quot;zero&quot;（从下往上堆叠），</li>
+<li>&quot;silhouette&quot;（纵向居中堆叠），</li>
+<li>&quot;expand&quot;（计算占比后堆叠），</li>
+<li>&quot;wiggle&quot;（前后两个时间点间的变化幅度最小，更平缓）。</li>
 </ul>
+<p>order有2个选项：
 
-<p>order有2个选项：</p>
-
+</p>
 <ul>
-<li>"default"表示个变量以输入数据中的先后顺序从下往上排列；</li>
-<li>"reverse"表示顺序相反。</li>
+<li>&quot;default&quot;表示个变量以输入数据中的先后顺序从下往上排列；</li>
+<li>&quot;reverse&quot;表示顺序相反。</li>
 </ul>
-
-<p>stream数据输入的格式为二维数组。例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。</p>
-
-<div class="highlight"><pre lang="javascript">    [
+<p>stream数据输入的格式为二维数组。例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
+</p>
+<pre><code class="lang-javascript">    [
       [1,2,3,9],
       [3,4,6,3]
-    ]
-</pre></div>
+    ]</code></pre>
+<p>数组中还可以在第一行和第一列加上列名和行名。下面的数据中加入了人名和季节。
 
-<p>数组中还可以在第一行和第一列加上列名和行名。下面的数据中加入了人名和季节。</p>
+</p>
+<pre><code class="lang-javascript">    [
+      [&quot;&quot;, &quot;season1&quot;, &quot;season2&quot;, &quot;season3&quot;, &quot;season4&quot;],
+      [&quot;Wang&quot;, 1, 2, 3, 9],
+      [&quot;Li&quot;, 3, 4, 6, 3]
+    ]</code></pre>
+<p>以上设置了绘制stream所需的最重要的属性，调用render()就能完成绘制。 
 
-<div class="highlight"><pre lang="javascript">    [
-      ["", "season1", "season2", "season3", "season4"],
-      ["Wang", 1, 2, 3, 9],
-      ["Li", 3, 4, 6, 3]
-    ]
-</pre></div>
 
-<p>以上设置了绘制stream所需的最重要的属性，调用render()就能完成绘制。 </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</p>
+
       </section>
     </div>
   </div>

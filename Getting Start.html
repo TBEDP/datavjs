@@ -111,38 +111,32 @@
       <ul class="nav nav-list bs-docs-sidenav affix">
 
   <li class="level_1">
-    <a href="#index_服务器端配置" title="服务器端配置">
-      <i class="icon-chevron-right"></i>服务器端配置
+    <a href="#index_Getting Start" title="Getting Start">
+      <i class="icon-chevron-right"></i>Getting Start
     </a>
   </li>
 
   <li class="level_2">
-    <a href="#index_为何需要服务器？" title="为何需要服务器？">
-      <i class="icon-chevron-right"></i>为何需要服务器？
+    <a href="#index_引入依赖" title="引入依赖">
+      <i class="icon-chevron-right"></i>引入依赖
     </a>
   </li>
 
   <li class="level_2">
-    <a href="#index_怎么安装？" title="怎么安装？">
-      <i class="icon-chevron-right"></i>怎么安装？
+    <a href="#index_准备数据" title="准备数据">
+      <i class="icon-chevron-right"></i>准备数据
     </a>
   </li>
 
-  <li class="level_3">
-    <a href="#index_下载安装" title="下载安装">
-      <i class="icon-chevron-right"></i>下载安装
+  <li class="level_2">
+    <a href="#index_渲染图表" title="渲染图表">
+      <i class="icon-chevron-right"></i>渲染图表
     </a>
   </li>
 
-  <li class="level_3">
-    <a href="#index_执行" title="执行">
-      <i class="icon-chevron-right"></i>执行
-    </a>
-  </li>
-
-  <li class="level_3">
-    <a href="#index_访问服务器" title="访问服务器">
-      <i class="icon-chevron-right"></i>访问服务器
+  <li class="level_2">
+    <a href="#index_结果" title="结果">
+      <i class="icon-chevron-right"></i>结果
     </a>
   </li>
 
@@ -151,24 +145,46 @@
     </div>
     <div class="span9">
       <section>
-        <h1>服务器端配置</h1>
-<h2>为何需要服务器？</h2>
-<p>由于我们项目中加载数据文件是通过ajax的方式，Ajax在普通从磁盘文件方式打开时，浏览器是不启用ajax功能的，会导致demo无法跑通。
+        <h1>Getting Start</h1>
+<p>此处以Pie图为例。
 
 </p>
-<h2>怎么安装？</h2>
-<p>推荐通过Node.js来搭建，十分方便快捷。
+<h2>引入依赖</h2>
+<pre><code>// 依赖
+path/to/deps/compatible.js
+path/to/deps/d3.min.js
+path/to/deps/raphael.min.js
+path/to/deps/eventproxy.js
+path/to/deps/underscore-1.4.2.js
+path/to/deps/jquery-1.7.1.min.js
+// DataV
+path/to/datav.js
+// Pie
+path/to/charts/pie.js</code></pre>
+<p>问题？<a href="">依赖库也太多了吧？</a>
 </p>
-<h3>下载安装</h3>
-<p>从这里下载<a href="http://nodejs.org/#download">http://nodejs.org/#download</a>适合你平台的Node二进制文件，并安装。Linux需要编译。
-</p>
-<h3>执行</h3>
-<pre><code>npm install anywhere -g</code></pre>
-<p>安装完成后，执行到目录下执行<code>anywhere</code>即可。
-</p>
-<h3>访问服务器</h3>
-<p>执行命令后，可以看到服务器已经执行起来，通过浏览器打开<a href="http://localhost:8080">http://localhost:8080</a>即可看到目录结构。
-</p>
+<h2>准备数据</h2>
+<pre><code>var source = [
+  &#39;北京&#39;, 50265
+  &#39;上海&#39;, 60555
+  &#39;广州&#39;, 38544
+  &#39;深圳&#39;, 27276
+  &#39;西安&#39;, 20506
+  &#39;昆明&#39;, 26916
+  &#39;武汉&#39;, 17636
+  &#39;拉萨&#39;, 977
+  &#39;哈尔滨&#39;, 10406
+  &#39;乌鲁木齐&#39;, 6695
+];</code></pre>
+<h2>渲染图表</h2>
+<pre><code>// 初始化组件
+var pie = new Pie(&quot;container&quot;, {width: 1000, tag: true});
+// 添加数据源
+pie.setSource(source);
+// 渲染
+pie.render();</code></pre>
+<h2>结果</h2>
+<p><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg" alt="Pie图"></p>
 
       </section>
     </div>
