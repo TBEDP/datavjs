@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Line</title>
+    <script src="../../build/deps.js"></script>
+	<script src="../../lib/datav.js"></script>
+	<script src="../../lib/charts/line.js"></script>	
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script type="text/javascript">
+		var line = new Line("chart");
+		var source = [["name", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],["first", 1, 2, 3, 6, 5, 4],["second", 4, 4, 4, 4, 2, 8, 1],["third", 3, 4, 5, 2, 2, 9, 6]];
+		line.setSource(source);
+		line.render();
+    </script>
+  </body>
+</html>

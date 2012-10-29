@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Line</title>
+    <script src="../../build/deps.js"></script>
+	<script type="text/javascript" src="../../deps/seajs/sea.js"></script>
+
+	<script>
+		var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+	    seajs.config({
+  			alias: {
+  				'DataV': dir + '/../../build/datav.js',
+  				'Line': dir + '/../../lib/charts/line.js'
+  			}
+  		});
+	</script>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script type="text/javascript">
+		seajs.use(["Line", "DataV"], function (Line, DataV) {
+			var line = new Line("chart");
+			var source = [["name", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],["first", 1, 2, 3, 6, 5, 4],["second", 4, 4, 4, 4, 2, 8, 1],["third", 3, 4, 5, 2, 2, 9, 6]];
+			line.setSource(source);
+			line.render();
+		});
+    </script>
+  </body>
+</html>
