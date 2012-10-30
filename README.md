@@ -30,13 +30,9 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 
 ### 引入依赖
 
-```
-// 依赖
-// DataV
-path/to/build/datav.js
-// Pie
-path/to/charts/pie.js
-```
+    <script src="path/to/build/datav.js"></script>
+    <script src="path/to/charts/pie.js"></script>
+
 ### 准备数据
 
 ```
