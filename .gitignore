@@ -1,1 +1,3 @@
+*.db
 *.swp
+node_modules/*

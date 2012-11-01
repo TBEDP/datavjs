@@ -51,5 +51,6 @@ exports.all = exports.datav.concat([
   'lib/charts/scatterplotMatrix.js',
   'lib/charts/stream.js',
   'lib/charts/tree.js',
-  'lib/charts/treemap.js'
+  'lib/charts/treemap.js',
+  'lib/charts/chinamap.js'
 ]);
