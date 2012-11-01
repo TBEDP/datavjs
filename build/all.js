@@ -26009,3 +26009,10541 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
   });
 
 }).call(this);
+
+/*global d3 */
+/*!
+ * DataV兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('DataV', function (require) {
+    /**
+     * DataV全局命名空间对象定义
+     */
+    var DataV = function () {};
+
+    /**
+     * 版本号
+     */
+    DataV.version = "0.0.1";
+
+    /**
+     * 全局主题对象
+     */
+    DataV.Themes = {};
+
+    /**
+     * 获取当前主题的属性
+     * @return {Mix} 返回当前主题的属性值
+     */
+    DataV.Themes.get = function (key) {
+        var themeName = DataV.Themes.current || "default";
+        if (!DataV.Themes._currentTheme) {
+            DataV.Themes._currentTheme = DataV.Themes[themeName];
+        }
+        return DataV.Themes._currentTheme[key];
+    };
+
+    /**
+     * 添加自定义主题
+     * @param {String} themeName 主题名称
+     * @param {Object} theme 主题对象json, contain attribute "COLOR_ARGS", theme.COLOR_ARGS is a 2-d array;
+     */
+    DataV.Themes.add = function () {
+        var args = [].slice.call(arguments, 0);
+        theme = args.pop();
+        if (arguments.length < 2) {
+            throw new Error("Arguments format error. should be: (themsName, theme)");
+        } else if (typeof theme !== "object") {
+            throw new Error("second argument theme should be a json object");
+        } else if (!theme["COLOR_ARGS"]) {
+            throw new Error("theme.COLOR_ARGS needed");
+        } else if (!theme["COLOR_ARGS"] instanceof Array) {
+            throw new Error("theme.COLOR_ARGS should be an array");
+        } else if (!(theme["COLOR_ARGS"][0] instanceof Array)) {
+            throw new Error("theme.COLOR_ARGS[0] should be an array");
+        }
+        for (var i = 0, l = args.length; i < l; i++) {
+            var _themeName = args[i];
+            if (DataV.Themes.hasOwnProperty(_themeName)) {
+                throw new Error("The " + _themeName + " has been defined");
+            }
+            DataV.Themes[_themeName] = theme;
+        }
+    };
+
+    /*!
+     * 默认主题
+     */
+    DataV.Themes.add('default', 'theme0', {
+         COLOR_ARGS: [
+            ["#3dc6f4", "#8ce3ff"],
+            ["#214fd9", "#7396ff"],
+            ["#4f21d9", "#9673ff"],
+            ["#c43df2", "#e38cff"],
+            ["#d8214f", "#ff7396"],
+            ["#f3c53c", "#ffe38c"]
+        ]
+    });
+
+    /*!
+     * 主题1
+     */
+    DataV.Themes.add('theme1', {
+        COLOR_ARGS: [
+            ["#e72e8b", "#ff7fbf"],
+            ["#d94f21", "#ff9673"],
+            ["#f3c53c", "#ffe38c"],
+            ["#8be62f", "#bfff7f"],
+            ["#14cc14", "#66ff66"],
+            ["#2fe68a", "#7fffc0"]
+        ]
+    });
+
+    /*!
+     * 主题2
+     */
+    DataV.Themes.add('theme2', {
+        COLOR_ARGS: [
+            ["#2f8ae7", "#7fc0ff"],
+            ["#8a2ee7", "#bf7fff"],
+            ["#f33dc6", "#ff8ce3"],
+            ["#8be62f", "#bfff7f"],
+            ["#14cc14", "#66ff66"],
+            ["#2fe68a", "#7fffc0"]
+        ]
+    });
+
+    DataV.Themes.add('theme3', {
+        COLOR_ARGS: [
+            ["#2f8ae7", "#896DA3"],
+            ["#8e34df", "#FFADA6"],
+            ["#f738c0", "#65FCFC"],
+            ["#84e653", "#555566"],
+            ["#0cc53e", "#db3f7c"],
+            ["#00e793s", "#db3f7c"]
+        ]
+    });
+
+    DataV.Themes.add('theme4', {
+        COLOR_ARGS: [
+            ["#d94f21", "#7a88d1"],
+            ["#579ce2", "#87bdf4"],
+            ["#3bb4df", "#7fd1ef"],
+            ["#a380ff", "#baa0ff"],
+            ["#a164c5", "#c28fe1"],
+            ["#d93a92", "#ec74b6"],
+            ["#b82377", "#d569a7"],
+            ["#bb3ca3", "#d381c2"],
+            ["#da2d57", "#ec6b8a"],
+            ["#4ca716", "#4ca716"],
+            ["#5b63c2", "#8e93d7"],
+            ["#15a9a3", "#4ecac5"],
+            ["#a9ab48", "#e8c670"],
+            ["#2aa5f5", "#73c4fa"],
+            ["#f67e10", "#feb648"],
+            ["#1faa77", "#62c8a2"],
+            ["#eb4f20", "#f58563"],
+            ["#ffc000", "#ffd659"],
+            ["#f16ebc", "#f6a1d3"],
+            ["#d23457", "#e27b92"]
+        ]
+    });
+
+    /**
+     * 切换当前主题
+     * @param {String} themeName 主题名称
+     * @return {Boolean} 返回是否切换成功
+     */
+    DataV.changeTheme = function (themeName) {
+        var ret = DataV.Themes[themeName];
+        if (ret) {
+            DataV.Themes.current = themeName;
+            DataV.Themes._currentTheme = null;
+        }
+        return !!ret;
+    };
+
+    /**
+     * 获取当前主题的颜色配置
+     * @return {Array} 颜色参数列表
+     */
+    DataV.getColor = function () {
+        var theme = DataV.Themes;
+        var color = theme.get("COLOR_ARGS");
+        return color;
+    };
+
+    /**
+     * 根据当前主题的颜色配置方案，获取生成离散颜色的函数
+     * @return {Function} 离散函数
+     */
+    DataV.getDiscreteColor = function () {
+        var color = DataV.getColor();
+        if (!_.isArray(color)) {
+            throw new Error("The color should be Array");
+        }
+        var colorCount = color.length;
+        var gotColor = [];
+
+        if (_.isArray(color[0])) {
+            for (var i = 0; i < colorLineCount ; i++) {
+                getColor.push(color[i][0]);
+            }
+        } else {
+            gotColor = color;
+        }
+
+        return function (num) {
+            var thisColor = gotColor;
+            var thisColorCount = colorCount;
+
+            return thisColor[num % thisolorCount];
+        };
+    };
+
+    /**
+     * 获取渐变颜色，用于生成渐变效果
+     * @param {Array} color 颜色数组
+     * @param {String} method 生成渐变色的方法，默认值为normal。如果为normal将采用D3的interpolateRgb算法，如果为special，则用Rapheal的HSB算法
+     * @return {Function} 返回生成算法
+     */
+    DataV.gradientColor = function (color, method) {
+        if (!_.isArray(color)) {
+            throw new Error("The color should be Array");
+        }
+
+        var startColor = color[0];
+        var colorColor;
+        var colorCount = color.length;
+
+        var hsb;
+        if (colorCount === 1) {
+            hsb = Raphael.color(color[0]);
+            endColor = Raphael.hsb(hsb.h / 360, (hsb.s -30) / 100, 1);
+        } else {
+            endColor = color[colorCount - 1];
+        }
+
+        method = method || "normal ";
+
+        if (method === "special") {
+            return function (num) {
+                var startHSB = Raphael.color(startColor);
+                var endHSB = Raphael.color(endColor);
+                var startH = startHSB.h * 360;
+                var endH = endHSB.h * 360;
+                var startNum = startHSB.h * 20;
+                var endNum = endHSB.h * 20;
+
+                var dH;
+                var dNum;
+                if (startNum >= endNum) {
+                    dH = 360 - startH + endH;
+                    dNum = colorCount - startNum + endNum;
+                } else {
+                    dH = endH - startH;
+                    dNum = endNum - startNum;
+                }
+                
+                var h = (startH + dH * num) / 360;
+                var s = (70 + Math.abs(4 - (startNum + dNum * num) % 8) * 5) / 100;
+                var b = (100 - Math.abs(4 - (startNum + dNum * num) % 8) * 5) / 100;
+
+                return Raphael.hsb(h, s, b);
+            };
+        } else {
+            return d3.interpolateRgb.apply(null, [startColor, endColor]);
+        }
+    };
+
+    /**
+     * 请求一个JSON文件
+     * @param {String} url JSON文件地址
+     * @param {Function} callback 回调函数
+     */
+    DataV.json = function (url, callback) {
+        d3.json(url, callback);
+    };
+
+    /**
+     * 请求一个CSV文件，并解析
+     * @param {String} url CSV文件地址
+     * @param {Function} callback 回调函数，得到解析后的结果
+     */
+    DataV.csv = function (url, callback) {
+        d3.text(url, "text/csv", function (text) {
+            callback(text && d3.csv.parseRows(text));
+        });
+    };
+
+    /**
+     * 判断输入是否是数字
+     * @param {Mix} obj 输入内容
+     * @return {Boolean} 返回输入是否是数字
+     */
+    DataV.isNumeric = function (obj) {
+        return !isNaN(parseFloat(obj)) && isFinite(obj);
+    };
+
+    /**
+     * 继承
+     * @param {Function} parent 父类
+     * @param {Object} properties 新属性
+     * @return {Function} 新的子类
+     */
+    DataV.extend = function (parent, properties) {
+        if (typeof parent !== "function") {
+            properties = parent;
+            parent = function () {};
+        }
+
+        properties = properties || {};
+        var sub = function () {
+            // Call the parent constructor.
+            parent.apply(this, arguments);
+            // Only call initialize in self constructor.
+            if (this.constructor === parent && this.initialize) {
+                this.initialize.apply(this, arguments);
+            }
+        };
+        sub.prototype = new parent();
+        sub.prototype.constructor = parent;
+        $.extend(sub.prototype, properties);
+        return sub;
+    };
+
+    /**
+     * 所有Chart的源定义
+     * Examples:
+     * ```
+     *    var Stream = DataV.extend(DataV.Chart, {
+     *        initialize: function () {
+     *            this.type = "Stream";
+     *        },
+     *        clearCanvas: function () {
+     *            this.canvas.clear();
+     *            this.legend.innerHTML = "";
+     *        }
+     *    });
+     * ```
+     */
+    var Chart = DataV.extend(EventProxy, {
+        type: "Chart",
+        initialize: function (node, options) {
+            this.defaults = {};
+            this.plugins = {};
+        }
+    });
+
+    /**
+     * 返回当前Chart的类型
+     * @return {String} Chart类型
+     */
+    Chart.prototype.getType = function () {
+        return this.type;
+    };
+    /**
+     * 如果node是字符串，会当作ID进行查找。
+     * 如果是DOM元素，直接返回该元素。
+     * 如果是jQuery对象，返回对象中的第一个元素。
+     * 如果节点不存在，则抛出异常
+     * Examples:
+     * ```
+     * chart.checkContainer("id");
+     * chart.checkContainer(document.getElementById("id"));
+     * chart.checkContainer($("#id"));
+     * ```
+     * @param {Mix} node The element Id or Dom element
+     * @return {Object} 返回找到的DOM节点
+     */
+    Chart.prototype.checkContainer = function (node) {
+        var ret = null;
+
+        if (typeof node === "string") {
+            ret = document.getElementById(node);
+        } else if (node.nodeName) { //DOM-element
+            ret = node;
+        } else if (node instanceof jQuery && node.size() > 0) {
+            ret = node[0];
+        }
+        if (!ret) {
+            throw new Error("Please specify which node to render.");
+        }
+        return ret;
+    };
+
+    /**
+     * 设置自定义选项
+     * Examples:
+     * Set width 500px, height 600px;
+     * ```
+     * {"width": 500, "height": 600}
+     * ```
+     * @param {Object} options 自定义选项对象
+     * @return {Object} 覆盖后的图表选项对象
+     */
+    Chart.prototype.setOptions = function (options) {
+        return _.extend(this.defaults, options);
+    };
+
+    /**
+     * 添加插件方法到实例对象上
+     * @param {String} name plugin name
+     * @param {Function} fn plugin function
+     * @return {Object} A reference to the host object
+     */
+    Chart.prototype.plug = function (name, fn) {
+        this[name] = fn;
+        this.plugins[name] = fn;
+        return this;
+    };
+
+    /**
+     * 从实例上移除插件方法
+     * @param {String} plugin The namespace of the plugin
+     * @return {Object} A reference to the host object
+     */
+    Chart.prototype.unplug = function (name) {
+        if (this.plugins.hasOwnProperty(name)) {
+            delete this.plugins[name];
+            delete this[name];
+        }
+        return this;
+    };
+
+    DataV.Chart = Chart;
+
+    /**
+     * 浮动标签
+     */
+    DataV.FloatTag = function () {
+        var _mousemove = function (e) {
+            var jqNode = e.data.jqNode;
+            var container = e.data.container;
+            var mouseToFloatTag = {x: 20, y: 20};
+            var offset = $(container).offset();
+            if (!(e.pageX && e.pageY)) {return false;}
+            var x = e.pageX - offset.left,
+                y = e.pageY - offset.top;
+            var position = $(container).position();
+
+            setContent.call(this);
+
+            //set floatTag location
+            floatTagWidth = jqNode.outerWidth();
+            floatTagHeight = jqNode.outerHeight();
+            if (floatTagWidth + x + 2 * mouseToFloatTag.x <=  $(container).width()) {
+                x += mouseToFloatTag.x;
+            } else {
+                x = x - floatTagWidth - mouseToFloatTag.x;
+            }
+            if (y >= floatTagHeight + mouseToFloatTag.y) {
+                y = y - mouseToFloatTag.y - floatTagHeight;
+            } else {
+                y += mouseToFloatTag.y;
+            }
+            jqNode.css("left",  x  + "px");
+            jqNode.css("top",  y + "px");
+        };
+
+        var setContent = function () {};
+
+        function floatTag(cont) {
+            var container = cont;
+            var jqNode = $("<div/>").css({
+                "border": "1px solid",
+                "border-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.8)",
+                "background-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.75)",
+                "color": "white",
+                "border-radius": "2px",
+                "padding": "12px 8px",
+                //"line-height": "170%",
+                //"opacity": 0.7,
+                "font-size": "12px",
+                "box-shadow": "3px 3px 6px 0px rgba(0,0,0,0.58)",
+                "font-familiy": "宋体",
+                "z-index": 10000,
+                "text-align": "center",
+                "visibility": "hidden",
+                "position": "absolute"
+            });
+            $(container).append(jqNode)
+                .mousemove({"jqNode": jqNode, "container": container}, _mousemove);
+            return jqNode;
+        }
+
+        floatTag.setContent = function (sc) {
+            if (arguments.length === 0) {
+                return setContent;
+            }
+            setContent = sc;
+        };
+        return floatTag;
+    };
+
+    DataV.sum = function (list, iterator) {
+        var count = 0;
+        var i, l;
+        if (typeof iterator === 'undefined') {
+            for (i = 0, l = list.length; i < l; i++) {
+                count += list[i];
+            }
+        } else if (typeof iterator === "function") {
+            for (i = 0, l = list.length; i < l; i++) {
+                count += iterator(list[i]);
+            }
+        } else if (typeof iterator === "string" || typeof iterator === 'number') {
+            for (i = 0, l = list.length; i < l; i++) {
+                count += iterator(list[i][iterator]);
+            }
+        } else {
+            throw new Error("iterator error");
+        }
+        return count;
+    };
+
+    return DataV;
+});
+
+//copy codes from d3.js, add 4 functions: tickAttr, tickTextAttr, minorTickAttr and domainAttr;
+//axis() changes, need a raphael paper object param, return raphael set object.
+//examples in ../examples/axis/ to know the usage.
+//a basic part for other data visualization format
+/*global d3*/
+/*!
+ * Axis兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Axis', function (require) {
+    /**
+     * function from d3, get scaleRange of an ordinal scale
+     * @param {Array} domain ordinal scale's range
+     */
+    function d3_scaleExtent(domain) {
+        var start = domain[0], stop = domain[domain.length - 1];
+        return start < stop ? [start, stop] : [stop, start];
+    }
+
+    /**
+     * function from d3, get scaleRange of a scale
+     */
+    function d3_scaleRange(scale) {
+        return scale.rangeExtent ? scale.rangeExtent() : d3_scaleExtent(scale.range());
+    }
+
+    /**
+     * function from d3, get subticks
+     * @param scale, scale
+     * @param ticks, major ticks of scale
+     * @param m, number of subdivide
+     */
+    function d3_svg_axisSubdivide(scale, ticks, m) {
+        var subticks = [];
+        if (m && ticks.length > 1) {
+            var extent = d3_scaleExtent(scale.domain()),
+                i = -1,
+                n = ticks.length,
+                d = (ticks[1] - ticks[0]) / ++m,
+                j,
+                v;
+            while (++i < n) {
+                for (j = m; --j > 0;) {
+                    if ((v = +ticks[i] - j * d) >= extent[0]) {
+                        subticks.push(v);
+                    }
+                }
+            }
+            for (--i, j = 0; ++j < m && (v = +ticks[i] + j * d) < extent[1];) {
+                subticks.push(v);
+            }
+        }
+        return subticks;
+    }
+
+    var Axis = function () {
+        var scale = d3.scale.linear(),
+            orient = "bottom",
+            tickMajorSize = 6,
+            tickMinorSize = 6,
+            tickEndSize = 6,
+            tickPadding = 3,
+            tickArguments_ = [10],
+            tickFormat_,
+            tickSubdivide = 0,
+
+            tickAttr_ = {},
+            tickTextAttr_ = {},
+            minorTickAttr_ = {},
+            domainAttr_ = {};
+      
+        /**
+         * @param paper: raphael's paper object.
+         * @return axisSet: raphael's set object.
+         */
+        function axis(paper) {
+            // Ticks for quantitative scale, or domain values for ordinal scale.
+            var ticks = scale.ticks ? scale.ticks.apply(scale, tickArguments_) : scale.domain(),
+                tickFormat = tickFormat_ === undefined ?
+                    (scale.tickFormat ?
+                        scale.tickFormat.apply(scale, tickArguments_)
+                        : String)
+                    : tickFormat_;
+
+            var subticks = d3_svg_axisSubdivide(scale, ticks, tickSubdivide);
+            var range = d3_scaleRange(scale);
+        
+            var axisSet = paper.set();
+
+            switch (orient) {
+            case "bottom":
+                subticks.forEach(function (d, i, arr) {
+                    var tickX = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickX + "," + tickMinorSize + "V0")
+                        .attr(minorTickAttr_));
+                });
+                ticks.forEach(function (d, i, arr) {
+                    var tickX = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickX + "," + tickMajorSize + "V0")
+                        .attr(tickAttr_));
+                    axisSet.push(paper
+                        .text(tickX,  Math.max(tickMajorSize, 0) + tickPadding + 2,
+                            typeof tickFormat === "function" ? tickFormat(d) : tickFormat)
+                        .attr({"text-anchor": "middle"})
+                        .attr(tickTextAttr_));
+                });
+                axisSet.push(paper
+                    .path("M" + range[0] + "," + tickEndSize + "V0H" + range[1] + "V" + tickEndSize)
+                    .attr(domainAttr_));
+                break;
+
+            case "top":
+                subticks.forEach(function (d, i, arr) {
+                    var tickX = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickX + "," + -tickMinorSize + "V0")
+                        .attr(minorTickAttr_));
+                });
+                ticks.forEach(function (d, i, arr) {
+                    var tickX = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickX + "," + -tickMajorSize + "V0")
+                        .attr(tickAttr_));
+                    axisSet.push(paper
+                        .text(tickX,  -(Math.max(tickMajorSize, 0) + tickPadding + 2),
+                            typeof tickFormat === "function" ? tickFormat(d) : tickFormat)
+                        .attr({"text-anchor": "middle"})
+                        .attr(tickTextAttr_));
+                });
+                axisSet.push(paper
+                    .path("M" + range[0] + "," + -tickEndSize + "V0H" + range[1] + "V" + -tickEndSize)
+                    .attr(domainAttr_));
+                break;
+
+            case "left":
+                subticks.forEach(function (d, i, arr) {
+                    var tickY = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + -tickMinorSize + "," + tickY + "H0")
+                        .attr(minorTickAttr_));
+                });
+                ticks.forEach(function (d, i, arr) {
+                    var tickY = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + -tickMajorSize + "," + tickY + "H0")
+                        .attr(tickAttr_));
+                    axisSet.push(paper
+                        .text(-(Math.max(tickMajorSize, 0) + tickPadding),  tickY,
+                            typeof tickFormat === "function" ? tickFormat(d) : tickFormat)
+                        .attr({"text-anchor": "end"})
+                        .attr(tickTextAttr_));
+                });
+                axisSet.push(paper
+                    .path("M" + -tickEndSize + "," + range[0] + "H0V" + range[1] + "H" + -tickEndSize)
+                    .attr(domainAttr_));
+                break;
+
+            case "right":
+                subticks.forEach(function (d, i, arr) {
+                    var tickY = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickMinorSize + "," + tickY + "H0")
+                        .attr(minorTickAttr_));
+                });
+                ticks.forEach(function (d, i, arr) {
+                    var tickY = scale.ticks ? scale(d) : scale(d) + scale.rangeBand() / 2;
+                    axisSet.push(paper
+                        .path("M" + tickMajorSize + "," + tickY + "H0")
+                        .attr(tickAttr_));
+                    axisSet.push(paper
+                        .text(Math.max(tickMajorSize, 0) + tickPadding,  tickY,
+                            typeof tickFormat === "function" ? tickFormat(d) : tickFormat)
+                        .attr({"text-anchor": "start"})
+                        .attr(tickTextAttr_));
+                });
+                axisSet.push(paper
+                    .path("M" + tickEndSize + "," + range[0] + "H0V" + range[1] + "H" + tickEndSize)
+                    .attr(domainAttr_));
+                break;
+            }
+
+            return axisSet;
+        }
+      
+        /**
+         * get or set axis' scale.
+         */
+        axis.scale = function (x) {
+            if (!arguments.length) {
+                return scale;
+            }
+            scale = x;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' orinet: "bottom", "top", "left", "right", default orient is bottom.
+         */
+        axis.orient = function (x) {
+            if (!arguments.length) {
+                return orient;
+            }
+            orient = x;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' ticks number.
+         */
+        axis.ticks = function () {
+            if (!arguments.length) {
+                return tickArguments_;
+            }
+            tickArguments_ = arguments;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' ticks format function, it's a function change format style.
+         * from one string format to another string format.
+         */
+        axis.tickFormat = function (x) {
+            if (!arguments.length) {
+                return tickFormat_;
+            }
+            tickFormat_ = x;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' tick size(length of tick line, unit: px).
+         * @param arguments.length === 0, get axis' major tick size.
+         * @param arguments.length === 1, set axis' all tick sizes as x.
+         * @param arguments.length === 2, get axis' major tick size as x, minor and end size as y.
+         * @param arguments.length === 3, get axis' major tick size as x, minor size as y, end size as z.
+         */
+        axis.tickSize = function (x, y, z) {
+            if (!arguments.length) {
+                return tickMajorSize;
+            }
+            var n = arguments.length - 1;
+            tickMajorSize = +x;
+            tickMinorSize = n > 1 ? +y : tickMajorSize;
+            tickEndSize = n > 0 ? +arguments[n] : tickMajorSize;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' tick padding(the distance between tick text and axis).
+         * @param x is a number, unit is px;
+         */
+        axis.tickPadding = function (x) {
+            if (!arguments.length) {
+                return tickPadding;
+            }
+            tickPadding = +x;
+            return axis;
+        };
+
+        /**
+         * get or set axis' sub tick divide number(divide number between two major ticks).
+         */
+        axis.tickSubdivide = function (x) {
+            if (!arguments.length) {
+                return tickSubdivide;
+            }
+            tickSubdivide = +x;
+            return axis;
+        };
+
+        /**
+         * get or set axis' tick attribute(Raphael format).
+         */
+        axis.tickAttr = function (x) {
+            if (!arguments.length) {
+                return tickAttr_;
+            }
+            tickAttr_ = x;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' tick text attribute(Raphael format).
+         */
+        axis.tickTextAttr = function (x) {
+            if (!arguments.length) {
+                return tickTextAttr_;
+            }
+            tickTextAttr_ = x;
+            return axis;
+        };
+
+        /**
+         * get or set axis' minor tick attribute(Raphael format).
+         */
+        axis.minorTickAttr = function (x) {
+            if (!arguments.length) {
+                return minorTickAttr_;
+            }
+            minorTickAttr_ = x;
+            return axis;
+        };
+      
+        /**
+         * get or set axis' domain(axis line) attribute(Raphael format).
+         */
+        axis.domainAttr = function (x) {
+            if (!arguments.length) {
+                return domainAttr_;
+            }
+            domainAttr_ = x;
+            return axis;
+        };
+      
+        return axis;
+    };
+
+    return Axis;
+});
+
+/*global d3,Raphael,$*/
+/*!
+ * Brush的兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Brush', function (require) {
+
+    var d3_svg_brush,
+        d3_svg_brushDispatch,
+        d3_svg_brushTarget,
+        d3_svg_brushX,
+        d3_svg_brushY,
+        d3_svg_brushExtent,
+        d3_svg_brushDrag,
+        d3_svg_brushResize,
+        d3_svg_brushCenter,
+        d3_svg_brushOffset,
+        d3_svg_brushEls;
+
+    /**
+     * set foreground and resizers' x and width;
+     */
+    function d3_svg_brushRedrawX(brushEls, extent) {
+        brushEls.fg.attr({"x": extent[0][0],
+                        "width": extent[1][0] - extent[0][0] });
+        brushEls.resizerSet.forEach(function (el) {
+            var orient = el.data("resizeOrient");
+
+            if (orient === "n" ||
+                    orient === "s" ||
+                    orient === "w" ||
+                    orient === "nw" ||
+                    orient === "sw") {
+                el.attr({"x": extent[0][0] - 2});
+            } else { // "e" "ne" "se"
+                el.attr({"x": extent[1][0] - 2});
+            }
+            if (orient === "n" || orient === "s") {
+                el.attr({"width": extent[1][0] - extent[0][0]});
+            }
+        });
+    }
+    
+    /**
+     * set foreground and resizers' y and height;
+     */
+    function d3_svg_brushRedrawY(brushEls, extent) {
+        brushEls.fg.attr({"y": extent[0][1],
+                        "height": extent[1][1] - extent[0][1] });
+        brushEls.resizerSet.forEach(function (el) {
+            var orient = el.data("resizeOrient");
+            if (orient === "n" ||
+                    orient === "e" ||
+                    orient === "w" ||
+                    orient === "nw" ||
+                    orient === "ne") {
+                el.attr({"y": extent[0][1] - 3});
+            } else { // "s" "se" "sw"
+                el.attr({"y": extent[1][1] - 4});
+            }
+            if (orient === "e" || orient === "w") {
+                el.attr({"height": extent[1][1] - extent[0][1]});
+            }
+        });
+    }
+
+    /**
+     * function from d3, get scaleRange of an ordinal scale
+     * @param domain, ordinal scale's range
+     */
+    function d3_scaleExtent(domain) {
+        var start = domain[0], stop = domain[domain.length - 1];
+        return start < stop ? [start, stop] : [stop, start];
+    }
+
+    /**
+     * function from d3, get scaleRange of a scale
+     */
+    function d3_scaleRange(scale) {
+        return scale.rangeExtent ? scale.rangeExtent() : d3_scaleExtent(scale.range());
+    }
+
+    /**
+     * function from d3, called by d3_svg_brushMove, compute new brush extent after brush moved
+     */
+    function d3_svg_brushMove1(mouse, scale, i) {
+        var range = d3_scaleRange(scale),
+            r0 = range[0],
+            r1 = range[1],
+            offset = d3_svg_brushOffset[i],
+            size = d3_svg_brushExtent[1][i] - d3_svg_brushExtent[0][i],
+            min,
+            max;
+      
+        // When dragging, reduce the range by the extent size and offset.
+        if (d3_svg_brushDrag) {
+            r0 -= offset;
+            r1 -= size + offset;
+        }
+      
+        // Clamp the mouse so that the extent fits within the range extent.
+        min = Math.max(r0, Math.min(r1, mouse[i]));
+      
+        // Compute the new extent bounds.
+        if (d3_svg_brushDrag) {
+            max = (min += offset) + size;
+        } else {
+            // If the ALT key is pressed, then preserve the center of the extent.
+            if (d3_svg_brushCenter) {
+                offset = Math.max(r0, Math.min(r1, 2 * d3_svg_brushCenter[i] - min));
+            }
+        
+            // Compute the min and max of the offset and mouse.
+            if (offset < min) {
+                max = min;
+                min = offset;
+            } else {
+                max = offset;
+            }
+        }
+
+        // Update the stored bounds.
+        d3_svg_brushExtent[0][i] = min;
+        d3_svg_brushExtent[1][i] = max;
+    }
+
+    /**
+     * function from d3, after brush moved, compute new brush extent
+     * and redraw foreground and resizer.
+     */
+    function d3_svg_brushMove(e) {
+        if (d3_svg_brushOffset) {
+            var bgOffset = $(d3_svg_brushTarget).offset();
+            var mouse = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
+            
+            if (!d3_svg_brushDrag) {
+                // If needed, determine the center from the current extent.
+                if (e.altKey) {
+                    if (!d3_svg_brushCenter) {
+                        d3_svg_brushCenter = [
+                            (d3_svg_brushExtent[0][0] + d3_svg_brushExtent[1][0]) / 2,
+                            (d3_svg_brushExtent[0][1] + d3_svg_brushExtent[1][1]) / 2
+                        ];
+                    }
+            
+                    // Update the offset, for when the ALT key is released.
+                    d3_svg_brushOffset[0] = d3_svg_brushExtent[+(mouse[0] < d3_svg_brushCenter[0])][0];
+                    d3_svg_brushOffset[1] = d3_svg_brushExtent[+(mouse[1] < d3_svg_brushCenter[1])][1];
+                } else {
+                    // When the ALT key is released, we clear the center.
+                    d3_svg_brushCenter = null;
+                }
+            }
+        
+            // Update the brush extent for each dimension.
+            if (d3_svg_brushX) {
+                d3_svg_brushMove1(mouse, d3_svg_brushX, 0);
+                d3_svg_brushRedrawX(d3_svg_brushEls, d3_svg_brushExtent);
+            }
+            if (d3_svg_brushY) {
+                d3_svg_brushMove1(mouse, d3_svg_brushY, 1);
+                d3_svg_brushRedrawY(d3_svg_brushEls, d3_svg_brushExtent);
+            }
+        
+            // Notify listeners.
+            d3_svg_brushDispatch("brush");
+        }
+    }
+    
+    /**
+     * function from d3,
+     * reset brush offset if user presses "space" key while brushing a new area,
+     * to ensure foreground's size unchanged while position changing.
+     */
+    function d3_svg_brushKeydown(e) {
+        if (e.keyCode === 32 && d3_svg_brushTarget && !d3_svg_brushDrag) {
+            d3_svg_brushCenter = null;
+            d3_svg_brushOffset[0] -= d3_svg_brushExtent[1][0];
+            d3_svg_brushOffset[1] -= d3_svg_brushExtent[1][1];
+            d3_svg_brushDrag = 2;
+            e.stopPropagation();
+        }
+    }
+
+    /**
+     * function from d3,
+     * reset brush offset if "space" key up to restore normal drush state.
+     */
+    function d3_svg_brushKeyup(e) {
+        if (e.keyCode === 32 && d3_svg_brushDrag === 2) {
+            d3_svg_brushOffset[0] += d3_svg_brushExtent[1][0];
+            d3_svg_brushOffset[1] += d3_svg_brushExtent[1][1];
+            d3_svg_brushDrag = 0;
+            e.stopPropagation();
+        }
+    }
+
+    /**
+     * function from d3,
+     * mouse up and stop brushing.
+     */
+    function d3_svg_brushUp(e) {
+        if (d3_svg_brushOffset) {
+            d3_svg_brushMove(e);
+            d3_svg_brushEls.resizerSet.forEach(function (resizer) {
+                //adjust all resizers
+                var orient = resizer.data("resizeOrient");
+                var size = d3_svg_brush.empty() ? 0 : 6;
+                if (orient === "n" || orient === "s") {
+                    resizer.attr({"height": size});
+                } else {
+                    resizer.attr({"width": size});
+                }
+            });
+            d3_svg_brushDispatch("brushend");
+            d3_svg_brush =
+                d3_svg_brushDispatch =
+                d3_svg_brushTarget =
+                d3_svg_brushX =
+                d3_svg_brushY =
+                d3_svg_brushExtent =
+                d3_svg_brushDrag =
+                d3_svg_brushResize =
+                d3_svg_brushCenter =
+                d3_svg_brushOffset =
+                d3_svg_brushEls = null;
+            e.stopPropagation();
+        }
+    }
+    
+    var d3_svg_brushCursor = {
+        n: "ns-resize",
+        e: "ew-resize",
+        s: "ns-resize",
+        w: "ew-resize",
+        nw: "nwse-resize",
+        ne: "nesw-resize",
+        se: "nwse-resize",
+        sw: "nesw-resize"
+    };
+    var vml_brushCursor = {
+        n: "row-resize",
+        e: "col-resize",
+        s: "row-resize",
+        w: "col-resize",
+        nw: "all-scroll",
+        ne: "all-scroll",
+        se: "all-scroll",
+        sw: "all-scroll"
+    };
+
+    var Brush  = function () {
+        var event = d3.dispatch("brushstart", "brush", "brushend"),
+            x, // x-scale, optional
+            y, // y-scale, optional
+            extent = [[0, 0], [0, 0]], // [x0, y0], [x1, y1]
+            e,
+            left,
+            top,
+            width,
+            height,
+            backgroundAttr = {
+                "fill": "#dddddd",
+                "stroke": "none",
+                "cursor": "crosshair"
+            },
+            foregroundAttr = {
+                "fill": "steelblue",
+                "stroke": "none",
+                "cursor": "move"
+            },
+            brushStart = function () {},
+            brushing = function () {},
+            brushEnd = function () {},
+
+            brushEls = {},
+            brushClass;
+
+        /*!
+         * mouse down and start brushing or dragging.
+         */
+        function down(e) {
+            var target = e.target,
+                bgOffset;
+            
+            // Store some global state for the duration of the brush gesture.
+            d3_svg_brush = brush;
+            d3_svg_brushTarget = $(brushEls.paper.canvas).parent();
+            d3_svg_brushExtent = extent;
+            bgOffset = $(d3_svg_brushTarget).offset();
+
+            d3_svg_brushOffset = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
+            d3_svg_brushEls = brushEls;
+        
+            // If the extent was clicked on, drag rather than brush;
+            // store the offset between the mouse and extent origin instead.
+            d3_svg_brushDrag = target.__brushNodeType__ === "fg" ? true : false;
+            if (d3_svg_brushDrag) {
+                d3_svg_brushOffset[0] = extent[0][0] - d3_svg_brushOffset[0];
+                d3_svg_brushOffset[1] = extent[0][1] - d3_svg_brushOffset[1];
+            } else if (/^resize/.test(target.__brushNodeType__)) {
+                // If a resizer was clicked on, record which side is to be resized.
+                // Also, set the offset to the opposite side.
+                d3_svg_brushResize = target.__brushNodeType__.split("_")[1];
+                d3_svg_brushOffset[0] = extent[+(/w$/.test(d3_svg_brushResize))][0];
+                d3_svg_brushOffset[1] = extent[+(/^n/.test(d3_svg_brushResize))][1];
+            } else if (e.altKey) {
+                // If the ALT key is down when starting a brush, the center is at the mouse.
+                d3_svg_brushCenter = d3_svg_brushOffset.slice();
+            }
+        
+            // Restrict which dimensions are resized.
+            d3_svg_brushX = !/^(n|s)$/.test(d3_svg_brushResize) && x;
+            d3_svg_brushY = !/^(e|w)$/.test(d3_svg_brushResize) && y;
+        
+            // Notify listeners.
+            d3_svg_brushDispatch = dispatcher(this, arguments);
+            d3_svg_brushDispatch("brushstart");
+            d3_svg_brushMove(e);
+            e.stopPropagation();
+        }
+
+        /*!
+         * create brush
+         * input a Raphael paper, return a brush object.
+         */
+        function brush(paper) {
+            var resizes = x && y ? ["n", "e", "s", "w", "nw", "ne", "se", "sw"]
+                : x ? ["e", "w"]
+                : y ? ["n", "s"]
+                : [];
+
+            if (x) {
+                e = d3_scaleRange(x);
+                left = e[0];
+                width = e[1] - e[0];
+            }
+
+            if (y) {
+                e = d3_scaleRange(y);
+                top = e[0];
+                height = e[1] - e[0];
+            }
+
+            brushEls.paper = paper;
+            brushEls.brushSet = paper.set();
+            brushEls.resizerSet = paper.set();
+            brushEls.bg = paper.rect(left, top, width, height)
+                .attr({"fill": "#dddddd",
+                        "stroke": "none",
+                        "cursor": "crosshair"
+                        })
+                .attr(backgroundAttr);
+            brushEls.bg.node.__brushNodeType__ = "bg";
+            brushEls.bg.node.ondragstart = function () { return false; };//firefox drag bug fix;
+
+            brushClass = "brush" + brushEls.bg.id;
+
+            //$(brushEls.bg.node).addClass("brush bg rvml");  // fail to svg
+            brushEls.bg.node.setAttribute("class", "brush bg rvml " + brushClass);
+            brushEls.bg.node.setAttribute("className", "brush bg rvml " + brushClass);// IE 6,7
+
+            brushEls.fg = paper.rect(left, top, (x ? 0 : width), (y ? 0 : height))
+                .attr({"fill": "steelblue",
+                        "stroke": "none",
+                        "cursor": "move"
+                        })
+                .attr(foregroundAttr);
+            brushEls.fg.node.__brushNodeType__ = "fg";
+            brushEls.fg.node.ondragstart = function () { return false; };//firefox drag bug fix;
+            //$(brushEls.fg.node).addClass("brush fg rvml");   //fail to svg
+            brushEls.fg.node.setAttribute("class", "brush fg rvml " + brushClass);
+            brushEls.fg.node.setAttribute("className", "brush fg rvml " + brushClass);// IE 6,7
+
+            resizes.forEach(function (d) {
+                var resizer = paper.rect(left, top, (x ? 6 : width), (y ? 6 : height))
+                                .data("resizeOrient", d)
+                                .attr({"cursor": d3_svg_brushCursor[d],
+                                    "fill": "white",
+                                    "stroke": "black",
+                                    "opacity": 0});
+                if (Raphael.vml) {
+                    resizer.attr({"cursor": vml_brushCursor[d]});
+                }
+                if (brush.empty()) {
+                    //hide all resizers
+                    if (d === "n" || d === "s") {
+                        resizer.attr({"height": 0});
+                    } else {
+                        resizer.attr({"width": 0});
+                    }
+                }
+                resizer.node.__brushNodeType__ = "resizer_" + d;
+                resizer.node.ondragstart = function () { return false; };//firefox drag bug fix;
+                //$(resizer.node).addClass("brush rvml " + d3_svg_brushCursor[d]);  //fail to svg
+                resizer.node.setAttribute("class", "brush rvml " + brushClass + " " + d3_svg_brushCursor[d]);
+                //IE 6,7
+                resizer.node.setAttribute("className", "brush rvml " + brushClass + " " + d3_svg_brushCursor[d]);
+                brushEls.resizerSet.push(resizer);
+            });
+            
+            if (x) {
+                d3_svg_brushRedrawX(brushEls, extent);
+            }
+
+            if (y) {
+                d3_svg_brushRedrawY(brushEls, extent);
+            }
+
+            //$(paper.canvas).delegate(".brush","mousedown", down);
+            //$(paper.canvas).undelegate(".brush","mousedown", down);
+            //$(paper.canvas).delegate(".brush","mousedown", down);
+            //$(paper.canvas).off("mousedown", ".brush", down);
+            $(paper.canvas).on("mousedown", "." + brushClass,  down);
+
+            brush.brushElements = brushEls;
+            return brush;
+        }
+
+        // dispatch event, bind data to golbal variant d3.event.
+        var dispatcher = function (that, argumentz) {
+            return function (type) {
+                var e = d3.event;
+                try {
+                    d3.event = {type: type, target: brush};
+                    event[type].apply(that, argumentz);
+                } finally {
+                    d3.event = e;
+                }
+            };
+        };
+
+        /*!
+         * get or set brush's left
+         * @param z, a value in brush scale's domain
+         */
+        brush.left = function (z) {
+            if (!arguments.length) { return left; }
+            left = z;
+            return brush;
+        };
+
+        /*!
+         * get or set brush's top
+         * @param z, a value in brush scale's domain
+         */
+        brush.top = function (z) {
+            if (!arguments.length) { return top; }
+            top = z;
+            return brush;
+        };
+
+        /*!
+         * get or set brush's width
+         * @param z, a value in brush scale's domain
+         */
+        brush.width = function (z) {
+            if (!arguments.length) { return width; }
+            width = z;
+            return brush;
+        };
+
+        /*!
+         * get or set brush's height
+         * @param z, a value in brush scale's domain
+         */
+        brush.height = function (z) {
+            if (!arguments.length) { return height; }
+            height = z;
+            return brush;
+        };
+
+        /*!
+         * get or set brush's x scale
+         * @param z, d3's sacle object
+         */
+        brush.x = function (z) {
+            if (!arguments.length) { return x; }
+            x = z;
+            return brush;
+        };
+      
+        /*!
+         * get or set brush's y scale
+         * @param z, d3's sacle object
+         */
+        brush.y = function (z) {
+            if (!arguments.length) { return y; }
+            y = z;
+            return brush;
+        };
+      
+        /*!
+         * get or set brush's extent in scale's domain format.
+         * if both x and y exist, @param z's format is [[x0, y0], [x1, y1]]
+         * if only one of x and y exists, @param z's format is [x0, x1] or [y0, y1].
+         */
+        brush.extent = function (z) {
+            var x0, x1, y0, y1, t;
+        
+            // Invert the pixel extent to data-space.
+            if (!arguments.length) {
+                if (x) {
+                    x0 = extent[0][0]; x1 = extent[1][0];
+                    if (x.invert) {
+                        x0 = x.invert(x0); x1 = x.invert(x1);
+                    }
+                    if (x1 < x0) {
+                        t = x0; x0 = x1; x1 = t;
+                    }
+                }
+                if (y) {
+                    y0 = extent[0][1]; y1 = extent[1][1];
+                    if (y.invert) {
+                        y0 = y.invert(y0); y1 = y.invert(y1);
+                    }
+                    if (y1 < y0) {
+                        t = y0; y0 = y1; y1 = t;
+                    }
+                }
+                return x && y ? [[x0, y0], [x1, y1]] : x ? [x0, x1] : y && [y0, y1];
+            }
+        
+            // Scale the data-space extent to pixels.
+            if (x) {
+                x0 = z[0]; x1 = z[1];
+                if (y) {
+                    x0 = x0[0]; x1 = x1[0];
+                }
+                if (x.invert) {
+                    x0 = x(x0); x1 = x(x1);
+                }
+                if (x1 < x0) {
+                    t = x0; x0 = x1; x1 = t;
+                }
+                extent[0][0] = x0; extent[1][0] = x1;
+            }
+            if (y) {
+                y0 = z[0]; y1 = z[1];
+                if (x) {
+                    y0 = y0[1]; y1 = y1[1];
+                }
+                if (y.invert) {
+                    y0 = y(y0); y1 = y(y1);
+                }
+                if (y1 < y0) {
+                    t = y0; y0 = y1; y1 = t;
+                }
+                extent[0][1] = y0; extent[1][1] = y1;
+            }
+        
+            return brush;
+        };
+     
+        //empty extent and refresh foreground
+        brush.clear = function () {
+            extent[0][0] = extent[0][1] = extent[1][0] = extent[1][1] = 0;
+            brush.refresh();
+            return brush;
+        };
+
+        //refresh foreground
+        brush.refresh = function () {
+            if (x) {
+                d3_svg_brushRedrawX(brushEls, extent);
+            }
+            if (y) {
+                d3_svg_brushRedrawY(brushEls, extent);
+            }
+            return brush;
+        };
+
+        //remove all brush elements, so users can reset brush attributes and redraw it.
+        brush.remove = function () {
+            $(paper.canvas).off("mousedown", "." + brushClass,  down);
+            brushEls.fg.remove();
+            brushEls.bg.remove();
+            brushEls.resizerSet.remove();
+            return brush;
+        };
+
+        // if brush is empty, return true, else false;
+        brush.empty = function () {
+            return (x && extent[0][0] === extent[1][0]) || (y && extent[0][1] === extent[1][1]);
+        };
+
+        // set background attribute.
+        brush.backgroundAttr  = function (x) {
+            if (!arguments.length) { return backgroundAttr; }
+            backgroundAttr = x;
+            return brush;
+        };
+        
+        // set foreground attribute.
+        brush.foregroundAttr = function (x) {
+            if (!arguments.length) { return foregroundAttr; }
+            foregroundAttr = x;
+            return brush;
+        };
+
+        $(document).bind("mousemove", d3_svg_brushMove)
+            .bind("mouseup", d3_svg_brushUp)
+            .bind("keydown", d3_svg_brushKeydown)
+            .bind("keyup", d3_svg_brushKeyup);
+
+        return d3.rebind(brush, event, "on");
+    };
+
+    return Brush;
+});
+
+﻿/*global Raphael, d3 */
+/*!
+ * Bubble的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Bubble', function (require) {
+    var DataV = require('DataV');
+    var Axis = require('Axis');
+
+    /**
+     * Recently, bubble graph can represent five dimensions by xaxis,yaxis,size,color and time.
+     * You can stop animation by pause() method, start animation by initControls method;
+     * you can change animation start time by using global variable  this.startTime;
+     * you can visualize a time point's data by generatePaths(time point) method;
+     * an inside method drawAllTime(key) is designed for interaction.
+     */
+    var Bubble = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Bubble";
+            this.node = this.checkContainer(node);
+
+            // setting display width and height, also they can be changed by options
+            this.defaults.width = 800;
+            this.defaults.height = 600;
+            this.defaults.minRadius = 10;
+            this.defaults.maxRadius = 40;
+            this.defaults.meshInterval = 20;
+            // margin order: left, top, right, bottom
+            this.defaults.borderMargin = [200, 30, 0, 80];
+            this.defaults.allDimensions = [];
+            this.defaults.dimensions = [];
+            this.defaults.dimensionType = {};
+            this.defaults.dimensionDomain = {};
+            this.defaults.dotStrokeColor = {"stroke": "#fff"};
+            this.defaults.colorBarWidth = 40;
+            this.defaults.colorBarHeight = 27;
+            this.defaults.colorBarBorder = 10;
+            this.defaults.skeletonCircleAttr = {
+                "fill": "#000",
+                "fill-opacity": 0.6,
+                "stroke-width": 0
+            };
+            this.defaults.skeletonLineAttr = {
+                "stroke": "#000",
+                "stroke-width": 0.5,
+                "stroke-opacity": 0.5
+            };
+            this.defaults.colorBarAttr = {
+                "stroke": "#C9C9C9",
+                "stroke-opacity": 0,
+                "r": 5
+            };
+            this.defaults.textAttr = {
+                "fill": "#000",
+                "fill-opacity": 1,
+                "font-family": "雅黑",
+                "font-size": 12
+            };
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * create a backCanvas for the visualization
+     */
+    Bubble.prototype.createCanvas = function () {
+        var conf = this.defaults;
+            m = conf.borderMargin;
+        this.backCanvas = new Raphael(this.node, conf.width, conf.height);
+        this.foreCanvas = Raphael(this.node, conf.width, conf.height);
+
+        $(this.node).css("position", "relative");
+        $(this.foreCanvas.canvas).css({"position": "absolute",
+            "zIndex": 2, "left": m[0], "top": m[1]});
+
+        canvasStyle = this.node.style;
+        canvasStyle.position = "relative";
+        this.floatTag = DataV.FloatTag()(this.node);
+
+        this.floatTag.css({"visibility": "hidden"});
+
+        $(this.node).append(this.floatTag);
+    };
+
+    /**
+     * choose bubble graph setted visualization dimens orderly
+     */
+    Bubble.prototype.chooseDimensions = function (dimen) {
+        var conf = this.defaults;
+        conf.dimensions = [];
+        var strInArray = function (str, array) {
+            for (var i = 0, l = array.length; i < l; i++){
+                if (array[i] === str) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        for(var i = 0, l = dimen.length; i < l; i++){
+            if(strInArray(dimen[i], conf.allDimensions)) {
+                conf.dimensions.push(dimen[i]);
+            }
+        }
+
+        this.timeDimen = conf.dimensions[0];
+        this.keyDimen = conf.dimensions[1];
+        this.xDimen = conf.dimensions[2];
+        this.yDimen = conf.dimensions[3];
+        this.sizeDimen = conf.dimensions[4];
+        this.colorDimen = conf.dimensions[5];
+
+        this.keys = [];
+        this.times = [];
+        this.timeKeys = [];
+        for (var i = 0, l = this.source.length; i < l; i++) {
+            this.keys.push(this.source[i][this.keyDimen]);
+            this.times.push(this.source[i][this.timeDimen]);
+        }
+
+        this.times.uniq();
+        this.keys.uniq();
+        for (var i = 0, l = this.times.length; i < l; i++) {
+            this.timeKeys.push(i);
+        }
+        this.startTime = 0;
+    };
+
+    /**
+     * set source, get dimensions data, dimension type, and dimension domain
+     * default visualization dimension is setted here
+     */
+    Bubble.prototype.setSource = function (source) {
+        var conf = this.defaults;
+        conf.allDimensions = source[0];
+        // by default all dimensions show
+        conf.dimensions = source[0];
+
+        this.source = [];
+        for(var i = 1, l = source.length; i < l; i++){
+            var dot = {},
+                dimen = conf.allDimensions;
+            for(var j=0, ll=dimen.length; j < ll; j++){
+                dot[dimen[j]] = source[i][j];
+            }
+            this.source.push(dot);
+        }
+
+        // judge dimesions type auto
+        conf.dimensionType = {};
+        function isNumber(n) {
+            return !isNaN(parseFloat(n)) && isFinite(n);
+        }
+        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+            var type = "quantitative";
+            for(var j = 1, ll = source.length; j < ll; j++){
+                var d = source[j][i];
+                if(d && (! isNumber(d))){
+                    type = "ordinal";
+                    break;
+                }
+            }
+            conf.dimensionType[conf.allDimensions[i]] = type;
+        }
+
+        // set default dimensionDomain
+        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+            var dimen = conf.allDimensions[i];
+            if(conf.dimensionType[dimen] === "quantitative"){
+                conf.dimensionDomain[dimen] = d3.extent(this.source,
+                     function(p){return Math.abs(p[dimen])});
+            }else{
+                conf.dimensionDomain[dimen] =
+                    this.source.map(function(p){return p[dimen]});
+            }
+        }
+
+        this.timeDimen = conf.dimensions[0];
+        this.keyDimen = conf.dimensions[1];
+        this.xDimen = conf.dimensions[2];
+        this.yDimen = conf.dimensions[3];
+        this.sizeDimen = conf.dimensions[4];
+        this.colorDimen = conf.dimensions[5];
+
+        this.keys = [];
+        this.times = [];
+        this.timeKeys = [];
+        for (var i = 0, l = this.source.length; i < l; i++) {
+            this.keys.push(this.source[i][this.keyDimen]);
+            this.times.push(this.source[i][this.timeDimen]);
+        }
+
+        this.times.uniq();
+        this.keys.uniq();
+        for (var i = 0, l = this.times.length; i < l; i++) {
+            this.timeKeys.push(i);
+        }
+        this.startTime = 0;
+    };
+
+    /**
+     * different visualization scale is defined here
+     */
+    Bubble.prototype.getScale = function() {
+        var conf = this.defaults;
+            m = conf.borderMargin,
+            w = conf.width - m[0] - m[2],
+            h = conf.height - m[1] - m[3],
+            colorData = [],
+            maxRadius = conf.maxRadius,
+            minRadius = conf.minRadius,
+            backCanvas = this.backCanvas,
+            xDimen = this.xDimen,
+            yDimen = this.yDimen,
+            sizeDimen = this.sizeDimen,
+            colorDimen = this.colorDimen,
+            timeDimen = this.timeDimen,
+            xMin = conf.dimensionDomain[xDimen][0],
+            yMin = conf.dimensionDomain[yDimen][0],
+            xMax = conf.dimensionDomain[xDimen][1],
+            yMax = conf.dimensionDomain[yDimen][1],
+            xBorder = (maxRadius + 30) * (xMax - xMin)/w,
+            yBorder = (maxRadius + 30) * (yMax - yMin)/h,
+            xDomain = [xMin - xBorder, xMax + xBorder],
+            yDomain = [yMin - yBorder, yMax + yBorder];
+
+        this.x = {};
+        this.x[xDimen] = d3.scale.linear()
+            .domain(xDomain).range([m[0], m[0] + w]);
+        this.y = {};
+        this.y[yDimen] = d3.scale.linear()
+            .domain(yDomain).range([h, 0]);
+        this.z = {};
+        this.z[sizeDimen] = d3.scale.linear()
+            .domain(conf.dimensionDomain[sizeDimen]).range([minRadius, maxRadius]);
+        this.c = {};
+        this.c[colorDimen] = this.colorDB({mode: "random", ratio: 0.5});
+
+        for (var i = 0, l = this.keys.length; i < l; i++) {
+            c0 = this.getColorData(this.keys[i]);
+            colorData.push(c0);
+        }
+        colorData.uniq();
+
+        // draw colorbar
+        var tagArea = [20, (conf.height - m[3] - colorData.length * 23), 200, 220],
+            rectBn = backCanvas.set(),
+            underBn = [];
+        for (var i = 0, l = colorData.length; i < l; i++) {
+            var c = this.c[colorDimen](colorData[i]);
+            // background to add interaction
+            underBn.push(backCanvas.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 120, 20)
+                .attr({"fill": "#ebebeb", "stroke": "none"}).hide());
+            // real colorbar
+            backCanvas.rect(tagArea[0] + 10 + 3, tagArea[1] + 10 + (20 + 3) * i + 6, 16, 8)
+                .attr({"fill": c, "stroke": "none"});
+            // colorbar text
+            backCanvas.text(tagArea[0] + 10 + 3 + 16 + 8, tagArea[1] + 10 + (20 + 3) * i + 10, colorData[i])
+                .attr({"fill": "black", "fill-opacity": 1, "font-family": "Verdana", "font-size": 12})
+                .attr({"text-anchor": "start"});
+            // just for interaction -- selction
+            rectBn.push(backCanvas.rect(tagArea[0] + 10, tagArea[1] + 10 + (20 + 3) * i, 50, 20)
+                .attr({"fill": "white", "fill-opacity": 0, "stroke": "none"})
+                .data("type", i).data("colorType", colorData[i]));
+        }
+
+        // add interaction for colorbar
+        this.interactionType = null;
+        that = this;
+        rectBn.forEach(function (d) {
+            d.hover(function () {
+                if (!that.interval) {
+                    for (var i = 0, l = underBn.length; i < l; i++) {
+                        if (i === d.data("type")) {
+                            underBn[i].show();
+                            that.interactionType = d.data("colorType");
+                            that.generatePaths(Math.ceil(that.startTime));
+                        }
+                    }
+                }
+            },
+            function () {
+                for (var i = 0, l = underBn.length; i < l; i++) {
+                    if (i === d.data("type")) {
+                        underBn[i].hide();
+                        that.interactionType = null;
+                    }
+                }
+            });
+        });
+
+        // pause, restart and related control function
+        // var restart = backCanvas.rect(m[0] - conf.colorBarHeight - 2, m[1] + h + 30, conf.colorBarHeight,
+        //     conf.colorBarHeight).attr({"fill": "#aaa", "fill-opacity": 0.9}).attr(conf.dotStrokeColor);
+        // var playButtonShadow = backCanvas.rect(0,0,15,15,2).attr({"stroke": "none","fill": "#606060", "fill-opacity":0.4});
+        var playButtonBack = backCanvas.rect(0,0,24,24,2).attr({"stroke": "none","fill": "#d6d6d6"});
+        var startPatternPath = "M7,18L19,12L7,6V18z";
+        var stopPatternPathL = "M7,7sh4v10sh-4z";
+        var stopPatternPathR = "M13,7sh4v10sh-4z";
+        // var buttonBack = backCanvas.rect(0,0,24,24).attr({"fill": "#606060"});
+        var startPattern = backCanvas.path(startPatternPath).attr({"stroke-width": 0, "stroke-linejoin": "round", "fill": "#606060"});
+        var stopPattern = backCanvas.set();
+        stopPattern.push(backCanvas.path(stopPatternPathL));
+        stopPattern.push(backCanvas.path(stopPatternPathR));
+        stopPattern.attr({"stroke-width": 0, "stroke-linejoin": "round", "fill": "#606060"});
+
+        // playButtonShadow.transform("t" + (m[0] - conf.colorBarHeight + 3 + 4) + "," + (m[1] + h + 33 + 4));
+        playButtonBack.transform("t" + (m[0] - conf.colorBarHeight) + "," + (m[1] + h + 33));
+        startPattern.transform("t" + (m[0] - conf.colorBarHeight) + "," + (m[1] + h + 33));
+        stopPattern.transform("t" + (m[0] - conf.colorBarHeight) + "," + (m[1] + h + 33));
+        startPattern.attr({"stroke-width": 0, "stroke-linejoin": "round", "fill-opacity": 0});
+
+        var playButton = backCanvas.set();
+        playButton.push(playButtonBack);
+        playButton.push(startPattern);
+        playButton.push(stopPattern);
+
+        // var reTest = backCanvas.path(startPattern).attr({"stroke-linejoin": "round"}).transform("t" + (m[0] - conf.colorBarHeight + 3) + "," + (m[1] + h + 33));
+        // backCanvas.path(stopPatternL).attr({"stroke-linejoin": "round"}).transform("t" + (m[0] - conf.colorBarHeight + 3) + "," + (m[1] + h + 33));
+        // backCanvas.path(stopButtonL).attr({"stroke-linejoin": "round"}).transform("t" + (m[0] - conf.colorBarHeight + 3 + 6) + "," + (m[1] + h + 33));
+
+        playButton.dblclick(
+            function() {
+                that.clearAnimation();
+                that.render();
+            }
+        );
+        playButton.click(function() {
+            if (that.interval) {
+                stopPattern.attr({"fill-opacity": 0});
+                startPattern.attr({"fill-opacity": 1});
+                that.pause();
+            } else {
+                startPattern.attr({"fill-opacity": 0});
+                stopPattern.attr({"fill-opacity": 1});
+                that.initControls();
+            }
+        });
+        playButton.hover(
+            function() {
+                startPattern.attr({"fill": "#ffffff"});
+                stopPattern.attr({"fill": "#ffffff"});
+            },
+            function() {
+                startPattern.attr({"fill": "#606060"});
+                stopPattern.attr({"fill": "#606060"});
+            }
+        );
+
+    };
+
+    /**
+     * draw x-axis, y-axis and related parts
+     */
+    Bubble.prototype.renderAxis = function () {
+        var conf = this.defaults;
+            m = conf.borderMargin,
+            w = conf.width - m[0] - m[2],
+            h = conf.height - m[1] - m[3],
+            colorData = [],
+            maxRadius = conf.maxRadius,
+            minRadius = conf.minRadius,
+            yaxis = Axis().orient("left"),
+            xaxis = Axis().orient("bottom"),
+            backCanvas = this.backCanvas,
+            xDimen = this.xDimen,
+            yDimen = this.yDimen,
+            xMin = conf.dimensionDomain[xDimen][0],
+            yMin = conf.dimensionDomain[yDimen][0],
+            xMax = conf.dimensionDomain[xDimen][1],
+            yMax = conf.dimensionDomain[yDimen][1],
+            xBorder = (maxRadius + 30) * (xMax - xMin)/w,
+            yBorder = (maxRadius + 30) * (yMax - yMin)/h,
+            xDomain = [xMin - xBorder, xMax + xBorder],
+            yDomain = [yMin - yBorder, yMax + yBorder],
+            axixX = d3.scale.linear().domain(xDomain).range([0, w]),
+            axixY = d3.scale.linear().domain(yDomain).range([h, 0]);
+
+        backCanvas.clear();
+
+        xaxis.scale(axixX)
+            .tickSubdivide(1)
+            .tickSize(6, 3, 0)
+            .tickPadding(5)
+            .tickAttr({"stroke": "#929292"})
+            .tickTextAttr({"font-size": "10px", "fill": "#929292"})
+            .minorTickAttr({"stroke": "#929292"})
+            .domainAttr({"stroke-width": 1, "stroke": "#929292"})
+            (backCanvas).attr({transform: "t" + m[0] + "," + (m[1] + h)});
+
+        yaxis.scale(axixY)
+            .tickSubdivide(1)
+            .tickSize(6, 3, 0)
+            .tickPadding(5)
+            .tickAttr({"stroke": "#929292"})
+            .tickTextAttr({"font-size": "10px", "fill": "#929292"})
+            .minorTickAttr({"stroke": "#929292"})
+            .domainAttr({"stroke-width": 1, "stroke": "#929292"})
+            (backCanvas).attr({transform: "t" + m[0] + "," + m[1]});
+
+        var xText = backCanvas.text(m[0] + w/2, m[1] + h + 40, this.xDimen);
+        xText.attr({"font-size": "15px", "font-family": "Arial", "fill": "#000000"});
+        var yText = backCanvas.text(m[0] - 50, m[1] + h/2, this.yDimen);
+        yText.attr({"font-size": "15px", "font-family": "Arial", "fill": "#000000"}).transform("r-90");
+    };
+
+    /**
+     * color database
+     */
+    Bubble.prototype.colorDB = function (colorJson) {
+        var colorMatrix = DataV.getColor();
+        var color;
+        var colorStyle = colorJson || {};
+        var colorMode = colorStyle.mode || 'default';
+        var i, l;
+
+        switch (colorMode) {
+        case "gradient":
+            var index = colorJson.index || 0;
+            index = index < 0 ? 0 : Math.min(index, colorMatrix.length - 1);
+            color = d3.interpolateRgb.apply(null, [colorMatrix[index][0], colorMatrix[index][1]]);
+            break;
+        case "random":
+        case "default":
+            var ratio = colorStyle.ratio || 0;
+            if (ratio < 0) { ratio = 0; }
+            if (ratio > 1) { ratio = 1; }
+            var colorArray = [];
+            for (i = 0, l = colorMatrix.length; i < l; i++) {
+                var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
+                colorArray.push(colorFunc(ratio));
+            }
+            color = d3.scale.ordinal().range(colorArray);
+            break;
+        }
+        return color;
+    };
+
+    /**
+     * main visualization method where bubble is drawed inside
+     * a time point is the method's only parameter
+     */
+    Bubble.prototype.generatePaths = function (time) {
+        var conf = this.defaults,
+            m = conf.borderMargin,
+            meshInterval = conf.meshInterval,
+            realWidth = conf.width - m[0] - m[2],
+            realHeight = conf.height - m[1] - m[3],
+            labelSize = 18,
+            labelXDistance = realHeight * 0.86,
+            foreCanvas = this.foreCanvas,
+            x0, y0, r0, c0,
+            x, y, r, c, skeletonRadius = 2,
+            timeKeys = this.timeKeys,
+            keys = this.keys,
+            dots = [],
+            dotBubbleSet = [];
+
+        // $("#" + this.node).append(this.floatTag);
+
+        if (time < this.times.length - 1) {
+            this.startTime = time;
+        } else {
+            this.startTime = 0;
+        }
+        
+        foreCanvas.clear();
+
+        // draw mesh
+        var meshes = foreCanvas.set(),
+            verticleMeshNum = realWidth / meshInterval,
+            horizontalMeshNUm = realHeight / meshInterval;
+        for (var i = 1;i < verticleMeshNum;i++) {
+            meshes.push(foreCanvas.path("M"+(i * meshInterval)+" "+0+"L"+(i * meshInterval)+
+                " "+(realHeight-1)).attr({"stroke": "#ebebeb", "stroke-width": 1}));
+        }
+        for (var i = 1; i < horizontalMeshNUm; i++) {
+            meshes.push(foreCanvas.path("M"+1+" "+(realHeight - (i * meshInterval))+"L"+realWidth+
+                " "+(realHeight - (i * meshInterval))).attr({"stroke": "#ebebeb", "stroke-dasharray": "-", "stroke-width": 0.5}));
+        }
+
+        // get all data by time and key dimension data
+        for (var i = 0, l = keys.length; i < l; i++) {
+            x0 = this.interpolateData(time, timeKeys, this.getKeyData(xDimen, keys[i]));
+            y0 = this.interpolateData(time, timeKeys, this.getKeyData(yDimen, keys[i]));
+            r0 = this.interpolateData(time, timeKeys, this.getKeyData(sizeDimen, keys[i]));
+            c0 = this.getColorData(keys[i]);
+
+            var dot = {key: keys[i], x0: x0, y0: y0, r0: r0, c0: c0, year: this.times[time.toFixed(0)]};
+            dots.push(dot);
+        }
+
+        var floatTag = this.floatTag;
+        var tip = '<b>' + that.keyDimen + ':{key}</b><br/><b>' +
+            that.xDimen + ':{xDimen}</b><br/><b>' +
+            that.yDimen + ':{yDimen}</b><br/><b>' +
+            that.sizeDimen + ':{sizeDimen}</b><br/><b>' +
+            that.colorDimen + ':{colorDimen}</b><br/><b>' +
+            that.timeDimen + ':{timeDimen}</b>';
+
+        // control the time label
+        var label = foreCanvas.text(20, m[1] + h + 15, this.times[time.toFixed(0)]);
+        label.attr({"font-size": labelSize, "fill": "#606060", "text-anchor": "start"});
+
+        dots.sort(function(b,a) { return a.r0 < b.r0 ? -1 : a.r0 > b.r0 ? 1 : 0; });
+
+        // draw the circles
+        for (var i = 0, l = dots.length; i < l; i++) {
+            var dot = dots[i],
+                x = this.x[xDimen](dot.x0) - m[0],
+                y = this.y[yDimen](dot.y0),
+                r = this.z[sizeDimen](dot.r0),
+                c = this.c[colorDimen](dot.c0),
+                dotBubble = foreCanvas.circle(x, y, r);
+            dotBubble.attr({"stroke-width":0, "fill": c, "fill-opacity": 0.5})
+                .data("key", dot.key).data("colorType", dot.c0);
+            dotBubbleSet.push(dotBubble);
+        }
+
+        // add hover and click effect for all circles
+        dotBubbleSet.forEach(function (d, i) {
+            tip = tip.replace('{key}', dots[i].key);
+                    tip = tip.replace('{xDimen}', dots[i].x0);
+                    tip = tip.replace('{yDimen}', dots[i].y0);
+                    tip = tip.replace('{sizeDimen}', dots[i].r0);
+                    tip = tip.replace('{colorDimen}', dots[i].c0);
+                    tip = tip.replace('{timeDimen}', time);
+            d.hover(
+                function () {
+                    floatTag.html('<div style="text-align: left;margin:auto;color:#ffffff">' + tip + '</div>');
+                    floatTag.css({"visibility" : "visible"});
+                    if (!that.choose) {
+                        d.attr({"stroke-width": 1, "stroke": "#f00", "fill-opacity": 0.8});
+                        meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-", "stroke-width": 1});
+                        for (var j = 0, l = dotBubbleSet.length; j < l ; j++) {
+                            if (j != i) {
+                               dotBubbleSet[j].attr({"stroke-width": 0, "fill-opacity": 0.2});
+                            }
+                        }
+                    }
+                },
+                function () {
+                    floatTag.css({"visibility" : "hidden"});
+                    if (!that.choose) {
+                        d.attr({"stroke-width": 0, "fill-opacity": 0.5});
+                        meshes.attr({"stroke": "#ebebeb", "stroke-dasharray": "-", "stroke-width": 1});
+                        for (var j = 0, l = dotBubbleSet.length; j < l ; j++) {
+                            if (j != i) {
+                               dotBubbleSet[j].attr({"stroke-width": 0, "fill-opacity": 0.5});
+                            }
+                        }
+                    }
+                }
+            );
+
+            d.click(
+                function() {
+                    if (time == Math.ceil(time)) {
+                        drawAllTime(this.data("key"), i);
+                    } else {
+                        drawAllTime(this.data("key"), i);
+                        this.remove();
+                    }
+                }
+            );
+        });
+
+        // colorbar interaction for showing all same color history data
+        that = this;
+        if (this.interactionType) {
+            dotBubbleSet.forEach(function (d) {
+                if (d.data("colorType") == that.interactionType) {
+                    drawAllTime(d.data("key"));
+                }
+            });
+        }
+
+        // an inside method to visualize a key's all time data
+        function drawAllTime (key, num) {
+            if (!that.interval) {
+                that.choose = true;
+                var floatTag = that.floatTag;
+
+                for (var j = 0, l = dotBubbleSet.length; j < l ; j++) {
+                    if (j != num) {
+                        dotBubbleSet[j].attr({"stroke-width": 0, "fill-opacity": 0.2});
+                    }
+                }
+
+                meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-"});
+
+                var tip = '<b>' + that.keyDimen + ':{key}</b><br/><b>'
+                    + that.xDimen + ':{xDimen}</b><br/><b>'
+                    + that.yDimen + ':{yDimen}</b><br/><b>'
+                    + that.sizeDimen + ':{sizeDimen}</b><br/><b>'
+                    + that.colorDimen + ':{colorDimen}</b><br/><b>'
+                    + that.timeDimen + ':{timeDimen}</b>';
+
+                for (var i = 0, l = timeKeys.length; i < l; i++) {
+                    var x0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(xDimen, key)),
+                        y0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(yDimen, key)),
+                        r0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(sizeDimen, key)),
+                        c0 = that.getColorData(key),
+                        x = that.x[xDimen](x0) - m[0],
+                        y = that.y[yDimen](y0),
+                        r = that.z[sizeDimen](r0),
+                        c = that.c[colorDimen](c0),
+                        fOpacity = 0.1 + Math.pow(1.5, i)/Math.pow(1.5, l);
+                        historyBubble = foreCanvas.circle(x, y, r);
+                        historyBubble.attr({"stroke-width": 0, "fill": c, "fill-opacity": fOpacity});
+
+                    tip = tip.replace('{key}', key);
+                    tip = tip.replace('{xDimen}', x0);
+                    tip = tip.replace('{yDimen}', y0);
+                    tip = tip.replace('{sizeDimen}', r0);
+                    tip = tip.replace('{colorDimen}', c0);
+                    tip = tip.replace('{timeDimen}', that.times[timeKeys[i]]);
+
+                    if (timeKeys[i] == Math.ceil(time)) {
+                        historyBubble.attr({"stroke-width": 1, "stroke": "#f00"});
+                        historyBubble.hover(
+                            function () {
+                                floatTag.html('<div style="text-align: left;margin:auto;color:#ffffff">' + tip + '</div>');
+                                floatTag.css({"visibility" : "visible"});
+                                // meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-"});
+                            },
+                            function () {
+                                floatTag.css({"visibility" : "hidden"});
+                                // meshes.attr({"stroke": "#ebebeb", "stroke-dasharray": "-"});
+                            }
+                        );
+                    } else {
+                        historyBubble.hover(
+                            function () {
+                                this.attr({"stroke-width": 1, "stroke": "#f00"});
+                                floatTag.html('<div style="text-align: left;margin:auto;color:#ffffff">' + tip + '</div>');
+                                floatTag.css({"visibility" : "visible"});
+                                // meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-"});
+                            },
+                            function () {
+                                this.attr({"stroke-width": 0});
+                                floatTag.css({"visibility" : "hidden"});
+                                // meshes.attr({"stroke": "#ebebeb", "stroke-dasharray": "-"});
+                            }
+                        );
+                    }
+
+                    historyBubble.click(function () {
+                        that.generatePaths(Math.ceil(time));
+                        that.choose = false;
+                    });
+                }
+
+                var skeletonLineSet = foreCanvas.set();
+                for (var i = 1, l = timeKeys.length; i < l; i++) {
+                    var x0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(xDimen, key)),
+                        y0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(yDimen, key)),
+                        x = that.x[xDimen](x0) - m[0],
+                        y = that.y[yDimen](y0),
+                        x1 = that.interpolateData(timeKeys[i-1], timeKeys, that.getKeyData(xDimen, key)),
+                        y1 = that.interpolateData(timeKeys[i-1], timeKeys, that.getKeyData(yDimen, key)),
+                        x2 = that.x[xDimen](x1) - m[0],
+                        y2 = that.y[yDimen](y1);
+                        skeletonLine = foreCanvas.path("M"+x2+" "+y2+"L"+x+" "+y);
+                        skeletonLine.attr(conf.skeletonLineAttr);
+                        skeletonLineSet.push(skeletonLine);
+                    }
+
+                var skeletonCircleSet = foreCanvas.set();
+                for (var i = 0, l = timeKeys.length; i < l; i++) {
+                    var x0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(xDimen, key)),
+                        y0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(yDimen, key)),
+                        r0 = that.interpolateData(timeKeys[i], timeKeys, that.getKeyData(sizeDimen, key)),
+                        c0 = that.getColorData(key),
+                        x = that.x[xDimen](x0) - m[0],
+                        y = that.y[yDimen](y0),
+                        r = that.z[sizeDimen](r0),
+                        c = that.c[colorDimen](c0),
+                        fOpacity = 0.1 + i * 0.9 / timeKeys.length;
+                    skeletonCircle = foreCanvas.circle(x,y,skeletonRadius);
+                    skeletonCircle.attr(conf.skeletonCircleAttr).attr({"stroke": c});
+                    skeletonCircleSet.push(skeletonCircle);
+
+                    if (timeKeys[i] == Math.ceil(time)) {
+                        skeletonCircle.attr({"fill": "#f00"});
+                        skeletonCircle.click(
+                            function () {
+                                that.generatePaths(Math.ceil(time));
+                            }
+                        );
+                        skeletonCircle.hover(
+                            function () {
+                                floatTag.html('<div style="text-align: left;margin:auto;color:#ffffff">' + tip + '</div>');
+                                floatTag.css({"visibility" : "visible"});
+                                skeletonCircleSet.attr({"fill-opacity": 0.35});
+                                this.attr({"fill-opacity": 1, "r": 5});
+                                // meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-"});
+                                skeletonLineSet.attr({"opacity": 0.35});
+                            },
+                            function () {
+                                floatTag.css({"visibility" : "hidden"});
+                                this.attr(conf.dotStrokeColor);
+                                skeletonCircleSet.attr({"fill-opacity": 0.7});
+                                this.attr({"r": skeletonRadius});
+                                // meshes.attr({"stroke": "#ebebeb", "stroke-dasharray": "-"});
+                                skeletonLineSet.attr({"opacity": 0.7});
+                            }
+                        );
+                    } else {
+                        skeletonCircle.hover(
+                            function () {
+                                floatTag.html('<div style="text-align: left;margin:auto;color:#ffffff">' + tip + '</div>');
+                                floatTag.css({"visibility" : "visible"});
+                                skeletonCircleSet.attr({"fill-opacity": 0.35});
+                                this.attr({"fill-opacity": 1, "r": 5});
+                                // meshes.attr({"stroke": "#d6d6d6", "stroke-dasharray": "-"});
+                                skeletonLineSet.attr({"opacity": 0.35});
+                            },
+                            function () {
+                                floatTag.css({"visibility" : "hidden"});
+                                this.attr(conf.dotStrokeColor);
+                                skeletonCircleSet.attr({"fill-opacity": 0.7});
+                                this.attr({"r": skeletonRadius});
+                                // meshes.attr({"stroke": "#ebebeb", "stroke-dasharray": "-"});
+                                skeletonLineSet.attr({"opacity": 0.7});
+                            }
+                        );
+                    }
+                }
+
+            }
+        }     
+    };
+
+    /**
+     * get key's specific dimension data which include all time points
+     */
+    Bubble.prototype.getKeyData = function(dimen,key) {
+        var data = [];
+        for (var i = 0; i < this.source.length; i++) {
+            if (this.source[i][this.keyDimen] === key) {
+                data.push(this.source[i][dimen]);
+            }
+        }
+        return data;
+    }; 
+
+    /**
+     * get a unique color specified by key
+     */
+    Bubble.prototype.getColorData = function(key) {
+        for (var i = 0; i < this.source.length; i++) {
+            if (this.source[i][this.keyDimen] === key) {
+                return this.source[i][this.colorDimen];
+            }
+        }
+    };
+
+    /**
+     * set up an animation
+     */
+    Bubble.prototype.initControls = function() {  
+        var that = this,
+            len = this.times.length -1;
+            value = this.startTime;
+
+        this.interval = setInterval(function() {
+            if (value <= len) {
+                that.generatePaths(value);
+                value += 0.25;
+            } else {
+                clearInterval(that.interval);
+                that.interval = 0;
+            }
+        }, 250);
+    };
+
+    /**
+     * interpolated some data between neibourh data point for the animation
+     */
+    Bubble.prototype.interpolateData = function(year, years, values) {
+        var index = Math.ceil(year);
+        if (year == years[index]) {
+            return values[index];
+        }
+        var lowerIndex = Math.max(0,index-1);
+        var lower = values[lowerIndex];
+        var higherIndex = index;
+        var higher = values[higherIndex];
+        var lowYear = years[lowerIndex];
+        var highYear = years[higherIndex];
+        var p = (year-lowYear) / (highYear-lowYear);
+        var value = +lower + +((higher-lower)*p) ;
+        return value;
+    };
+
+    /**
+     * make an array's every element unique by delete other same element
+     * TODO: 用underscore的uniq替换该方法
+     */
+    Array.prototype.uniq = function () {
+        var temp = {},
+            len = this.length;
+
+        for (var i = 0; i < len; i++) {
+            if (typeof temp[this[i]] == "undefined") {
+                temp[this[i]] = 1;
+            }
+        }
+        this.length = 0;
+        len = 0;
+        for (var i in temp) {
+            this[len++] = i;
+        }
+        return this;
+    };
+
+    /**
+     * clear animation and related artifacts
+     */
+    Bubble.prototype.clearAnimation = function () {
+        clearInterval(this.interval);
+        this.interval = 0;
+        this.backCanvas.clear();
+        this.foreCanvas.clear();
+    };
+
+    /**
+     * pause the interval
+     */
+    Bubble.prototype.pause = function () {
+        clearInterval(this.interval);
+        this.interval = 0;
+    };
+
+    /**
+     * set the rendering process
+     */
+    Bubble.prototype.render = function (options) {
+        clearInterval(this.interval);
+        this.setOptions(options);
+        if (!this.interval) {
+            this.renderAxis();
+        }
+        this.foreCanvas.clear();
+ 	    this.getScale();
+        this.initControls();
+    };
+
+    return Bubble;
+});
+/*global Raphael, d3 */
+/*!
+ * Bullet的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Bullet', function (require) {
+    var DataV = require('DataV');
+    var Axis = require('Axis');
+
+    /**
+     * Bullet构造函数
+     * Options:
+     *
+     *   - `width` 数字，图片宽度，默认为200，表示图片高200px
+     *   - `height` 数字，图片高度，默认为80
+     *   - `orient` string，图片方向，默认为"horizonal"，表示水平方向。若为"vertical"，则表示垂直方向
+     *   - `axisStyle` string, 坐标系类型，默认为"linear"，表示坐标系为线性坐标系。若为"log"，则表示对数坐标系
+     *   - `logBase` 数字, 采用对数坐标系时的对数基，默认为Math.E
+     *   - `tickDivide` 数字，表示坐标的标尺的分段数，默认为5
+     *   - `margin` 数字数组，表示图片上、右、下、左的边距，默认为 [20, 20, 20, 20]
+     *   - `centerBarRatio` 数字，表示中间的测度条的高度与背景条高度的比值， 默认为0.3
+     *   - `markerWidth` 数字，表示标记条的宽度， 默认为4，单位为像素
+     *   - `markerRatio` 数字，表示标记条的高度与背景条高度的比值，默认为0.7
+     *   - `titleRatio` 数字，表示子弹图title的高度与背景条高度的比值，默认为0.6，此时title与subtitle的比值
+     *   - `backgroundColor` string数组，表示背景条颜色的渐变数组，默认为["#666", "#ddd"],背景条颜色就是这两种颜色的渐变
+     *   - `measureColor` string数组，表示测度条颜色的渐变数组，默认为["steelblue", "#B0C4DE"],测度条颜色就是这两种颜色的渐变
+     *   - `markerColor` string，表示标记条的颜色，默认为"#000"
+     *
+     * Examples:
+     * ```
+     * //Create bullet in a dom node with id "chart", width is 500; height is 600px;
+     * var bullet = new Bullet("chart", {
+     *     "width": 500,
+     *     "height": 600,
+     *     "margin": [10, 10, 20, 70]
+     * });
+     * //Create bullet with log base;
+     * var log = new Bullet("chart2", {
+     *     width: 300,
+     *     height: 60,
+     *     margin: [10, 10, 20, 70],
+     *     backgroundColor: ["#66f", "#ddf"],
+     *     measureColor: ["#000", "#000"],
+     *     markerColor: "#44f",
+     *     axisStyle: "log",
+     *     logBase: 10
+     * });
+     * ```
+     * @param {Mix} node The dom node or dom node Id
+     * @param {Object} options options json object for determin stream style.
+     */
+    var Bullet = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Bullet";
+            this.node = this.checkContainer(node);
+            // Properties
+            this.defaults.orient = "horizonal"; // "horizonal", "vertical"
+            this.defaults.axisStyle = "linear"; // "linear", "log"
+            this.defaults.logBase = Math.E;
+            this.defaults.tickDivide = 5;
+            this.defaults.margin = [10, 10, 20, 80];//top, right, bottom, left
+            this.defaults.centerBarRatio = 0.3;
+            this.defaults.markerWidth = 4;
+            this.defaults.markerRatio = 0.7;
+            this.defaults.titleRatio = 0.6; //title's text height : subtitle's text height = 6:4
+            this.defaults.backgroundColor = ["#666", "#ddd"]; //dark, light
+            this.defaults.measureColor = ["steelblue", "#B0C4DE"]; //dark, light
+            this.defaults.markerColor = "#000";
+
+            // canvas
+            this.defaults.width = 200;
+            this.defaults.height = 80;
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /*!
+     * 创建画布
+     */
+    Bullet.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+    };
+
+    /**
+     * 设置数据源
+     * Examples:
+     * ```
+     * bullet.setSource({
+     *    title: "Sample",
+     *    subtitle: "ratio",
+     *    ranges: [0, 0.5, 0.8, 1],
+     *    measures: [0.7, 0.9],
+     *    markers: [0.6],
+     *    rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
+     *    measureTitles: ["value is 0.7", "value is 0.9"],
+     *    markerTitles: ["mean is 0.6"]
+     * })
+     * ```
+     * @param {Object} source 数据源
+     */
+    Bullet.prototype.setSource = function (source) {
+        var conf = this.defaults,
+            range,
+            axisOrient;
+        this.data = source;
+        if (conf.orient === "horizonal") {
+            axisOrient = "bottom";
+            range = [conf.margin[3], conf.width - conf.margin[1]];
+        } else if (conf.orient === "vertical") {
+            axisOrient = "left";
+            range = [conf.height - conf.margin[2], conf.margin[0]];
+        }
+
+        if (conf.axisStyle === "linear") {
+            this.scale = d3.scale.linear();
+        } else if (conf.axisStyle === "log") {
+            this.scale = d3.scale.log();
+        }
+
+        this.data.min = this.data.ranges[0];
+        this.data.max = this.data.ranges[this.data.ranges.length - 1];
+        this.scale.domain([this.data.min, this.data.max])
+            .range(range);
+
+        if (conf.axisStyle === "linear") {
+            this.axis = Axis().scale(this.scale).orient(axisOrient).ticks(conf.tickDivide).domainAttr({"stroke": "none"});
+        } else if (conf.axisStyle === "log") {
+            this.logScale = d3.scale.linear()
+                .domain([Math.log(this.data.min)/Math.log(conf.logBase), Math.log(this.data.max)/Math.log(conf.logBase)])
+                .range(range);
+            this.axis = Axis()
+                .orient(axisOrient)
+                .scale(this.logScale)
+                .ticks(conf.tickDivide)
+                .tickFormat(function (d) {return Math.round(Math.pow(conf.logBase, d));})
+                .domainAttr({"stroke": "none"});
+        }
+    };
+
+    /*!
+     * generate bullet dom path
+     */
+    Bullet.prototype.generatePaths = function () {
+        var conf = this.defaults;
+        //get color function
+        if (conf.backgroundColor) {
+            this.color = d3.interpolateRgb.apply(null, [conf.backgroundColor[0], conf.backgroundColor[1]]);
+        }
+        if (conf.measureColor) {
+            this.measureColor = d3.interpolateRgb.apply(null, [conf.measureColor[0], conf.measureColor[1]]);
+        }
+
+        if (conf.orient === "horizonal") {
+            this.paintHorizonal();
+        } else if (conf.orient === "vertical") {
+            this.paintVertical();
+        }
+    };
+
+    /*!
+     * paint orient horizonal bullet
+     */
+    Bullet.prototype.paintHorizonal = function () {
+        var conf = this.defaults;
+        var paper = this.canvas,
+            data = this.data,
+            m = conf.margin,
+            ranges = [],
+            measures = [],
+            markers = [],
+            rangeTitles = [],
+            i,
+            l,
+            rect,
+            titleRatio,
+            w,
+            h = conf.height - m[0] - m[2],
+            left;
+
+        //axis
+        this.axis(paper).attr({transform: "t" + 0 + ',' + (conf.height - m[2])});
+        //color rect
+        ranges = data.ranges;
+        if (data.rangeTitles) {
+            rangeTitles = data.rangeTitles;
+        }
+        left = m[3];
+        for (i = 0, l = ranges.length - 1; i < l; i++) {
+            w = this.scale(ranges[i + 1]) - this.scale(ranges[i]);
+            rect = paper.rect(left, m[0], w, h)
+                .attr({"stroke": "none",
+                        "fill": this.color(l === 1 ? 1 : i / (l - 1)),
+                        "title": rangeTitles[i] ? rangeTitles[i] : ""});
+            left += w;
+        }
+
+        //measure bar
+        data.measures.forEach(function (d, i) {
+                var mTitles = data.measureTitles;
+                var mTitle = mTitles && mTitles[i] ? mTitles[i] : "";
+                measures.push({measure: d, measureTitle: mTitle});
+                });
+        measures.sort(function (a, b) { return d3.ascending(a.measure, b.measure); });
+        left = this.scale(data.min);
+        for (i = 0, l = measures.length; i < l; i++) {
+            value = Math.max(data.min, Math.min(data.max, measures[i].measure));
+            w = this.scale(value) - left;
+            paper.rect(left,
+                    m[0] + h * (1 - conf.centerBarRatio) / 2,
+                    w,
+                    h * conf.centerBarRatio)
+                .attr({"stroke": "none", "fill": this.measureColor(l === 1 ? 1 : i / (l - 1)), "title": measures[i].measureTitle});
+            left += w;
+        }
+
+        //marker bar
+        markers = data.markers;
+        for (i = 0, l = markers.length; i < l; i++) {
+            paper.rect(this.scale(markers[i]) - conf.markerWidth / 2,
+                    m[0] + h * (1 - conf.markerRatio) / 2,
+                    conf.markerWidth,
+                    h * conf.markerRatio)
+                .attr({"stroke": "none", "fill": conf.markerColor,
+                        "title": data.markerTitles && data.markerTitles[i] ? data.markerTitles[i] : ""});
+        }
+
+        //title
+        if (data.title) {
+            titleRatio = data.subtitle ? conf.titleRatio : 1;
+            this.title = paper.text(m[3] - 5, m[0] + h / 2, data.title)
+            .attr({"text-anchor": "end", "font-weight": "bold", "font-size": h * titleRatio * 0.9});
+        }
+
+        //subtitle
+        if (data.subtitle) {
+            this.subtitle = paper.text(m[3] - 5, conf.height - m[2], data.subtitle)
+            .attr({"text-anchor": "end", "font-size": h * (1 - conf.titleRatio) * 0.9});
+        }
+    };
+
+    /*!
+     * paint orient vertical bullet
+     */
+    Bullet.prototype.paintVertical = function () {
+        var conf = this.defaults;
+        var paper = this.canvas,
+            data = this.data,
+            m = conf.margin,
+            ranges = [],
+            measures = [],
+            markers = [],
+            rangeTitles = [],
+            i,
+            l,
+            rect,
+            titleRatio,
+            w = conf.width - m[1] - m[3],
+            h,
+            bottom;
+
+        //axis
+        this.axis(paper).attr({transform: "t" + m[3] + ',' + 0});
+
+        //color rect
+        ranges = data.ranges;
+        if (data.rangeTitles) {
+            rangeTitles = data.rangeTitles;
+        }
+        bottom = conf.height - m[2];
+        for (i = 0, l = ranges.length - 1; i < l; i++) {
+            h = -this.scale(ranges[i + 1]) + this.scale(ranges[i]);
+            rect = paper.rect(m[3], bottom - h, w, h)
+                .attr({"stroke": "none",
+                        "fill": this.color(l === 1 ? 1 : i / (l - 1)),
+                        "title": rangeTitles[i] ? rangeTitles[i] : ""});
+            bottom -= h;
+        }
+
+        //measure bar
+        data.measures.forEach(function (d, i) {
+                var mTitles = data.measureTitles;
+                var mTitle = mTitles && mTitles[i] ? mTitles[i] : "";
+                measures.push({measure: d, measureTitle: mTitle});
+                });
+        measures.sort(function (a, b) { return d3.ascending(a.measure, b.measure); });
+        bottom = this.scale(data.min);
+        for (i = 0, l = measures.length; i < l; i++) {
+            value = Math.max(data.min, Math.min(data.max, measures[i].measure));
+            h = -this.scale(value) + bottom;
+            paper.rect(m[3] + w * (1 - conf.centerBarRatio) / 2,
+                    bottom - h,
+                    w * conf.centerBarRatio,
+                    h)
+                .attr({"stroke": "none", "fill": this.measureColor(l === 1 ? 1 : i / (l - 1)), "title": measures[i].measureTitle});
+            bottom -= h;
+        }
+
+        //marker bar
+        markers = data.markers;
+        for (i = 0, l = markers.length; i < l; i++) {
+            paper.rect(m[3] + w * (1 - conf.markerRatio) / 2,
+                    this.scale(markers[i]) - conf.markerWidth / 2,
+                    w * conf.markerRatio,
+                    conf.markerWidth)
+                .attr({"stroke": "none", "fill": conf.markerColor,
+                        "title": data.markerTitles && data.markerTitles[i] ? data.markerTitles[i] : ""});
+        }
+
+        //title
+        if (data.title) {
+            titleRatio = data.subtitle ? conf.titleRatio : 1;
+            m[0] *= 0.9; //some ratio adjust;
+            this.title = paper.text((conf.width + m[3] - m[1])/ 2, m[0] * titleRatio / 2, data.title)
+            .attr({"text-anchor": "middle", "font-weight": "bold", "font-size": m[0] * titleRatio * 0.8});
+        }
+
+        //subtitle
+        if (data.subtitle) {
+            this.subtitle = paper.text((conf.width + m[3] - m[1])/ 2, m[0] * (1 - (1 - titleRatio) / 2), data.subtitle)
+            .attr({"text-anchor": "middle", "font-size": m[0] * (1 - titleRatio) * 0.8});
+        }
+    };
+
+    /*!
+     * clean canvas
+     */
+    Bullet.prototype.clearCanvas = function () {
+        this.canvas.clear();
+    };
+
+    /**
+     * render bullet
+     */
+    Bullet.prototype.render = function (options) {
+        this.setOptions(options);
+        this.generatePaths();
+    };
+
+    return Bullet;
+});
+
+
+/*global EventProxy, d3, Raphael, self, packages, $ */
+
+/*!
+ * Bundle的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Bundle', function (require) {
+    var DataV = require('DataV');
+
+    /**
+     * 构造函数，node参数表示在html的哪个容器中绘制该组件
+     * options对象为用户自定义的组件的属性，比如画布大小
+     */
+    var Bundle = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Bundle";
+            this.node = this.checkContainer(node);
+            this.json = {};
+    
+            // 图的半径
+            this.defaults.diameter = 960;
+            this.defaults.radius = this.defaults.diameter / 2;
+            this.defaults.innerRadius = this.defaults.radius - 120;
+            this.defaults.tension = 0.85;
+    
+            this.defaults.color = {
+                defaultLineColor: "#4065AF",
+                defaultWordColor: "#000000",
+                lineHoverColor: "#02B0ED",
+                nodeHoverColor: "#02B0ED",
+                importNodesColor: "#5DA714", //被引用的节点
+                exportNodesColor: "#FE3919" //引用当前节点的节点
+            };
+    
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 设置用户自定义属性
+     */
+    Bundle.prototype.setOptions = function (options) {
+        if (options) {
+            var prop;
+            for (prop in options) {
+                if (options.hasOwnProperty(prop)) {
+                    this.defaults[prop] = options[prop];
+                    if (prop === "diameter") {
+                        this.defaults.radius = this.defaults.diameter / 2;
+                        this.defaults.innerRadius = this.defaults.radius - 120;
+                    } else if (prop === "radius") {
+                        this.defaults.diameter = this.defaults.radius * 2;
+                        this.defaults.innerRadius = this.defaults.radius - 120;
+                    } else if (prop === "innerRadius") {
+                        this.defaults.radius = this.defaults.innerRadius + 120;
+                        this.defaults.diameter = this.defaults.radius * 2;
+                    } else if (prop === "width") {
+                        this.defaults.diameter = this.defaults.width;
+                        this.defaults.radius = this.defaults.diameter / 2;
+                        this.defaults.innerRadius = this.defaults.radius - 120;
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * 对原始数据进行处理
+     * TODO: 改进为获取值时运算
+     */
+    Bundle.prototype.setSource = function (source) {
+        if (source[0] && source[0] instanceof Array) {
+            // csv or 2d array source
+            if (source[0][0] === "name") {
+                source = source.slice(1); // 从第一行开始，第0行舍去
+            }
+            var nData = [];
+            var imports = [];
+            //var isNode = true;
+            var nodeNum;
+            var that = this;
+            source.forEach(function (d, i) {
+                if (d[0] === "") {
+                    throw new Error("name can not be empty(line:" + (i + 1) + ").");
+                }
+                if (d[1] !== "") {
+                    imports = d[1].split(" ");
+                }
+                nData[i] = {
+                    name: d[0],
+                    imports: imports
+                };
+            });
+            this.json = nData;
+        } else {
+            // json source
+            this.json = source;
+        }
+    };
+
+    /**
+     * 创建画布
+     */
+    Bundle.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.diameter, conf.diameter);
+
+        //var c = this.canvas.circle(50, 50, 40);
+    };
+
+    /**
+     * 布局
+     */
+    Bundle.prototype.layout = function () {
+        var packages = {
+            // Lazily construct the package hierarchy from class names.
+            root: function (classes) {
+                var map = {};
+                function construct(name, data) {
+                    var node = map[name], i;
+                    if (!node) {
+                        node = map[name] = data || {name: name, children: []};
+                        if (name.length) {
+                            node.parent = construct(name.substring(0, i = name.lastIndexOf(".")));
+                            node.parent.children.push(node);
+                            node.key = name.substring(i + 1);
+                        }
+                    }
+                    return node;
+                }
+          
+                classes.forEach(function (d) {
+                    construct(d.name, d);
+                });
+          
+                return map[""];
+            },
+        
+            // Return a list of imports for the given array of nodes.
+            imports: function (nodes) {
+                var map = {},
+                    imports = [];
+          
+                // Compute a map from name to node.
+                nodes.forEach(function (d) {
+                    map[d.name] = d;
+                });
+          
+                // For each import, construct a link from the source to target node.
+                nodes.forEach(function (d) {
+                    if (d.imports) {
+                        d.imports.forEach(function (i) {imports.push({source: map[d.name], target: map[i]});
+                            });
+                    }
+                });
+          
+                return imports;
+            }
+        };
+        
+        var cluster = d3.layout.cluster()
+            .size([360, this.defaults.innerRadius]) //.size(角度，半径)
+            .sort(null)
+            .value(function (d) {
+                return d.size;
+            });
+        this.nodes = cluster.nodes(packages.root(this.json));
+        this.links = packages.imports(this.nodes);
+    };
+
+    /**
+     * 渲染弦图
+     */
+    Bundle.prototype.render = function () {
+        this.layout();
+        this.generatePaths();
+    };
+
+    /**
+     * 生成路径
+     */
+    Bundle.prototype.generatePaths = function (options) {
+        var that = this;
+
+        var canvas = this.canvas;
+        var rNodes = canvas.set();
+        var rLinks = canvas.set();
+
+        var bundle = d3.layout.bundle();
+
+        var line = d3.svg.line.radial()
+            .interpolate("bundle")
+            .tension(this.defaults.tension)
+            .radius(function (d) {
+                return d.y;
+            })
+            .angle(function (d) {
+                return d.x / 180 * Math.PI;
+            });
+
+        //定义图中的弦和节点
+        var nodes = this.nodes;
+        var links = this.links;
+        var linksCount = links.length;
+        var paths = bundle(links);
+
+        var locateStr = ""; //对文字进行平移和旋转
+        var locateBBox = ""; //对文字的bounding box进行平移和旋转
+        var r = 0;
+        var angle = 0;
+        var xTrans = 0;
+        var yTrans = 0;
+        var anchor; //text-anchor: start or end
+        var rotateStr = "";
+
+        //element data cache
+        var nodeRelatedElements = {};// {key: {targetLink: [], sourceLink: [], targetNode: [], sourceNode: []}}
+        var nodeElements = {}; //{key: Els}
+        var bBoxElements = {}; //{key: Els}
+
+        var i,
+            j,
+            key,
+            textEl,
+            bBox,
+            bBoxNew,
+            tCenterX,
+            tCenterY,
+            bBoxEl,
+            linkEl;
+
+        var mouseoverLink = function () {
+            var current = this;
+            //var color = that.data("color");
+            if (rLinks.preLink) {
+                rLinks.preLink.attr("stroke", that.defaults.color.defaultLineColor)
+                    .attr("stroke-width", 1)
+                    .attr("stroke-opacity", 0.6);
+
+            }
+            rLinks.preLink = this;
+
+            current.attr("stroke", that.defaults.color.lineHoverColor)
+                .attr("stroke-width", 2)
+                .attr("stroke-opacity", 1.0)
+                .toFront(); //把当前弦移到画布最上层
+        };
+
+        var mouseoverNode = function () {
+            var relatedEl = this.data("relatedElements");
+            //高亮所选节点的文字颜色
+            this.data("relatedNode").attr({"fill": that.defaults.color.nodeHoverColor,
+                "fill-opacity": 1.0, "font-weight": "600"});
+            //将包围盒颜色设为透明
+            this.attr({"fill": that.defaults.color.nodeHoverColor, "fill-opacity": 0.0/*, "font-weight": "600"*/});
+            
+            relatedEl.sourceLink.forEach(function (d) { //set green
+                d.attr({"stroke": that.defaults.color.importNodesColor, "stroke-width": 1, "stroke-opacity": 0.9})
+                    .toFront();
+            });
+            relatedEl.sourceNode.forEach(function (d) {
+                d.attr({"fill": that.defaults.color.importNodesColor, "font-weight": "600"});
+            });
+            relatedEl.targetLink.forEach(function (d) { //set red
+                d.attr({"stroke": that.defaults.color.exportNodesColor, "stroke-width": 1, "stroke-opacity": 0.9})
+                    .toFront();
+            });
+            relatedEl.targetNode.forEach(function (d) {
+                d.attr({"fill": that.defaults.color.exportNodesColor, "font-weight": "600"});
+            });
+        };
+
+        var mouseoutNode = function () {
+            var relatedEl = this.data("relatedElements");
+            this.data("relatedNode").attr({"fill": that.defaults.color.defaultWordColor,
+                "font-weight": "400", "fill-opacity": 1.0});
+            relatedEl.targetLink.forEach(function (d) {
+                d.attr({"stroke": that.defaults.color.defaultLineColor, "stroke-width": 1, "stroke-opacity": 0.6});
+            });
+            relatedEl.targetNode.forEach(function (d) {
+                d.attr({"fill": that.defaults.color.defaultWordColor, "font-weight": "400"});
+            });
+            relatedEl.sourceLink.forEach(function (d) {
+                d.attr({"stroke": that.defaults.color.defaultLineColor, "stroke-width": 1, "stroke-opacity": 0.6});
+            });
+            relatedEl.sourceNode.forEach(function (d) {
+                d.attr({"fill": that.defaults.color.defaultWordColor, "font-weight": "400"});
+            });
+        };
+
+        for (j = 0; j < nodes.length; j++) {
+            //若为叶子节点
+            if (!nodes[j].children) {
+                locateStr = "T" + that.defaults.radius + "," + that.defaults.radius + "R"; //使用大写T、R、S--绝对，not相对
+
+                //半径: add a padding between lines and words
+                r = nodes[j].y + 20;
+
+                //计算旋转角度和水平、竖直方向所需平移的距离
+                angle = (nodes[j].x - 90) * Math.PI / 180;
+                xTrans = r * Math.cos(angle);
+                yTrans = r * Math.sin(angle);
+
+                //计算text-anchor
+                if (nodes[j].x < 180) {
+                    anchor = "start";
+                } else {
+                    anchor = "end";
+                }
+
+                //计算文字方向是否需要旋转180度
+                if (nodes[j].x < 180) {
+                    rotateStr = "";
+                } else {
+                    rotateStr = "R180";
+                }
+
+                //计算文字需要如何经过平移和旋转被排列在圆周上
+                locateStr += (nodes[j].x - 90) + rotateStr + "T" + xTrans + "," + yTrans;
+
+                //绘制文字
+                textEl = canvas.text()
+                    .attr("font", "11px arial")
+                    .data("color", that.defaults.color)
+                    .attr("text", nodes[j].key)
+                    //.attr("title", nodes[j].size)
+                    .transform(locateStr)
+                    .attr("text-anchor", anchor)
+                    .attr("fill", that.defaults.color.defaultWordColor);
+
+                //获取旋转平移之前文字的bounding box
+                bBox = textEl.getBBox(true);
+
+                //canvas.rect(bBox.x, bBox.y, bBox.width, bBox.height);
+                //获取旋转平移之后文字的bounding box
+                bBoxNew = textEl.getBBox();
+                //adjust vml box center
+                if (Raphael.vml) {
+                    //vml's word bbox is not related to text-anchor, always middle;
+                    //svg's word bbox is related to text-anchor;
+                    bBoxNew.x = bBoxNew.x + bBox.width / 2 * Math.cos(angle);
+                    bBoxNew.y = bBoxNew.y + bBox.width / 2 * Math.sin(angle);
+                }
+                //canvas.rect(bBoxNew.x, bBoxNew.y, bBoxNew.width, bBoxNew.height);
+
+                //新旧bounding box的中心坐标变化
+                tCenterX = bBoxNew.x + bBoxNew.width / 2 - bBox.x - bBox.width / 2;
+                tCenterY = bBoxNew.y + bBoxNew.height / 2 - bBox.y - bBox.height / 2;
+                //对bounding box进行平移和旋转
+                locateBBox = "T" + tCenterX + "," + tCenterY + "R" + (nodes[j].x - 90) + rotateStr;
+
+                // 包围盒
+                bBoxEl = canvas.rect(bBox.x, bBox.y, bBox.width, bBox.height)
+                    .transform(locateBBox)
+                    .data("relatedNode", textEl)
+                    .attr({"fill": "#fff", "opacity": 0.01});
+                
+                key = nodes[j].key;
+                nodeElements[key] = textEl;
+                bBoxElements[key] = bBoxEl;
+                nodeRelatedElements[key] = {targetLink: [], sourceLink: [], targetNode: [], sourceNode: []};
+
+                rNodes.push(textEl);
+            }
+        }
+
+        //绘制曲线
+        for (i = 0; i < linksCount; i++) {
+            var l = paths[i];
+
+            //对paths数组中的每一项进行计算，由路径节点信息得到坐标值
+            var spline = line(l);
+            var sourceKey = links[i].source.key;
+            var targetKey = links[i].target.key;
+            var tips = "link source: " + sourceKey  + "\n"
+                        + "link target: " + targetKey;
+
+            linkEl = canvas.path(spline)
+                //.attr("stroke", that.defaults.defaultLineColor)
+                .attr("stroke-opacity", 0.6)
+                .attr("title", tips)
+                .attr("d", spline)
+                .attr("stroke", that.defaults.color.defaultLineColor)
+                .translate(that.defaults.radius, that.defaults.radius)
+                .mouseover(mouseoverLink);
+                //.mouseout(mouseoutLink);
+            linkEl[0].el = linkEl;
+
+            nodeRelatedElements[sourceKey].targetLink.push(linkEl);
+            nodeRelatedElements[sourceKey].targetNode.push(nodeElements[targetKey]);
+            nodeRelatedElements[targetKey].sourceLink.push(linkEl);
+            nodeRelatedElements[targetKey].sourceNode.push(nodeElements[sourceKey]);
+            rLinks.push(linkEl);
+        }
+
+        $(this.canvas.canvas).mousemove(function (e) {
+                    if(!e.target.el && rLinks.preLink){
+                        rLinks.preLink.attr("stroke", that.defaults.color.defaultLineColor)
+                            .attr("stroke-width", 1)
+                            .attr("stroke-opacity", 0.6);
+                        rLinks.preLink = undefined;
+                        //console.log("a");
+                    }
+                });
+
+        //bind text words hover event
+        for (key in bBoxElements) {
+            if (bBoxElements.hasOwnProperty(key)) {
+                bBoxElements[key].data("relatedElements", nodeRelatedElements[key])
+                    .mouseover(mouseoverNode)
+                    .mouseout(mouseoutNode);
+            }
+        }
+
+    };
+
+    return Bundle;
+});
+
+/*global Raphael, d3, $, define */
+/*!
+ * Chord的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Chord', function (require) {
+    var DataV = require('DataV');
+
+    /**
+     * 构造函数
+     * @param {Object} node 表示在html的哪个容器中绘制该组件
+     * @param {Object} options 为用户自定义的组件的属性，比如画布大小
+     */
+    var Chord = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Chord";
+            this.node = this.checkContainer(node);
+            this.matrix = [];
+            this.groupNames = []; //数组：记录每个group的名字
+
+            //图的大小设置
+            this.defaults.legend = true;
+            this.defaults.width = 800;
+            this.defaults.height = 800;
+
+            //设置用户指定的属性
+            this.setOptions(options);
+
+            this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.defaults.innerRadius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.38;
+            this.defaults.outerRadius = this.defaults.innerRadius * 1.10;
+            //创建画布
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 创建画布
+     */
+    Chord.prototype.createCanvas = function () {
+        this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
+        canvasStyle = this.node.style;
+        canvasStyle.position = "relative";
+        this.floatTag = DataV.FloatTag()(this.node);
+        this.floatTag.css({
+            "visibility": "hidden"
+        });
+    };
+
+    /**
+     * 获取颜色
+     * @param {Number} i 元素类别编号
+     * @return {String} 返回颜色值
+     */
+    Chord.prototype.getColor = function (i) {
+        var color = DataV.getColor();
+        return color[i % color.length][0];
+    };
+
+    /**
+     * 绘制弦图
+     */
+    Chord.prototype.render = function () {
+        this.layout();
+        if (this.defaults.legend) {
+            this.legend();
+        }
+    };
+
+    /**
+     * 绘制图例
+     */
+    Chord.prototype.legend = function () {
+        var that = this;
+        var paper = this.canvas;
+        var legendArea = this.legendArea;
+        var rectBn = paper.set();
+        this.underBn = [];
+        var underBn = this.underBn;
+        for (i = 0; i <= this.groupNum; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "#ebebeb",
+                "stroke": "none"
+                //"r": 3
+            }).hide());
+            //色框
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                "fill": this.getColor(i),
+                "stroke": "none"
+            });
+            //文字
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
+                "fill": "black",
+                "fill-opacity": 1,
+                "font-family": "Verdana",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "start"
+            });
+            //选框
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "white",
+                "fill-opacity": 0,
+                "stroke": "none"
+                //"r": 3
+            })).data("clicked", 0);
+        }
+        rectBn.forEach(function (d, i) {
+            d.mouseover(function () {
+                if (d.data("clicked") === 0) {
+                    underBn[i].attr('opacity', 0.5);
+                    underBn[i].show();
+                }
+            }).mouseout(function () {
+                if (d.data("clicked") === 0) {
+                    underBn[i].hide();
+                }
+            });
+            d.click(function () {
+                for (j = 0; j < underBn.length; j++) {
+                    if (j === i) {
+                        underBn[j].show();
+                    } else {
+                        underBn[j].hide();
+                    }
+                }
+                rectBn.forEach(function (eachBn) {
+                    if (eachBn !== d) {
+                        eachBn.data("clicked", 0);
+                    }
+                });
+                if (d.data("clicked") === 0) {
+                    underBn[i].attr('opacity', 1);
+                    underBn[i].show();
+                    that.chordGroups.forEach(function (d) {
+                        if (d.data('source') !== i && d.data('target') !== i) {
+                            d.attr({
+                                'fill-opacity': 0.1
+                            });
+                        } else {
+                            d.attr({
+                                'fill-opacity': 0.6
+                            });
+                        }
+                    });
+
+                    d.data("clicked", 1);
+                } else if (d.data("clicked") === 1) {
+                    underBn[i].hide();
+                    d.data("clicked", 0);
+                    that.chordGroups.forEach(function (d) {
+                        d.attr({
+                            'fill-opacity': 0.6
+                        });
+                    });
+                }
+            });
+        });
+    };
+
+    /**
+     *对原始数据进行处理
+     * @param {Array} table 将要被绘制成饼图的二维表数据
+     */
+    Chord.prototype.setSource = function (table) {
+        if (table[0][0] !== null) {
+            var t;
+            for (t = 0; t < table[0].length; t++) {
+                this.groupNames[t] = table[0][t];
+            }
+            table = table.slice(1); // 从第一行开始，第0行舍去
+        }
+
+        var group = [];
+        this.groupNum = table[0].length;
+        var groupNum = this.groupNum;
+        var that = this;
+        table.forEach(function (d, i) {
+            if (d.length !== groupNum || table.length !== groupNum) {
+                throw new Error("The source data should be an n * n matrix!");
+            }
+
+            group[i] = [];
+            var s;
+            for (s = 0; s < groupNum; s++) {
+                group[i][s] = Number(d[s]);
+            }
+        });
+
+        var r;
+        for (r = 0; r < groupNum; r++) {
+            that.matrix[r] = group[r];
+        }
+    };
+
+    /**
+     *创建chord布局
+     */
+    Chord.prototype.layout = function () {
+        var floatTag = this.floatTag;
+        var that = this;
+
+        that.canvas.clear();
+        /*var see = [
+            [11975, 5871, 8916, 2868],
+            [1951, 10048, 2060, 6171],
+            [8010, 16145, 8090, 8045],
+            [1013, 990, 940, 6907]
+        ];*/
+
+        var chordLayout = d3.layout.chord().padding(0.05) //chord segments之间的padding间隔
+        .sortSubgroups(d3.descending) //chord segments细分后的排序规则
+        .matrix(that.matrix);
+
+        /*var fillColor = d3.scale.ordinal()
+            .domain(d3.range(4))
+            .range(["#000000", "#FFDD89", "#957244", "#F26223"]);*/
+
+        //groups数组：获取每个组的起始角度、数值、索引等属性
+        var groups = chordLayout.groups();
+
+        //由内外半径、起始角度计算路径字符串
+        var pathCalc = d3.svg.arc().innerRadius(that.defaults.innerRadius).outerRadius(that.defaults.outerRadius).startAngle(function (d) {
+            return d.startAngle;
+        }).endAngle(function (d) {
+            return d.endAngle;
+        });
+
+        var chords = chordLayout.chords();
+
+        //计算弦的路径曲线
+        var chordCalc = d3.svg.chord().radius(that.defaults.innerRadius);
+
+        //Raphael: Paper.path()
+        var donutEle;
+        //获取每个环形的字符串表示
+        var spline;
+        //表示每条弦的element
+        var chordEle;
+        //每条弦的字符串表示
+        var belt;
+
+        var num; //每个group分割小格数
+        var unitAngle; //每个group所占的角度
+        var angle;
+        var radian;
+        var tickLine;
+        var tickStr; //每个tick的路径
+        var xTrans, yTrans;
+        var aX, aY, bX, bY; //每个tick起始端点的坐标
+        var anchor;
+        var rotateStr;
+        var wordStr;
+        var word;
+        var textEl;
+        var wXTrans, wYTrans;
+        var tips;
+        var minValue = 1000;
+        that.chordGroups = that.canvas.set();
+        that.donutGroups = that.canvas.set();
+
+        $(this.node).append(this.floatTag);
+
+        //计算某条弦被赋值为target或source的颜色
+        var colorCalc = function (index) {
+            var i = chords[index].target.value > chords[index].source.value ? chords[index].target.index : chords[index].source.index;
+            return i;
+        };
+
+        //添加透明效果
+
+        var mouseOverDonut = function () {
+            floatTag.html('<div style = "text-align: center;margin:auto;color:'
+            //+ jqNode.color
+            +
+            "#ffffff" + '">' + this.data('text') + '</div>');
+            floatTag.css({
+                "visibility": "visible"
+            });
+            that.underBn.forEach(function (d) {
+                d.hide();
+            });
+            index = this.data("donutIndex");
+            that.chordGroups.forEach(function (d) {
+                if (d.data('source') !== index && d.data('target') !== index) {
+                    d.attr({
+                        'fill-opacity': 0.1
+                    });
+                } else {
+                    d.attr({
+                        'fill-opacity': 0.6
+                    });
+                }
+            });
+            //fade(this.data("donutIndex"), 0.2);
+            that.underBn[index].attr('opacity', 0.5).show();
+
+        };
+
+        var mouseOutDonut = function () {
+            floatTag.css({
+                "visibility": "hidden"
+            });
+            index = this.data("donutIndex");
+            that.chordGroups.forEach(function (d) {
+                if (d.data('source') !== index && d.data('target') !== index) {
+                    d.attr({
+                        'fill-opacity': 0.6
+                    });
+                }
+            });
+            //fade(this.data("donutIndex"), 0.6);
+            that.underBn[index].hide();
+        };
+
+        var mouseoverChord = function () {
+            floatTag.html('<div style="text-align: center;margin:auto;color:#ffffff">' + this.data('text') + '</div>');
+            floatTag.css({
+                "visibility": "visible"
+            });
+            that.underBn.forEach(function (d) {
+                d.hide();
+            });
+            that.chordGroups.forEach(function (d) {
+                d.attr("fill-opacity", 0.1);
+            });
+            if (navigator.appName !== "Microsoft Internet Explorer") {
+                this.toFront(); //把当前弦移到画布最上层
+            }
+            this.attr("fill-opacity", 0.7);
+            that.underBn[this.data('source')].attr('opacity', 0.5).show();
+        };
+
+        var mouseoutChord = function () {
+            floatTag.css({
+                "visibility": "hidden"
+            });
+            //alert("***");
+            that.chordGroups.forEach(function (d) {
+                d.attr("fill-opacity", 0.6);
+            });
+            //this.attr("fill-opacity", 0.6);
+            that.underBn[this.data('source')].hide();
+        };
+
+        //画弦*********************************************************
+        var t;
+        for (t = 0; t <= chords.length - 1; t++) {
+            //alert(chords.length);
+            belt = chordCalc(chords[t]);
+            //hover到弦上时的效果
+            tips = that.groupNames[chords[t].source.index] + " to " + that.groupNames[chords[t].target.index] + ": " + that.matrix[chords[t].source.index][chords[t].target.index] + "," + that.groupNames[chords[t].target.index] + " to " + that.groupNames[chords[t].source.index] + ": " + that.matrix[chords[t].target.index][chords[t].source.index];
+
+            chordEle = that.canvas.path(belt).
+            translate((that.defaults.width - this.xOffset) / 2 + this.xOffset, that.defaults.height / 2).attr({
+                "path": belt,
+                "fill": that.getColor(colorCalc(t)),
+                "fill-opacity": 0.6,
+                "stroke": "#d6d6d6",
+                "stroke-opacity": 0.1
+            }).hover(mouseoverChord, mouseoutChord).data("source", chords[t].source.index).data("target", chords[t].target.index);
+            //.attr("fill", fillColor(chords[t].target.index))
+            chordEle.data('text', tips);
+            that.chordGroups.push(chordEle);
+        }
+
+
+
+        //画圆弧*********************************************************
+        var i, r;
+        var donutName;
+        var nameStr;
+        var nameX, nameY;
+        var ro, a;
+        var sum = 0;
+        for (r = 0; r <= groups.length - 1; r++) {
+            sum += groups[r].value;
+        }
+
+        for (i = 0; i <= groups.length - 1; i++) {
+            //画外圈的pie图**************************************
+            //计算每个group的path
+            spline = pathCalc(groups[i]);
+            tips = that.groupNames[i] + ": " + Math.round(groups[i].value) + " " + (groups[i].value * 100 / sum).toFixed(2) + "%";
+
+            donutEle = that.canvas.path(spline).translate((that.defaults.width - this.xOffset) / 2 + this.xOffset, that.defaults.height / 2).data("donutIndex", i).attr({
+                "path": spline,
+                "fill": that.getColor(i),
+                "stroke": that.getColor(i)
+            }).mouseover(mouseOverDonut).mouseout(mouseOutDonut);
+            donutEle.data('text', tips);
+            that.donutGroups.push(donutEle);
+
+            //每个donut上显示名称
+            ro = groups[i].startAngle * 180 / Math.PI - 86 + 90;
+            a = (groups[i].startAngle * 180 / Math.PI - 86) * Math.PI / 180;
+            nameX = ((that.defaults.outerRadius - that.defaults.innerRadius) / 2 + that.defaults.innerRadius) * Math.cos(a);
+            nameY = ((that.defaults.outerRadius - that.defaults.innerRadius) / 2 + that.defaults.innerRadius) * Math.sin(a);
+            nameStr = "T" + ((that.defaults.width - that.xOffset) / 2 + that.xOffset) + "," + that.defaults.height / 2 + "R" + ro + "T" + nameX + "," + nameY;
+
+            if ((groups[i].endAngle - groups[i].startAngle) * 180 / Math.PI > 10) {
+                donutName = that.canvas.text().attr("font", "12px Verdana").attr("text", that.groupNames[i]).transform(nameStr);
+            }
+
+            //画刻度和刻度值**************************************
+            num = groups[i].value / 5000;
+            //最细分的每个小格代表的数值大小
+            unitAngle = (groups[i].endAngle - groups[i].startAngle) * 180 / Math.PI / num;
+
+            var j;
+            for (j = 0; j <= num; j++) {
+                //计算旋转角度和水平、竖直方向所需平移的距离
+                radian = ((groups[i].startAngle * 180 / Math.PI - 90) + j * unitAngle);
+                angle = radian * Math.PI / 180;
+                xTrans = that.defaults.outerRadius * Math.cos(angle);
+                yTrans = that.defaults.outerRadius * Math.sin(angle);
+
+                tickStr = "T" + ((that.defaults.width - that.xOffset) / 2 + that.xOffset) + "," + that.defaults.height / 2 + "T" + xTrans + "," + yTrans;
+
+                //刻度线的起点终点坐标
+                aX = ((that.defaults.width - that.xOffset) / 2 + that.xOffset) + xTrans;
+                aY = that.defaults.height / 2 + yTrans;
+                bX = ((that.defaults.width - that.xOffset) / 2 + that.xOffset) + (that.defaults.outerRadius + 6) * Math.cos(angle);
+                bY = that.defaults.height / 2 + (that.defaults.outerRadius + 6) * Math.sin(angle);
+
+                tickLine = "M" + aX + "," + aY + "L" + bX + "," + bY;
+                that.canvas.path(tickLine).attr({
+                    'stroke': "#929292",
+                    "stroke-width": '1px'
+                }); //绘制刻度
+
+                //每隔五个刻度，绘制一次文字
+                if (j % 2 === 0) {
+                    //计算text-anchor
+                    if (radian + 90 < 180) {
+                        anchor = "start";
+                    } else {
+                        anchor = "end";
+                    }
+
+                    //计算文字方向是否需要旋转180度
+                    if (radian + 90 < 180) {
+                        rotateStr = null;
+                    } else {
+                        rotateStr = "R180";
+                    }
+
+                    wXTrans = (that.defaults.outerRadius + 10) * Math.cos(angle);
+                    wYTrans = (that.defaults.outerRadius + 10) * Math.sin(angle);
+
+                    word = j % 2 ? "" : Math.round(((groups[i].value / num) * j) / 1000);
+
+                    wordStr = "T" + ((that.defaults.width - that.xOffset) / 2 + that.xOffset) + "," + that.defaults.height / 2 + "R" + radian
+                    /*(groups[i].startAngle * 180 / Math.PI - 90)*/ + rotateStr + "T" + wXTrans + "," + wYTrans;
+
+                    //绘制文字
+                    textEl = that.canvas.text(0, 0, word).attr("font", "12px Verdana").transform(wordStr).attr("text-anchor", anchor).attr('fill', "#929292");
+                }
+            }
+        }
+
+        /*this.canvas.text().attr("font", "12px arial").translate((that.defaults.width - this.xOffset) / 2 + this.xOffset, this.defaults.height).attr("text", "The unit of the scale on the periphery is 1000. \n 刻度值的单位为1000。");
+         */
+    };
+
+    return Chord;
+});
+/*global Raphael, d3, $, define */
+/*!
+ * Diff的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Diff', function (require) {
+    var DataV = require('DataV');
+
+    /**
+     * 构造函数
+     * @param {Object} node 表示在html的哪个容器中绘制该组件
+     * @param {Object} options 为用户自定义的组件的属性，比如画布大小
+     */
+    var Diff = DataV.extend(DataV.Chart, {
+        type: "Diff",
+        initialize: function (node, options) {
+            this.node = this.checkContainer(node);
+
+            //图的大小设置
+            this.defaults.width = 900;
+            this.defaults.height = 800;
+
+            //设置用户指定的属性
+            this.setOptions(options);
+
+            //创建画布
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 创建画布
+     */
+    Diff.prototype.createCanvas = function () {
+        this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
+    };
+
+    /**
+     * 绘制弦图
+     */
+    Diff.prototype.render = function () {
+        this.layout();
+    };
+
+    // 计算顺序的相似度
+    var diffMap = function (list1, list2) {
+      var map = [];
+      var hit = 0;
+      var lastIndex = -1;
+      for (var i = 0; i < list1.length; i++) {
+        var index = _.indexOf(list2, list1[i]);
+        if (index === -1) {
+          continue;
+        } else {
+          if (index > lastIndex) {
+            lastIndex = index;
+            map.push([i, index]);
+          }
+          hit++;
+        }
+      }
+      console.log(map);
+      console.log(map.length / list1.length);
+      console.log(hit / list1.length);
+      return map;
+    };
+
+    /**
+     *对原始数据进行处理
+     * @param {Array} table 将要被绘制成饼图的二维表数据
+     */
+    Diff.prototype.setSource = function (table1, table2) {
+        this.rawData = [table1, table2];
+        this.diffMap = diffMap(table1, table2);
+    };
+
+    /**
+     *创建chord布局
+     */
+    Diff.prototype.layout = function () {
+        var that = this;
+        var canvas = that.canvas;
+
+        var paddingLeft = 10;
+        var paddingTop = 10;
+        var height = 20;
+        var distance = 50;
+        var width = (this.defaults.width - 2 * paddingLeft - distance) / 2;
+
+        for (var j = 0, k = this.rawData.length; j < k; j++) {
+            var maped = _.pluck(this.diffMap, j);
+            for (var i = 0, l = this.rawData[j].length; i < l; i++) {
+                canvas.rect(paddingLeft + j * (width + distance), paddingTop + height * i, width, height).attr({fill: _.indexOf(maped, i) !== -1 ? "#00ff00" : "#ff0000"});
+                canvas.text(paddingLeft + j * (width + distance), paddingTop + height * i + height / 2, this.rawData[j][i]).attr({'text-anchor': 'start'});
+            }
+        }
+        for (var i = 0, l = this.diffMap.length; i < l; i++) {
+            var line = this.diffMap[i];
+            canvas.path("M" + (paddingLeft + width) + ' ' + (paddingTop + height * line[0] + height / 2) + "L" + (paddingLeft + width + distance) + " " + (paddingTop + height * line[1] + height / 2)).attr({stroke: '#00ff00'});
+        }
+    };
+
+    return Diff;
+});
+/*global EventProxy, d3, Raphael, $ */
+/*!
+ * Flow的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Flow', function (require) {
+    var DataV = require('DataV');
+    var theme = DataV.Themes;
+
+    /**
+     * Flow构造函数
+     */
+    var Flow = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Flow";
+            this.node = this.checkContainer(node);
+
+            // Properties
+            this.font = {};
+
+            // Canvas
+            this.defaults.width = 500;
+            this.defaults.height = 400;
+            this.defaults.deep = 150;
+            this.defaults.radius = 50;
+            this.defaults.xStep = 300;
+            this.defaults.xStart = 200;
+            this.defaults.yStart = 50;
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    Flow.prototype.setSource = function (source) {
+        var conf = this.defaults;
+
+        this.rawData = source;
+        this.source = this.remapSource(source);
+    };
+
+    Flow.prototype.remapSource = function (data) {
+        console.log(data);
+        var dataLength = data.length;
+        var remapData = [];
+
+        var total;
+        var i;
+        for (i = 0; i < dataLength; i++){
+            if (!data[i][3]) {
+                total = data[i][2];
+                remapData.push({id: data[i][0], name: data[i][1], value: data[i][2], pid: data[i][3], child: [], deep: 0});
+            } else {
+                remapData.push({id: data[i][0], name: data[i][1], value: data[i][2], pid: data[i][3], child: [], deep: 0});
+            }
+        }
+
+        var conf = this.defaults;
+        var width = conf.width;
+        var height = conf.height;
+        var radius = conf.radius;
+        var xStep = conf.xStep;
+        var xStart = conf.xStart;
+        var yStart = conf.yStart;
+        var depth = 0;
+
+        for (i = 0; i < dataLength; i++){
+            if (remapData[i].pid) {
+                remapData[i].deep = remapData[remapData[i].pid - 1].deep + 1;
+                remapData[remapData[i].pid - 1].child.push(remapData[i].id - 1);
+                if (remapData[i].deep > depth) {
+                    depth = remapData[i].deep;
+                }
+            }
+            // remapData[remapData[i].pid].child.push(remapData[i].id);
+        }
+
+        this.depth = depth;
+        radius = Math.min(Math.min((width - xStep * (depth - 1) - xStart * 2) / depth, height*0.55), radius);
+        console.log("r:" + radius);
+        for (i = 0; i < dataLength; i++){
+            remapData[i].percent = remapData[i].value / total;
+            remapData[i].radius = radius * remapData[i].percent;
+        }
+        return remapData;
+        // return data;
+    };
+
+    Flow.prototype.layout = function () {
+        var conf = this.defaults;
+        var width = conf.width;
+        var height = conf.height;
+        var xStart = conf.xStart;
+        var yStart = conf.yStart;
+        var xStep = conf.xStep;
+        var remapData = this.source;
+
+        //console.log(this.source);
+        var circleData = [];
+
+        circleData.push({x: width * 0.24, y: height * 0.42, radius: Math.max(10, remapData[0].radius), deep: remapData[0].deep, name: remapData[0].name, value: remapData[0].value});
+        circleData.push({x: width * 0.5, y: height * 0.245, radius: Math.max(10, remapData[1].radius), deep: remapData[1].deep, name: remapData[1].name, value: remapData[1].value});
+        circleData.push({x: width * 0.5, y: height * 0.6, radius: Math.max(10, remapData[2].radius), deep: remapData[2].deep, name: remapData[2].name, value: remapData[2].value});
+        circleData.push({x: width * 0.72, y: height * 0.5, radius: Math.max(10, remapData[3].radius), deep: remapData[3].deep, name: remapData[3].name, value: remapData[3].value});
+        circleData.push({x: width * 0.72, y: height * 0.817, radius: Math.max(10, remapData[4].radius), deep: remapData[4].deep, name: remapData[4].name, value: remapData[4].value});
+
+        for (i = 0;i < circleData.length; i++) {
+            console.log(circleData[i].x);
+        }
+
+        this.circleData = circleData;
+    };
+
+    Flow.prototype.getColor = function () {
+
+        var colorMatrix = DataV.getColor();
+        
+        return color;
+    };
+
+    // Tree.prototype.getFont = function () {
+    //     //var conf = this.defaults;
+
+    //     return DataV.getFont();
+    // };
+
+    Flow.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+
+        this.DOMNode = $(this.canvas.canvas);
+        var that = this;
+        this.DOMNode.click(function (event) {
+            that.trigger("click", event);
+        });
+        this.DOMNode.dblclick(function (event) {
+            that.trigger("dblclick", event);
+        });
+
+        var mousewheel = document.all ? "mousewheel" : "DOMMouseScroll";
+        this.DOMNode.bind(mousewheel, function (event) {
+            that.trigger("mousewheel", event);
+        });
+
+        this.DOMNode.bind("contextmenu", function (event) {
+            that.trigger("contextmenu", event);
+        });
+
+        this.DOMNode.delegate("circle", "click", function (event) {
+            that.trigger("circle_click", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseover", function (event) {
+            that.trigger("circle_mouseover", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseout", function (event) {
+            that.trigger("circle_mouseout", event);
+        });
+
+        //console.log(this.canvas);
+    };
+
+
+    Flow.prototype.getLinkPath = function (fx, fy, tx, ty) {
+        var conf = this.defaults;
+
+        var c1x = fx + (tx - fx) / 1.5;
+        var c1y = fy;
+        var c2x = tx - (tx - fx) / 4;
+        var c2y = ty - (ty - fy) / 2;
+
+        var link_path = [["M", fx, fy],
+            ["S", c1x, c1y, tx, ty]];
+
+        return link_path;
+    };
+
+    Flow.prototype.generatePaths = function () {
+        var canvas = this.canvas;
+        var source = this.source;
+        var conf = this.defaults;
+        var radius = conf.radius;
+        //canvas.clear();
+        // var font = this.getFont();
+        var font_family = '微软雅黑';
+        var font_size = 8;
+        var depth = this.depth;
+        var crilceData = this.circleData;
+        var l = crilceData.length;
+        var getLinkPath = this.getLinkPath;
+
+        canvas.path().attr({stroke:  "#cdcdcd", "stroke-width": 2}).attr({path: getLinkPath(crilceData[0].x, crilceData[0].y, crilceData[1].x, crilceData[1].y)});
+        canvas.path().attr({stroke:  "#cdcdcd", "stroke-width": 2}).attr({path: getLinkPath(crilceData[0].x, crilceData[0].y, crilceData[2].x, crilceData[2].y)});
+        canvas.path().attr({stroke:  "#cdcdcd", "stroke-width": 2}).attr({path: getLinkPath(crilceData[2].x, crilceData[2].y, crilceData[3].x, crilceData[3].y)});
+        canvas.path().attr({stroke:  "#cdcdcd", "stroke-width": 2}).attr({path: getLinkPath(crilceData[2].x, crilceData[2].y, crilceData[4].x, crilceData[4].y)});
+
+        var i, d;
+        var thisRadius;
+        var thisColor;
+        var titelPath = [];
+        var valuePath = [];
+        for (i = 0 ; i < l ; i++) {
+            d = crilceData[i];
+            thisRadius = Math.max(27, d.radius);
+            if (i === 1) {
+                thisColor = "#b4e481";
+            } else if (i === 4) {
+                thisColor = "#cd3a19";
+            } else {
+                thisColor = "#ffe79d";
+            }
+            canvas.circle(d.x, d.y, thisRadius)
+            .attr({"stroke": "none", fill: thisColor});
+            titelPath.push(canvas.text(0, 0, d.name).attr({'font-size': 12}));
+            if (i < l - 2) {
+                titelPath[i].transform("t" + d.x + "," + (d.y - thisRadius - titelPath[i].getBBox().height/2 - 5));
+            } else {
+                titelPath[i].transform("t" + d.x + "," + (d.y - thisRadius - titelPath[i].getBBox().height/2 - 5)).attr({"text-anchor": "start"});
+            }
+
+            if (i < l - 1) {
+                valuePath.push(canvas.text(d.x, d.y, d.value + "人").attr({'font-size': 12}));
+            } else {
+                valuePath.push(canvas.text(d.x, d.y, d.value + "人").attr({fill: "#ffffff", 'font-size': 12}));
+            }
+        }
+
+        var n = 0;
+
+        var node;
+        var num = 0;
+
+        var nodes = canvas.set();
+        var path = [];
+        var textpath = [];
+        
+        var tree = this;
+    };
+
+    Flow.prototype.render = function (options) {
+        var st = new Date().getTime();
+        this.canvas.clear();
+        this.setOptions(options);
+        this.layout();
+        var st2 = new Date().getTime();
+        console.log(st2 - st);
+
+        this.generatePaths();
+        var et = new Date().getTime();
+        console.log(et - st2);
+        //this.canvas.renderfix();
+    };
+
+    return Flow;
+});
+
+/*global Raphael, d3 */
+/*!
+ * Force的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Force', function (require) {
+    var DataV = require('DataV');
+    /**
+     * 构造函数
+     * @param {Object} node 表示在html的哪个容器中绘制该组件
+     * @param {Object} options 为用户自定义的组件的属性，比如画布大小
+     */
+    var Force = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Force";
+            this.node = this.checkContainer(node);
+            this.net = {};
+            this.linkValeMin = 0;
+            this.linkValeMax = 1;
+            this.nodeValueMin = 0;
+            this.nodeValueMax = 1;
+            this.clicked = false;
+            this.clickedNum = -1;
+            this.legendClicked = false;
+
+            // Properties
+            this.font = {};
+
+            // Canvas
+            this.defaults.legend = true;
+            this.defaults.width = 500;
+            this.defaults.height = 500;
+            this.defaults.linkLength = 50;
+            this.defaults.linkWidth = 2;
+            this.defaults.classNum = 6;
+            this.defaults.forceValue = 10;
+            this.defaults.iterate = 100;
+            this.defaults.browserName = navigator.appName;
+
+            this.setOptions(options);
+            this.defaults.charge = -(this.defaults.width + this.defaults.height) / this.defaults.forceValue;
+            this.legendArea = [20, (this.defaults.height - 20 - this.defaults.classNum * 20), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.createCanvas();
+        }
+    });
+
+
+    /*!
+     *Strings in CSV to Numbers
+     * @param {Number} value the value of the elemnts in csv table
+     */
+    Force.prototype._toNum = function (value) {
+        var type = typeof value;
+        if (type === "number") {
+            return value;
+        } else if (type === "string" && value !== "") {
+            return parseInt(value, 10);
+        } else {
+            return 1;
+        }
+    };
+
+    /**
+     * Set CSV content to force-directed net
+     * @param {Array} table the csv table to be rendered
+     */
+    Force.prototype.setSource = function (table) {
+        //this.net = json;
+        if (table[0][0] === "Id") {
+            table = table.slice(1);
+        }
+        var nData = [];
+        var lData = [];
+        var isNode = true;
+        var nodeNum;
+        var that = this;
+        table.forEach(function (d, i) {
+            var value;
+            if (isNode) {
+                if (d[0] === "Source") {
+                    isNode = false;
+                    nodeNum = i + 1;
+                } else {
+                    if (d[0] === "") {
+                        throw new Error("ID can not be empty(line:" + (i + 1) + ").");
+                    }
+                    value = that._toNum(d[2]);
+                    nData[i] = {
+                        name: d[1],
+                        nodeValue: value
+                    };
+                    if (i === 0) {
+                        that.nodeValueMin = value;
+                        that.nodeValueMax = value;
+                    }
+                    that.nodeValueMin = (value < that.nodeValueMin) ? value : that.nodeValueMin;
+                    that.nodeValueMax = (value > that.nodeValueMax) ? value : that.nodeValueMax;
+                }
+            } else {
+                if (d[0] === "") {
+                    throw new Error("Source can not be empty(line:" + (i + 1) + ").");
+                }
+                if (d[1] === "") {
+                    throw new Error("Target can not be empty(line:" + (i + 1) + ").");
+                }
+                value = that._toNum(d[2]);
+                lData[i - nodeNum] = {
+                    source: that._toNum(d[0]),
+                    target: that._toNum(d[1]),
+                    value: that._toNum(d[2])
+                };
+                if (i === nodeNum) {
+                    that.linkValueMin = value;
+                    that.linkValueMax = value;
+                }
+                that.linkValueMin = (value < that.linkValueMin) ? value : that.linkValueMin;
+                that.linkValueMax = (value > that.linkValueMax) ? value : that.linkValueMax;
+            }
+        });
+        this.net.nodes = nData;
+        this.net.links = lData;
+        this.nodeValueMax++;
+        this.linkValueMax++;
+    };
+
+
+    /**
+     * 创建画布
+     */
+    Force.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+        //var c = this.canvas.circle(50, 50, 40);
+    };
+
+    /**
+     * 获取节点颜色
+     * @param {Number} i 元素类别编号
+     * @return {String} 返回颜色值
+     */
+    Force.prototype.getColor = function (i) {
+        var color = DataV.getColor(this.classNum);
+        //var k = color.length * (i - this.nodeValueMin-0.1) / (this.nodeValueMax - this.nodeValueMin);
+        //if (k < 0) k = 0;
+        return color[i % color.length][0];
+    };
+
+    /**
+     * 获取节点的半径
+     * @param {Number} value 元素对应的数据值
+     * @return {Number} 返回半径值
+     */
+    Force.prototype.getRadius = function (value) {
+        var conf = this.defaults;
+        return 16.0 * (value - this.nodeValueMin) / (this.nodeValueMax - this.nodeValueMin) + 8;
+    };
+
+
+    /**
+     * 获取节点透明度
+     * @param {Number} value 元素类别编号
+     * @return {Number} 返回透明度值
+     */
+    Force.prototype.getOpacity = function (value) {
+        return 0.083 * (value - this.linkValueMin) / (this.linkValueMax - this.linkValueMin) + 0.078;
+    };
+
+    /**
+     * update the layout by modify the attributes of nodes and links
+     */
+    Force.prototype.update = function () {
+        var that = this;
+        var conf = this.defaults;
+        var canvas = this.canvas;
+
+        this.nodes = this.canvas.set();
+        this.links = this.canvas.set();
+        var nodes = this.nodes;
+        var links = this.links;
+        var i, j, temp;
+        this.force.charge(conf.charge).nodes(this.net.nodes).links(this.net.links).start();
+
+        var nodesData = this.net.nodes;
+        var linksData = this.net.links;
+        var nodesNum = nodesData.length;
+        var linksNum = linksData.length;
+        var connectMatrix = [];
+        var linkMatrix = [];
+        conf.iterate = (nodesNum + linksNum) * 2;
+
+        var onMouseClick = function () {
+            that.legendClicked = false;
+            that.underBn.forEach(function (d) {
+                d.hide();
+                d.data('clicked', false);
+            });
+            that.clicked = true;
+            if (!this.data('clicked')) {
+                if (conf.browserName !== "Microsoft Internet Explorer") {
+                    that.force.linkDistance(conf.linkLength * 2).charge(conf.charge * 2).start();
+                }
+                that.nodes.forEach(function (d) {
+                    d.data('rect').hide();
+                    d.data('text').hide();
+                    d.attr({
+                        "opacity": 0.2
+                    });
+                    d.data('clicked', false);
+                    d.data('showText', false);
+                });
+                that.links.forEach(function (d) {
+                    d.attr({
+                        'stroke-opacity': 0.0
+                    });
+                });
+                that.clickedNum = this.data('index');
+                this.data('clicked', true);
+                this.data("link").forEach(function (d) {
+                    d.attr({
+                        "stroke-opacity": d.data('opacity')
+                    });
+                });
+                this.data("node").forEach(function (d) {
+                    d.attr({
+                        "opacity": 0.9
+                    });
+                    d.data('showText', true);
+                });
+                that.underBn[this.data('colorType')].data('clicked', true).attr('opacity', 1).show();
+            } else {
+                that.clicked = false;
+                if (conf.browserName !== "Microsoft Internet Explorer") {
+                    that.force.linkDistance(conf.linkLength).charge(conf.charge).start();
+                }
+                nodes.forEach(function (d) {
+                    d.attr({
+                        "opacity": 0.9
+                    });
+                    if (d.data('big')) {
+                        d.data('showText', true);
+                    } else {
+                        d.data('rect').hide();
+                        d.data('text').hide();
+                        d.data('showText', false);
+                    }
+                });
+                links.forEach(function (d) {
+                    d.attr({
+                        'stroke-opacity': d.data('opacity')
+                    });
+                });
+                this.data('clicked', false);
+                that.underBn[this.data('colorType')].hide();
+            }
+        };
+
+        var onCanvasClick = function () {
+            that.legendClicked = false;
+            that.underBn.forEach(function (d) {
+                d.hide();
+                d.data('clicked', false);
+            });
+            that.clicked = false;
+            if (conf.browserName !== "Microsoft Internet Explorer") {
+                that.force.linkDistance(conf.linkLength).charge(conf.charge).start();
+            } else {
+                that.force.resume();
+            }
+            nodes.forEach(function (d) {
+                d.attr({
+                    "opacity": 0.9
+                });
+                if (d.data('big')) {
+                    d.data('showText', true);
+                } else {
+                    d.data('rect').hide();
+                    d.data('text').hide();
+                    d.data('showText', false);
+                }
+            });
+            links.forEach(function (d) {
+                d.attr({
+                    'stroke-opacity': d.data('opacity')
+                });
+            });
+        };
+
+        var topValue = [];
+        var topId = [];
+        var topNum = 10;
+        if (nodesNum < 10) {
+            topNum = nodesNum;
+        }
+        for (i = 0; i < topNum; i++) {
+            topValue[i] = nodesData[i].nodeValue;
+            topId[i] = i;
+        }
+        for (i = 0; i < topNum; i++) {
+            for (j = 1; j < topNum - i; j++) {
+                if (topValue[j] < topValue[j - 1]) {
+                    temp = topValue[j];
+                    topValue[j] = topValue[j - 1];
+                    topValue[j - 1] = temp;
+                    temp = topId[j];
+                    topId[j] = topId[j - 1];
+                    topId[j - 1] = temp;
+                }
+            }
+        }
+        //rapheal绘制部分
+        for (i = 0; i < nodesNum; i++) {
+            nodesData[i].x = (conf.width + this.xOffset) / 2;
+            nodesData[i].y = conf.height / 2;
+            var n = nodesData[i];
+            var k = Math.floor(conf.classNum * (n.nodeValue - this.nodeValueMin) / (this.nodeValueMax - this.nodeValueMin));
+            if (k >= conf.classNum) k = conf.classNum - 1;
+            var radius = this.getRadius(n.nodeValue);
+            var cnode = canvas.circle(n.x, n.y, radius).attr({
+                fill: this.getColor(k),
+                'stroke': "#ffffff",
+                'opacity': 0.9
+                //title: n.name
+            });
+            var nodeText = canvas.text(n.x, n.y - radius, n.name).attr({
+                'opacity': 1,
+                //'font-family': "微软雅黑",
+                'font': '12px Verdana'
+            }).hide();
+            var nodeRect = canvas.rect(n.x, n.y, nodeText.getBBox().width, nodeText.getBBox().height, 2).attr({
+                'fill': "#000000",
+                'stroke-opacity': 0,
+                'fill-opacity': 0.1
+            }).hide();
+            cnode.data('r', radius);
+            cnode.data("name", n.name);
+            cnode.data('text', nodeText);
+            cnode.data('rect', nodeRect);
+            cnode.data('colorType', k);
+            cnode.data('clicked', false);
+            cnode.data('index', i);
+            cnode.data('big', false);
+
+            if (i >= topNum && topValue[0] < nodesData[i].nodeValue) {
+                topValue[0] = nodesData[i].nodeValue;
+                topId[0] = i;
+                for (j = 1; j < topNum; j++) {
+                    if (topValue[j] < topValue[j - 1]) {
+                        temp = topValue[j];
+                        topValue[j] = topValue[j - 1];
+                        topValue[j - 1] = temp;
+                        temp = topId[j];
+                        topId[j] = topId[j - 1];
+                        topId[j - 1] = temp;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            nodes.push(cnode);
+            connectMatrix[i] = [];
+            linkMatrix[i] = [];
+            connectMatrix[i].push(nodes[i]);
+        }
+
+        for (i = 0; i < topNum; i++) {
+            nodes[topId[i]].data("big", true);
+        }
+
+
+        for (i = 0; i < linksNum; i++) {
+            var l = linksData[i];
+            var clink = canvas.path("M" + l.source.x + "," + l.source.y + "L" + l.target.x + "," + l.target.y).attr({
+                'stroke-width': conf.linkWidth,
+                'stroke-opacity': this.getOpacity(l.value)
+            }).toBack();
+            clink.data('opacity', this.getOpacity(l.value));
+            links.push(clink);
+            connectMatrix[l.source.index].push(nodes[l.target.index]);
+            connectMatrix[l.target.index].push(nodes[l.source.index]);
+            linkMatrix[l.source.index].push(links[i]);
+            linkMatrix[l.target.index].push(links[i]);
+        }
+
+        var background = canvas.rect(0, 0, conf.width, conf.height).attr({
+            'fill': '#ffffff',
+            'stroke-opacity': 0
+        }).toBack();
+        background.click(onCanvasClick);
+
+        nodes.forEach(function (d, i) {
+            d.data("node", connectMatrix[i]);
+            d.data("link", linkMatrix[i]);
+            if (d.data('big')) {
+                d.data('showText', true);
+            } else {
+                d.data('showText', false);
+            }
+            d.drag(function (dx, dy) {
+                d.data('x', this.ox + dx);
+                d.data('y', this.oy + dy);
+            }, function () {
+                that.force.resume();
+                this.ox = this.attr("cx");
+                this.oy = this.attr("cy");
+                d.data('x', this.ox);
+                d.data('y', this.oy);
+                d.data('drag', true);
+            }, function () {
+                that.force.resume();
+                d.data('drag', false);
+            });
+            d.click(onMouseClick); //.mouseup(onmouseup);
+            d.mouseover(function () {
+                if (conf.browserName !== "Microsoft Internet Explorer") {
+                    that.force.resume();
+                }
+                this.attr({
+                    'r': d.data('r') + 5
+                });
+                if (!this.data('showText')) {
+                    //this.attr('title', "");
+                    this.data('showText', true);
+                    this.data('hover', true);
+                }
+                if (!that.underBn[this.data('colorType')].data('clicked')) {
+                    that.underBn[this.data('colorType')].attr('opacity', 0.5).show();
+                }
+            }).mouseout(function () {
+                this.attr({
+                    'r': d.data('r')
+                });
+                //this.attr('title', this.data('name'));
+                if (this.data('hover') && !this.data('clicked')) {
+                    d.data('rect').hide();
+                    d.data('text').hide();
+                    this.data('showText', false);
+                    this.data('hover', false);
+                }
+                if (!that.underBn[this.data('colorType')].data('clicked')) {
+                    that.underBn[this.data('colorType')].hide();
+                }
+            });
+        });
+
+    };
+
+
+    /**
+     * 绘制图例
+     */
+    Force.prototype.legend = function () {
+        var that = this;
+        var conf = this.defaults;
+        var paper = this.canvas;
+        var legendArea = this.legendArea;
+        var rectBn = paper.set();
+        this.underBn = [];
+        var underBn = this.underBn;
+        for (i = 0; i <= conf.classNum - 1; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "#ebebeb",
+                "stroke": "none",
+                'opacity': 1
+            }).data('clicked', false).hide());
+            //色框
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                "fill": that.getColor(i),
+                "stroke": "none"
+            });
+            //文字
+            var min = Math.floor(this.nodeValueMin + i * (this.nodeValueMax - this.nodeValueMin) / conf.classNum);
+            var max = Math.floor(min + (this.nodeValueMax - this.nodeValueMin) / conf.classNum);
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, min + " ~ " + max).attr({
+                "fill": "black",
+                "fill-opacity": 1,
+                "font-family": "Verdana",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "start"
+            });
+            //选框
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "white",
+                "fill-opacity": 0,
+                "stroke": "none"
+                //"r": 3
+            })).data("clicked", 0);
+        }
+        rectBn.forEach(function (d, i) {
+            d.mouseover(function () {
+                if (!underBn[i].data('clicked')) {
+                    underBn[i].attr('opacity', 0.5);
+                    underBn[i].show();
+                }
+            }).mouseout(function () {
+                if (!underBn[i].data('clicked')) {
+                    underBn[i].hide();
+                }
+            });
+            d.click(function () {
+                that.clicked = false;
+                if (conf.browserName !== "Microsoft Internet Explorer") {
+                    that.force.linkDistance(conf.linkLength).charge(conf.charge).start();
+                }
+                for (j = 0; j < underBn.length; j++) {
+                    if (j === i) {
+                        underBn[j].show();
+                    } else {
+                        underBn[j].hide();
+                    }
+                }
+                rectBn.forEach(function (eachBn) {
+                    if (eachBn !== d) {
+                        eachBn.data("clicked", 0);
+                    }
+                });
+                if (d.data("clicked") === 0) {
+                    that.legendClicked = true;
+                    underBn[i].attr('opacity', 1);
+                    underBn[i].data('clicked', true);
+                    underBn[i].show();
+                    that.nodes.forEach(function (d) {
+                        if (d.data('colorType') === i) {
+                            d.attr({
+                                "opacity": 0.9
+                            });
+                            d.data('showText', true);
+                        } else {
+                            d.attr({
+                                "opacity": 0.2
+                            });
+                            d.data('rect').hide();
+                            d.data('text').hide();
+                            d.data('showText', false);
+                        }
+                    });
+                    that.links.forEach(function (d) {
+                        d.attr({
+                            "stroke-opacity": 0
+                        });
+                    });
+                    d.data("clicked", 1);
+                } else if (d.data("clicked") === 1) {
+                    that.legendClicked = false;
+                    underBn[i].data('clicked', false);
+                    underBn[i].hide();
+                    d.data("clicked", 0);
+                    that.nodes.forEach(function (d) {
+                        d.attr({
+                            "opacity": 0.9
+                        });
+                        if (d.data('big')) {
+                            d.data('showText', true);
+                        } else {
+                            d.data('rect').hide();
+                            d.data('text').hide();
+                            d.data('showText', false);
+                        }
+                    });
+                    that.links.forEach(function (d) {
+                        d.attr({
+                            "stroke-opacity": d.data('opacity')
+                        });
+                    });
+                }
+            });
+        });
+    };
+
+
+    /**
+     * create the force-direct layout
+     */
+    Force.prototype.layout = function () {
+        var conf = this.defaults;
+        this.force = d3.layout.force().linkDistance(conf.linkLength).size([conf.width + this.xOffset, conf.height]).theta(1.5);
+    };
+
+    /**
+     * update the force-direct layout animation
+     */
+    Force.prototype.animate = function () {
+        var conf = this.defaults;
+        var nodes = this.nodes;
+        var links = this.links;
+        var tick = 0;
+        var that = this;
+
+        var nodesData = this.net.nodes;
+        var linksData = this.net.links;
+
+        this.force.on("tick", function () {
+            if (conf.browserName !== "Microsoft Internet Explorer" || tick > conf.iterate) {
+                if (tick % 2 === 0) {
+                    nodes.forEach(function (d, i) {
+                        var margin = d.data('r');
+                        var nd = nodesData[i];
+                        if (d.data('drag')) {
+                            nd.x = d.data('x');
+                            nd.y = d.data('y');
+                        }
+                        nd.x = (nd.x < margin + that.xOffset) ? (margin + that.xOffset) : nd.x;
+                        nd.x = (nd.x > conf.width - margin) ? conf.width - margin : nd.x;
+                        nd.y = (nd.y < margin) ? margin : nd.y;
+                        nd.y = (nd.y > conf.height - margin) ? conf.height - margin : nd.y;
+                        var bx = d.data('text').getBBox().width / 2;
+                        var by = d.data('text').getBBox().height / 2;
+
+                        if (that.clicked) {
+                            var mx = nodesData[that.clickedNum].x;
+                            var my = nodesData[that.clickedNum].y;
+                            var tx, ty;
+                            if (d.data('clicked')) {
+
+                                if (conf.browserName !== "Microsoft Internet Explorer") {
+                                    nd.x = (conf.width + that.xOffset) / 2;
+                                    nd.y = conf.height / 2;
+                                }
+                                d.data('rect').attr({
+                                    'x': nd.x - bx,
+                                    'y': nd.y + d.data('r')
+                                });
+                                d.data('text').attr({
+                                    'x': nd.x,
+                                    'y': nd.y + by + d.data('r')
+                                });
+                                d.data('rect').show();
+                                d.data('text').show();
+                            } else if (d.data('showText')) {
+                                var lx = (nd.x - mx);
+                                var ly = (nd.y - my);
+                                var length = Math.sqrt(lx * lx + ly * ly);
+                                tx = nd.x + bx * lx / length;
+                                ty = nd.y + by * ly / length;
+                                tx = (nd.x < mx) ? tx - d.data('r') : tx + d.data('r');
+                                ty = (nd.y < my) ? ty - d.data('r') : ty + d.data('r');
+                                tx = (tx < margin + that.xOffset) ? (margin + that.xOffset) : tx;
+                                tx = (tx > conf.width - margin) ? conf.width - margin : tx;
+                                ty = (ty < margin) ? margin : ty;
+                                ty = (ty > conf.height - margin) ? conf.height - margin : ty;
+                                d.data('rect').attr({
+                                    'x': tx - bx,
+                                    'y': ty - by
+                                });
+                                d.data('text').attr({
+                                    'x': tx,
+                                    'y': ty
+                                });
+                                d.data('rect').show();
+                                d.data('text').show();
+                            }
+                        } else if (d.data('showText')) {
+                            d.data('rect').attr({
+                                'x': nd.x - bx,
+                                'y': nd.y - by + 4 + d.data('r')
+                            });
+                            d.data('text').attr({
+                                'x': nd.x,
+                                'y': nd.y + 4 + d.data('r')
+                            });
+                            try {
+                                d.data('rect').show();
+                                d.data('text').show();
+                            } catch (e) {}
+
+                        }
+                        d.attr({
+                            'cx': nd.x,
+                            'cy': nd.y
+                        });
+                    });
+                    links.forEach(function (d, i) {
+                        d.attr('path', "M" + linksData[i].source.x + "," + linksData[i].source.y + "L" + linksData[i].target.x + "," + linksData[i].target.y);
+                    });
+                }
+            }++tick;
+        });
+    };
+
+    /**
+     *render the force-directed net on the canvas and keep updating
+     * @param {Object} options user options
+     */
+    Force.prototype.render = function (options) {
+        this.setOptions(options);
+        this.canvas.clear();
+        this.layout();
+        if (this.defaults.legend) {
+            this.legend();
+        }
+        this.update();
+        this.animate();
+    };
+
+    return Force;
+});
+﻿/*global Raphael, d3, $, define */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Histogram', function (require) {
+    var DataV = require('DataV');
+
+    /**
+     * Histogram构造函数
+     * Create histogram in a dom node with id "chart", default width is 522; height is 522px;
+     * Options:
+     *
+     *   - `width` 宽度，默认为节点宽度
+     *   - `typeNames` 指定y轴上数据类目
+     *
+     * Examples:
+     * ```
+     * var histogram = new Histogram("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
+     * ```
+     * @param {Mix} node The dom node or dom node Id
+     * @param {Object} options options json object for determin histogram style.
+     */
+    var Histogram = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Histogram";
+            this.node = this.checkContainer(node);
+            this.defaults = {};
+
+            // Properties
+            this.defaults.dimensionX = {}; //dimension of X axis(horizonal).  array type
+            this.defaults.demensionY = {}; //dimension of Y axis(vertical).  array type
+            this.defaults.allDimensions = {};
+            this.defaults.dimensionDomain = {};
+            this.defaults.typeNames = [];
+
+            // canvas parameters
+            this.defaults.width = 522;
+            this.defaults.height = 522;
+            this.defaults.margin = 50;
+            this.defaults.gap = 15;
+            this.defaults.circleR = 3;
+            this.defaults.barColor = ["#308BE6","#8EEC00"];
+            
+            //图例区域的左上顶点坐标x，y，宽，高
+            this.defaults.legendArea = [422, 50, 472, 220];
+            //散点矩阵区域的左上顶点坐标x，y，宽，高
+            this.defaults.diagramArea = [50, 50, 422, 472];
+
+            this.defaults.typeName = "undefined"; //默认情况是没有分类
+            this.defaults.tagDimen = "undefined";
+
+
+            this.setOptions(options);
+            this.createCanvas();
+        }   
+    });
+	/**
+     * 创建画布
+     */
+	Histogram.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.node.style.position = "relative";
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+
+        this.canvasF = document.getElementById(this.container);
+        this.floatTag = DataV.FloatTag()(this.canvasF);
+        this.floatTag.css({"visibility": "hidden"});
+	};
+	/**
+     * 设置数据源
+     *
+     * Examples：
+     * ```
+     * histogram.setSource(source);
+     * ```
+     *
+     * @param {Array} source 数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据
+     */
+	Histogram.prototype.setSource = function (source) {
+        var conf = this.defaults;
+        var i, j, l;
+        var xTemp = [],
+            yTemp = [];
+        xTemp = source[0][0];
+        yTemp = source[0][1];
+        
+        conf.allDimensions = source[0];
+        conf.dimensionX = xTemp;
+        conf.dimensionY = yTemp;
+        conf.xAxisData = [];
+        this.source = [];
+        
+        for (i = 1, l = source.length; i < l; i++) {
+            if (conf.typeNames.length == 1) {
+                var line = {}, dimenT = conf.allDimensions;
+                for (j = 0, ll = dimenT.length; j < ll; j++) {
+                    line[dimenT[j]] = source[i][j]; //each line is an array, contains value for each dimension
+                }
+                this.source.push(line);
+            }
+            else if (conf.typeNames.length == 2) {
+                var lineY = {}, lineZ = {}, dimenT = conf.allDimensions;
+                lineY[dimenT[0]] = i;
+                lineY[dimenT[1]] = source[i][1];
+                this.source.push(lineY);
+                lineZ[dimenT[0]] = i;
+                lineZ[dimenT[1]] = source[i][2];
+                this.source.push(lineZ);
+                conf.xAxisData.push(source[i][0]);
+            }
+        }
+        //设置默认的定义域
+        var getExtent = function (s, dimen) {
+            return d3.extent(s, function (p) {
+                return +p[dimen];
+            });
+        };
+        var dimen;
+        for (i = 0, l = conf.allDimensions.length; i < l; i++) {
+            dimen = conf.allDimensions[i];
+            conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
+            conf.dimensionDomain[dimen][0] = 0;
+        }
+	};
+    /**
+     * 设置坐标轴
+     */
+	Histogram.prototype.setAxis = function () {
+        var conf = this.defaults;
+        var tagWidth = conf.width / 5 > 50 ? 50 : conf.width / 5;
+        conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
+        conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
+    
+        var w = conf.diagramArea[2] - 2 * conf.margin;
+        var h = conf.diagramArea[3] - conf.margin;
+		
+        this.x = {};
+        this.y = {};
+        var x = this.x,
+            y = this.y;
+        var tickAr = [5];
+        //设置x轴
+        x[conf.dimensionX] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionX]).range([conf.margin, w]);
+        x[conf.dimensionX].ticks = x[conf.dimensionX].ticks.apply(x[conf.dimensionX], tickAr);
+        //设置y轴
+        y[conf.dimensionY] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionY]).range([h, conf.margin]);
+        y[conf.dimensionY].ticks = y[conf.dimensionY].ticks.apply(y[conf.dimensionY], tickAr);
+    };
+    /**
+     * 进行柱状图的绘制
+     */
+    Histogram.prototype.drawDiagram = function () {
+        var that = this;
+        var conf = this.defaults;
+        var paper = this.canvas;
+        var x = this.x;
+        var y = this.y;
+        var i, j, k, l;
+        //画坐标轴
+        var axisLines = paper.set();
+        var tickText = paper.set();
+        var hLines = paper.set();
+        var dimenX = conf.dimensionX;
+        var dimenY = conf.dimensionY;
+        var leftPos = x[dimenX].range()[0],
+            rightPos = x[dimenX].range()[1],
+            upPos = y[dimenY].range()[1],
+            downPos = y[dimenY].range()[0];
+        var linePos,
+            lineGap;
+        //X轴
+        ticks = x[dimenX].ticks;
+        for (j = 1; j < ticks.length; j++) {
+            tickText.push(paper.text(x[dimenX](ticks[j]), downPos+10, conf.xAxisData[ticks[j]-1]).attr({
+                "fill": "#878791",
+                "fill-opacity": 0.7,
+                "font-family": "雅黑",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "middle"
+            }).rotate(0, x[dimenX](ticks[j]), upPos));
+            axisLines.push(paper.path("M" + x[dimenX](ticks[j]) + "," + downPos + "L" + x[dimenX](ticks[j]) + "," + (downPos+5)).attr({
+                "stroke": "#D7D7D7",
+                "stroke-width": 2
+            }));
+        }
+        axisLines.push(paper.path("M" + leftPos + "," + upPos + "L" + leftPos + "," + downPos).attr({
+            "stroke": "#D7D7D7",
+            "stroke-width": 2
+        }));
+        //Y轴
+        ticks = y[dimenY].ticks;
+        for (j = 0; j < ticks.length; j++) {
+            tickText.push(paper.text(leftPos - 10, y[dimenY](ticks[j]), ticks[j]).attr({
+                "fill": "#878791",
+                "fill-opacity": 0.7,
+                "font-family": "雅黑",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "end"
+            }).rotate(0, rightPos + 6, y[dimenY](ticks[j])));
+            axisLines.push(paper.path("M" + leftPos + "," + y[dimenY](ticks[j]) + "L" + (leftPos - 5) + "," + y[dimenY](ticks[j])).attr({
+                "stroke": "#D7D7D7",
+                "stroke-width": 2
+            }));
+        }
+        axisLines.push(paper.path("M" + leftPos + "," + downPos + "L" + rightPos + "," + downPos).attr({
+            "stroke": "#D7D7D7",
+            "stroke-width": 2
+        }));
+        var numOfHLine = d3.round((downPos - upPos)/30-1);
+        for (j = 1; j <= numOfHLine; j++) {
+            hLinesPos = downPos - j * 30;
+            hLines.push(paper.path("M" + leftPos + "," + hLinesPos + "L" + rightPos + "," + hLinesPos).attr({
+                "stroke": "#ECECEC",
+                "stroke-width":1
+            }));
+        }
+        //定义变量
+        //bars
+        var barWidth = 8;
+        this.defaults.bars = paper.set();
+        var bars = paper.set();
+        //legend
+        var legendArea = this.defaults.legendArea;
+        var rectBn = paper.set();
+        var underBn = [];
+        var temp;
+        //绘制
+        //bars
+        var mouseOverBar = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum - this.data.seqNum % 2;
+            var rectBn = this.data.rectBn;
+            var clicked = false;
+            var typeSeq = -1;
+            var typeNum = this.data.typeNum;
+            var xPos, yPos;
+            var temp;
+            var paper = bars[0].paper;
+            for(i = 0, j = rectBn.length; i < j; i++)
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    typeSeq = i;
+                }
+            //hover
+            if(clicked) {
+                if(typeSeq != this.data.seqNum % typeNum)
+                    return;
+                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
+                    bars[i].attr({
+                        "fill-opacity":0.3
+                    });
+                }
+                bars[this.data.seqNum].attr({
+                    "fill-opacity":1
+                });
+            } else {
+                for(i = 0, j = bars.length; i < j; i++) {
+                    if(i == seq) {
+                        i++;
+                    }
+                    else {
+                        
+                            bars[i].attr({
+                                "fill-opacity":0.3
+                            });
+                    }
+                }
+            }
+            //pins
+            xPos = bars[seq].attrs.x + 4 * typeNum;
+            yPos = bars[seq].attrs.y + bars[seq].attrs.height;
+            //axis x text
+            temp = paper.text(xPos, yPos, this.data.xAxisLabel).attr({
+                "file": "#ffffff",
+                "fill-opacity": 0.7,
+                "font-family": "雅黑",
+                "font-size": 12,
+                "text-anchor": "middle"
+            });
+            var textWidth = temp.node.clientWidth + 8;
+            temp.remove();
+            //axis x rect
+            temp = paper.rect(xPos - textWidth/2, yPos, textWidth, 20, 2).attr({
+                "fill": "#5f5f5f",
+                "fill-opacity": 1,
+                "stroke": "none"
+            });;
+            bars.push(temp);
+            temp = paper.text(xPos, yPos + 10, this.data.xAxisLabel).attr({
+                "file": "#abcdef",
+                "fill-opacity": 0.7,
+                "font-family": "雅黑",
+                "font-size": 12,
+                "text-anchor": "middle"
+            });
+            bars.push(temp);
+        };
+        
+        var mouseOutBar = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum - this.data.seqNum % 2;
+            var rectBn = this.data.rectBn;
+            var clicked = false;
+            var typeSeq = -1;
+            var typeNum = this.data.typeNum;
+            var temp;
+            for(i = 0, j = rectBn.length; i < j; i++)
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    typeSeq = i;
+                }
+            //hover
+            if(clicked) {
+                if(typeSeq != this.data.seqNum % typeNum)
+                    return;
+                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
+                    bars[i].attr({
+                        "fill-opacity":1
+                    });
+                }
+            } else {
+                for(i = 0, j = bars.length; i < j; i++) {
+                    if(i == seq) {
+                        i++;
+                    }
+                    else {
+                        bars[i].attr({
+                            "fill-opacity":1
+                        });
+                    }
+                }
+            }
+            //pins
+            temp = bars.pop();
+            temp.remove();
+            temp = bars.pop();
+            temp.remove();
+        };
+        
+        for (i = 0, j = this.source.length; i < j; i++) {
+            for (k = 0, l = conf.typeNames.length; k < l; k++)
+                if(i%l == k) {
+                    temp = paper.rect((x[dimenX](this.source[i][dimenX])-barWidth * (l / 2 - i % l)), y[dimenY](this.source[i][dimenY]), 
+                        barWidth, downPos - y[dimenY](this.source[i][dimenY])).attr({
+                            "fill": conf.barColor[k],
+                            "fill-opacity": 1,
+                            "stroke": "none"
+                            });
+                    temp.data = {};
+                    temp.data.container = bars;
+                    temp.data.seqNum = i;
+                    temp.data.rectBn = rectBn;
+                    temp.data.typeNum = conf.typeNames.length;
+                    temp.data.xAxisLabel = conf.xAxisData[d3.round((i-1)/l)];
+                    temp.data.yAxisLabel = this.source[i][dimenY];
+                    temp.mouseover(mouseOverBar);
+                    temp.mouseout(mouseOutBar);
+                    bars.push(temp);
+                }
+        }
+        //legend
+        var mouseOverLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var rectBn = this.data.rectBn;
+            for(i = 0, j = rectBn.length; i < j; i++)
+                if(rectBn[i].data.isClicked)
+                    return;
+            //
+            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
+                bars[i].attr({
+                    "fill-opacity":0.3
+                });
+            }
+            this.data.underBn[seq].attr({
+                "fill-opacity":0.5
+            });
+        };
+        var mouseOutLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var rectBn = this.data.rectBn;
+            for(i = 0, j = rectBn.length; i < j; i++)
+                if(rectBn[i].data.isClicked)
+                    return;
+            //
+            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
+                bars[i].attr({
+                    "fill-opacity":1
+                });
+            }
+            this.data.underBn[seq].attr({
+                "fill-opacity":0
+            });
+        };
+        var clickLegend = function (event) {
+            var bars = this.data.container;
+            var seq = this.data.seqNum;
+            var clicked = false;
+            var underBn = this.data.underBn;
+            var rectBn = this.data.rectBn;
+            var lastClickedSeq;
+            var typeNum = this.data.typeNum;
+            //check if any legend has been already clicked
+            for(i = 0, j = rectBn.length; i < j; i++) {
+                if(rectBn[i].data.isClicked) {
+                    clicked = true;
+                    lastClickedSeq = i;
+                    break;
+                }
+            }
+            if(this.data.isClicked) {
+                for(i = 0; i < typeNum; i++) {
+                    if(i != seq % typeNum) {
+                        for(var j = i, m = bars.length; j < m; j+=typeNum)
+                            bars[j].attr({
+                                "fill-opacity":0.3
+                            });
+                    }
+                }
+                this.data.isClicked = false;
+            } else if(!clicked) {
+                for(i = 0; i < typeNum; i++) {
+                    if(i != seq % typeNum) {
+                        for(j = i, m = bars.length; j < m; j+=typeNum)
+                            bars[j].attr({
+                                "fill-opacity":0.1
+                            });
+                    }
+                }
+                this.data.isClicked = true;
+            } else {
+                //cancle the clicked button
+                underBn[lastClickedSeq].attr({
+                    "fill-opacity":0
+                });
+                for(i = lastClickedSeq % typeNum, j = bars.length; i < j; i+=typeNum)
+                    bars[i].attr({
+                        "fill-opacity":0.1
+                    });
+                for(i = seq % typeNum, j = bars.length; i < j; i+=typeNum)
+                    bars[i].attr({
+                        "fill-opacity":1
+                    });
+                this.data.rectBn[lastClickedSeq].data.isClicked = false;
+                this.data.isClicked = true;
+            }
+            this.data.underBn[seq].attr({
+                "fill-opacity":(this.data.isClicked?1:0)
+            });
+        };
+        for (i = 0; i < conf.typeNames.length; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "#ebebeb",
+                "fill-opacity":0,
+                "stroke": "none"
+            }));
+            //色框
+            temp = paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                "fill": conf.barColor[i],
+                "stroke": "none"
+            });
+            //文字
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
+                "fill": "black",
+                "fill-opacity": 1,
+                "font-family": "Verdana",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "start"
+            });
+            //选框
+            temp = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "white",
+                "fill-opacity": 0,
+                "stroke": "none"
+                //"r": 3
+            }).data("type", i);
+            temp.mouseover(mouseOverLegend);
+            temp.mouseout(mouseOutLegend);
+            temp.click(clickLegend);
+            temp.data = {};
+            temp.data.seqNum = i;
+            temp.data.container = bars;
+            temp.data.rectBn = rectBn;
+            temp.data.isClicked = false;
+            temp.data.underBn = underBn;
+            temp.data.typeNum = conf.typeNames.length;
+            rectBn.push(temp);
+        }
+    };
+    /**
+     * 绘制柱状图
+     * Options:
+     *
+     *   - `width` 宽度，默认为节点宽度
+     *   - `typeNames` 指定y轴上数据类目
+     *
+     * Examples:
+     * ```
+     * histogram.render({"width": 1024})
+     * ```
+     * @param {Object} options options json object for determin histogram style.
+     */
+	Histogram.prototype.render = function (options) {
+        this.setOptions(options);
+        this.canvas.clear();
+        this.setAxis();
+        this.drawDiagram();
+	};
+	return Histogram;
+});
+/*global EventProxy, d3, Raphael, $ */
+/*!
+ * Matrix的兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Matrix', function (require) {
+    var DataV = require('DataV');
+    var theme = DataV.Themes;
+
+    /**
+     * 构造函数
+     */
+    var Matrix = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Matrix";
+            this.node = this.checkContainer(node);
+
+            // Properties
+            this.font = {};
+
+            // Canvas
+            this.defaults.width = 1200;
+            this.defaults.height = 1200;
+            this.defaults.axisWidth = 40;
+
+            this.setOptions(options);
+            this.createCanvas();
+            this.move = false;
+        }
+    });
+
+    Matrix.prototype.getDataTable = function (table) {
+        var title = table[0];
+        table = table.slice(1);
+
+        var titleLength = title.length;
+        var tableWidth = table[0].length;
+        var tableHeight = table.length;
+
+        this.tableWidth = tableWidth;
+        this.tableHeight = tableHeight;
+
+        //for symmetric matrix
+        if (tableWidth !== title.length || tableHeight !== title.length) {
+            throw new Error("This matrix is not symmetric matrix!!!");
+        } else {
+            this.tableWidth = tableWidth;
+            this.tableHeight = tableHeight;
+        }
+
+        this.title = title;
+        return table;
+    };
+
+    Matrix.prototype.setSource = function (source) {
+        var conf = this.defaults;
+
+        this.source = this.getDataTable(source);
+        this.hasSort = false;
+        // this.source = this.remapSource(source);
+    };
+
+    Matrix.prototype.layout = function () {
+        var conf = this.defaults;
+        var width = conf.width;
+        var height = conf.height;
+        var tableWidth = this.tableWidth;
+        var tableHeight = this.tableHeight;
+        var axisWidth = conf.axisWidth;
+
+        this.cellWidth = Math.min((width - axisWidth) / tableWidth, (height - axisWidth) / tableHeight);
+
+        var startX;
+        var startY;
+        var bRectWidth;
+        var matrixWidth;
+
+        if (width > height) {
+            startX = (width - height)/2 + axisWidth;
+            startY = axisWidth;
+            bRectWidth = height - axisWidth;
+            matrixWidth = bRectWidth - axisWidth;
+        } else if (height > width) {
+            startX = axisWidth;
+            startY = (height - width) + axisWidth;
+            bRectWidth = width - axisWidth;
+        } else {
+            startX = axisWidth;
+            startY = axisWidth;
+            bRectWidth = width - axisWidth;
+            matrixWidth = bRectWidth - axisWidth;
+        }
+
+        this.startX = startX;
+        this.startY = startY;
+        this.bRectWidth = bRectWidth;
+        this.matrixWidth = matrixWidth;
+    };
+
+    Matrix.prototype.getColor = function (i) {
+        var colorMatrix = DataV.getColor();
+        var length = colorMatrix.length;
+        var num = i % length;
+        //var color = '#939598';
+        var color = '#FFFFFF';
+
+        if (num !== 0) {
+            color = colorMatrix[num][0];
+        }
+
+        return color;
+    };
+
+    Matrix.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+
+        this.DOMNode = $(this.canvas.canvas);
+        var that = this;
+        this.DOMNode.click(function (event) {
+            that.trigger("click", event);
+            that.update();
+        });
+        this.DOMNode.dblclick(function (event) {
+            that.trigger("dblclick", event);
+        });
+
+        var mousewheel = document.all ? "mousewheel" : "DOMMouseScroll";
+        this.DOMNode.bind(mousewheel, function (event) {
+            that.trigger("mousewheel", event);
+        });
+
+        this.DOMNode.bind("contextmenu", function (event) {
+            that.trigger("contextmenu", event);
+        });
+
+        this.DOMNode.delegate("circle", "click", function (event) {
+            that.trigger("circle_click", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseover", function (event) {
+            that.trigger("circle_mouseover", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseout", function (event) {
+            that.trigger("circle_mouseout", event);
+        });
+    };
+
+    Matrix.prototype.generatePaths = function () {
+        var canvas = this.canvas;
+        var source = this.source;
+        var conf = this.defaults;
+        var width = conf.width;
+        var height = conf.height;
+        var startX = this.startX;
+        var startY = this.startY;
+        var cellWidth = this.cellWidth;
+        var tableWidth = this.tableWidth;
+        var tableHeight = this.tableHeight;
+        var bRectWidth = this.bRectWidth;
+        var matrixWidth = this.matrixWidth;
+
+        //canvas.clear();
+        // var color = this.getColor();
+        // var font = this.getFont();
+        var font_family = '微软雅黑';
+        var font_size = 8;
+
+        var title = this.title;
+
+        var row = [];
+        var columnLine = [];
+        var columnText = [];
+
+        var backgroundRect = canvas.rect(startX, startY, bRectWidth, bRectWidth);
+        //backgroundRect.attr({fill: "#939598", stroke: "none", "fill-opacity": 0.8});
+        backgroundRect.attr({fill: "#ffffff", stroke: "none", "fill-opacity": 0.8});
+        backgroundRect.toBack();
+
+        var sort;
+        if (this.hasSort) {
+            sort = this.sort;
+        }
+        var i, j, a, b, color, rect;
+        var rects = [];  //for column change move rect
+        for (i = 0; i < tableHeight; i++) {
+            if (!this.hasSort){
+                a = i;
+            } else {
+                for (j = 0; j < sort.length; j++) {
+                    if (sort[j] === i) {
+                        a = j;
+                    }
+                }
+            }
+            var rowRect = canvas.set();
+            canvas.path("M" + startX + " " + (startY + cellWidth * i) + "L" + (startX + matrixWidth + 10 + cellWidth) + " "
+             + (startY + cellWidth * i)).attr({stroke: "#D1D1D1", "stroke-width": 1});
+            rowRect.push(canvas.text(-20, cellWidth / 2, title[i])
+                .attr({"fill": "#000000",
+                    "fill-opacity": 0.7,
+                    "font-family": "Verdana",
+                    //"font-weight": "bold",
+                    "font-size": 12}));
+
+            for (j = 0; j < tableWidth; j++) {
+                if (!this.hasSort) {
+                    color = this.getColor(source[i][j]);
+                } else {
+                    color = this.getColor(source[i][sort[j]]);
+                }
+                rect = canvas.rect(cellWidth * j, 0, cellWidth, cellWidth)
+                    .attr({stroke: "none", fill: color, "fill-opacity": 0.8});
+                rowRect.push(rect);
+                rects.push(rect);
+            }
+
+            rowRect.transform("t" + startX + ", " + (startY + cellWidth * a));
+            row.push(rowRect);
+        }
+
+        canvas.path("M" + startX + " " + (startY + cellWidth * tableHeight) + "L" + (startX + matrixWidth + 10 + cellWidth) + " "
+             + (startY + cellWidth * tableHeight)).attr({stroke: "#D1D1D1", "stroke-width": 1});
+
+        for (i = 0; i < tableWidth; i++) {
+            // var columnLine = canvas.set();
+            // var columnText = canvas.set();
+            if (!this.hasSort){
+                a = i;
+            } else {
+                for (j = 0; j < sort.length; j++) {
+                    if (sort[j] === i) {
+                        a = j;
+                    }
+                }
+            }
+            columnLine.push(canvas.path("M0 0L0 " + matrixWidth + 10 + cellWidth)
+                .attr({stroke: "#D1D1D1", "stroke-width": 1})
+                .transform("t" + (startX + cellWidth * a) + ", " + startY));
+            columnText.push(canvas.text(cellWidth / 2, -20, title[i])
+                .attr({"fill": "#000000",
+                    "fill-opacity": 0.7,
+                    "font-family": "Verdana",
+                    //"font-weight": "bold",
+                    "font-size": 12})
+                .transform("t" + (startX + cellWidth * a) + ", " + startY + "r90"));
+        }
+
+        columnLine.push(canvas.path("M0 0L0 " + matrixWidth + 10 + cellWidth)
+                .attr({stroke: "#D1D1D1", "stroke-width": 1})
+                .transform("t" + (startX + cellWidth * tableWidth) + ", " + startY));
+
+        this.row = row;
+        this.columnText = columnText;
+        this.columnLine = columnLine;
+        this.rects = rects;
+    };
+
+    Matrix.prototype.getSort = function (source) {
+        var sumQueue = [];
+        var sort = [];
+        var rowData;
+        var rowLength;
+        var sum;
+        var means;
+        var matrixD = [];
+        var quareSum;
+        var rowquareSum = [];
+
+        var i, j, k;
+        for (i = 0 ; i < source.length ; i++) {
+            rowData = source[i];
+            rowLength = rowData.length;
+            sum = 0;
+            quareSum = 0;
+
+            for (j = 0 ; j < rowLength ; j++) {
+                sum = sum + rowData[j];
+            }
+
+            means = sum / rowLength;
+            for (j = 0 ; j < rowLength ; j++) {
+                rowData[j] = rowData[j] - means;
+                quareSum = quareSum + Math.pow(rowData[j], 2);
+            }
+
+            quareSum = Math.sqrt(quareSum);
+
+            rowquareSum.push(quareSum);
+            matrixD.push(rowData);
+        }
+
+        var rowI;
+        var rowJ;
+        var matrixR = [];
+
+        for (i = 0 ; i < source.length ; i++) {
+            matrixR[i] = [];
+            for (j = 0 ; j < source.length ; j++) {
+                matrixR[i][j] = 0;
+            }
+        }
+
+        for (i = 0 ; i < source.length ; i++) {
+            rowI = matrixD[i];
+            matrixR[i][i] = source[i][i];
+            for (j = i + 1 ; j < source.length ; j++) {
+                sum = 0;
+                rowJ = matrixD[j];
+                for (k = 0; k < rowLength; k++) {
+                    sum = sum + rowI[k] * rowJ[k];
+                }
+
+                sum = sum / (rowquareSum[i] * rowquareSum[j]);
+                matrixR[i][j] = sum;
+                matrixR[j][i] = sum;
+            }
+        }
+
+
+
+        return matrixR;
+    };
+    
+    Matrix.prototype.update = function () {
+        var i, j;
+        var source = [];
+        for(i = 0; i < this.source.length ; i++){
+            source[i] = this.source[i].concat();
+        }
+
+        var sort = [];
+        for (i = 0; i < source[0].length; i++) {
+            sort.push(i);
+        }
+
+        if (this.hasSort) {
+            this.sort = sort;
+            this.hasSort = false;
+        } else {
+            var getSort = this.getSort;
+            var i, j;
+            var pt;
+            var nowSort = [];
+            var iterations = 12;
+
+            for (i = 0; i < iterations; i++) {
+                source = getSort(source);
+            }
+
+            nowSort = source[0];
+
+            var a, b;
+            for (i = 1; i < sort.length; i++) {
+                a = sort[i];
+                for (j = i + 1; j < sort.length; j++) {
+                    b = sort[j];
+                    if (nowSort[a] < nowSort[b]) {
+                        pt = sort[i];
+                        sort[i] = sort[j];
+                        sort[j] = pt;
+                    }
+                }
+            }
+            sort = [0,7,5,2,8,3,1,9,6,14,15,4,13,10,16,11,12];
+            this.sort = sort;
+            this.hasSort = true;
+        }
+
+        if (!this.move) {
+            this.move = true;
+            var rects = this.rects;
+            var num;
+            var startX = this.startX;
+            var startY = this.startY;
+            var cellWidth = this.cellWidth;
+
+            var rowAnim;
+            var columnLineAnim;
+            var columnTextAnim;
+            var anim;
+
+            for (i = 0; i < sort.length; i++) {
+                num = sort[i];
+                // if (num != i) {
+                rowAnim = Raphael.animation({transform: ["t", startX, (startY + cellWidth * i)]}, 200, "<>");
+                this.row[num].animate(rowAnim.delay(100 * i));
+                // }
+            }
+
+            var that = this;
+            var moveEnd = function () {
+                that.move = false;
+            };
+
+            for (i = 0; i < sort.length; i++) {
+                num = sort[i];
+                // if (num != i) {
+                //columnLineAnim = Raphael.animation({transform: ["t", (startX + cellWidth * i), startY]}, 1000, "<>");
+                columnTextAnim = Raphael.animation({transform: ["t", (startX + cellWidth * i), startY, "r", 90]},
+                    200, "<>");
+                //this.columnLine[num].animate(columnLineAnim.delay(500 * (i + sort.length + 1)));
+                this.columnText[num].animate(columnTextAnim.delay(100 * (i + sort.length + 1)));
+
+                for (j = 0; j < sort.length; j++) {
+                    if (i === sort.length - 1 && j === sort.length - 1) {
+                        anim = Raphael.animation({'x': cellWidth * i}, 200, "<>", moveEnd);
+                    } else {
+                        anim = Raphael.animation({'x': cellWidth * i}, 200, "<>");
+                    }
+                    rects[j * sort.length + num].animate(anim.delay(100 * (i + sort.length + 1)));
+                }
+                // }
+            }
+        }
+    };
+
+    Matrix.prototype.render = function (options) {
+        if (!this.move) {
+            this.canvas.clear();
+            this.setOptions(options);
+            this.layout();
+            this.generatePaths();
+        }
+    };
+
+    return Matrix;
+});
+/*global Raphael, d3 */
+/*!
+ * Parallel的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Parallel', function (require) {
+    var DataV = require('DataV');
+    var Axis = require('Axis');
+    var Brush = require('Brush');
+
+    /**
+     * 构造函数
+     * Options:
+     *
+     *   - `width` 数字，图片宽度，默认为750，表示图片高750px
+     *   - `height` 数字，图片高度，默认为500
+     *   - `marginWidth` 数组，表示图片上、右、下、左的边距，默认为 [20, 20, 20, 20]
+     *   - `backgroundAttr` 对象，没有选中的线的样式，默认为{"fill": "none", "stroke": "#ccc", "stroke-opacity": 0.4}， 具体设置方式请参考Raphael手册：http://raphaeljs.com/reference.html#Element.attr
+     *   - `foregroundAttr` 对象，被选中的线的样式，默认为{"fill": "none", "stroke": "steelblue", "stroke-opacity": 0.7}， 具体设置方式请参考Raphael手册：http://raphaeljs.com/reference.html#Element.attr
+     *   - `axisStyle` 对象，设置坐标轴属性。3中坐标轴属性：domainAttr表示坐标轴线属性。tickAttr表示坐标轴标尺属性。tickTextAttr表示坐标轴文字属性。具体设置方式请参考Raphael手册：http://raphaeljs.com/reference.html#Element.attr
+     *   - `customEvent` 函数对象，其中有3个自定义函数。`brushstart` 函数，表示刚开始拖选区间的事件响应，默认为空函数; `brushend` 函数，表示拖选结束后的事件响应，默认为空函数; `brush` 函数，表示拖选时的事件响应，默认为空函数; 这些函数可以在创建对象或setOption()时一起设置，也可以通过on()函数单独设置。
+     *
+     * @param {Node|String|jQuery} node 容器节点，文档节点、ID或者通过jQuery查询出来的对象
+     */
+    var Parallel = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Parallel";
+            this.node = this.checkContainer(node);
+
+            // Properties
+            this.allDimensions = [];
+            this.dimensions = [];
+            this.dimensionType = {};
+            this.dimensionDomain = {};
+            this.dimensionExtent = {};
+
+            // Canvas
+            this.defaults.width = 750;
+            this.defaults.height = 500;
+            this.defaults.marginWidth = [20, 20, 20, 20];
+            this.defaults.backgroundAttr = {"fill": "none", "stroke": "#ccc", "stroke-opacity": 0.4};
+            this.defaults.foregroundAttr = {"fill": "none", "stroke": "steelblue", "stroke-opacity": 0.7};
+
+            this.defaults.axisStyle = {
+                domainAttr : {"stroke": "#000"},//坐标轴线
+                tickAttr : {"stroke": "#000"},//坐标轴标尺
+                tickTextAttr : {}//坐标轴文字
+            }
+
+            this.defaults.customEvent = {
+                "brushstart": function () {},
+                "brushend": function () {},
+                "brush": function () {}
+            };
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * choose dimension
+     * @param {array} dimen  Array of column names
+     */
+    Parallel.prototype.chooseDimensions = function (dimen) {
+        var conf = this.defaults;
+        this.dimensions = [];
+        for (var i = 0, l = dimen.length; i<l; i++) {
+            if ($.inArray(dimen[i], this.allDimensions) !== -1) {
+                this.dimensions.push(dimen[i]);
+            }
+        }
+    };
+
+    /**
+     * set dimension type, ordinal or quantitative
+     * Examples:
+     * ```
+     *  parallel.setDimensionType({"cylinders": "ordinal", "year": "quantitative"});
+     * ```
+     * @param {Object} dimenType  dimension type obj
+     */
+    Parallel.prototype.setDimensionType = function (dimenType) {
+        var conf = this.defaults,
+            prop,
+            type;
+        if (dimenType) {
+            for (prop in dimenType) {
+                if (dimenType.hasOwnProperty(prop) && this.dimensionType[prop]) {
+                    var type = dimenType[prop];
+                    if (type !== "quantitative" && type !== "ordinal") {
+                        throw new Error('Dimension type should be "quantitative" or "ordinal".');
+                    }
+                    if (this.dimensionType[prop] !== type) {
+                        this.dimensionType[prop] = type;
+                        this._setDefaultDimensionDomain(prop);
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * get dimensions extents
+     * @return {Object} {key: dimension name(column name); value: dimenType("ordinal" or "quantitativ")}
+     */
+    Parallel.prototype.getDimensionExtents = function () {
+        return $.extend({}, this.dimensionExtent);
+    };
+
+    
+    /**
+     * set dimension extent, if chart has been rendered, then refresh the chart;
+     * Examples:
+     * ```
+     *  parallel.setDimensionExtent({
+     *    "cylinders": ["6", "3"],
+     *    "economy (mpg)": [35, 20]
+     *  });
+     * ```
+     * @param {Object} dimenExtent {key: dimension name(column name); value: extent array;}
+     */
+    Parallel.prototype.setDimensionExtent = function (dimenExtent) {
+        var conf = this.defaults;
+        var dimen, i, l, extent;
+        var rebrushNeeded = false;
+        var ordinalExtent = [];
+
+        if (arguments.length === 0) {
+            // clean all extent
+            this.dimensionExtent = {};
+        } else {
+            for (prop in dimenExtent) {
+                if (dimenExtent.hasOwnProperty(prop) && this.dimensionType[prop]) {
+                    extent = dimenExtent[prop];
+                    if (!(extent instanceof Array)) {
+                        throw new Error("extent should be an array");
+                    } else {
+                        if (extent.length !== 2) {
+                            throw new Error("extent should be an array with two items, for example: [num1, num2]");
+                        } else if (this.dimensionType[prop] === "quantitative") {
+                            this.dimensionExtent[prop] = extent;
+                            rebrushNeeded = true;
+                            if (this.brush) {
+                                this.y[prop].brush.extent(extent);
+                                this.y[prop].brush.refresh();
+                            }
+                        } else if (this.dimensionType[prop] === "ordinal") {
+                            if (typeof this.dimensionDomain[prop].itemIndex[extent[0]] === 'undefined'
+                                    || typeof this.dimensionDomain[prop].itemIndex[extent[1]] === 'undefined') {
+                                throw new Error(prop + " does not have value: " + extent[0] + " or " + extent[1]); 
+                            } else {
+                                rebrushNeeded = true;
+                                ordinalExtent = this._getOrdinalExtent(prop, extent);
+                                this.dimensionExtent[prop] = extent;
+                                if (this.brush) {
+                                    this.y[prop].brush.extent(ordinalExtent);
+                                    this.y[prop].brush.refresh();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (rebrushNeeded && this.brush) {
+                this.brush();
+            }
+        }
+    };
+
+    /**
+     * get dimension types
+     * @return {Object}  {key: dimension name(column name); value: dimenType("ordinal" or "quantitativ")}
+     */
+    Parallel.prototype.getDimensionTypes = function () {
+        return $.extend({}, this.dimensionType);
+    };
+
+    /**
+     * get dimension domain
+     * @return {Object}  {key: dimension name(column name); value: extent array;}
+     */
+    Parallel.prototype.getDimensionDomains = function () {
+        return $.extend({}, this.dimensionDomain);
+    };
+
+    /*!
+     * get default ordinal dimension domain
+     * @param {array} a: array of source ordinal column values
+     * @return {array} unique string array
+     */
+    Parallel.prototype._setOrdinalDomain = function (a) {
+        var uniq = [];
+        var index = {};
+        var i = -1, n = a.length, ai;
+        while (++i < n) {
+            if (typeof index[ai = a[i]] === 'undefined') {
+                index[ai] = uniq.push(ai) - 1;
+            }
+        }
+        uniq.itemIndex = index;
+        return uniq;
+    };
+
+    /*!
+     * set default dimension domain
+     * @param {string} dimen: dimension string
+     */
+    Parallel.prototype._setDefaultDimensionDomain = function (dimen) {
+        var conf = this.defaults;
+        if(this.dimensionType[dimen] === "quantitative"){
+            this.dimensionDomain[dimen] = d3.extent(this.source, function(p){return +p[dimen]});
+        } else {
+            this.dimensionDomain[dimen] = this._setOrdinalDomain(this.source.map(function(p){return p[dimen]}));
+        }
+    };
+
+    /**
+     * set dimension domain
+     * Examples:
+     * ```
+     *  parallel.setDimensionDomain({
+     *    "cylinders": [4, 8], //quantitative
+     *    "year": ["75", "79", "80"] //ordinal
+     *  });
+     * ```
+     * @param {Object} dimenDomain {key: dimension name(column name); value: domain array (quantitative domain is digit array whose length is 2, ordinal domain is string array whose length could be larger than 2;}
+     */
+    Parallel.prototype.setDimensionDomain = function (dimenDomain) {
+        //set default dimensionDomain, extent for quantitative type, item array for ordinal type
+        var conf = this.defaults;
+        var dimen, i, l, domain;
+
+        if (arguments.length === 0) {
+            for (i = 0, l = this.allDimensions.length; i < l; i++) {
+                dimen = this.allDimensions[i];
+                this._setDefaultDimensionDomain(dimen);
+            }
+        } else {
+            for (prop in dimenDomain) {
+                if (dimenDomain.hasOwnProperty(prop) && this.dimensionType[prop]) {
+                    domain = dimenDomain[prop];
+                    if (!(domain instanceof Array)) {
+                        throw new Error("domain should be an array");
+                    } else {
+                        if (this.dimensionType[prop] === "quantitative" && domain.length !== 2) {
+                            throw new Error("quantitative's domain should be an array with two items, for example: [num1, num2]");
+                        }
+                        if (this.dimensionType[prop] === "quantitative") {
+                            this.dimensionDomain[prop] = domain;
+                        } else if (this.dimensionType[prop] === "ordinal") {
+                            this.dimensionDomain[prop] = this._setOrdinalDomain(domain);
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * 侦听自定义事件
+     */
+    Parallel.prototype.on = function (eventName, callback) {
+        if ($.inArray(eventName, ["brushstart", "brushend", "brush"]) !== -1) {
+            this.defaults.customEvent[eventName] = callback;
+        }
+    };
+
+    /**
+     * 设置数据源
+     * Examples:
+     * 第一行为列名
+     * ```
+     * [
+     *  ["name", "weight", "year"],
+     *  ["AMC", "2000", "79"],
+     *  ["Buick", "2100", "80"]
+     * ]
+     * ```
+     * @param {Array} source 二维数组的数据源
+     */
+    Parallel.prototype.setSource = function (source) {
+        //source is 2-dimension array
+
+        var conf = this.defaults;
+        this.allDimensions = source[0];
+
+        //by default all dimensions show
+        this.dimensions = source[0];
+
+        //this.source is array of line; key is dimension, value is line's value in that dimension
+        this.source = [];
+        for(var i=1, l=source.length; i<l; i++){
+            var line = {},
+                dimen = this.allDimensions;
+            for(var j=0, ll=dimen.length; j<ll; j++){
+                line[dimen[j]] = source[i][j];
+            }
+            this.source.push(line);
+        }
+
+        //judge dimesions type auto
+        //if all number, quantitative else ordinal
+        this.dimensionType = {};
+        for (var i = 0, l = this.allDimensions.length; i < l; i++) {
+            var type = "quantitative";
+            for (var j=1, ll = source.length; j<ll; j++) {
+                var d = source[j][i];
+                if(d && (!DataV.isNumeric(d))){
+                    type = "ordinal";
+                    break;
+                }
+            }
+            this.dimensionType[this.allDimensions[i]] = type;
+        }
+
+        this.setDimensionDomain();
+
+    };
+
+    /*!
+     * chart layout
+     */
+    Parallel.prototype.layout = function () {
+        //create x and y dimensions
+        var conf = this.defaults,
+            domain,
+            i,
+            j,
+            l,
+            ll;
+
+        var m = conf.marginWidth,
+            w = conf.width - m[1] - m[3],
+            h = conf.height - m[0] - m[2];
+
+        this.x = d3.scale.ordinal().rangePoints([0, w], 1),
+        this.y = {};
+        this.y2 = {};
+
+        this.x.domain(d3.range(this.dimensions.length));//allow same dimension
+        for(i=0, l=this.dimensions.length; i<l; i++){
+            var dimen = this.dimensions[i];
+            if(this.dimensionType[dimen] === "quantitative"){
+                this.y[dimen] = d3.scale.linear()
+                .domain(this.dimensionDomain[dimen])
+                .range([h + m[0], m[0]]);
+                this.y2[dimen] = d3.scale.linear()
+                .domain(this.dimensionDomain[dimen])
+                .range([h + m[0], m[0]]);
+            }else{
+                this.y[dimen] = d3.scale.ordinal()
+                .domain(this.dimensionDomain[dimen])
+                .rangeBands([h + m[0], m[0]]);
+                this.y2[dimen] = d3.scale.linear()
+                .domain([0, this.dimensionDomain[dimen].length])
+                .range([h + m[0], m[0]]);
+            }
+        }
+    };
+
+    /*!
+     * generate chart path
+     */
+    Parallel.prototype.generatePaths = function () {
+        var conf = this.defaults;
+        var axis = Axis()
+            .orient("left")
+            .tickAttr(conf.axisStyle.tickAttr)
+            .tickTextAttr(conf.axisStyle.tickTextAttr)
+            .domainAttr(conf.axisStyle.domainAttr);
+
+        var m = conf.marginWidth;
+
+        var paper = this.canvas;
+
+        this.bg = paper.set();
+        var i, l;
+        for (i = 0, l = this.source.length; i<l; i++) {
+            var line = this.source[i];
+            this.bg.push(paper.path(this.path(line)));
+        }
+        this.bg.attr(conf.backgroundAttr).attr({transform: "t" + m[3] + ',0'});
+        
+        this.fg = paper.set();
+        for (i = 0, l = this.source.length; i<l; i++) {
+            var line = this.source[i];
+            this.fg.push(paper.path(this.path(line)));
+        }
+        this.fg.attr(conf.foregroundAttr).attr({transform: "t" + m[3] + ',0'});
+
+        var dimensions = this.dimensions;
+        
+        for(i = 0, l = dimensions.length; i<l; i++){
+            var ax=axis.scale(this.y[dimensions[i]])(paper);
+            ax.push(paper.text(0, m[0] - 12, dimensions[i]).attr({"text-anchor": "middle"}));
+            ax.attr({transform: "t" + (m[3] + this.x.range()[i] ) + ',0'});
+        }
+
+        var xInterval = Math.min(this.x.range()[1] - this.x.range()[0] - 20, 16);
+        var brushs = [];
+
+        this.statistic = {};
+        this.statistic["selected"] = 0;
+        this.statistic["all"] = this.source.length;
+        this.statistic["items"] = {};
+        var that = this;
+        this.brush = function() {
+                var statistic = that.statistic;
+                var dimensionExtents = that.dimensionExtent;
+                var actives = that.dimensions.filter(function(p) {
+                        var empty = that.y[p].brush.empty();
+                        if (empty) {
+                            statistic.items[p] = -1;
+                            dimensionExtents[p] = undefined;
+                        } else {
+                            statistic.items[p] = 0;
+                        }
+                        return !empty;
+                    }),
+                    extents = actives.map(function(p) {
+                            var extent = that.y[p].brush.extent();
+                            if (that.dimensionType[p] === "quantitative") {
+                                that.dimensionExtent[p] = extent;
+                            } else {
+                                that.dimensionExtent[p] = [
+                                    that.dimensionDomain[p][Math.ceil(extent[0] - 0.5)],
+                                    that.dimensionDomain[p][Math.floor(extent[1] - 0.5)]
+                                ];
+                            }
+                            return extent;
+                        });
+                var i, j, l, ll, p;
+                var d, value, inExtent, selected;
+                //var brush, dimen;
+
+                statistic["selected"] = 0;
+                
+                for (j=0, l=that.fg.length; j<l; j++) {
+                    d = that.source[j];
+                    selected = true;
+                    for (i = 0, ll = actives.length; i < ll; i++) {
+                        p = actives[i];
+                        value = that.dimensionType[p] === "quantitative" ?
+                                d[p] : that.dimensionDomain[p].itemIndex[d[p]] + 0.5;
+                        inExtent = extents[i][0] <= value && value <= extents[i][1];
+                        if (inExtent) { statistic.items[p] += 1;}
+                        if (!inExtent) {selected = false;}
+                    }
+                    if (selected) {
+                        statistic["selected"] += 1;
+                        that.fg[j].attr({"stroke": "steelblue"});
+                    } else {
+                        that.fg[j].attr({"stroke": "none"});
+                    }
+                }
+
+                that.defaults.customEvent["brush"].call(that);
+            },
+            brushstart = function () {
+                that.defaults.customEvent["brushstart"].call(that);
+            },
+            brushend = function () {
+                that.defaults.customEvent["brushend"].call(that);
+            };
+
+        var b, start, end, temp;
+
+        for (var i = 0, l = dimensions.length; i<l; i++) {
+            dimen = dimensions[i];
+            b = Brush().y(this.y2[dimen])
+                .left(m[3] + this.x.range()[i] - xInterval/2)
+                .width(xInterval)
+                .backgroundAttr({"opacity": 0, "fill": "white"})
+                .foregroundAttr({"opacity": 0.5, "fill": "gray"})
+                .on("brushstart", brushstart)
+                .on("brush", this.brush)
+                .on("brushend", brushend);
+            if (typeof this.dimensionExtent[dimen] !== 'undefined') {
+                if (this.dimensionType[dimen] === "quantitative") {
+                    b.extent(this.dimensionExtent[dimen]);
+                } else {
+                    b.extent(this._getOrdinalExtent(dimen, this.dimensionExtent[dimen]));
+                }
+            }
+
+            this.y[dimen].brush = b(paper);
+            //this.y[dimensions[i]].brush.dimension = dimensions[i];
+        }
+        if (!$.isEmptyObject(this.dimensionExtent)) {
+            this.brush();
+        }
+    };
+
+    /*!
+     * get Ordinal Extent between two string of one dimension
+     * @param {string} dimen: dimension name(column name)
+     * @param {array} stringArray: array of 2 strings, like ["Jan", "May"]
+     * @return {array} array of string, like ["Jan", "Feb", "Mar", "Apr", "May"]
+     */
+    Parallel.prototype._getOrdinalExtent = function (dimen, stringArray) {
+        start = this.dimensionDomain[dimen].itemIndex[stringArray[0]];
+        end = this.dimensionDomain[dimen].itemIndex[stringArray[1]];
+        if (start > end) {
+            temp = start;
+            start = end;
+            end = temp;
+        }
+        start = Math.max(0, start + 0.5 - 0.5);
+        end = Math.min(this.dimensionDomain[dimen].length, end + 0.5 + 0.5);
+        return [start, end];
+    };
+
+    /*!
+     * create canvas
+     */
+    Parallel.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.node.style.position = "relative";
+        this.canvas = Raphael(this.node, conf.width, conf.height);
+
+        //console.log(this.canvas);
+    };
+
+    /*!
+     * get color
+     */
+    Parallel.prototype.getColor = function (colorJson) {
+        var colorM = DataV.getColor();
+        var color;
+        var colorStyle = colorJson ? colorJson : {};
+        var colorMode = colorStyle.mode ? colorStyle.mode : 'default';
+        switch (colorMode){
+            case "gradient":
+                var index = colorJson.index ? colorJson.index : 0;
+                index = index <0 ? 0 : (index>colorM.length-1 ? colorM.length-1 : index);
+                color = d3.interpolateRgb.apply(null, [colorM[index][0],colorM[index][1]]);
+                break;
+            case "random":
+            case "default":
+                var ratio = colorStyle.ratio ? colorStyle.ratio : 0;
+                if(ratio <0 ){ratio=0;}
+                if(ratio > 1) { ratio =1;}
+                var colorArray =[];
+                for (var i=0, l=colorM.length; i<l; i++) {
+                    var colorFunc = d3.interpolateRgb.apply(null, [colorM[i][0],colorM[i][1]]);
+                    colorArray[colorArray.length]=colorFunc(ratio);
+                }
+                color = d3.scale.ordinal().range(colorArray);
+                break;
+        }
+        return color;
+    };
+
+    /**
+     * 绘制图表
+     */
+    Parallel.prototype.render = function (options) {
+        this.setOptions(options);
+        this.layout();
+        this.generatePaths();
+    };
+
+    /*!
+     * compute line path of one row data
+     * @param {Object} d {key: dimension name(column name); value: value of related dimension;}
+     * @return {string} svg line path string
+     */
+    Parallel.prototype.path = function (d) {
+        var line = d3.svg.line();
+        var conf = this.defaults;
+        var y = this.y;
+        var x = this.x;
+        var dimensions = this.dimensions;
+        var dimensionType = this.dimensionType;
+        return line(dimensions.map(function(p, i) {
+            var yLoc = y[p](d[p]);
+            if(dimensionType[p] === "ordinal"){
+                yLoc +=  y[p].rangeBand()/2;
+            }
+            return [x(i), yLoc];
+        }));
+    };
+
+    return Parallel;
+});
+
+/*global Raphael, d3 */
+/*!
+ * Pie的兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) {
+            return this[id];
+        });
+    }
+})('Pie', function (require) {
+    var DataV = require('DataV');
+
+    /**
+     * 构造函数
+     * @param {Object} node 表示在html的哪个容器中绘制该组件
+     * @param {Object} options 为用户自定义的组件的属性，比如画布大小
+     */
+    var Pie = DataV.extend(DataV.Chart, {
+        type: "Pie",
+        initialize: function (node, options) {
+            this.node = this.checkContainer(node);
+            this.sum = 0;
+            this.groupNames = []; //数组：记录每个group的名字
+            this.groupValue = [];
+            this.groups = [];
+            this.click = 0;
+
+            //图的大小设置
+            this.defaults.legend = true;
+            this.defaults.width = 800;
+            this.defaults.height = 800;
+
+            //设置用户指定的属性
+            this.setOptions(options);
+
+            this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            if (this.defaults.legend) {
+                this.xOffset = this.legendArea[2];
+            } else {
+                this.xOffset = 0;
+            }
+
+            this.defaults.radius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.3;
+            this.defaults.protrude = this.defaults.radius * 0.1;
+            //创建画布
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 饼图纬度描述
+     */
+    Pie.dimension = {};
+    /**
+     * 标签纬度
+     */
+    Pie.dimension.label = {
+        type: "string",
+        required: false
+    };
+    /**
+     * 值纬度
+     */
+    Pie.dimension.value = {
+        type: "number",
+        required: true
+    };
+
+    /**
+     * 创建画布
+     */
+    Pie.prototype.createCanvas = function () {
+        this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
+        var canvasStyle = this.node.style;
+        canvasStyle.position = "relative";
+        this.floatTag = DataV.FloatTag()(this.node);
+        this.floatTag.css({
+            "visibility": "hidden"
+        });
+    };
+
+    /**
+     * 获取颜色
+     * @param {Number} i 元素类别编号
+     * @return {String} 返回颜色值
+     */
+    Pie.prototype.getColor = function (i) {
+        var color = DataV.getColor();
+        return color[i % color.length][0];
+    };
+
+    /**
+     * 绘制饼图
+     */
+    Pie.prototype.render = function () {
+        var conf = this.defaults;
+        var floatTag = this.floatTag;
+        var that = this;
+        this.layout();
+        var groups = this.groups;
+
+        //由内外半径、起始角度计算路径字符串
+        var pathCalc = d3.svg.arc()
+        .innerRadius(conf.radius)
+        .outerRadius(0)
+        .startAngle(function (d) {
+            return d.startAngle;
+        }).endAngle(function (d) {
+            return d.endAngle;
+        });
+
+        var donutEle;
+        //获取每个环形的字符串表示
+        var spline;
+        var tips;
+        that.donutGroups = that.canvas.set();
+
+        $(this.node).append(this.floatTag);
+
+        //添加透明效果
+
+        var mouseOver = function () {
+            floatTag.html('<div style="text-align:center;margin:auto;color:#ffffff">' + this.data('text') + '</div>');
+            floatTag.css({
+                "visibility": "visible"
+            });
+            var index = this.data("donutIndex");
+            if (!this.data('click')) {
+                that.underBn[index].attr('opacity', 0.5).show();
+            }
+            if (that.click === 0) {
+                that.donutGroups.forEach(function (d) {
+                    if (index !== d.data("donutIndex")) {
+                        d.attr('fill-opacity', 0.5);
+                    }
+                });
+            }
+            this.attr('fill-opacity', 1);
+        };
+
+        var mouseOut = function () {
+            floatTag.css({
+                "visibility": "hidden"
+            });
+            var index = this.data("donutIndex");
+            //fade(this.data("donutIndex"), 0.6);
+            if (!this.data('click')) {
+                that.underBn[index].hide();
+            }
+            if (that.click === 0) {
+                that.donutGroups.forEach(function (d) {
+                    d.attr('fill-opacity', 1);
+                });
+            } else if (!this.data('click')) {
+
+                this.attr('fill-opacity', 0.5);
+            }
+        };
+
+        var mouseClick = function () {
+            var index = this.data("donutIndex");
+            var flag = !this.data('click');
+            this.data('click', flag);
+            var a = 0.5 * ((that.groups[index].startAngle + that.groups[index].endAngle) - Math.PI);
+            var nameX = conf.protrude * Math.cos(a);
+            var nameY = conf.protrude * Math.sin(a);
+            if (flag) {
+                if (that.click === 0) {
+                    that.donutGroups.forEach(function (d) {
+                        if (!d.data('click')) {
+                            d.attr('fill-opacity', 0.5);
+                        }
+                    });
+                }
+                that.underBn[index].attr('opacity', 1).show();
+                this.attr('fill-opacity', 1);
+                this.data('nameTag').translate(0, - conf.protrude);
+                this.data('line').translate(0, - conf.protrude);
+                this.translate(nameX, nameY);
+                that.click += 1;
+            } else {
+                this.data('nameTag').translate(0, conf.protrude);
+                this.data('line').translate(0, conf.protrude);
+                this.translate(-nameX, - nameY);
+                that.click -= 1;
+                if (that.click > 0) {
+                    this.attr('fill-opacity', 0.5);
+                }
+            }
+        };
+
+
+        //画圆弧
+        var i;
+        var nameStr;
+        var nameX, nameY;
+        var ro, a;
+        for (i = 0; i <= groups.length - 1; i++) {
+            //画外圈的pie图
+            //计算每个group的path
+            spline = pathCalc(groups[i]);
+            tips = that.groupNames[i] + ": " + Math.round(groups[i].value) + " " + (groups[i].value * 100 / this.sum).toFixed(2) + "%";
+
+            donutEle = that.canvas.path(spline)
+            .translate((conf.width - this.xOffset) / 2 + this.xOffset, conf.height / 2)
+            .data("donutIndex", i)
+            .attr({
+                "path": spline,
+                "fill": that.getColor(i),
+                "stroke": '#ffffff'
+            })
+            .mouseover(mouseOver)
+            .mouseout(mouseOut)
+            .click(mouseClick);
+
+            //每个donut上显示名称
+            ro = (groups[i].startAngle + groups[i].endAngle) * 90 / Math.PI;
+            a = 0.5 * ((groups[i].startAngle + groups[i].endAngle) - Math.PI);
+            nameX = (conf.radius + 2 * conf.protrude) * Math.cos(a);
+            nameY = (conf.radius + 2 * conf.protrude) * Math.sin(a);
+            nameStr = "T" + ((conf.width - that.xOffset) / 2 + that.xOffset) + "," + conf.height / 2 + "R" + ro + "T" + nameX + "," + nameY;
+
+            var line = that.canvas.path("M,0,-" + conf.protrude + "L0," + conf.protrude).transform(nameStr).translate(0, conf.protrude + 9);
+            var nameTag = that.canvas.text().attr("font", "18px Verdana").attr("text", that.groupNames[i]).transform(nameStr);
+
+            donutEle.data('text', tips).data('click', false).data('nameTag', nameTag).data('line', line);
+            that.donutGroups.push(donutEle);
+        }
+
+        if (conf.legend) {
+            this.legend();
+        }
+    };
+
+    /**
+     * 绘制图例
+     */
+    Pie.prototype.legend = function () {
+        var that = this;
+        var conf = this.defaults;
+        var paper = this.canvas;
+        var legendArea = this.legendArea;
+        this.rectBn = paper.set();
+        var rectBn = this.rectBn;
+        this.underBn = [];
+        var underBn = this.underBn;
+        for (var i = 0, l = this.groups.length; i < l; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "#ebebeb",
+                "stroke": "none"
+                //"r": 3
+            }).hide());
+            //色框
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                "fill": this.getColor(i),
+                "stroke": "none"
+            });
+            //文字
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
+                "fill": "black",
+                "fill-opacity": 1,
+                "font-family": "Verdana",
+                "font-size": 12,
+                "text-anchor": "start"
+            });
+            //选框
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "white",
+                "fill-opacity": 0,
+                "stroke": "none"
+                //"r": 3
+            }));
+        }
+        rectBn.forEach(function (d, i) {
+            // TODO 这里的事件建议采用事件委托
+            d.mouseover(function () {
+                if (!that.donutGroups[i].data("click")) {
+                    underBn[i].attr('opacity', 0.5);
+                    underBn[i].show();
+                }
+            }).mouseout(function () {
+                if (!that.donutGroups[i].data("click")) {
+                    underBn[i].hide();
+                }
+            });
+            d.click(function () {
+                var a = 0.5 * ((that.groups[i].startAngle + that.groups[i].endAngle) - Math.PI);
+                var nameX = conf.protrude * Math.cos(a);
+                var nameY = conf.protrude * Math.sin(a);
+                if (!that.donutGroups[i].data("click")) {
+                    if (that.click === 0) {
+                        that.donutGroups.forEach(function (d) {
+                            if (!d.data('click')) {
+                                d.attr('fill-opacity', 0.5);
+                            }
+                        });
+                    }
+                    underBn[i].attr('opacity', 1).show();
+                    that.donutGroups[i].data("click", true).attr('fill-opacity', 1);
+                    that.donutGroups[i].data('nameTag').translate(0, - conf.protrude);
+                    that.donutGroups[i].data('line').translate(0, - conf.protrude);
+                    that.donutGroups[i].translate(nameX, nameY);
+                    that.click += 1;
+
+                } else if (that.donutGroups[i].data("click")) {
+                    that.donutGroups[i].data('nameTag').translate(0, conf.protrude);
+                    that.donutGroups[i].data('line').translate(0, conf.protrude);
+                    that.donutGroups[i].translate(-nameX, - nameY);
+                    that.click -= 1;
+                    if (that.click > 0) {
+                        that.donutGroups[i].attr('fill-opacity', 0.5);
+                    } else {
+                        that.donutGroups.forEach(function (d) {
+                            d.attr('fill-opacity', 1);
+                        });
+                    }
+                    underBn[i].hide();
+                    that.donutGroups[i].data("click", false);
+
+                }
+            });
+        });
+    };
+
+    /**
+     * 对原始数据进行处理
+     * @param {Array} table 将要被绘制成饼图的二维表数据
+     */
+    Pie.prototype.setSource = function (table) {
+        this.groupNames = _.pluck(table, 0);
+        this.groupValue = _.pluck(table, 1).map(function (item) {
+            return parseFloat(item);
+        });
+    };
+
+    /**
+     * 创建pie布局
+     */
+    Pie.prototype.layout = function () {
+        var that = this;
+
+        that.canvas.clear();
+
+        var acc = 0;
+        this.sum = DataV.sum(this.groupValue);
+        var sum = this.sum;
+        this.groups = this.groupValue.map(function (item, index) {
+            var startAngle = 2 * acc * Math.PI / sum;
+            acc += item;
+            var endAngle = 2 * acc * Math.PI / sum;
+            var ret = {
+                index: index,
+                value: item,
+                startAngle: startAngle,
+                endAngle: endAngle
+            };
+            return ret;
+        });
+    };
+
+    return Pie;
+});
+/*global Raphael, d3, $, define */
+/*!
+ * ScatterplotMatrix的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('ScatterplotMatrix', function (require) {
+    var DataV = require('DataV');
+    var Brush = require('Brush');
+
+    var ScatterplotMatrix = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "ScatterplotMatrix";
+            this.node = this.checkContainer(node);
+            // Properties
+            this.defaults.allDimensions = [];
+            this.defaults.dimensionsX = []; //dimension of X axis(horizonal).  array type
+            this.defaults.demensionsY = []; //dimension of Y axis(vertical).  array type
+            this.defaults.dimensionDomain = {};
+            this.defaults.typeNames = [];
+
+            // canvas parameters
+            this.defaults.width = 522;
+            this.defaults.height = 522;
+            this.defaults.margin = 50;
+            this.defaults.gap = 15;
+            this.defaults.squareWidth = 150;
+            this.defaults.circleR = 3;
+
+            //图例区域的左上顶点坐标x，y，宽，高
+            this.defaults.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+            //简介区域的左上角顶点坐标x，y，宽，高
+            this.defaults.introArea = [20, 20, 200, 200];
+            //散点矩阵区域的左上顶点坐标x，y，宽，高
+            this.defaults.diagramArea = [240, 20, (this.defaults.width - 260), (this.defaults.height - 40)];
+
+            this.defaults.typeName = "NoTypeDefinition"; //默认情况是没有分类
+            this.defaults.legendDimen = "NoTagDimen";
+
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 设置X轴的维度
+     */
+    ScatterplotMatrix.prototype.setDimensionsX = function (dimen) {
+        if (!dimen) {
+            throw new Error("Please specify the dimensions.");
+        }
+        var conf = this.defaults;
+        conf.dimensionsX = [];
+        var i = 0,
+            l = 0;
+        for (i = 0, l = dimen.length; i < l; i++) {
+            if (_.indexOf(conf.allDimensions, dimen[i]) !== -1) {
+                conf.dimensionsX.push(dimen[i]);
+            }
+        }
+    };
+
+    /**
+     * 设置Y轴的维度
+     */
+    ScatterplotMatrix.prototype.setDimensionsY = function (dimen) {
+        if (!dimen) {
+            throw new Error("Please specify the dimensions.");
+        }
+        var conf = this.defaults;
+        conf.dimensionsY = [];
+        var i = 0,
+            l = 0;
+        for (i = 0, l = dimen.length; i < l; i++) {
+            if (_.indexOf(conf.allDimensions, dimen[i]) !== -1) {
+                conf.dimensionsY.push(dimen[i]);
+            }
+        }
+    };
+
+    //设置类型的名字
+    ScatterplotMatrix.prototype.setTypeName = function (types) {
+        this.defaults.typeNames = types;
+    };
+
+    //设置源数据
+    ScatterplotMatrix.prototype.setSource = function (source) {
+        var i, j, l, ll;
+        var conf = this.defaults;
+
+        var xTemp = [],
+            yTemp = [];
+        for (i = 1; i < source[0].length; i++) {
+            xTemp[i - 1] = source[0][i];
+            yTemp[i - 1] = source[0][i];
+        }
+        conf.allDimensions = source[0];
+        // 默认情况下，所有维度都显示
+        conf.dimensionsX = xTemp;
+        conf.dimensionsY = yTemp;
+
+        // this.source is array of line; key is dimension, value is line's value in that dimension
+        this.source = [];
+
+        for (i = 1, l = source.length; i < l; i++) {
+            var line = {}, dimenT = conf.allDimensions;
+            for (j = 0, ll = dimenT.length; j < ll; j++) {
+                line[dimenT[j]] = source[i][j]; //each line is an array, contains value for each dimension
+            }
+            this.source.push(line);
+        }
+
+        // 设置默认的定义域
+        var getExtent = function (s, dimen) {
+            return d3.extent(s, function (p) {
+                return +p[dimen];
+            });
+        };
+        var dimen;
+        for (i = 0, l = conf.allDimensions.length; i < l; i++) {
+            dimen = conf.allDimensions[i];
+            conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
+        }
+    };
+
+    /**
+     * 设置X轴和Y轴
+     */
+    ScatterplotMatrix.prototype.setAxis = function () {
+        var conf = this.defaults;
+
+        conf.legendArea = [20, (conf.height - 20 - 220), 200, 220];
+        conf.introArea = [20, 20, 200, 200];
+        conf.diagramArea = [240, 20, (conf.width - 260), (conf.height - 40)];
+
+        var w = conf.diagramArea[2] - 2 * conf.margin,
+            h = conf.diagramArea[3] - conf.margin,
+            g = conf.gap,
+            nX = conf.dimensionsX.length,
+            nY = conf.dimensionsY.length,
+            wX = d3.round((w - (nX - 1) * g) / nX),
+            wY = d3.round((h - (nY - 1) * g) / nY),
+            sw = d3.min([wX, wY]);
+
+        this.defaults.squareWidth = sw;
+        this.defaults.dX = conf.dimensionsX[0];
+        this.defaults.dY = conf.dimensionsY[0];
+
+        this.x = {};
+        this.y = {};
+        var x = this.x,
+            y = this.y;
+        var tickAr = [5];
+
+        //设置X轴
+        var i, l, dimen, begin, end;
+        for (i = 0, l = conf.dimensionsX.length; i < l; i++) {
+            dimen = conf.dimensionsX[i];
+            begin = i * (sw + g) + conf.diagramArea[0] + 30;
+            end = begin + sw;
+            x[dimen] = d3.scale.linear().domain(conf.dimensionDomain[dimen]).range([begin, end]);
+            x[dimen].ticks = x[dimen].ticks.apply(x[dimen], tickAr);
+        }
+        //设置Y轴
+        for (i = 0, l = conf.dimensionsY.length; i < l; i++) {
+            dimen = conf.dimensionsY[i];
+            end = i * (sw + g) + conf.diagramArea[1] + 30;
+            begin = end + sw;
+            y[dimen] = d3.scale.linear().domain(conf.dimensionDomain[dimen]).range([begin, end]);
+            y[dimen].ticks = y[dimen].ticks.apply(y[dimen], tickAr);
+        }
+    };
+
+    //画散点矩阵
+    ScatterplotMatrix.prototype.drawDiagram = function () {
+        var i, j, k, z, ticks;
+        var conf = this.defaults,
+            x = this.x,
+            y = this.y,
+            sw = conf.squareWidth,
+            g = conf.gap,
+            cR = conf.circleR;
+
+        var paper = this.canvas;
+        var sourceData = this.source;
+
+        var dimensionsX = conf.dimensionsX,
+            dimensionsY = conf.dimensionsY,
+            lx = dimensionsX.length,
+            ly = dimensionsY.length;
+
+        var browserName = navigator.appName;
+        var that = this;
+
+        $(this.node).append(this.floatTag);
+
+        //画背景点
+        var circlesBg = paper.set(); //背景点
+        var centerPos;
+
+        if (browserName !== "Microsoft Internet Explorer") {
+            for (k = 0; k < sourceData.length; k++) {
+                for (i = 0; i < lx; i++) {
+                    for (j = 0; j < ly; j++) {
+                        centerPos = this.circleCenter(k, dimensionsX[i], dimensionsY[j]);
+                        circlesBg.push(paper.circle(centerPos[0], centerPos[1], cR).attr({
+                            "fill": "gray",
+                            "stroke": "none",
+                            "opacity": 0.2
+                        }));
+                    }
+                }
+            }
+        }
+
+        // 画矩形框
+        var squares = paper.set();
+        var x1, y1;
+        for (i = 0; i < lx; i++) {
+            for (j = 0; j < ly; j++) {
+                x1 = x[dimensionsX[i]].range()[0];
+                y1 = y[dimensionsY[j]].range()[1];
+                squares.push(paper.rect(x1 - 1, y1 - 1, sw + 2, sw + 2));
+            }
+        }
+        squares.attr({
+            "fill": "white",
+            "fill-opacity": 0.5, //背景点的蒙版
+            "stroke": "#d6d6d6",
+            "stroke-width": '1px'
+        });
+
+        //画虚线
+        var reLines = paper.set(),
+            tickText = paper.set();
+        var tickAr = [10], //set the number of ticks
+            leftPos = x[dimensionsX[0]].range()[0],
+            rightPos = x[dimensionsX[lx - 1]].range()[1],
+            upPos = y[dimensionsY[0]].range()[1],
+            downPos = y[dimensionsY[ly - 1]].range()[0];
+
+        var reLineGap = sw / 7; //每个矩形框中画6条虚线
+        var reLinePos;
+
+        //画纵向的虚线
+        for (i = 0; i < lx; i++) {
+            ticks = x[dimensionsX[i]].ticks;
+            for (j = 0; j < ticks.length; j++) {
+                tickText.push(paper.text((x[dimensionsX[i]](ticks[j])), downPos + 6, ticks[j]).attr({
+                    "fill": "#aaaaaa",
+                    "fill-opacity": 0.7,
+                    "font-family": "雅黑",
+                    "font-size": 12
+                }).attr({
+                    "text-anchor": "end"
+                }).rotate(-45, x[dimensionsX[i]](ticks[j]), downPos + 6));
+            }
+            for (z = 1; z < 7; z++) {
+                reLinePos = x[dimensionsX[i]].range()[0] + z * reLineGap;
+                reLines.push(paper.path("M" + (reLinePos) + "," + (upPos) + "L" + (reLinePos) + "," + (downPos)).attr({
+                    "stroke": "#ebebeb",
+                    "stroke-dasharray": "-"
+                }));
+            }
+        }
+        //画横向的虚线
+        for (i = 0; i < ly; i++) {
+            //draw reference lines
+            ticks = y[dimensionsY[i]].ticks;
+            for (j = 0; j < ticks.length; j++) {
+                tickText.push(paper.text(rightPos + 6, y[dimensionsY[i]](ticks[j]), ticks[j]).attr({
+                    "fill": "#aaaaaa",
+                    "fill-opacity": 0.7,
+                    "font-family": "雅黑",
+                    "font-size": 12
+                }).attr({
+                    "text-anchor": "start"
+                }).rotate(315, rightPos + 6, y[dimensionsY[i]](ticks[j])));
+            }
+            for (z = 1; z < 7; z++) {
+                reLinePos = y[dimensionsY[i]].range()[1] + z * reLineGap;
+                reLines.push(paper.path("M" + (leftPos) + "," + (reLinePos) + "L" + (rightPos) + "," + (reLinePos)).attr({
+                    "stroke": "#ebebeb",
+                    "stroke-dasharray": "-"
+                }));
+            }
+        }
+
+        //坐标轴名称
+        var axText = paper.set();
+        var xPos, yPos;
+        var pos = y[dimensionsY[0]].range()[1] - 10;
+        for (i = 0; i < lx; i++) {
+            xPos = x[dimensionsX[i]].range()[0] + sw / 2;
+            axText.push(paper.text(xPos, pos, dimensionsX[i]).attr({
+                "fill": "#000000",
+                "fill-opacity": 0.7,
+                "font-family": "Verdana",
+                //"font-weight": "bold",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "middle"
+            }));
+        }
+
+        pos = x[dimensionsX[0]].range()[0] - 10;
+        for (i = 0; i < ly; i++) {
+            yPos = y[dimensionsY[i]].range()[1] + sw / 2;
+            axText.push(paper.text(pos, yPos, dimensionsY[i]).attr({
+                "fill": "#000000",
+                "fill-opacity": 0.7,
+                "font-family": "Verdana",
+                //"font-weight": "bold",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "middle"
+            }).rotate(-90, pos, yPos));
+        }
+
+        // 画前景点
+        var circlesFg = []; //circles in foreground
+        var circleType = -1;
+        var typeMax = -1;
+
+        this.preIndex = "start";
+        this.linePosition = [0,0];
+        //水平虚线
+        that.lineH = paper.path("M" + (leftPos) + "," + (0) + "L" + (rightPos) + "," + (0)).attr({
+            "stroke-dasharray": "- ",
+            'stroke': '#000000'
+        }).hide();
+        //垂直虚线
+        that.lineV = paper.path("M" + (0) + "," + (upPos) + "L" + (0) + "," + (downPos)).attr({
+            "stroke-dasharray": "- ",
+            'stroke': '#000000'
+        }).hide();
+        var hoverTag;
+        var circle;
+        for (k = 0; k < sourceData.length; k++) {
+            if (conf.typeName !== "NoTypeDefinition") { //classify the circles according to their types
+                circleType = sourceData[k][conf.typeName] - 1;
+                typeMax = Math.max(typeMax, circleType);
+            } else {
+                circleType = 0;
+            }
+            for (i = 0; i < lx; i++) {
+                for (j = 0; j < ly; j++) {
+                    centerPos = this.circleCenter(k, dimensionsX[i], dimensionsY[j]);
+                    //前景点
+                    circle = paper.circle(centerPos[0], centerPos[1], cR)
+                    .data("type", circleType)
+                    .data("canHover", 0)
+                    .data("position", centerPos)
+                    .data('colorType', circleType)
+                    .attr({
+                        "fill": "#800",
+                        "stroke": "none",
+                        "opacity": 0.5
+                    }).attr({
+                        "fill": this.getColor(circleType)
+                    });
+                    //如果制定了hover要显示的文字，则hover显示的文字
+                    if (conf.legendDimen !== "NoTagDimen") {
+                        hoverTag = conf.legendDimen + ": " + sourceData[k][conf.legendDimen];
+                        circle.data("legend", hoverTag);
+                    }
+                    circlesFg.push(circle);
+                }
+            }
+        }
+
+        //图例
+        var legendArea = this.defaults.legendArea;
+        var rectBn = paper.set();
+        var underBn = [];
+        for (i = 0; i <= typeMax; i++) {
+            //底框
+            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "#ebebeb",
+                "stroke": "none"
+            }).hide());
+            //色框
+            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+                "fill": this.getColor(i),
+                "stroke": "none"
+            });
+            //文字
+            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
+                "fill": "black",
+                "fill-opacity": 1,
+                "font-family": "Verdana",
+                "font-size": 12
+            }).attr({
+                "text-anchor": "start"
+            });
+            //选框
+            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+                "fill": "white",
+                "fill-opacity": 0,
+                "stroke": "none"
+                //"r": 3
+            }).data("type", i)).data("clicked", 0);
+        }
+
+        if (browserName !== "Microsoft Internet Explorer") {
+            rectBn.forEach(function (d, i) {
+                underBn[i].data('legendclicked', false);
+                d.mouseover(function () {
+                    if (underBn[i].data('legendclicked') === false) {
+                        underBn[i].attr('opacity', 0.5).show();
+                    }
+                }).mouseout(function () {
+                    if (underBn[i].data('legendclicked') === false) {
+                        underBn[i].hide();
+                    }
+                });
+                d.click(function () {
+                    for (j = 0; j < underBn.length; j++) {
+                        if (j === i) {
+                            underBn[j].show();
+                        } else {
+                            underBn[j].hide();
+                        }
+                    }
+                    rectBn.forEach(function (eachBn) {
+                        if (eachBn !== d) {
+                            eachBn.data("clicked", 0);
+                        }
+
+                    });
+                    if (d.data("clicked") === 0) {
+                        underBn[i].attr('opacity', 1).show();
+                        underBn[i].data('legendclicked', true);
+                        circlesFg.forEach(function (ec) {
+                            if (ec.data("type") !== d.data("type")) {
+                                ec.hide();
+                                ec.data("canHover", 0);
+                            } else {
+                                ec.show();
+                                ec.data("canHover", 1);
+                            }
+                        });
+                        d.data("clicked", 1);
+                    } else if (d.data("clicked") === 1) {
+                        underBn[i].hide();
+                        underBn[i].data('legendclicked', false);
+                        d.data("clicked", 0);
+                        circlesFg.forEach(function (ec) {
+                            ec.show();
+                            ec.data("canHover", 0);
+                        });
+                    }
+                });
+            });
+
+            //Bursh函数定义
+            var curBrush;
+
+            function brushstart() {
+                if (curBrush !== undefined && curBrush !== d3.event.target) {
+                    curBrush.clear();
+                }
+                var i;
+                for (i = 0; i < circlesFg.length; i++) {
+                    circlesFg[i].hide();
+                    circlesFg[i].data("canHover", 0);
+                }
+                underBn.forEach(function (ub) {
+                    ub.hide();
+                });
+                rectBn.forEach(function (rb) {
+                    rb.data("clicked", 0);
+                });
+            }
+
+            function brush() {
+                curBrush = d3.event.target;
+
+                var e = curBrush.extent(),
+                    dimX = d3.event.target.dimX,
+                    dimY = d3.event.target.dimY,
+                    tempX,
+                    tempY,
+                    count = lx * ly,
+                    i,
+                    z;
+
+                for (i = 0; i < sourceData.length; i++) {
+                    tempX = sourceData[i][dimX];
+                    tempY = sourceData[i][dimY];
+                    if (e[0][0] - 1 <= tempX && tempX <= e[1][0] + 1 && e[0][1] - 1 <= tempY && tempY <= e[1][1] + 1) {
+                        for (z = 0; z < count; z++) {
+                            circlesFg[i * count + z].show();
+                        }
+                    } else {
+                        for (z = 0; z < count; z++) {
+                            circlesFg[i * count + z].hide();
+                        }
+                    }
+                }
+            }
+
+            function brushend() {
+                if (d3.event.target.empty()) {
+                    circlesFg.forEach(function (d) {
+                        d.show();
+                    });
+                }
+            }
+
+            //Brush交互
+            var brushes = [];
+            var b;
+            for (i = 0; i < lx; i++) {
+                for (j = 0; j < ly; j++) {
+                    b = Brush().x(x[dimensionsX[i]]).y(y[dimensionsY[j]]).backgroundAttr({
+                        "opacity": 0, //背景颜色：白色、全透明
+                        "fill": "white"
+                    }).foregroundAttr({ //选框颜色
+                        "opacity": 0.2,
+                        "fill": "#fff700"
+                    }).on("brushstart", brushstart).on("brush", brush).on("brushend", brushend);
+                    b(paper);
+                    b.dimX = dimensionsX[i];
+                    b.dimY = dimensionsY[j];
+                    brushes.push(b);
+                }
+            }
+            //hover交互
+            //var preIndex = "start";
+            var floatTag = this.floatTag;
+            $(paper.canvas).bind("mousemove", function (e) {
+                var bgOffset = $(this).parent().offset();
+                var mouse = [e.pageX - bgOffset.left, e.pageY - bgOffset.top];
+                var location = [Math.floor((mouse[0] - leftPos) / (sw + g)), Math.floor((mouse[1] - upPos) / (sw + g))];
+                if (that.preIndex !== "start") {
+                    that.lineV.hide();
+                    that.lineH.hide();
+                    if (conf.legendDimen !== "NoTagDimen") {
+                        floatTag.css({"visibility" : "hidden"});
+                    }
+                }
+                if (location[0] >= 0 && location[0] <= lx && location[1] >= 0 && location[1] <= ly) {
+                    for (i = location[0] * ly + location[1]; i < circlesFg.length; i = i + lx * ly) {
+                        var center = circlesFg[i].data("position");
+                        var canHover = circlesFg[i].data("canHover");
+                        if ((canHover === 1) && (Math.abs(mouse[0] - center[0]) <= cR) && (Math.abs(mouse[1] - center[1]) <= cR)) {
+                            that.lineV.translate(center[0] - that.linePosition[0], 0).attr('stroke', that.getColor(circlesFg[i].data('colorType'))).show();
+                            that.lineH.translate(0, center[1] - that.linePosition[1]).attr('stroke', that.getColor(circlesFg[i].data('colorType'))).show();
+                            that.linePosition = center;
+                            if (conf.legendDimen !== "NoTagDimen") {
+                                floatTag.html('<div style="text-align: center;margin:auto;color:#ffffff">' + circlesFg[i].data("legend") + '</div>');
+                                floatTag.css({"visibility" : "visible"});
+                            }
+                            that.preIndex = i;
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    /**
+     * 创建canvas
+     */
+    ScatterplotMatrix.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.node.style.position = "relative";
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+        this.floatTag = DataV.FloatTag()(this.node);
+        this.floatTag.css({"visibility": "hidden"});
+    };
+
+    //根据不同类别得到颜色值
+    ScatterplotMatrix.prototype.getColor = function (circleType) {
+        var color = DataV.getColor();
+        return color[circleType % color.length][0];
+    };
+
+    //绘制函数
+    ScatterplotMatrix.prototype.render = function (options) {
+        this.setOptions(options);
+        this.canvas.clear();
+        this.setAxis();
+        this.drawDiagram();
+        //var dEnd = new Date();
+        //alert(dEnd.getTime() - dBegin.getTime());
+    };
+
+    //计算每个circle的圆心位置
+    ScatterplotMatrix.prototype.circleCenter = function (index, xDimen, yDimen) {
+        var conf = this.defaults,
+            source = this.source,
+            y = this.y,
+            x = this.x,
+            dimensionsX = conf.dimensionsX,
+            dimensionsY = conf.dimensionsY,
+            dimensionType = conf.dimensionType;
+
+        var xPos = x[xDimen](source[index][xDimen]),
+            yPos = y[yDimen](source[index][yDimen]);
+
+        return [xPos, yPos];
+    };
+
+    return ScatterplotMatrix;
+});
+/*global Raphael, d3, $, define */
+/*!
+ * Stream的兼容定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Stream', function (require) {
+    var DataV = require('DataV');
+    var Axis = require('Axis');
+
+    /*
+     * Stream构造函数
+     * Create stream in a dom node with id "chart", width is 500; height is 600px;
+     * Options:
+     *
+     *   - `width` 宽度，默认为节点宽度
+     *
+     * Examples:
+     * ```
+     * var stream = new Stream("chart", {"width": 500, "height": 600});
+     * ```
+     * @param {Mix} node The dom node or dom node Id
+     * @param {Object} options options json object for determin stream style.
+     */
+    var Stream = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Stream";
+            this.node = this.checkContainer(node);
+
+            this.level = 0;
+            // Properties
+            this.defaults.offset = "zero";//"expand";
+            this.defaults.order = "default";
+            this.defaults.columnNameUsed = "auto";
+            this.defaults.rowNameUsed = "auto";
+            this.defaults.topInterval = 0;
+            this.defaults.bottomInterval = 0;
+            this.defaults.legend = true;
+            this.defaults.axis = true;
+            this.defaults.pathLabel = true;
+            this.defaults.fontSize = 12;
+            this.defaults.heightWidthRatio = 0.618;
+            //this.defaults.axisTickNumber = 8; // axis ticks number
+    
+            this.defaults.indexMargin = 3; // if dates.length < indexMargin * 2 + 1, do not show label
+    
+            this.userConfig = {"more": true, "max": 20, "other": 0.1};
+
+            this.timeRange = [];
+            // Canvas
+            this.defaults.width = 750;
+            this.defaults.height = 360;
+            this.defaults.totalWidth = 820;
+            this.defaults.naviBackWidth = 80;
+            this.defaults.legendHeight = 50;
+            this.defaults.legendWidth = 150;
+            this.defaults.legendIndent = 21;
+            this.defaults.axisHeight = 30;
+            this.defaults.margin = [0, 40, 0, 40];
+
+            this.defaults.customEventHandle = {"mousemove": null};
+
+            //test related
+            this.defaults.testMakeup = false;
+            this.defaults.testDays = 30;
+            this.defaults.testDataType = 0; //0: random; 1: false random; 2: same; >2: small change;
+    
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * Stream图纬度描述
+     */
+    Stream.dimension = {};
+    /**
+     * 流向纬度，例如，时间
+     */
+    Stream.dimension.stream = {
+        type: "string",
+        required: true
+    };
+    /**
+     * 堆叠纬度，例如，按类目
+     */
+    Stream.dimension.stack = {
+        type: "string",
+        required: true
+    };
+    /**
+     * 值纬度，在流向和堆叠纬度上的值
+     */
+    Stream.dimension.value = {
+        type: "number",
+        required: true
+    };
+
+    /*!
+     * 创建画布
+     */
+    Stream.prototype.createCanvas = function () {
+        var conf = this.defaults,
+            canvasFatherContainer = document.createElement("div"),
+            coverStyle,
+            naviStyle,
+            naviTraceStyle,
+            naviBackStyle,
+            percentageStyle,
+            axisStyle,
+            brushStyle,
+            getBack;
+
+        this.node.style.position = "relative";
+        this.node.style.width = conf.totalWidth + "px";
+
+        this.legend = document.createElement("div");
+        //this.legendPaper = new Raphael(this.legend, conf.legendWidth - conf.legendIndent, 500);
+        $(this.legend).css({"overflow": "hidden",
+                            "width": conf.legendWidth - conf.legendIndent + "px",
+                            "padding": "10px 0 10px 0"
+                            });
+
+        this.navi = document.createElement("div");
+        $(this.navi).css({
+            //"width": conf.totalWidth + "px",
+            "border-top": "1px solid #ddd",
+            "border-bottom": "1px solid #ddd",
+            //"height": "22px",
+            "padding-top": "5px",
+            "padding-bottom": "10px",
+            "padding-left": "10px",
+            "padding-right": "10px",
+            "font": (conf.fontSize + 1) + "px 宋体"
+        });
+        this.naviTrace = document.createElement("div");
+        $(this.naviTrace).css({
+            "width": conf.totalWidth - conf.naviBackWidth - 50 + "px",
+            "margin-top": "5px"
+        });
+
+        this.naviBack = document.createElement("div");
+        this.naviBack.innerHTML = "返回上层";
+        $(this.naviBack).css({
+            "width": conf.naviBackWidth + "px",
+            "float": "right",
+            "background-color": "#f4f4f4",
+            "padding-top": "4px",
+            "padding-bottom": "4px",
+            "border": "1px solid #ddd",
+            "border-radius": "2px",
+            "cursor": "pointer",
+            "text-align": "center",
+            "visibility": "hidden"
+        });
+        //naviBackStyle.float = "right";
+        //naviBackStyle.visibility = "hidden";
+        this.navi.appendChild(this.naviBack);
+        this.navi.appendChild(this.naviTrace);
+
+        this.percentage = document.createElement("div");
+        if (this.userConfig.more) {
+            this.percentagePaper = new Raphael(this.percentage, conf.margin[3], conf.height);
+        }
+        percentageStyle = this.percentage.style;
+        percentageStyle.width = conf.margin[3] + "px";
+        percentageStyle.height = conf.height + "px";
+        $(this.percentage).css({
+            "float": "left",
+            "margin-bottom": "0px",
+            "border-bottom": "0px",
+            "padding-bottom": "0px"
+        });
+
+        this.canvasContainer = document.createElement("div");
+        $(this.canvasContainer).css({
+            "float": "left",
+            "width": conf.width + "px",
+            "margin-bottom": "0px",
+            "border-bottom": "0px",
+            "padding-bottom": "0px"
+        })
+            .append($(canvasFatherContainer).css({"position": "relative"}));
+        this.canvas = new Raphael(canvasFatherContainer, conf.width, conf.height);
+        $(this.canvasContainer).height(conf.height);
+
+        this.floatTag = DataV.FloatTag()(canvasFatherContainer);
+        this.floatTag.css({"visibility": "hidden"});
+
+        // cover can block stream canvas when animating to prevent some default mouse event
+        this.cover = document.createElement("div");
+        coverStyle = this.cover.style;
+        coverStyle.position = "absolute";
+        coverStyle.width = conf.width + "px";
+        coverStyle.height = conf.height + "px";
+        coverStyle.zIndex = 100;
+        coverStyle.visibility = "hidden";
+        $(this.cover).bind("mousemove", {stream: this}, function (e) {
+            var stream = e.data.stream;
+            stream.coverMouse = {x: e.pageX, y: e.pageY};
+        });
+        $(this.cover).bind("mouseleave", {stream: this}, function (e) {
+            var stream = e.data.stream;
+            stream.coverMouse = undefined;
+        });
+
+        this.axis = document.createElement("div");
+        this.axisPaper = new Raphael(this.axis, conf.totalWidth - conf.legendWidth, conf.axisHeight);
+        //axisStyle = this.axis.style;
+        $(this.axis).css({
+            "margin-top": "0px",
+            "border-top": "1px solid #ddd",
+            "height": conf.axisHeight + "px"
+        });
+
+        this.leftContainer = document.createElement("div");
+        this.rightContainer = document.createElement("div");
+
+        this.leftContainer.appendChild(this.legend);
+
+        this.rightContainer.appendChild(this.navi);
+        this.middleContainer = document.createElement("div");
+        $(this.middleContainer).css("height", conf.height);
+        this.middleContainer.appendChild(this.percentage);
+        this.middleContainer.appendChild(this.canvasContainer);
+        this.middleContainer.appendChild(this.cover);
+        $(this.canvasFatherContainer).append(this.floatTag);
+        this.rightContainer.appendChild(this.middleContainer);
+        this.rightContainer.appendChild(this.axis);
+
+        this.node.appendChild(this.rightContainer);
+        this.node.appendChild(this.leftContainer);
+        $(this.rightContainer).css({"float": "right",
+                                    //"border": "solid 1px",
+                                    "width": conf.totalWidth - conf.legendWidth
+                                    });
+        $(this.leftContainer).css({ "width": conf.legendWidth - 4 + "px",
+                                    //"float": "left",
+                                    //"border": "solid 1px",
+                                    //"margin-left": "-5px",
+                                    //"height": 300,
+                                    //"max-height": 300,
+                                    //"overflow-y": "scroll",
+                                    "overflow-x": "hidden"
+                                    });
+
+        getBack = function (stream) {
+            stream.cover.style.visibility = "visible";
+            stream.coverMouse = undefined;
+            stream.getLevelSource();
+            stream.reRender();
+
+            //hidden
+            stream.indicatorLine.attr({"stroke": "none"});
+            stream.highlightLine.attr({"stroke": "none"});
+            stream.floatTag.css({"visibility" : "hidden"});
+
+            stream.paths.forEach(function (d, i, array) {
+                d.attr({transform: "s1,0.001,0,0"});
+                d.label.hide();
+                d.animate({transform: "t0,0"}, 750, "linear", function () {
+                    stream.cover.style.visibility = "hidden";
+                    if (typeof stream.coverMouse !== 'undefined') {
+                        stream.indicatorLine.attr({"stroke": "#000"});
+                        stream.highlightLine.attr({"stroke": "white"});
+                        stream.floatTag.css({"visibility" : "visible"});
+                        $(stream.canvas.canvas).trigger("mousemove",
+                            [stream.coverMouse.x, stream.coverMouse.y]);
+                        stream.coverMouse = undefined;
+                    }
+                    if (d.labelLoc.showLabel) {
+                        d.label.show();
+                    }
+                });
+            });
+        };
+        $(this.naviTrace).on("click", ".navi", {stream: this}, function (e) {
+            var stream = e.data.stream;
+            stream.level = e.target.data.level;
+            getBack(stream);
+        });
+
+        $(this.naviBack).on("click", {stream: this}, function (e) {
+            var stream = e.data.stream;
+            stream.level -= 1;
+            getBack(stream);
+        });
+    };
+
+    /**
+     * 设置自定义选项
+     */
+    Stream.prototype.setOptions = function (options) {
+        _.extend(this.defaults, options);
+
+        if (options && options.width) {
+            this.defaults.totalWidth = this.defaults.width;
+            this.defaults.width = this.defaults.totalWidth - this.defaults.margin[1]
+                - this.defaults.margin[3] - this.defaults.legendWidth;
+            if (!options.height) {
+                this.defaults.autoHeight = true;
+                this.defaults.height = this.defaults.width * this.defaults.heightWidthRatio;
+            } else {
+                this.defaults.autoHeight = false;
+            }
+        }
+    };
+
+    /*!
+     * 检测行名
+     */
+    Stream.prototype.hasRowName = function () {
+        var i,
+            l,
+            firstColumn = [],
+            source = this.rawData;
+
+        if ((typeof this.defaults.rowNameUsed) === "boolean") {
+            return this.defaults.rowNameUsed;
+        }
+        //first column from 2nd row
+        for (i = 1, l = source.length; i < l; i++) {
+            firstColumn[i] = source[i][0];
+        }
+        return !firstColumn.every(DataV.isNumeric);
+    };
+
+    /*!
+     * 检测列名
+     */
+    Stream.prototype.hasColumnName = function () {
+        var firstRow;
+        if ((typeof this.defaults.columnNameUsed) === "boolean") {
+            return this.defaults.columnNameUsed;
+        }
+        //first row from 2nd column
+        firstRow = this.rawData[0].slice(1);
+        return !firstRow.every(DataV.isNumeric);
+    };
+
+    /*!
+     * 排序
+     * @param {Array} source 待排序的二维数组
+     */
+    Stream.prototype.sort = function (source) {
+        var i, j, l, ll;
+        var rowSum = [];
+        var columnSum = [];
+        var newSource = [];
+        var rowName = [];
+        var that = this;
+
+        for (j = 0, ll = source[0].length; j < ll; j++) {
+            columnSum[j] = 0;
+        }
+
+        for (i = 0, l = source.length; i < l; i++) {
+            rowSum[i] = 0;
+            for (j = 0, ll = source[0].length; j < ll; j++) {
+                rowSum[i] += source[i][j];
+                columnSum[j] += source[i][j];
+            }
+            rowSum[i] = [rowSum[i]];
+            rowSum[i].index = i;
+        }
+
+        rowSum.sort(function (a, b) {
+            return b[0] - a[0];
+        });
+
+        rowSum.forEach(function (d, i) {
+            newSource[i] = source[d.index];
+			if (that.rowName) {
+                rowName[i] = that.rowName[d.index];
+			}
+        });
+
+        for (i = 0, l = rowSum.length; i < l; i++) {
+            rowSum[i] = rowSum[i][0];
+        }
+
+        //this.mergeOthe
+
+		this.rowName = rowName;
+        this.rowSum = rowSum;
+        this.columnSum = columnSum;
+        this.total = d3.sum(this.rowSum);
+
+        return newSource;
+    };
+
+    /*!
+     * 合并数据
+     */
+    Stream.prototype.mergeOther = function (source) {
+        //change digitData, rowSum, rowName;
+    };
+
+    /**
+     * 获取数据
+     * @param {Array} source 从二维数组中，获取纯数据的部分（排除掉列名后）
+     */
+    Stream.prototype.getDigitData = function (source) {
+		//get first column name, row name and digitData;
+        var conf = this.defaults,
+            firstRow = source[0],
+            firstColumn,
+            digitData;
+
+        var i, j, l, ll;
+
+        firstColumn = source.map(function (d) {
+            return d[0];
+        });
+
+        if (this.hasRowName()) {
+            if (this.hasColumnName()) {
+                //row names, column names
+                this.rowName = firstColumn.slice(1);
+                this.columnName = firstRow.slice(1);
+                digitData = source.map(function (d) {
+                    return d.slice(1);
+                }).slice(1);
+            } else {
+                //row names, no column names
+                this.rowName = firstColumn;
+                this.columnName = undefined;
+                digitData = source.map(function (d) {
+                    return d.slice(1);
+                });
+            }
+        } else {
+            if (this.hasColumnName()) {
+                //no row names, column names
+                this.rowName = undefined;
+                this.columnName = firstRow;
+                digitData = source.slice(1);
+            } else {
+                //no row names, no column names
+                if (conf.columnNameUsed === "auto" && conf.rowNameUsed === "auto" && !DataV.isNumeric(source[0][0])) {
+                    throw new Error("Please specify whether there are column names or row names");
+                }
+                this.rowName = undefined;
+                this.columnName = undefined;
+                digitData = source;
+            }
+        }
+        for (i = 0, l = digitData.length; i < l; i++) {
+            for (j = 0, ll = digitData[0].length; j < ll; j++) {
+                digitData[i][j] = parseFloat(digitData[i][j]);
+            }
+        }
+		return digitData;
+    };
+
+    /**
+     * 获取信息数据
+     */
+    Stream.prototype.getInfo = function () {
+		var allInfos = [];
+		var i, j, l, ll;
+		var infos, info;
+        var column;
+        var digitData = this.digitData;
+        var descending = function (a, b) {
+                return b.value - a.value;
+            };
+		for (i = 0, l = this.digitData.length; i < l; i++) {
+			infos = allInfos[i] = [];
+			infos.ratio = this.rowSum[i] / this.total;
+			infos.value = this.rowSum[i];
+			infos.name = this.rowName[i];
+			infos.id = i;
+		}
+        for (i = 0, l = digitData.length; i < l; i++) {
+            column = [];
+            for (j = 0, ll = digitData[0].length; j < ll; j++) {
+                allInfos[i][j] = column[j] = {
+                    "date": this.columnName[j],
+                    "id": i,
+                    "name": allInfos[i].name,
+                    "tip": "<b>" + allInfos[i].name + "</b><br/>占比:"
+                        + (Math.round(digitData[i][j] / this.columnSum[j] * 10000) / 100) + "%<br/>",
+                    "total": allInfos[i].ratio,
+                    //"value": columnTotal[i]
+                    "value" : digitData[i][j],
+                    "index" : j,
+                    "rowInfo" : allInfos[i],
+                    "ratio" : digitData[i][j] / this.columnSum[j]
+                };
+            }
+
+            column.sort(descending);
+
+            for (j = 0, ll = column.length; j < ll; j++) {
+                column[j].rank = j;
+            }
+        }
+        return allInfos;
+	};
+
+    /**
+     * 设置数据源
+     * Examples:
+     * 例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
+     * ```
+     * [
+     *  [1,2,3,9],
+     *  [3,4,6,3]
+     * ]
+     * ```
+     * @param {Array} source 二维数组的数据源
+     */
+    Stream.prototype.setSource = function (source) {
+        this.rawData = source;
+		this.digitData = this.getDigitData(this.rawData);
+
+        //get date, sort and allInfos;
+        //date
+        this.date = source[0].slice(1, source[0].length);
+        this.timeRange = [0, this.date.length - 1];
+        //sort
+        this.digitData = this.sort(this.digitData);
+		this.allInfos = this.getInfo(this.digitData);
+
+        this.level = 0;
+        this.getLevelSource();
+        //this.source = this.remapSource(digitData);
+        this.canAnimate = false;
+    };
+
+    /**
+     * If useString is true, start and end are date string, else start and end are index number
+     * @param {Number|String} start 起始范围
+     * @param {Number|String} end 结束范围
+     * @param {Boolean} useString 是否是字符串
+     */
+    Stream.prototype.setTimeRange = function (start, end, useString) {
+        var idx1, idx2;
+        if (useString) {
+            idx1 = _.indexOf(this.date, start);
+            idx2 = _.indexOf(this.date, end);
+        } else {
+            idx1 = start;
+            idx2 = end;
+        }
+
+        var min = Math.min(idx1, idx2);
+        var max = Math.max(idx1, idx2);
+        if (min === max) {
+            throw new Error("start index and end index can not be same.");
+        }
+        if (min < 0 || max > this.date.length - 1) {
+            throw new Error("start index or end index is beyond the time range.");
+        }
+
+        this.timeRange = [min, max];
+        this.getLevelSource();
+    };
+
+    /*!
+     * 根据时间范围获取数据
+     */
+    Stream.prototype.getDataByTimeRange = function () {
+        if (this.timeRange[0] === 0 && this.timeRange[1] === this.date.length - 1) {
+            return this.digitData;
+        } else {
+            var tr = this.timeRange;
+            return _.map(this.digitData, function (d, i) {
+                return d.slice(tr[0], tr[1] + 1);
+            });
+        }
+    };
+
+    /*!
+     * 获取等级数据
+     */
+    Stream.prototype.getLevelSource = function () {
+        var data = this.getDataByTimeRange(),//this.digitData,
+            rowStart = this.level * (this.userConfig.max - 1),
+            rowEnd,
+            needMoreRow,
+            column = data[0].length,
+            remap = [],
+            i,
+            j,
+            k,
+            m,
+            moreRow,
+            moreSum,
+            totalSum,
+            infos = [],
+            moreRowInfo = [];
+
+        if (column < 1) {
+            throw new Error("Data source is empty.");
+        }
+        if (this.userConfig.more) {
+            if (rowStart + this.userConfig.max >= data.length) {
+                if (rowStart + this.userConfig.max === data.length && this.allInfos[data.length - 1][0].id === -2) {
+                    //last more sum < this.userConfig.other
+                    rowEnd = rowStart + this.userConfig.max - 1;
+                    needMoreRow = true;
+                } else {
+                    rowEnd = data.length;
+                    needMoreRow = false;
+                }
+            } else {
+                rowEnd = rowStart + this.userConfig.max - 1;
+                needMoreRow = true;
+            }
+        } else {
+            rowStart = 0;
+            rowEnd = data.length;
+            needMoreRow = false;
+        }
+        for (i = rowStart; i < rowEnd; i++) {
+            k = i - rowStart;
+            remap[k] = [];
+            for (j = 0; j < column; j++) {
+                remap[k][j] = {};
+                remap[k][j].x =  j;
+                remap[k][j].y =  parseFloat(data[i][j]);
+            }
+            if (this.timeRange[0] === 0 && this.timeRange[1] === this.date.length - 1) {
+                infos[k] = this.allInfos[i];
+            } else {
+                infos[k] = this.allInfos[i].slice(this.timeRange[0], this.timeRange[1] + 1);
+            }
+        }
+        if (needMoreRow) {
+            if (rowStart + this.userConfig.max === data.length && this.allInfos[data.length - 1][0].id === -2) {
+                //last more sum < this.userConfig.other
+                var valueArray = data[data.length - 1];
+                moreRow = [];
+                for (j = 0; j < column; j++) {
+                    moreRow[j] = {};
+                    moreRow[j].x =  j;
+                    moreRow[j].y =  valueArray[j];
+                }
+                moreRowInfo = this.allInfos[data.length - 1];
+            } else {
+                moreRow = [];
+                for (j = 0; j < column; j++) {
+                    moreSum = 0;
+                    totalSum = 0;
+                    for (m = data.length - 1; m >= rowEnd; m--) {
+                        moreSum += parseFloat(data[m][j]);
+                        totalSum += parseFloat(this.allInfos[m][j].total);
+                    }
+                    moreRow[j] = {};
+                    moreRow[j].x =  j;
+                    moreRow[j].y =  moreSum;
+                    moreRowInfo[j] = {
+                        "date": this.allInfos[0][j].date,
+                        "id": -1,// -1 clickable; -2 not click
+                        "name": "更多",
+                        "tip": "<b>更多</b><br/>占比:" + (Math.round(moreSum * 10000) / 100) + "%<br/>点击查看更多信息<br/>",
+                        "total": totalSum,
+                        "value": moreSum
+                    };
+                }
+            }
+            remap = [moreRow].concat(remap);
+            infos = [moreRowInfo].concat(infos);
+        }
+        this.infos = infos;
+        this.source = remap;
+    };
+
+    /**
+     * 生成布局
+     */
+    Stream.prototype.layout = function () {
+        var conf = this.defaults;
+        d3.layout.stack().offset(conf.offset).order(conf.order)(this.source);
+    };
+
+    /**
+     * 根据选择方案获取颜色数据
+     * @param {Object} colorJson 颜色方案
+     * @return {Array} 返回颜色数据
+     */
+    Stream.prototype.getColor = function (colorJson) {
+        var colorMatrix = DataV.getColor();
+        var color;
+        var colorStyle = colorJson || {};
+        var colorMode = colorStyle.mode || 'default';
+        var i, l;
+
+        switch (colorMode) {
+        case "gradient":
+            l = this.source.length;
+            var colorL = Math.round(l / 5);
+            if (colorL > colorMatrix.length - 1) {
+                colorL = colorMatrix.length - 1;
+            }
+            var testColor = [colorMatrix[0][0], colorMatrix[colorL][0]];
+            var test1 = DataV.gradientColor(testColor, "special");
+            var testColorMatrix = [];
+            var testColorMatrix1 = [];
+            for (i = 0; i < l; i++) {
+                testColorMatrix.push([test1(i / (l - 1)), test1(i / (l - 1))]);
+            }
+
+            for (i = (l - 1); i >= 0; i--) {
+                testColorMatrix1.push(testColorMatrix[i]);
+            }
+
+            colorMatrix = testColorMatrix;
+            
+            break;
+        case "random":
+        case "default":
+            break;
+        }
+
+        var ratio = colorStyle.ratio || 0;
+        if (ratio < 0) { ratio = 0; }
+        if (ratio > 1) { ratio = 1; }
+        var colorArray = [];
+        for (i = 0, l = colorMatrix.length; i < l; i++) {
+            var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
+            colorArray.push(colorFunc(ratio));
+        }
+        color = d3.scale.ordinal().range(colorArray);
+
+        return color;
+    };
+
+    /**
+     * 生成路径
+     */
+    Stream.prototype.generatePaths = function () {
+        this.createNavi();
+        this.createPercentage();
+        this.createAxis();
+        this.createStreamPaths();
+        this.createLegend();
+    };
+
+    /**
+     * 创建图例
+     */
+    Stream.prototype.createLegend = function () {
+        var conf = this.defaults,
+            //paper = this.legendPaper,
+            legends = [],
+            m = [10, 20, 10, 20],
+            left = m[3],
+            top = m[0],
+            lineHeight = 25,
+            legendInterval = 10,
+            width = conf.legendWidth - conf.legendIndent,
+            r0 = 5,
+            r1 = 7,
+            circleW = 18,
+            x,
+            y,
+            circle,
+            text,
+            box,
+            ul,
+            li,
+            color = this.getColor({mode: conf.colorMode}),
+            i,
+            l,
+            leftHeight,
+            legendHeight,
+            legendTopMargin,
+            hoverIn = function (e) {
+                var index = e.data.index;
+                var stream = e.data.stream;
+                var path = stream.paths[index];
+                //stream.legends[stream.preIndex]
+                stream.preIndex = index;
+                stream.legends[index].css({"background": "#dddddd"});
+                path.attr({"opacity": 0.5});
+            },
+            hoverOut = function (e) {
+                var index = e.data.index;
+                var stream = e.data.stream;
+                var path = stream.paths[index];
+                stream.preIndex = index;
+                stream.legends[index].css({"background": "white"});
+                path.attr({"opacity": 1.0});
+            };
+
+        ul = $("<ul/>");
+        ul.css({
+            "margin": "0px 0px 0px 10px",
+            "padding-left": "0px"
+        });
+        $(this.legend).append(ul);
+
+        for (i = 0, l = this.infos.length; i < l; i++) {
+            li = $("<li>" + "<span style=\"color: black\">" + this.infos[i][0].name + "</span>" + "</li>");
+            li.css({"list-style-type": "square",
+                    "list-style-position": "inside",
+                    //"background": "gray",
+                    "color": color(i),
+                    //"display": "inline",
+                    "white-space": "nowrap",
+                    "padding-left": 5
+                    });
+            ul.append(li);
+            li.mouseenter({"index": i, "stream": this}, hoverIn);
+            li.mouseleave({"index": i, "stream": this}, hoverOut);
+            legends.push(li);
+        }
+        this.legends = legends;
+        //paper.setSize(width, top + lineHeight + m[2]);
+
+        //height and margin
+        leftHeight = $(this.rightContainer).height();
+        legendHeight = $(this.legend).height();
+        $(this.leftContainer).css({
+            "height": leftHeight
+        });
+        if (leftHeight > legendHeight) {
+            $(this.legend).css({"margin-top": leftHeight - legendHeight - 30});
+        } else {
+            $(this.legend).css({"margin-top": 0});
+        }
+    };
+
+    /**
+     * 创建导航
+     */
+    Stream.prototype.createNavi = function () {
+        if (!this.userConfig.more) {
+            $(this.navi).css({
+                "visibility": "hidden",
+                "position": "absolute"
+            });
+        } else {
+            $(this.navi).css({"visibility": "visible",
+                "position": "relative"
+            });
+        }
+        var i,
+            span;
+        $(this.naviTrace).empty();
+        for (i = 0; i <= this.level; i++) {
+            $(this.naviTrace).append($("<span> &gt; </span>"));
+            span = document.createElement("span");
+            span.data = {level: i};
+            span = $(span)
+                .html(i === 0 ? "第1层" : "第" + (i + 1) + "层")
+                .appendTo($(this.naviTrace));
+            if (i !== this.level) {
+                span.css({"cursor": "pointer", "color": "#1E90FF"})
+                    .addClass("navi");
+                    //.data("level", i);
+            }
+        }
+        if (this.level > 0) {
+            this.naviBack.style.visibility = "visible";
+        } else {
+            this.naviBack.style.visibility = "hidden";
+        }
+    };
+
+    /**
+     * 获取最大百分比
+     */
+    Stream.prototype.getMaxPercentage = function () {
+        this.maxPercentage = this.allInfos.reduce(function (a, b, i, array) {
+            return [{total: a[0].total + b[0].total}];
+        })[0].total;
+    };
+
+    /**
+     * 生成百分比数据
+     */
+    Stream.prototype.createPercentage = function () {
+        if (!this.userConfig.more) {
+            return;
+        }
+        var conf = this.defaults;
+        var maxY = this.getMaxY(),
+            y;
+        if (this.firstRender) {
+            this.getMaxPercentage();
+        }
+
+        maxY /= this.maxPercentage;
+        y = maxY > 0.1
+            ? (1 - maxY) * conf.height + conf.fontSize * 2 / 3
+            : (1 - maxY) * conf.height - conf.fontSize * 2 / 3;
+
+        if (this.firstRender) {
+            this.percentageRect = this.percentagePaper.rect(0, (1 - maxY) * conf.height,
+                    conf.margin[3], maxY * conf.height)
+                .attr({"fill": "#f4f4f4", "stroke": "#aaa", "stroke-width": 0.5});
+            this.percentageText = this.percentagePaper.text(conf.margin[3] / 2, y,
+                    Math.round(maxY * 100) + "%")
+                .attr({"text-anchor": "middle"});
+        } else {
+            this.percentageRect.animate({"y": (1 - maxY) * conf.height, "height": maxY * conf.height}, 750);
+            this.percentageText.attr({"text": Math.round(maxY * 100) + "%"})
+                .animate({"y": y}, 750);
+        }
+    };
+
+    /**
+     * 生成Stream路径
+     */
+    Stream.prototype.createStreamPaths = function () {
+        var canvas = this.canvas,
+            paths = [],
+            labels = [],
+            area = this.generateArea(),
+            color = this.getColor({mode: this.defaults.colorMode}),
+            conf = this.defaults,
+            i,
+            l,
+            _area,
+            pathLegend,
+            path,
+            pathLegendMouseOver = function () {
+                var path = this.path,
+                    anchorIndex = path.index;
+                path.paths.forEach(function (d, i, array) {
+                    if (i !== anchorIndex) {
+                        array[i].attr({"fill": d3.interpolateRgb.apply(null, [array[i].color, "#fff"])(0.5)});
+                    }
+                });
+				this.style.backgroundColor = d3.interpolateRgb.apply(null, [path.color, "#fff"])(0.8);
+            },
+            
+            pathLegendMouseOut = function () {
+                var path = this.path,
+                    anchorIndex = path.index;
+                path.paths.forEach(function (d, i, array) {
+                    if (i !== anchorIndex) {
+                        array[i].attr({"fill": array[i].color});
+                    }
+                });
+				path.legend.style.backgroundColor = path.color;
+            },
+
+            getLabelLocation = function (locArray, el) {
+                var x = 0,
+                    y = 0,
+                    i;
+                var ratioMargin = 0.15;
+                var index = 0;
+                var max = 0;
+                var box = el.getBBox();
+                var xInterval;
+                var minTop, maxBottom;
+                var showLabel = true;
+                var loc;
+                var height;
+
+                xInterval = Math.ceil(box.width / (locArray[1].x - locArray[0].x) / 2);
+                if (xInterval === 0) {
+                    xInterval = 1;
+                }
+
+                locArray.forEach(function (d, i, array) {
+                    var m = Math.max(ratioMargin * array.length, xInterval);
+                    if (i >= m && i <= array.length - m) {
+                        if (d.y > max) {
+                            minTop = d.y0 - d.y;
+                            maxBottom = d.y0;
+                            max = d.y;
+                            index = i;
+                        }
+                    }
+                });
+                for (i = index - xInterval; i <= index + xInterval; i++) {
+                    if (i < 0 || i >= locArray.length) {
+                        height = 0;
+                        showLabel = false;
+                        break;
+                        //return;
+                    }
+                    loc = locArray[i];
+                    //top's y is small
+                    if (loc.y0 - loc.y > minTop) {
+                        minTop = loc.y0 - loc.y;
+                    }
+                    if (loc.y0 < maxBottom) {
+                        maxBottom = loc.y0;
+                    }
+                }
+
+                if (showLabel && maxBottom - minTop >= box.height * 0.8) {
+                    x = locArray[index].x;
+                    y = (minTop + maxBottom) / 2;
+                    //y = locArray[index].y0 - locArray[index].y / 2;
+                } else {
+                    showLabel = false;
+                }
+
+                return {x: x,
+                        y: y,
+                        showLabel: showLabel};
+            },
+
+            getLabelLocation_old2 = function (locArray, conf) {
+                var x, y, height = 0, i;
+                var indexMargin = Math.min(conf.indexMargin, Math.floor((locArray.length - 1) / 2));
+                var ratioMargin = 0.15;
+                var index = indexMargin;
+                var max = 0;
+                if (locArray.length >= conf.indexMargin * 2 + 1) {
+                    locArray.forEach(function (d, i, array) {
+                        var m = Math.max(indexMargin, ratioMargin * array.length);
+                        if (i >= m && i <= array.length - m) {
+                            if (d.y > max) {
+                                max = d.y;
+                                index = i;
+                            }
+                        }
+                    });
+                    x = locArray[index].x;
+                    y = locArray[index].y0 - locArray[index].y / 2;
+                    for (i = index - indexMargin; i <= index + indexMargin; i++) {
+                        height += locArray[i].y;
+                    }
+                    height = height / (2 * indexMargin + 1);
+                } else {
+                    x = -100;
+                    y = -100;
+                    height = 0;
+                }
+
+                return {
+                    x: x,
+                    y: y,
+                    height: height
+                };
+            };
+
+        canvas.rect(0, 0, conf.width, conf.height)
+            .attr({"stroke": "none",
+                    "fill": "#e0e0e0"});
+        for (i = 0, l = this.source.length; i < l; i++) {
+            _area = area(this.pathSource[i]);
+            path = canvas.path(_area).attr({fill: color(i),
+                    stroke: color(i),
+                    "stroke-width": 1,
+                    "stroke-linejoin": "round",
+                    "transform":  "t0," + conf.topInterval
+                    });
+            path.color = color(i);
+            path.index = i;
+            path.info = this.infos[i];
+
+            path.paths = paths;
+            path.topTrans = conf.topInterval;
+            path.bottomTrans = conf.bottomInterval;
+            path.stream = this;
+
+            path.node.streamPath = path;
+            path.node.setAttribute("class", "streamPath rvml");
+
+            //path.click(pathClick);
+            //path.mouseover(pathMouseOver);
+            //path.mouseout(pathMouseOut);
+            //path.mousemove(pathMouseMove);
+
+            paths[path.index] = path;
+            //brush canvas background
+        }
+
+        //label
+        for (i = 0, l = paths.length; i < l; i++) {
+            path = paths[i];
+            path.label = this.canvas.text(0, 0,
+                    conf.pathLabel ?
+                    path.info[0].name + " " + (Math.round(path.info[0].total * 10000) / 100) + "%" : "")
+                .attr({"text-anchor": "middle",
+                        "fill": "white",
+                        "font-size": conf.fontSize,
+                        "font-family": "微软雅黑"});
+            path.labelLoc = getLabelLocation(this.pathSource[i], path.label);
+
+            if (path.labelLoc.showLabel) {
+                path.label.attr({"x": path.labelLoc.x,
+                                "y": path.labelLoc.y});
+            } else {
+                path.label.attr({"opacity": 0});
+                //path.labelOpacity = 1;
+            }
+            if (i === 0 && path.info[0].id === -1) {
+                path.attr({"cursor": "pointer"});
+                path.label.attr({"cursor": "pointer"});
+            }
+            labels.push(path.label);
+            path.label.node.setAttribute("class", "streamPath rvml");
+        }
+
+        $(this.canvas.canvas).unbind();
+
+        var mouseenter = function (e) {
+                var stream = e.data.stream;
+                stream.indicatorLine.attr({"stroke": "#000"});
+                stream.highlightLine.attr({"stroke": "white"});
+                stream.floatTag.css({"visibility" : "visible"});
+                stream.axisPopText.show();
+                stream.axisPopBubble.show();
+            };
+
+        var mouseleave = function (e) {
+                var stream = e.data.stream,
+                    circle;
+                stream.indicatorLine.attr({"stroke": "none"});
+                stream.highlightLine.attr({"stroke": "none"});
+                stream.floatTag.css({"visibility" : "hidden"});
+                stream.axisPopText.hide();
+                stream.axisPopBubble.hide();
+                //recover prepath;
+                if (typeof stream.prePath !== 'undefined') {
+                    stream.prePath.attr({"opacity": 1, "stroke-width": 1});
+                    // set legend
+                    //circle = stream.legends[stream.prePath.index].circle;
+                    //circle.attr({"r": circle.data("r0"), "opacity": 1});
+                    stream.legends[stream.prePath.index].css({"background": "white"});
+                    stream.prePath = undefined;
+                }
+            };
+
+        var click = function (e) {
+                var stream = e.data.stream,
+                    position;
+                if (typeof stream.prePath !== 'undefined'
+                        && stream.prePath.info[0].id === -1) {
+    
+                    //hidden
+                    stream.indicatorLine.attr({"stroke": "none"});
+                    stream.highlightLine.attr({"stroke": "none"});
+                    stream.floatTag.css({"visibility" : "hidden"});
+
+                    stream.level += 1;
+
+                    //set cover
+                    position = $(this).parent().position();
+                    $(stream.cover).css({left: position.left + "px",
+                                        top: position.top + "px"});
+                    stream.cover.style.visibility = "visible";
+                    stream.coverMouse = {x: e.pageX, y: e.pageY};
+
+                    //redraw
+                    stream.getLevelSource();
+                    stream.reRender();
+
+                    //hidden
+                    stream.indicatorLine.attr({"stroke": "none"});
+                    stream.highlightLine.attr({"stroke": "none"});
+                    stream.floatTag.css({"visibility" : "hidden"});
+
+                    stream.paths.forEach(function (d, i, array) {
+                        d.attr({transform: "s1,0.001,0," + stream.defaults.height});
+                        d.label.hide();
+                        d.animate({transform: "t0,0"}, 750, "linear", function () {
+                            stream.cover.style.visibility = "hidden";
+                            if (typeof stream.coverMouse !== 'undefined') {
+                                stream.indicatorLine.attr({"stroke": "#000"});
+                                stream.highlightLine.attr({"stroke": "white"});
+                                stream.floatTag.css({"visibility" : "visible"});
+                                $(stream.canvas.canvas).trigger("mousemove",
+                                    [stream.coverMouse.x, stream.coverMouse.y]);
+                                stream.coverMouse = undefined;
+                            }
+                            //if (d.labelOpacity === 1)
+                            if (d.labelLoc.showLabel) {
+                                d.label.show();
+                            }
+                        });
+                    });
+                }
+            };
+
+        var mousemove = function (e, pageX, pageY) {
+                var stream = e.data.stream;
+                var offset = $(this).parent().offset();
+                var position = $(this).parent().position();
+                //var offset = $(this).offset();
+                var x = (e.pageX || pageX) - offset.left,
+                    y = (e.pageY || pageY) - offset.top;
+                var floatTag,
+                    floatTagWidth,
+                    floatTagHeight,
+					mouseToFloatTag = {x: 20, y: 20};
+                var path,
+                    pathSource = stream.pathSource,
+                    pathSourceP,
+                    pathIndex,
+                    circle;
+                var i, l;
+                var xIdx = Math.floor((x / (stream.defaults.width
+                                / (stream.source[0].length - 1) / 2) + 1) / 2);
+                var pathsourceP,
+                    lineX;
+
+                //get path
+                path = undefined;
+                pathSource = stream.pathSource;
+                for (i = 0, l = pathSource.length; i < l; i++) {
+                    if (y >= pathSource[i][xIdx].y0 - pathSource[i][xIdx].y && y <= pathSource[i][xIdx].y0) {
+                        path = stream.paths[i];
+                        pathIndex = i;
+                        break;
+                    }
+                }
+                if (typeof path === 'undefined') {
+                    return;
+                }
+
+
+                //recover prepath;
+                if (typeof stream.prePath !== 'undefined') {
+                    stream.prePath.attr({"opacity": 1, "stroke-width": 1});
+                    // set legend
+                    stream.legends[stream.prePath.index].css({"background": "white"});
+                }
+                //change new path;
+                stream.prePath = path;
+                path.attr({"opacity": 0.5, "stroke-width": 0});
+
+                // set legend
+                stream.legends[stream.prePath.index].css({"background": "#dddddd"});
+
+                //set indicator and highlight line
+                lineX = stream.defaults.width * xIdx / (stream.source[0].length - 1);
+                pathSourceP = pathSource[pathSource.length - 1][xIdx];
+                stream.indicatorLine.attr({path: "M" + lineX
+                        + " " + (pathSourceP.y0 - pathSourceP.y)
+                        + "V" + pathSource[0][xIdx].y0});
+
+                pathSourceP = pathSource[pathIndex][xIdx];
+                stream.highlightLine.attr({path: "M" + lineX
+                        + " " + (pathSourceP.y0 - pathSourceP.y)
+                        + "V" + pathSourceP.y0});
+                if (pathIndex === 0 && path.info[0].id === -1) {
+                    stream.highlightLine.attr({"cursor": "pointer"});
+                } else {
+                    stream.highlightLine.attr({"cursor": "auto"});
+                }
+
+                floatTag = stream.floatTag;
+                floatTag.html(path.info[xIdx].tip);
+
+                //axis pop bubble
+                stream.axisPopText.attr({"text": stream.date[xIdx + stream.timeRange[0]]})
+                    .transform("t" + (lineX + stream.defaults.margin[3]) + ",0");
+                stream.axisPopBubble.transform("t" + (lineX + stream.defaults.margin[3]) + ",0");
+
+                //customevent;
+                if (stream.defaults.customEventHandle.mousemove) {
+                    stream.defaults.customEventHandle.mousemove.call(stream,
+                            {"timeIndex": xIdx, "pathIndex": pathIndex});
+                }
+            };
+        var $canvas = $(this.canvas.canvas);
+        $canvas.bind("mouseenter", {"stream": this}, mouseenter);
+        $canvas.bind("mouseleave", {"stream": this}, mouseleave);
+        $canvas.bind("click", {"stream": this}, click);
+        $canvas.bind("mousemove", {"stream": this}, mousemove);
+
+        this.paths = paths;
+        this.labels = labels;
+        this.indicatorLine = canvas.path("M0 " + conf.topInterval + "V" + (conf.height - conf.bottomInterval))
+            .attr({stroke: "none", "stroke-width": 1, "stroke-dasharray": "- "});
+        this.highlightLine = canvas.path("M0 " + conf.topInterval + "V" + (conf.height - conf.bottomInterval))
+            .attr({stroke: "none", "stroke-width": 2});
+    };
+
+    /**
+     * 创建坐标轴
+     */
+    Stream.prototype.createAxis = function () {
+        //all date strings' format are same, string length are same
+        var conf = this.defaults,
+            date = this.date.slice(this.timeRange[0], this.timeRange[1] + 1),
+            left = conf.margin[3],
+            //left = conf.margin[3] + conf.legendWidth,
+            right = conf.totalWidth - conf.margin[1] - conf.legendWidth,
+            tempWord,
+            tickNumber,
+            getPopPath = function (El) {
+                //down pop
+                var x = 0,
+                    y = 0,
+                    size = 4,
+                    cw = 23,
+                    bb = {height: 8};
+                if (El) {
+                    bb = El.getBBox();
+                    bb.height *= 0.6;
+                    cw = bb.width / 2 - size;
+                }
+                return [
+                    'M', x, y,
+                    'l', size, size, cw, 0,
+                    'a', size, size, 0, 0, 1, size, size,
+                    'l', 0, bb.height,
+                    'a', size, size, 0, 0, 1, -size, size,
+                    'l', -(size * 2 + cw * 2), 0,
+                    'a', size, size, 0, 0, 1, -size, -size,
+                    'l', 0, -bb.height,
+                    'a', size, size, 0, 0, 1, size, -size,
+                    'l', cw, 0,
+                    'z'
+                ].join(',');
+            };
+
+        this.dateScale = d3.scale.linear()
+            .domain([0, date.length - 1])
+            .range([left, right]);
+
+        tempWord = this.axisPaper.text(0, 0, date[0]);
+        tickNumber = Math.floor((right - left)
+                / tempWord.getBBox().width / 2) + 1;
+        tempWord.remove();
+        //tickNumber = 4;
+
+        Axis().scale(this.dateScale)
+            .ticks(tickNumber)
+            //.ticks(conf.axisTickNumber)
+            .tickSize(6, 3, 3)
+            .tickAttr({"stroke": "none"})
+            .minorTickAttr({"stroke": "none"})
+            .domainAttr({"stroke": "none"})
+            //.tickTextAttr({"font-size": conf.fontSize})
+            .tickFormat(function (d) {
+                return date[d] || "";
+            })(this.axisPaper);//.attr({transform: "t0," + (conf.height - 0)});
+
+        this.axisPopText = this.axisPaper.text(0, 11, date[0])
+            .attr({ "text-anchor": "middle",
+                    "fill": "#fff",
+                    //"font-size": conf.fontSize,
+                    "transform": "t" + left + ",0"})
+            .hide();
+        this.axisPopBubble = this.axisPaper.path(getPopPath(this.axisPopText))
+            .attr({ "fill": "#000",
+                    //"opacity": 0,
+                    "transform": "t" + left + ",0"})
+            .toBack()
+            .hide();
+    };
+
+    /**
+     * 获取纵轴最大值
+     */
+    Stream.prototype.getMaxY = function () {
+        return d3.max(this.source, function (d) {
+            return d3.max(d, function (d) {
+                return d.y0 + d.y;
+            });
+        });
+    };
+
+    /**
+     * 映射路径源
+     */
+    Stream.prototype.mapPathSource = function () {
+        var conf = this.defaults,
+            maxX = this.source[0].length - 1,//this.digitData[0].length - 1,
+            maxY = this.getMaxY(),
+            width = conf.width,
+            height = conf.height - conf.topInterval - conf.bottomInterval;
+        var i, j, l, l2, s, ps;
+        this.pathSource = [];
+        for (i = 0, l = this.source.length; i < l; i++) {
+            this.pathSource[i] = [];
+            for (j = 0, l2 = this.source[0].length; j < l2; j++) {
+                s = this.source[i][j];
+                ps = this.pathSource[i][j] = {};
+                ps.x = s.x * width / maxX;
+                ps.y0 = height - s.y0 * height / maxY;
+                ps.y = s.y * height / maxY;
+            }
+        }
+    };
+
+    /**
+     * 生成区域
+     */
+    Stream.prototype.generateArea = function () {
+        this.mapPathSource();
+        return d3.svg.area().x(function (d) {
+            return d.x;
+        }).y0(function (d) {
+            return d.y0;
+        }).y1(function (d) {
+            return d.y0 - d.y;
+        });
+    };
+
+    /*!
+     * 生成区域
+     */
+    Stream.prototype.generateArea_old = function () {
+        var conf = this.defaults,
+            maxX = this.digitData[0].length - 1,
+            maxY = this.getMaxY(),
+            width = conf.width,
+            height = conf.height - conf.topInterval - conf.bottomInterval,
+            area = d3.svg.area()
+                .x(function (d) {
+                    return d.x * width / maxX;
+                })
+                .y0(function (d) {
+                    return height - d.y0 * height / maxY;
+                })
+                .y1(function (d) {
+                    return height - (d.y + d.y0) * height / maxY;
+                });
+        return area;
+    };
+
+    /**
+     * 清除画布
+     */
+    Stream.prototype.clearCanvas = function () {
+        this.canvas.clear();
+        this.legend.innerHTML = "";
+        this.axisPaper.clear();
+    };
+
+    /**
+     * 重绘图表
+     */
+    Stream.prototype.reRender = function (options) {
+        this.setOptions(options);
+        this.clearCanvas();
+        this.layout();
+        this.generatePaths();
+        this.canAnimate = true;
+    };
+
+    /**
+     * 绘制图表
+     */
+    Stream.prototype.render = function (options) {
+        this.firstRender = true;
+        this.setOptions(options);
+        this.clearCanvas();
+        this.layout();
+        this.generatePaths();
+        this.firstRender = false;
+        this.canAnimate = true;
+    };
+
+    /**
+     * 重设图表
+     */
+    Stream.prototype.resize = function (options) {
+        var conf = this.defaults;
+
+        if (!options.width && !options.height) {
+            throw new Error("no width and height input");
+        } else if (options.width && !options.height) {
+            if (conf.autoHeight) {
+                this.setOptions({"width": options.width});
+            } else {
+                this.setOptions({"width": options.width, "height": conf.height});
+            }
+        } else if (!options.width && options.height) {
+            this.setOptions({"width": conf.totalWidth, "height": options.height});
+        } else {
+            this.setOptions({"width": options.width, "height": options.height});
+        }
+
+        this.node.innerHTML = "";
+        this.createCanvas();
+        this.reRender();
+    };
+    
+    /**
+     * 侦听自定义事件
+     * @param {String} eventName 事件名
+     * @param {Function} callback 事件回调函数
+     */
+    Stream.prototype.on = function (eventName, callback) {
+        if (typeof this.defaults.customEventHandle[eventName] !== 'undefined') {
+            this.defaults.customEventHandle[eventName] = callback;
+        }
+    };
+
+    /**
+     * 设置动画
+     * @param {Object} options 选项对象
+     * @param {Number} timeDuration 时间
+     */
+    Stream.prototype.animate = function (options, timeDuration) {
+        //must after render if new Source has been set;
+        if (!this.canAnimate) {
+            throw new Error("Function animate must be called after render if new Source has been set.");
+        }
+        var time = 0,
+            area,
+            color,
+            i,
+            l;
+        if (arguments.length > 1) {
+            time = timeDuration;
+        }
+
+        //this.setOptions(options);
+        if (options.offset || options.order) {
+            this.source = this.remapSource(this.digitData);
+            this.layout();
+        }
+        area = this.generateArea();
+        color = this.getColor();
+        for (i = 0, l = this.source.length; i < l; i++) {
+            var _area = area(this.source[i]);
+            var anim = Raphael.animation({path: _area, fill: color(i)}, time);
+            this.paths[i].animate(anim);
+        }
+    };
+
+    /*!
+     * 导出Stream
+     */
+    return Stream;
+});
+
+/*global EventProxy, d3, Raphael, $ */
+/*!
+ * Tree的兼容性定义
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') {
+        define(definition);
+    } else {
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Tree', function (require) {
+    var DataV = require('DataV');
+    var theme = DataV.Themes;
+
+    /**
+     * Tree的构造函数
+     * Examples:
+     * ```
+     * var tree = new Tree("container");
+     * tree.setSource(source);
+     * tree.render();
+     * ```
+     * Options:
+     * - `width`: 画布的宽度
+     * - `height`: 画布的高度
+     */
+    var Tree = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Tree";
+            this.node = this.checkContainer(node);
+
+            this.addlink = {};
+
+            // Properties
+            this.treeDepth = 0;
+            this.font = {};
+
+            // Canvas
+            this.defaults.width = 750;
+            this.defaults.height = 760;
+            this.defaults.deep = 180;
+            this.defaults.radius = 15;
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * 饼图纬度描述
+     */
+    Tree.dimension = {};
+    /**
+     * ID标签
+     */
+    Tree.dimension.id = {
+        type: "string",
+        required: true
+    };
+    /**
+     * 父ID标签
+     */
+    Tree.dimension.pid = {
+        type: "string",
+        required: true
+    };
+
+    Tree.prototype.hierarchyTableToJson = function (table) {
+        if (table[0][0] === "ID") {
+            table = table.slice(1);
+        }
+
+        var rootID;
+        var hierarchy = {};
+        var addlink = {}; //for multi-fathernode
+        // var ids = _.pluck(table, 0);
+        // var pids = _.pluck(table, 3);
+        // var roots = _.difference(pids, ids);
+        // if (roots.length === 0) {
+        //     throw new Error("root node is empty");
+        // } else if (roots.length > 1) {
+        //     throw new Error("root nodes are too many");
+        // }
+
+        table.forEach(function (d, i) {
+            if (d[0] === "") {
+                throw new Error("ID can not be empty(line:" + (i + 1) + ").");
+            }
+            if (!d[3]) {
+                if (rootID) {
+                    throw new Error("2 or more lines have an empty parentID(line:" + (i + 1) + ").");
+                } else {
+                    rootID = d[0];
+                }
+            }
+            if (hierarchy[d[0]]) {
+                throw new Error("2 or more lines have same ID: " + d[0] + "(line:" + (i + 1) + ").");
+            }
+
+            var value = "";
+            var j, length;
+            if (d.length > 4) {
+                for (j = 4, length = d.length; j < length; j++) {
+                    if (j < length - 1) {
+                        value = value + d[j] + ",";
+                    } else {
+                        value = value + d[j];
+                    }
+                }
+            }
+            hierarchy[d[0]] = {name: d[1], size: d[2], child: [], id: d[0], value: value};
+        });
+        if (!rootID) {
+            throw new Error("No root node defined.");
+        }
+        table.forEach(function (d, i) {
+            if (d[3]) {
+                var record;
+                var ids = d[3].split(',');
+                if (ids.length === 1) {
+                    record = hierarchy[d[3]];
+                    record.child.push(d[0]);
+                } else {
+                    record = hierarchy[ids[0]];
+                    record.child.push(d[0]);
+                    addlink[d[0]] = {child: [], path: [], pnode: []};
+
+                    var j, length;
+                    for (j = 1, length = ids.length; j < length;  j++) {
+                        addlink[d[0]].child.push(ids[j]);
+                    }
+                }
+                if (!record) {
+                    throw new Error("Can not find parent with ID " + d[3] + "(line:" + (i + 1) + ").");
+                }
+            }
+        });
+
+        this.addlink = addlink;
+
+        var recurse = function (rootID) {
+            var record = hierarchy[rootID];
+            if (record.child.length === 0) {
+                if (isNaN(parseFloat(record.size))) {
+                    throw new Error("Leaf node's size is not a number(ID:" + (rootID + 1) + ").");
+                } else {
+                    return {
+                        name: record.name,
+                        size: record.size,
+                        num: record.id,
+                        children: null,
+                        draw: false,
+                        value: record.value
+                    };
+                }
+            } else {
+                var childNode = [];
+                record.child.forEach(function (d) {
+                    childNode.push(recurse(d));
+                });
+                return {name: record.name, children: childNode, num: record.id, draw: false, value: record.value};
+            }
+        };
+
+        return recurse(rootID);
+    };
+
+    Tree.prototype.setSource = function (source) {
+        var conf = this.defaults;
+
+        this.rawData = this.hierarchyTableToJson(source);
+        this.source = this.remapSource(source);
+        
+        this.source.x0 = conf.width / 2;
+        this.source.y0 = conf.radius * 10;
+
+        this.source.children.forEach(function collapse(d) {
+            if (d.children) {
+                // d._children = d.children;
+                // d._children.forEach(collapse);
+                // d.children = null;
+                d._children = null;
+                d.children.forEach(collapse);
+            }
+        });
+    };
+
+    Tree.prototype.remapSource = function (data) {
+        return this.hierarchyTableToJson(data);
+        // return data;
+    };
+
+    Tree.prototype.layout = function () {
+        var conf = this.defaults;
+        var tree = d3.layout.tree()
+            .size([conf.width, conf.height]);
+
+        this.nodesData = tree.nodes(this.source);
+
+        var treedepth = 0;
+        var id = 0;
+
+        this.nodesData.forEach(function (d) {
+            if (d.depth > treedepth) {
+                treedepth = d.depth;
+            }
+        });
+
+        this.treeDepth = treedepth;
+        conf.deep = conf.height / (treedepth + 1);
+
+        this.nodesData.forEach(function (d) {
+            d.y = conf.radius * 3 + d.depth * conf.deep;
+            d.id = id;
+            id++;
+        });
+    };
+
+    Tree.prototype.getColor = function () {
+        var colorMatrix = DataV.getColor();
+        var color;
+        if (colorMatrix.length > 1 && colorMatrix[0].length > 1) {
+            color = [colorMatrix[0][0], colorMatrix[1][0]];
+        } else {
+            color = colorMatrix[0];
+        }
+
+        return DataV.gradientColor(color, "special");
+    };
+
+    Tree.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.canvas = new Raphael(this.node, conf.width, conf.height);
+        this.node.style.position = "relative";
+        this.floatTag = DataV.FloatTag()(this.node);
+
+        this.floatTag.css({"visibility": "hidden"});
+
+        this.DOMNode = $(this.canvas.canvas);
+        var that = this;
+        this.DOMNode.click(function (event) {
+            that.trigger("click", event);
+        });
+        this.DOMNode.dblclick(function (event) {
+            that.trigger("dblclick", event);
+        });
+
+        var mousewheel = document.all ? "mousewheel" : "DOMMouseScroll";
+        this.DOMNode.bind(mousewheel, function (event) {
+            that.trigger("mousewheel", event);
+        });
+
+        this.DOMNode.bind("contextmenu", function (event) {
+            that.trigger("contextmenu", event);
+        });
+
+        this.DOMNode.delegate("circle", "click", function (event) {
+            that.trigger("circle_click", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseover", function (event) {
+            that.trigger("circle_mouseover", event);
+        });
+
+        this.DOMNode.delegate("circle", "mouseout", function (event) {
+            that.trigger("circle_mouseout", event);
+        });
+    };
+
+    Tree.prototype.zoom = function (d) {
+        var multiple = d || 2;
+        var conf = this.defaults;
+        conf.width = conf.width * multiple;
+
+        if (conf.height <= this.treeDepth * conf.deep) {
+            conf.height = conf.height * multiple;
+        }
+
+        //this.createCanvas();
+        this.canvas.setSize(conf.width, conf.height);
+        this.canvas.setViewBox(0, 0, conf.width, 800);
+        this.defaults = conf;
+
+        this.render();
+    };
+
+
+    Tree.prototype.getLinkPath = function (fx, fy, tx, ty) {
+        var conf = this.defaults;
+
+        var c1x = fx;
+        var c1y = fy + (ty - fy) / 2;
+        var c2x = tx;
+        var c2y = ty - (ty - fy) / 2;
+
+        var link_path = [["M", fx, fy + conf.radius],
+            ["C", c1x, c1y, c2x, c2y, tx, ty - conf.radius]];
+
+        return link_path;
+    };
+
+    Tree.prototype.generatePaths = function () {
+        var canvas = this.canvas;
+        var source = this.source;
+        var conf = this.defaults;
+        var radius = conf.radius;
+        //canvas.clear();
+        var color = this.getColor();
+        // var font = this.getFont();
+        var font_family = '微软雅黑';
+        var font_size = 8;
+        var treedepth = this.treeDepth;
+        var nodesData = this.nodesData;
+
+        var n = 0;
+
+        var addlink = this.addlink;
+        var node;
+        var num = 0;
+
+        var nodes = canvas.set();
+        var path = [];
+        var textpath = [];
+        
+        var tree = this;
+        var nodeupdate = function () {
+            tree.update(this.data("num"));
+        };
+
+        $(this.node).append(this.floatTag);
+
+        var i, nodesLength;
+        for (i = 0, nodesLength = nodesData.length; i < nodesLength;  i++) {
+            var d =  nodesData[i];
+            var parent = d.parent;
+
+            if (addlink[d.num]) {
+                var j, k, childLength;
+                for (j = 0, childLength = addlink[d.num].child.length; j < childLength; j++) {
+                    for (k = 0; k < nodesLength;  k++) {
+                        if (nodesData[k].num === addlink[d.num].child[j]) {
+                            addlink[d.num].pnode[j] = k;
+                            addlink[d.num].path[j] = canvas.path()
+                                .attr({ stroke:  "#939598", "stroke-width": 0.5});
+                        }
+                    }
+                }
+            }
+
+            var startX;
+            var startY;
+
+            if (parent && d.draw) {
+                startX = parent.x;
+                startY = parent.y;
+            } else {
+                startX = d.x;
+                startY = d.y;
+            }
+            if (parent) {
+                path.push(canvas.path().attr({stroke:  "#939598", "stroke-width": 0.5}));
+            }
+
+            nodes.push(
+                canvas.circle(startX, startY, radius)
+                    .attr({fill: color(d.depth / treedepth),
+                        stroke: "#ffffff",
+                        "stroke-width": 1,
+                        "fill-opacity": 0.4,
+                        "data": 12})
+                    .data("num", i)
+                    .animate({cx: d.x, cy: d.y}, 500, "backOut")
+            );
+
+            if (d.children || d._children) {
+                nodes[i].click(nodeupdate);
+            }
+
+            if (d._children) {
+                nodes[i].attr({
+                    stroke: color(d.depth / treedepth),
+                    "stroke-width": radius,
+                    "stroke-opacity": 0.4,
+                    "fill-opacity": 1,
+                    "r": radius / 2
+                });
+            }
+
+            if (d.children) {
+                textpath.push(canvas.text(d.x, d.y - radius - 7, d.name).attr({'font-size': 12}));
+            } else {
+                textpath.push(canvas.text(d.x, d.y + radius + 7, d.name).attr({'font-size': 12}));
+            }
+        }
+
+        // var back = function(pid, x, y){
+        //     s.forEach(function (d, i){
+        //         if (d.data('pid') == pid){
+        //             d.animate({cx: x, cy: y}, 200, "backOut");
+        //             if (nodes[i].children)
+        //             back(d.data('num'), d.attr('cx'), d.attr('cy'));
+        //         }
+        //     });
+        // };
+
+        // s.forEach(function(d, i) {
+        //     d.click(function(){
+        //         if (nodes[i].children)
+        //         back(d.data('num'), d.attr('cx'), d.attr('cy'));
+        //         tree.update(d.data("num"));
+        //     });
+        // });
+        var floatTag = this.floatTag;
+        nodes.forEach(function (d, i) {
+            $(d.node).attr('value', nodesData[i].value);
+            var textY = textpath[i].attr('y');
+            var thisradius = d.attr('r');
+            var thisstrokewidth = d.attr('stroke-width');
+            d.mouseover(function () {
+                if (!nodesData[i]._children) {
+                    this.animate({r: thisradius + 2, "fill-opacity": 0.75}, 100);
+                } else {
+                    this.animate({r: thisradius + 2, "stroke-opacity": 0.75}, 100);
+                }
+
+                textpath[i].attr({'font-size': 20});
+
+                if (i > 0) {
+                    if (!nodesData[i].children) {
+                        textpath[i].animate({'y': textY + 12}, 100, "backOut");
+                    } else {
+                        textpath[i].animate({'y': textY - 12}, 100, "backOut");
+                    }
+                }
+
+                var getFline = function (node, num) {
+                    var parent = node.parent;
+                    if (parent) {
+                        path[node.id - 1].attr({"stroke-width": 4, "stroke-opacity": num});
+                        if ( num > 0.5) {
+                            num = num - 0.1;
+                        }
+                        getFline(parent, num);
+                    }
+                };
+
+                getFline(nodesData[i], 0.9);
+
+                var thisparent = nodesData[i].parent;
+                var j, textpathLength;
+                for (j = 0, textpathLength = textpath.length; j < textpathLength; j++) {
+                    var parent = nodesData[j].parent;
+                    if (parent === thisparent && j !== i) {
+                        textpath[j].animate({'fill-opacity': 0.4});
+                    }
+                }
+
+                console.log(nodesData[i]);
+                floatTag.html('<div style = "text-align: center;margin:auto;color:#ffffff">' + nodesData[i].name + '</div>');
+                floatTag.css({"visibility" : "visible"});
+            })
+            .mouseout(function () {
+                floatTag.css({"visibility" : "hidden"});
+                if (!nodesData[i]._children) {
+                    this.animate({r: thisradius, "fill-opacity": 0.4}, 100);
+                } else {
+                    this.animate({r: thisradius, "stroke-width": thisstrokewidth, "stroke-opacity": 0.4}, 100);
+                }
+                textpath[i].attr({'font-size': 12});
+                textpath[i].animate({'y': textY}, 100, "backOut");
+
+                var getFline = function (node) {
+                    var parent = node.parent;
+                    if (parent) {
+                        path[node.id - 1].attr({"stroke-width": 0.5, "stroke-opacity": 1});
+                        getFline(parent);
+                    }
+                };
+                getFline(nodesData[i]);
+
+                var thisparent = nodesData[i].parent;
+                var j, textpathLength;
+                for (j = 0, textpathLength = textpath.length; j < textpathLength; j++) {
+                    var parent = nodesData[j].parent;
+                    if (parent === thisparent && j !== i) {
+                        textpath[j].animate({'fill-opacity': 1});
+                    }
+                }
+            });
+        });
+
+        nodes.onAnimation(function () {
+            var pathNum = 0;
+            var i, nodeslength;
+            
+            for (i = 1, nodeslength = nodes.length; i < nodeslength;  i++) {
+                var d = nodes[i];
+                var node = nodesData[i];
+                var parent = node.parent;
+                
+                path[pathNum]
+                    .attr({path: tree.getLinkPath(parent.x, parent.y, d.attr("cx"), d.attr("cy"))});
+                    
+                pathNum++;
+
+                if (addlink[node.num]) {
+                    var j, k, linkchildLength, nodesLength;
+                    for (j = 0, linkchildLength = addlink[node.num].child.length; j < linkchildLength; j++) {
+                        for (k = 0, nodesLength = nodesData.length; k < nodesLength;  k++) {
+                            var anparent = nodesData[k];
+                            if (anparent.num === addlink[node.num].child[j]) {
+                                var link_path = tree.getLinkPath(anparent.x, anparent.y, d.attr("cx"), d.attr("cy"));
+                                addlink[node.num].path[j].attr({path: link_path});
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        this.nodes = nodes;
+        this.path = path;
+        this.textpath = textpath;
+    };
+    
+    Tree.prototype.update = function (i) {
+        var source = this.source;
+        var conf = this.defaults;
+
+        source.children.forEach(function clearDraw(d) {
+            d.draw = false;
+            if (d.children) {
+                d.children.forEach(clearDraw);
+            }
+        });
+
+        source.children.forEach(function find(d) {
+            if (d.id === i) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    if (d.children) {
+                        d.children.forEach(function drawn(child) {
+                            child.draw = true;
+                            if (child.children) {
+                                child.children.forEach(drawn);
+                            }
+                        });
+                    }
+                    d._children = null;
+                }
+            } else {
+                if (d.children) {
+                    d.children.forEach(find);
+                }
+            }
+        });
+        this.source = source;
+        this.source.x0 = conf.width / 2;
+        this.source.y0 = conf.radius * 2;
+        this.render();
+    };
+    
+    /**
+     * 渲染Tree
+     */
+    Tree.prototype.render = function (options) {
+        this.canvas.clear();
+        this.setOptions(options);
+        this.layout();
+        // var st2 = new Date().getTime();
+        this.generatePaths();
+        // var et = new Date().getTime();
+        //this.canvas.renderfix();
+    };
+
+    return Tree;
+});
+
+/*global d3, $, define */
+/*!
+ * Treemap兼容定义部分
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Treemap', function (require) {
+    var DataV = require('DataV');
+
+    /*
+     * Treemap构造函数，继承自Chart
+     * Options:
+     *
+     *   - `width` 数字，图片宽度，默认为750，表示图片高750px
+     *   - `height` 数字，图片高度，默认为500
+     *   - `showBackTag` 布尔值，回退操作导航条是否显示，默认为 true, 显示；设为false则不显示
+     *   - `backHeight` 数字，回退操作导航条宽度，默认为20
+     *   - `level1BorderWidth` 数字，一级方框的边框宽度，默认为1(1px),不建议修改
+     *   - `level2BorderWidth` 数字，二级方框的边框宽度，默认为1(1px)，不建议修改
+     *   - `fontSizeRatio` 数字，表示图中文字大小。默认为1.0(1倍), 若设为2.0，字体大小会加倍;
+     *   - `customEvent` 函数对象，其中有4个自定义函数。`leafNodeClick` 函数，表示点击叶子节点的事件响应，默认为空函数; `hoverIn` 函数，表示鼠标移进方框的事件响应，默认为空函数; `hoverOut` 函数，表示鼠标移出方框的事件响应，默认为空函数; `mouseover` 函数，表示在方框内移动鼠标的事件响应，默认为设置浮框的内容，可以替换它修改浮框内容; 这些函数可以在创建对象或setOption()时一起设置，也可以通过on函数单独设置。
+     *
+     * Examples:
+     * create treemap in a dom node with id "chart", width is 500; height is 600px;
+     * ```
+     * var treemap = new Treemap("chart", {"width": 500, "height": 600});
+     * ```
+     * @param {Object} node The dom node or dom node Id
+     * @param {Object} options JSON object for determin treemap style
+     */
+    var Treemap = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Treemap";
+            this.node = this.checkContainer(node);
+
+            // Properties
+            this.selectedTreeNodes = [];//array of nodes on the path from root to recent node
+            this.treeNodeJson = {};
+            this.level_ = 2;
+
+            this.floatTag;//浮框对象，这是个可操作的对象。
+
+            // Canvas
+            this.defaults.width = 750;
+            this.defaults.height = 500;
+
+            this.defaults.showBackTag = true;
+            this.defaults.backHeight = 20;
+
+            this.defaults.level1BorderWidth = 1;
+            this.defaults.level2BorderWidth = 1;
+            this.defaults.fontSizeRatio = 1.0;
+
+            //event
+            this.defaults.customEvent = {
+                leafNodeClick : function () {},
+                hoverIn : function () {},
+                hoverOut : function () {},
+                mousemove : function () {
+                    var jqNode = this.jqNode,
+                        treemap = jqNode.treemap,
+                        floatTag = treemap.floatTag;
+    
+                    //set floatTag content
+                    floatTag.html('<div style = "text-align: center;margin:auto;color:' +
+                        //+ jqNode.color
+                        '"#fff">' + jqNode.treemapNode.name + '</div>' +
+                        '<div style = "text-align: center; margin:auto;color:' +
+                        '"#fff">' + jqNode.treemapNode.value + '</div>');
+                }
+            };
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * Create dom node relate to treemap
+     */
+    Treemap.prototype.createCanvas = function () {
+        var conf = this.defaults,
+            floatStyle,
+            container = this.node,
+            backStyle,
+            canvasStyle;
+
+        this.node.style.position = "relative";
+
+        if (conf.showBackTag) {
+            this.backTag = document.createElement("div");
+            backStyle = this.backTag.style;
+            backStyle.width = conf.width + "px";
+            backStyle.height = conf.backHeight + "px";
+            backStyle.paddingLeft = "5px";
+            container.appendChild(this.backTag);
+        }
+
+        this.canvas = document.createElement("div");
+        canvasStyle = this.canvas.style;
+        canvasStyle.position = "relative";
+        canvasStyle.width = conf.width + "px";
+        canvasStyle.height = conf.height + "px";
+        container.appendChild(this.canvas);
+
+        this.floatTag = DataV.FloatTag()(this.canvas);
+
+        this.floatTag.css({"visibility": "hidden"});
+
+        //this.canvas.appendChild(this.floatTag);
+    };
+
+    /*!
+     * Get color function according to level 1 node name
+     * 根据一级节点名获取颜色函数
+     */
+    Treemap.prototype._changeLevel1NodeColorIndex = function (nodeName) {
+        if (!this._getNodeTheme) {
+            this._getNodeTheme = d3.scale.ordinal().range(d3.range(DataV.getColor().length));
+        }
+        return this._getNodeTheme(nodeName);
+    };
+
+    /**
+     * 获取颜色
+     * Examples:
+     * ```
+     * // 获取第二种颜色的渐变色。
+     * {mode: "gradient", index: 1}
+     * // 获取最深的离散色。
+     * {mode: "random", ratio: 0}
+     * // 获取最浅的离散色。
+     * {mode: "random", ratio: 1}
+     * // 获取适中的离散色。
+     * {mode: "random", ratio: 0.5}
+     * ```
+     * @param {Object} colorJson Way to get color from color theme matrix
+     * @return {Array} 返回颜色数组
+     */
+    Treemap.prototype.getColor = function (colorJson) {
+        var colorMatrix = DataV.getColor();
+        var color;
+        var colorStyle = colorJson || {};
+        var colorMode = colorStyle.mode || 'default';
+        var i, l;
+
+        switch (colorMode) {
+        case "multiColorGradient":
+            //color = d3.interpolateHsl.apply(null, ["red", "blue"]);
+            //color = d3.interpolateHsl.apply(null, [colorMatrix[0][0], colorMatrix[colorMatrix.length - 1][0]]);
+            //color = DataV.gradientColor(["#f5f5f6", "#f6f5f5"], 'special');
+            //color = DataV.gradientColor([colorMatrix[0][0], colorMatrix[colorMatrix.length - 1][0]], 'special');
+            //color = d3.interpolateRgb.apply(null, [colorMatrix[0][0], colorMatrix[colorMatrix.length - 1][0]]);
+
+            color = (function () {
+                var c = [];
+                colorMatrix.forEach(function (d, i) {
+                    c.push(d[0]);
+                });
+                return function (ratio) {
+                    var index = (c.length - 1) * ratio;
+                    var floor = Math.floor(index);
+                    var ceil = Math.ceil(index);
+                    if (floor === ceil) {
+                        return c[floor];
+                    } else {
+                        return d3.interpolateRgb.apply(null, [c[floor], c[ceil]])(index - floor);
+                    }
+                };
+            }());
+            //color = d3.interpolateRgb.apply(null, ["green", "purple"]);
+            break;
+        case "gradient":
+            var index = colorJson.index || 0;
+            index = index < 0 ? 0 : Math.min(index, colorMatrix.length - 1);
+            color = d3.interpolateRgb.apply(null, [colorMatrix[index][0], colorMatrix[index][1]]);
+            break;
+        case "random":
+        case "default":
+            var ratio = colorStyle.ratio || 0;
+            if (ratio < 0) { ratio = 0; }
+            if (ratio > 1) { ratio = 1; }
+            var colorArray = [];
+            for (i = 0, l = colorMatrix.length; i < l; i++) {
+                var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
+                colorArray.push(colorFunc(ratio));
+            }
+            color = d3.scale.ordinal().range(colorArray);
+            break;
+        }
+        return color;
+    };
+
+    /*
+     * 设置数据源
+     * Examples:
+     * treemap数据输入的格式可以是二维数组。例如下面的数组表示2000年4个季度的天数。
+     * 第1季度下面还列出了1-3月的天数。数组的第一行为四个固定的字符串"ID"，"name"，"size"和"parentID"。
+     * 四列数据分别表示层次数据集中各结点的ID，名称，大小和父节点ID。叶子节点必须有大小，根结点不能有父节点ID。各结点的ID、名称必须要有。
+     * ```
+     *  [
+     *      ["ID", "name", "size", "parentID"],
+     *      [0, "2000",  ,  ],
+     *      [1, "season1",  , 0],
+     *      [2, "January", 31, 1],
+     *      [3, "February", 29, 1],
+     *      [4, "Match", 31, 1],
+     *      [5, "season2", 91, 0],
+     *      [6, "season3", 92, 0],
+     *      [7, "season4", 92, 0]
+     *  ]
+     * ```
+     * 数据还可以是json格式。每个结点都有`name`，如果是父节点则还有`children`，如果为叶节点则还有`size`。以上数组数据对应的json数据如下：
+     * ```
+     * {
+     *   "name": "2000",
+     *   "children": [
+     *      {
+     *       "name": "season1",
+     *       "children": [
+     *            {"name": "January", "size": 31},
+     *            {"name": "February", "size": 29},
+     *            {"name": "Match", "size": 31}
+     *          ]
+     *      },
+     *      {"name": "season2", "size": 91},
+     *      {"name": "season3", "size": 92},
+     *      {"name": "season4", "size": 92},
+     *   ]
+     * }
+     * ```
+     * @param {Array|Object} source json or 2-d array
+     */
+    Treemap.prototype.setSource = function (source) {
+        if (source instanceof Array) {
+            this.rawData = this._arrayToJson(source);
+        } else {
+            this.rawData = source;
+        }
+        this.source = this._remapSource(this.rawData);
+        this.selectedTreeNodes = [this.source[0]];
+    };
+
+    /*!
+     * Change 2-d array source data to json format.
+     * @param {Array} array 待转换的二维数组
+     * @return {Object} 返回转换后的对象
+     */
+    Treemap.prototype._arrayToJson = function (array) {
+        // ID name size parentID
+        var getColumnIndex = function (columnName) {
+            var title = array[0];
+            var i, l;
+            for (i = 0, l = title.length; i < l; i++) {
+                if (title[i] === columnName) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        var idx = {};
+        var column = ["ID", "name", "size", "parentID"];
+        var i, l;
+        for (i = 0, l = column.length; i < l; i++) {
+            if ((idx[column[i]] = getColumnIndex(column[i])) === -1) {
+                throw new Error("no column \'" + column[i] + "\'");
+            }
+        }
+
+        var table = [];
+        for (i = 1, l = array.length; i < l; i++) {
+            var line = array[i];
+            var tableLine = table[i - 1] = [];
+            var j, columnL;
+            for (j = 0, columnL = column.length; j < columnL; j++) {
+                tableLine.push(line[idx[column[j]]]);
+            }
+        }
+
+        var rootID;
+        var h = {};
+        table.forEach(function (d, i) {
+            if (d[0] === "") {
+                throw new Error("ID can not be empty(line:" + (i + 1) + ").");
+            }
+            if (!d[3]) {
+                if (rootID) {
+                    throw new Error("2 or more lines have an empty parentID(line:" + (i + 1) + ").");
+                } else {
+                    rootID = d[0];
+                }
+            }
+            if (h[d[0]]) {
+                throw new Error("2 or more lines have same ID: " + d[0] + "(line:" + (i + 1) + ").");
+            }
+            h[d[0]] = {name: d[1], size: d[2], child: []};
+        });
+        if (!rootID) {
+            throw new Error("No root node defined.");
+        }
+        table.forEach(function (d, i) {
+            if (d[3]) {
+                var record = h[d[3]];
+                if (!record) {
+                    throw new Error("Can not find parent with ID " + d[3] + "(line:" + (i + 1) + ").");
+                }
+                record.child.push(d[0]);
+            }
+        });
+        var recurse = function (parentID) {
+            var record = h[parentID];
+            if (record.child.length === 0) {
+                if (isNaN(parseFloat(record.size))) {
+                    throw new Error("Leaf node's size is not a number(name:" + record.name + ").");
+                } else {
+                    return {name: record.name, size: record.size};
+                }
+            } else {
+                var childNode = [];
+                record.child.forEach(function (d) {
+                    childNode.push(recurse(d));
+                });
+                return {name: record.name, children: childNode};
+            }
+        };
+        return recurse(rootID);
+    };
+
+    /*!
+     * map digit data to layout data format.
+     * @param source The digit data source from source.
+     */
+    Treemap.prototype._remapSource = function (data) {
+        var conf = this.defaults;
+
+        var treemap = this._createTreemap();
+        var source = treemap.nodes(data);
+
+        var recurse = function (node) {
+            if (!node.children) {
+                return node.size;
+            }
+            var size = 0;
+            node.children.forEach(function (d) {
+                size += parseFloat(recurse(d), 10);
+            });
+            node.size = size;
+            return node.size;
+        };
+        recurse(source[0]);
+
+        return source;
+    };
+
+    /*!
+     * input a node, return a json tree contains the node's level 1 children and level 2 children;
+     */
+    Treemap.prototype._create2LevelJson = function (node) {
+        // return json
+        var recurse = function (node, depth) {
+                if (depth === 2 && node.refer) {
+                    node = node.refer;
+                }
+                if ((!node.children) || depth <= 0) {
+                    return {name: node.name, size: node.size, refer: node};
+                }
+                var childNode = [];
+                node.children.forEach(function (d) {
+                    childNode.push(recurse(d, depth - 1));
+                });
+                return {name: node.name, children: childNode, refer: node};
+            };
+
+        this.treeNodeJson = recurse(node, this.level_);
+    };
+
+    /*!
+     * add the clicked leaf to selected tree nodes.
+     */
+    Treemap.prototype._goToLeaf = function (treemapNode) {
+        this.selectedTreeNodes.push(treemapNode);
+        this.reRender();
+    };
+
+    /*!
+     * remove recent leaf node, set leaf node's parent node as new leaf node;
+     */
+    Treemap.prototype._goToRoot = function (idx) {
+        this.selectedTreeNodes = this.selectedTreeNodes.slice(0, idx + 1);
+        this.reRender();
+    };
+
+    /*!
+     * create treemap layout function
+     */
+    Treemap.prototype._createTreemap = function () {
+        var conf = this.defaults;
+        return d3.layout.treemap()
+            .size([conf.width, conf.height])
+            .value(function (d) { return d.size; });
+    };
+
+    /*!
+     * d3 treemap layout
+     */
+    Treemap.prototype.layout = function () {
+        var treemap = this._createTreemap()
+            .sort(function (a, b) { return a.value - b.value; });
+        this.nodes = treemap.nodes(this.treeNodeJson);
+    };
+
+    /*!
+     * 生成绘制路径
+     */
+    Treemap.prototype.generatePaths = function () {
+        //add interactive need
+        var canvas = this.canvas,
+            conf = this.defaults,
+            color,
+            leafIndex = 0,
+            leafCount,
+            colorRatio,
+            level1Node,
+            level1NodeArray = [],
+            funcArray = {},
+            i,
+            l,
+            level1Count = 0,
+            level1ColorFun,
+            goIn = function (event) {
+                var treemap = event.data.treemap,
+                    treemapNode = event.data.treemapNode,
+                    jqueryNode = event.data.jqueryNode;
+                jqueryNode.css({'z-index': 30,
+                            "backgroundColor": jqueryNode.color})
+                    .animate({
+                        left : 0,
+                        top : 0,
+                        width : treemap.defaults.width,
+                        height : treemap.defaults.height
+                    }, 1000, function () {
+                        treemap._goToLeaf(treemapNode);
+                    });
+            },
+
+            goOut = function (event) {
+                var treemap = event.data.treemap;
+                if (treemap.selectedTreeNodes.length > 1) {
+                    treemap._goToRoot(treemap.selectedTreeNodes.length - 2);
+                }
+                return false;
+            },
+
+            level1HoverIn = function (index, level1NodeArray) {
+                return function () {
+                    level1NodeArray.forEach(function (d, i, Array) {
+                        if (i === index) {
+                            d.css("font-size", Array[i].fontSizeValue * 6 / 5 + "px");
+                            if (d.treemapNode.children) {
+                                Array[i].css("backgroundColor", '');
+                            }
+                        } else {
+                            Array[i].css("backgroundColor",
+                                d3.interpolateRgb.apply(null, [Array[i].color, "#fff"])(0.4));
+                        }
+                    });
+                    level1NodeArray[0].treemap.floatTag.css({"visibility" : "visible"});
+                };
+            },
+
+            level1HoverOut = function (level1NodeArray) {
+                return function () {
+                    level1NodeArray.forEach(function (d, i, Array) {
+                        Array[i].css("backgroundColor", Array[i].color)
+                            .css("font-size", Array[i].fontSizeValue + "px");
+                    });
+                    level1NodeArray[0].treemap.floatTag.css({"visibility" : "hidden"});
+                };
+            },
+
+            level0HoverIn = function () {
+                this.jqNode.treemap.floatTag.css({"visibility" : "visible"});
+            },
+
+            level0HoverOut = function () {
+                this.jqNode.treemap.floatTag.css({"visibility" : "hidden"});
+            },
+
+            customEvent = function (f, o) {
+                return function () {
+                    f.call(o);
+                };
+            };
+
+        $(canvas).append(this.floatTag);//canvas clear before draw, add floatTag.
+
+        for (i = 0, l = this.nodes.length; i < l; i++) {
+            var d = this.nodes[i],//treemap node
+                borderWidth,
+                w,
+                h,
+                left,
+                top,
+                depthColor,
+                depthColorHsl,
+                jqNode = $(document.createElement("div"));
+
+            if (!(d.parent && d.parent.parent)) {
+                //level 0 and 1
+                color = this.getColor({mode: "gradient", index: this._changeLevel1NodeColorIndex(d.name)});
+                leafIndex = -1;
+                leafCount = d.children ? d.children.length : 0;
+                colorRatio = 0.5;
+
+                if (d.parent) {
+                    //only level 1
+                    level1NodeArray.push(jqNode);
+                    level1Node = jqNode;
+                }
+                jqNode.color = color(colorRatio);
+                if (d.parent) {
+                    //level 1
+                    if (this.selectedTreeNodes.length === 1) {
+                        //root
+                        if (!level1ColorFun) {
+                            level1ColorFun = this.getColor({mode: "multiColorGradient"});
+                        }
+                    } else {
+                        if (!level1ColorFun) {
+                            depthColor = this.selectedTreeNodes[this.selectedTreeNodes.length - 1].color;
+                            depthColorHsl = d3.hsl(depthColor);
+                            level1ColorFun = d3.interpolateHsl.apply(null, [
+                                d3.hsl((depthColorHsl.h + 180) % 360, depthColorHsl.s, depthColorHsl.l).toString(),
+                                depthColor
+                            ]);
+                        }
+                    }
+                    jqNode.color = d.parent.children.length === 1 
+                        ? level1ColorFun(0)
+                        : level1ColorFun((level1Count++) / (d.parent.children.length - 1));
+                    color = d3.interpolateRgb.apply(null, [jqNode.color,
+                            d3.interpolateRgb.apply(null, [jqNode.color, "#fff"])(0.5)]);
+                } else {
+                    //level 0
+                    if (this.selectedTreeNodes.length > 1) {
+                        jqNode.color = this.selectedTreeNodes[this.selectedTreeNodes.length - 1].color;
+                    }
+                }
+            } else {
+                //level 2
+                leafIndex += 1;
+                colorRatio = leafCount === 1 ? 0 : leafIndex / (leafCount - 1);
+                jqNode.color = color(colorRatio);
+            }
+            jqNode.treemapNode = d;
+            d.color = jqNode.color;
+            jqNode.treemap = this;
+            jqNode[0].jqNode = jqNode;
+            jqNode.appendTo($(canvas));
+
+            jqNode.css("borderStyle", "solid")
+                .css("borderColor", "#d6d6d6")
+                .css("overflow", "hidden")
+                .css("fontFamily", '黑体')
+                //.css("fontFamily", 'sans-serif')
+                .css("position", "absolute")
+                .css("textIndent", "2px")
+                .css("backgroundColor", jqNode.color)
+                //.css("color", "#fff");
+                .css("color", "white");
+                //.css("textAlign", "center");
+
+            if (!d.parent) {
+                // level 0 node
+                if (!d.children) {
+                    jqNode.html(d.name);
+                }
+            } else if (d.parent && !d.parent.parent) {
+                // level 1 node
+                jqNode.html(d.name)
+                    .css("zIndex", 20);
+                if (d.children) {
+                    //jqNode.css("backgroundColor", '');
+                    jqNode.css("backgroundColor", jqNode.color);
+                }
+            } else {
+                // level 2 node
+                jqNode.css("borderColor", "rgba(255, 255, 255, 0.5)");
+            }
+
+            // position
+            // border do not need adjust, still 1 px;
+            borderWidth = 1;
+            w = Math.max(0, d.dx - borderWidth);
+            h = Math.max(0, d.dy - borderWidth);
+            jqNode.fontSizeValue = Math.max(conf.fontSizeRatio
+                    * parseInt(60 * Math.sqrt(w * h / conf.width / conf.height), 10),
+                    12);
+            jqNode.css("borderWidth", borderWidth + "px")
+                .css("left", d.x + "px")
+                .css("top", d.y + "px")
+                .css("width", w + "px")
+                .css("height", h + "px")
+                .css("fontSize", jqNode.fontSizeValue + "px");
+                //.css("lineHeight", Math.max(0, d.dy - borderWidth ) + "px");
+
+            if (d.parent && !d.parent.parent) {
+                //level 1
+                jqNode.css("cursor", "pointer");
+                jqNode.clone().insertBefore(jqNode).css("opacity", 0.01);
+                jqNode.click({"treemap": this, "treemapNode": d, "jqueryNode": jqNode}, goIn);
+                jqNode.mouseover(level1HoverIn(level1NodeArray.length - 1, level1NodeArray));
+                jqNode.mouseout(level1HoverOut(level1NodeArray));
+                jqNode.mousemove(this.defaults.customEvent.mousemove);
+            }
+
+            if (!d.parent) {
+                //level 0; leaf node
+                jqNode.mouseover(level0HoverIn);
+                jqNode.mouseout(level0HoverOut);
+                jqNode.mousemove(this.defaults.customEvent.mousemove);
+            }
+
+            jqNode.bind("contextmenu", {"treemap": this}, goOut);
+
+            // custom interacitves
+            var o = {treemapNode : d,
+                node : jqNode,
+                name : d.name,
+                parent : d.parent,
+                value : d.value
+                };
+
+            if (d.parent && (!d.parent.parent) && (!d.children)) {
+                jqNode.click(customEvent(this.defaults.customEvent.leafNodeClick, o));
+            }
+    
+            jqNode.mouseover(customEvent(this.defaults.customEvent.hoverIn, o));
+    
+            jqNode.mouseout(customEvent(this.defaults.customEvent.hoverOut, o));
+
+            //canvas.appendChild(jqNode[0]);
+        }
+    };
+
+    /**
+     * 清除画布
+     */
+    Treemap.prototype.clearCanvas = function () {
+        var canvas = this.canvas;
+        canvas.innerHTML = "";
+    };
+
+    /*!
+     * set back navi link
+     */
+    Treemap.prototype._setBackTag = function () {
+        if (!this.backTag) {return; }
+        var p = document.createElement("p"),
+            i,
+            l,
+            backClick = function (that, idx) {
+                return function () {
+                    that._goToRoot(idx);
+                };
+            },
+            lastA,
+            lastGt;
+        for (i = 0, l = this.selectedTreeNodes.length; i < l; i++) {
+            var a = document.createElement("a");
+            a.innerHTML = this.selectedTreeNodes[i].name;
+            if (i < l - 1) {
+                a.style.color = "blue";
+                a.style.cursor = "pointer";
+                a.onclick = backClick(this, i);
+            } else {
+                lastA = a;
+            }
+            if (i > 0) {
+                var span = document.createElement('span');
+                span.innerHTML = " &gt; ";
+                p.appendChild(span);
+                if (i === l - 1) {
+                    lastGt = span;
+                }
+            }
+            p.appendChild(a);
+            
+        }
+        $(lastA).css({"opacity": 0.01, "position": "relative", "left": l === 1 ? 0 : -20})
+            .animate({"opacity": 1,  "left": 0}, 1000);
+        this.backTag.innerHTML = "";
+        this.backTag.appendChild(p);
+    };
+
+    /**
+     * 计算布局，并重新渲染图表
+     */
+    Treemap.prototype.reRender = function (options) {
+        this.clearCanvas();
+        this.setOptions(options);
+        this._create2LevelJson(this.selectedTreeNodes[this.selectedTreeNodes.length - 1]);
+        this.layout();
+        this._setBackTag();
+        this.generatePaths();
+    };
+
+    /**
+     * 计算布局位置，并渲染图表
+     */
+    Treemap.prototype.render = function (options) {
+        this.clearCanvas();
+        this.setOptions(options);
+        this._getNodeTheme = undefined;
+        this.selectedTreeNodes = this.selectedTreeNodes.slice(0, 1);
+        this._create2LevelJson(this.selectedTreeNodes[0]);
+        this.layout();
+        this._setBackTag();
+        this.generatePaths();
+    };
+
+    /**
+     * 设置自定义事件
+     */
+    Treemap.prototype.on = function (eventName, callback) {
+        if ($.inArray(eventName, ["leafNodeClick", "hoverIn", "hoverOut", "mousemove"]) !== -1) {
+            this.defaults.customEvent[eventName] = callback;
+        }
+    };
+
+    /*!
+     * 导出Treemap
+     */
+    return Treemap;
+});
+
+/*global d3, $, define */
+/*!
+ * Chinamap兼容定义部分
+ */
+;(function (name, definition) {
+    if (typeof define === 'function') { // Module
+        define(definition);
+    } else { // Assign to common namespaces or simply the global object (window)
+        this[name] = definition(function (id) { return this[id];});
+    }
+})('Chinamap', function (require) {
+    var DataV = require('DataV');
+
+    /*
+     * Chinamap构造函数，继承自Chart
+     * Options:
+     *
+     *   - `width` 数字，图片宽度，默认为750，表示图片高750px
+     *   - `height` 数字，图片高度，默认为500
+     *   - `showBackTag` 布尔值，回退操作导航条是否显示，默认为 true, 显示；设为false则不显示
+     *   - `backHeight` 数字，回退操作导航条宽度，默认为20
+     *   - `level1BorderWidth` 数字，一级方框的边框宽度，默认为1(1px),不建议修改
+     *   - `level2BorderWidth` 数字，二级方框的边框宽度，默认为1(1px)，不建议修改
+     *   - `fontSizeRatio` 数字，表示图中文字大小。默认为1.0(1倍), 若设为2.0，字体大小会加倍;
+     *   - `customEvent` 函数对象，其中有4个自定义函数。`leafNodeClick` 函数，表示点击叶子节点的事件响应，默认为空函数; `hoverIn` 函数，表示鼠标移进方框的事件响应，默认为空函数; `hoverOut` 函数，表示鼠标移出方框的事件响应，默认为空函数; `mouseover` 函数，表示在方框内移动鼠标的事件响应，默认为设置浮框的内容，可以替换它修改浮框内容; 这些函数可以在创建对象或setOption()时一起设置，也可以通过on函数单独设置。
+     *
+     * Examples:
+     * create chinamap in a dom node with id "chart", width is 500; height is 600px;
+     * ```
+     * var chinamap = new Chinamap("chart", {"width": 500, "height": 600});
+     * ```
+     * @param {Object} node The dom node or dom node Id
+     * @param {Object} options JSON object for determin chinamap style
+     */
+    var Chinamap = DataV.extend(DataV.Chart, {
+        initialize: function (node, options) {
+            this.type = "Chinamap";
+            this.node = this.checkContainer(node);
+
+            // Properties
+            /*
+            this.floatTag;//浮框对象，这是个可操作的对象。
+            */
+            this.recentViewBox = [];
+            this.areaBoxes = {
+                //x, y, width, height when projection scale is 4000
+                0: [-1174.6445229087194, -1437.3577680805693, 3039.3970214233723, 2531.19589698184],
+                65: [-1174.9404317915883, -1136.0130934711678, 1216.4169237052663, 939.4360818385251],
+                54: [-1061.2905098655508, -273.40253896102865, 1182.4138890465167, 728.4762434212385],
+                15: [81.92106433333947, -1404.5655158641246, 1337.913665139638, 1168.7030286278964],
+                63: [-398.0407413665446, -404.86540158240564, 770.5429460357634, 553.4881569694239],
+                51: [34.77351011413543, -24.727858097581816, 654.265749584143, 581.5837904142871],
+                23: [1185.0861642873883, -1435.9087566254907, 680.9449423479143, 618.3772597960831],
+                62: [-197.5222870378875, -631.2015222269291, 884.6861134736321, 734.2542202456989],
+                53: [-4.030270169151834, 326.89754492870105, 561.4971786143803, 565.9079094851168],
+                45: [444.4355364538484, 524.7911424174906, 490.6548359068431, 384.1667316158848],
+                43: [716.7125751678784, 265.3988842488122, 346.1702652872375, 377.50144051998274],
+                61: [508.5948583446903, -399.56997062473215, 321.038690321553, 559.1002147021181],
+                44: [790.2032875493967, 572.9640361040085, 494.8279567104971, 388.7112686526252],
+                22: [1287.5729431804648, -950.943295028444, 504.33243011403374, 354.162667814153],
+                13: [940.0156020671719, -646.4007207319194, 325.33903805510784, 477.4542727272415],
+                42: [683.8325394595918, 45.82949601748078, 468.66717545627034, 295.2142095820616],
+                52: [392.5021834497175, 337.4483828727408, 375.50579966539516, 320.9420464446699],
+                37: [1035.7855473594757, -382.19242168799906, 412.5747391303373, 313.152767793266],
+                36: [1012.6841751377355, 236.50140310944056, 295.599802392515, 400.86430917822287],
+                41: [785.5419798731749, -185.2911232263814, 362.6977821251186, 340.3902676066224],
+                21: [1203.0641741691293, -757.0946871553339, 352.71788824534656, 357.71276541155214],
+                14: [776.5185040689469, -493.6204506126494, 212.68572802329425, 448.08485211774945],
+                34: [1054.014965660052, -80.43770626104327, 295.73127466484925, 352.03731065611606],
+                35: [1172.0955040211252, 341.81292779438445, 288.99462739279807, 339.42845011348845],
+                33: [1272.1789620983063, 123.46272678646208, 286.17816622252326, 286.73860446060394],
+                32: [1125.161343490302, -134.97368204682834, 356.1806346879009, 291.4961628010442],
+                50: [497.78832088614774, 127.0051229616378, 291.91221530072164, 280.8880182020781],
+                64: [441.193675072408, -376.31946967355213, 183.76989823787306, 293.0024551112753],
+                46: [723.8031601361929, 946.050886515855, 183.33374783084207, 147.66048518654895],
+                71: [1459.925544038912, 519.7445429876257, 103.06085087505835, 237.80851484008463],
+                11: [1031.6052083127613, -530.1928574952913, 103.23943439987329, 114.66079087790081],
+                12: [1106.9649995752443, -479.16508616378724, 71.21176554916747, 120.01987096046025],
+                31: [1420.334836525578, 71.79837578328207, 70.41721601016525, 81.99461244072737],
+                81: [1061.983645387268, 769.0837862603122, 50.65584483626753, 32.17422147262721],
+                82: [1043.1350056914507, 798.0786255550063, 5.387452843479423, 7.564113979470676]
+            };
+            this.mapCache = {};
+            this.states = [];
+            this.words = [];
+            this.projection = function () {}; // d3 map prejection function
+            this.getAreaPath = function () {}; // input geojson feature, return area path string
+
+            // Canvas
+            this.defaults = {};
+            this.defaults.geoDataPath = "";
+            this.defaults.width = 750;
+            this.defaults.height = 500;
+            this.defaults.mapId = "0";
+
+            /*
+            this.defaults.fontSizeRatio = 1.0;
+            */
+
+            //event
+            this.defaults.customEvent = {
+                leafNodeClick : function () {},
+                hoverIn : function () {},
+                hoverOut : function () {},
+                mousemove : function () {}
+            };
+
+            this.setOptions(options);
+            this.createCanvas();
+        }
+    });
+
+    /**
+     * Create dom node relate to chinamap
+     */
+    Chinamap.prototype.createCanvas = function () {
+        var conf = this.defaults,
+            canvasStyle,
+            container = this.node;
+
+        this.canvas = document.createElement("div");
+        canvasStyle = this.canvas.style;
+        canvasStyle.position = "relative";
+        canvasStyle.width = conf.width + "px";
+        canvasStyle.height = conf.height + "px";
+        container.appendChild(this.canvas);
+
+        this.paper = new Raphael(this.canvas, conf.width, conf.height);
+        //$(this.node).css("opacity", 0.01);
+
+        /*
+        this.node.style.position = "relative";
+        this.floatTag = DataV.FloatTag()(this.canvas);
+        this.floatTag.css({"visibility": "hidden"});
+        */
+
+    };
+
+
+    /**
+     * 获取颜色
+     * Examples:
+     * ```
+     * // 获取第二种颜色的渐变色。
+     * {mode: "gradient", index: 1}
+     * // 获取最深的离散色。
+     * {mode: "random", ratio: 0}
+     * // 获取最浅的离散色。
+     * {mode: "random", ratio: 1}
+     * // 获取适中的离散色。
+     * {mode: "random", ratio: 0.5}
+     * ```
+     * @param {Object} colorJson Way to get color from color theme matrix
+     * @return {Array} 返回颜色数组
+     */
+     Chinamap.prototype.getColor = (function () {
+        var color = d3.scale.category10();
+        return function (d) {
+                return color(d.id);
+            };
+    }());
+    /*
+    Chinamap.prototype.getColor = function (colorJson) {
+        var colorMatrix = DataV.getColor();
+        var color;
+        var colorStyle = colorJson || {};
+        var colorMode = colorStyle.mode || 'default';
+        var i, l;
+
+        switch (colorMode) {
+        case "multiColorGradient":
+            color = (function () {
+                var c = [];
+                colorMatrix.forEach(function (d, i) {
+                    c.push(d[0]);
+                });
+                return function (ratio) {
+                    var index = (c.length - 1) * ratio;
+                    var floor = Math.floor(index);
+                    var ceil = Math.ceil(index);
+                    if (floor === ceil) {
+                        return c[floor];
+                    } else {
+                        return d3.interpolateRgb.apply(null, [c[floor], c[ceil]])(index - floor);
+                    }
+                };
+            }());
+            //color = d3.interpolateRgb.apply(null, ["green", "purple"]);
+            break;
+        case "gradient":
+            var index = colorJson.index || 0;
+            index = index < 0 ? 0 : Math.min(index, colorMatrix.length - 1);
+            color = d3.interpolateRgb.apply(null, [colorMatrix[index][0], colorMatrix[index][1]]);
+            break;
+        case "random":
+        case "default":
+            var ratio = colorStyle.ratio || 0;
+            if (ratio < 0) { ratio = 0; }
+            if (ratio > 1) { ratio = 1; }
+            var colorArray = [];
+            for (i = 0, l = colorMatrix.length; i < l; i++) {
+                var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
+                colorArray.push(colorFunc(ratio));
+            }
+            color = d3.scale.ordinal().range(colorArray);
+            break;
+        }
+        return color;
+    };
+    */
+
+    /*
+     * 设置数据源
+     * Examples:
+     * treemap数据输入的格式可以是二维数组。例如下面的数组表示2000年4个季度的天数。
+     * 第1季度下面还列出了1-3月的天数。数组的第一行为四个固定的字符串"ID"，"name"，"size"和"parentID"。
+     * 四列数据分别表示层次数据集中各结点的ID，名称，大小和父节点ID。叶子节点必须有大小，根结点不能有父节点ID。各结点的ID、名称必须要有。
+     * ```
+     *  [
+     *      ["ID", "name", "size", "parentID"],
+     *      [0, "2000",  ,  ],
+     *      [1, "season1",  , 0],
+     *      [2, "January", 31, 1],
+     *      [3, "February", 29, 1],
+     *      [4, "Match", 31, 1],
+     *      [5, "season2", 91, 0],
+     *      [6, "season3", 92, 0],
+     *      [7, "season4", 92, 0]
+     *  ]
+     * ```
+     * 数据还可以是json格式。每个结点都有`name`，如果是父节点则还有`children`，如果为叶节点则还有`size`。以上数组数据对应的json数据如下：
+     * ```
+     * {
+     *   "name": "2000",
+     *   "children": [
+     *      {
+     *       "name": "season1",
+     *       "children": [
+     *            {"name": "January", "size": 31},
+     *            {"name": "February", "size": 29},
+     *            {"name": "Match", "size": 31}
+     *          ]
+     *      },
+     *      {"name": "season2", "size": 91},
+     *      {"name": "season3", "size": 92},
+     *      {"name": "season4", "size": 92},
+     *   ]
+     * }
+     * ```
+     * @param {Array|Object} source json or 2-d array
+     */
+    Chinamap.prototype.setSource = function (source) {
+        /*
+        if (source instanceof Array) {
+            this.rawData = this._arrayToJson(source);
+        } else {
+            this.rawData = source;
+        }
+        this.source = this._remapSource(this.rawData);
+        this.selectedTreeNodes = [this.source[0]];
+        */
+    };
+
+    /*!
+     * d3 chinamap layout
+     */
+    Chinamap.prototype.layout = function () {
+        /*
+        var chinamap = this._createTreemap()
+            .sort(function (a, b) { return a.value - b.value; });
+        this.nodes = chinamap.nodes(this.treeNodeJson);
+        */
+        this.projection = d3.geo.albers()
+            .origin([105, 30.5])
+            .scale(4000);
+
+        this.getAreaPath = d3.geo.path()
+            .projection(this.projection);
+    };
+
+    /*!
+     * 生成绘制路径
+     */
+    Chinamap.prototype.generatePaths = function () {
+        var conf = this.defaults;
+        var map = this;
+        var states = map.states;
+        var words = map.words;
+        var projection = map.projection;
+        var getAreaPath = map.getAreaPath;
+        var mapCache = map.mapCache;
+        var recentViewBox = map.recentViewBox;
+        var paper = this.paper;
+        var areaBoxes = this.areaBoxes;
+
+        var render = function (areaId, json) {
+            var getTitle = function (d) {
+                return d.properties.name;
+            };
+            
+            var getCallback = function (d) {
+                return function () {
+                    parseInt(areaId, 10) === 0 
+                          ? (function () {
+                              if (parseInt(d.properties.childNum, 10) === 1) {
+                                 return;
+                              }
+                              if (typeof mapCache[d.id] === 'undefined') {
+                                  d3.json(conf.geoDataPath + d.id + ".json", function(j) {
+                                      render(d.id, j);
+                                  });
+                              } else {
+                                      render(d.id);
+                              }
+                          }()) 
+                          : (function () {
+                              /*
+                              d3.json("./jsonData/0.json", function(j) {
+                                  render(0, j);
+                              });
+                              */
+                              render(0);
+                          }());
+                };
+            };
+            var getCenterX = function (d) {
+                return projection(d.properties.cp)[0];
+            };
+            var getCenterY = function (d) {
+                return projection(d.properties.cp)[1];
+            };
+            var getText = function (d) {
+                return d.properties.name;
+            };
+        
+            //paper.clear();
+            states.forEach(function (d, i) {
+              d.hide();
+            });
+            words.forEach(function (d, i) {
+              d.hide();
+            });
+        
+            states = map.states = [];
+            words = map.words = [];
+        
+            if (typeof mapCache[areaId] === 'undefined') {//no cache
+                cache = mapCache[areaId] = {
+                    states: [],
+                    words: []
+                };
+          
+                //state
+                json.features.forEach(function (d, i) {
+                    var state = paper.path(getAreaPath(d)); 
+                    state.attr({
+                        "fill": map.getColor(d),
+                        "stroke": "#fff"
+                        });
+                    state.click(getCallback(d));
+                    states.push(state);
+                    state.node.debugName = d.id;
+                    cache.states.push(state);
+                });
+              
+                //word
+                json.features.forEach(function (d, i) {
+                    var word = paper.text(getCenterX(d), getCenterY(d), getText(d));
+                    word.attr({
+                        "font-family": '"微软雅黑", "宋体"'
+                        });
+                    word.click(getCallback(d));
+                    words.push(word);
+                    cache.words.push(word);
+                });
+          
+            } else {//cached 
+                //state
+                states = mapCache[areaId].states;
+                states.forEach(function (d) {
+                        d.show();
+                });
+              
+                //word
+                words = mapCache[areaId].words;
+                words.forEach(function (d) {
+                        d.show();
+                });
+            }
+        
+            var getStatesBox = function () {
+                var box = {};
+                var areabox = areaBoxes[areaId];
+                box.x = areabox[0];
+                box.y = areabox[1];
+                box.width = areabox[2];
+                box.height = areabox[3];
+                box.x2 = areabox[2] + areabox[0];
+                box.y2 = areabox[3] + areabox[1];
+                return box;
+            };
+        
+            (function trans () {
+                var statesBox = getStatesBox();
+                var ratio = Math.max(statesBox.width / conf.width, statesBox.height / conf.height);
+                var i, l;
+                var newBox = [statesBox.x, statesBox.y, statesBox.width, statesBox.height];
+                //console.log(newBox[0] + " " + newBox[1] + " " + newBox[2] + " " + newBox[3]);
+        
+                for (i = 0, l = states.length; i < l; i++) {
+                    states[i].attr({
+                        "stroke-width": 1 //2 * ratio
+                    });
+                    words[i].attr({
+                        "font-size": Math.round(Math.max(14 * ratio, 1))//14 * ratio + "px"
+                    });
+                }
+                /*
+                svg.transition()
+                    .duration(750)
+                    .attr("viewBox", statesBox.x + ", " + statesBox.y + ", " + statesBox.width + ", " + statesBox.height )
+                    .attr("preserveAspectRatio", "xMidYMid meet");
+                    */
+                var viewBoxAnim = function (oldBox, newBox, time) {
+                    var ti = 30;
+                    var flag = true;
+                    var start = +new Date();
+                    var getBox = function (ratio) {
+                        var box = [];
+                        var i, l;
+                        if (ratio >= 1) {
+                            return newBox;
+                        }
+                        for (i = 0, l = oldBox.length; i < l; i++) {
+                            box[i] = (newBox[i] - oldBox[i]) * ratio + oldBox[i];
+                        };
+                        return box;
+                    };
+                    var getRatio = function () {
+                        var t = +new Date();
+                        var ratio = (t - start) / time;
+                        if (ratio > 1) {
+                            ratio = 1;
+                        }
+                        var easing = function (n) {
+                            return Math.pow(n, 1.7);
+                        };
+                        return easing(ratio);
+                    };
+                    var anim = function () {
+                        if (flag === false) {
+                            return;
+                        }
+                        //not permit new flame
+                        flag = false;
+                        //set new flame;
+                        var ratio = getRatio();
+                        var box = getBox(ratio);
+                        //draw
+                        paper.setViewBox(box[0], box[1], box[2], box[3], true);
+                        //console.log(box[0] + " " + box[1] + " " + box[2] + " " + box[3]);
+                    
+                        //clearInterval; permit new flame;
+                        if (ratio >= 1) {
+                            clearInterval(interval);
+                        }
+                        flag = true;
+                    };
+                    var interval = setInterval(anim, ti);
+                };
+                if (recentViewBox.length === 0) { // first render 
+                    paper.setViewBox(newBox[0], newBox[1], newBox[2], newBox[3], true);
+                    $("#chart").css("opacity", 1);
+                } else {
+                    if (Raphael.vml) {
+                        paper.setViewBox(newBox[0], newBox[1], newBox[2], newBox[3], true);
+                    } else {
+                        viewBoxAnim(recentViewBox, newBox, 750);
+                    }
+                }
+                recentViewBox = newBox;
+            }());
+        };
+        
+        d3.json(conf.geoDataPath + conf.mapId + ".json", function(json) {
+            render(conf.mapId, json);
+        });
+
+    };
+
+    /**
+     * 清除画布
+     */
+    Chinamap.prototype.clearCanvas = function () {
+        //this.canvas.innerHTML = "";
+        this.paper.clear();
+    };
+
+    /**
+     * 计算布局位置，并渲染图表
+     */
+    Chinamap.prototype.render = function (options) {
+        this.setOptions(options);
+        this.clearCanvas();
+        this.layout();
+        this.generatePaths();
+    };
+
+    /**
+     * 设置自定义事件
+     */
+    Chinamap.prototype.on = function (eventName, callback) {
+        if ($.inArray(eventName, ["leafNodeClick", "hoverIn", "hoverOut", "mousemove"]) !== -1) {
+            this.defaults.customEvent[eventName] = callback;
+        }
+    };
+
+    /*!
+     * 导出Chinamap
+     */
+    return Chinamap;
+});
