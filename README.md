@@ -3,6 +3,8 @@ DataV.js
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
 > 凡有数据在处，皆能可视化
 
+![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
+
 - [API文档](http://tbedp.github.com/datavjs/index.html)
 
 ## Examples
