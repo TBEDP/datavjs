@@ -7,22 +7,22 @@ test("Themes.get", function () {
 
 test("Themes.set", function () {
     raises(function(){
-       DataV.Themes.set();
+       DataV.Themes.add();
     }, "Arguments format error. should be: (themsName, theme)");
     raises(function(){
-       DataV.Themes.set("t", "");
+       DataV.Themes.add("t", "");
     }, "second argument theme should be a json object");
     raises(function(){
-       DataV.Themes.set("t", {});
+       DataV.Themes.add("t", {});
     }, "theme.COLOR_ARGS needed");
     raises(function(){
-       DataV.Themes.set("t", {COLOR_ARGS: ""});
+       DataV.Themes.add("t", {COLOR_ARGS: ""});
     }, "theme.COLOR_ARGS should be an array");
     raises(function(){
-       DataV.Themes.set("t", {COLOR_ARGS: [""]});
+       DataV.Themes.add("t", {COLOR_ARGS: [""]});
     }, "theme.COLOR_ARGS[0] should be an array");
 
-    DataV.Themes.set("t", {COLOR_ARGS: [["#aaa", "#test"]]});
+    DataV.Themes.add("t", {COLOR_ARGS: [["#aaa", "#test"]]});
     DataV.changeTheme("t");
     equal(DataV.Themes.get("COLOR_ARGS")[0][1], "#test", "set color Theme OK");
 });

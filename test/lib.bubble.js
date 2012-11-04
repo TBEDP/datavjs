@@ -29,7 +29,7 @@ var source = [
     ["1990", "Indonesia", "0.915", "3.12", "184345939", "Asia"],
     ["1990", "India", "0.8852", "3.92", "873785449", "Asia"],
     ["1990", "Iceland", "0.9937", "2.16", "254793", "Europe"]
-    ];
+];
 
 test("setSource", function () {
     bubble.setSource(source);
@@ -37,13 +37,13 @@ test("setSource", function () {
     equal(bubble.defaults.dimensions, bubble.defaults.allDimensions, "set dimensions ok");
     equal(bubble.timeDimen, bubble.defaults.dimensions[0], "set time dimension ok");
     equal(bubble.keyDimen, bubble.defaults.dimensions[1], "set key dimension ok");
-    ok(bubble.keys.length === 10, "set keys ok");
-    ok(bubble.times.length === 2, "set times ok");
+    equal(bubble.keys.length, 10, "set keys ok");
+    equal(bubble.times.length, 2, "set times ok");
 });
 
 test("chooseDimensions", function () {
     bubble.setSource(source);
-    bubble.chooseDimensions(["year", "region", "children", "survival", "population", "region"]);  
+    bubble.chooseDimensions(["year", "region", "children", "survival", "population", "region"]);
     equal(bubble.xDimen, "children", "choose X Dimensions dimensions ok");
     equal(bubble.yDimen, "survival", "choose Y Dimensions dimensions ok");
     ok(bubble.keys.length === 4, "change defaults keys ok");
@@ -51,7 +51,7 @@ test("chooseDimensions", function () {
 
 test("Animation and clearAnimation", function () {
     bubble.setSource(source);
-    bubble.chooseDimensions(["year", "region", "children", "survival", "population", "region"]);  
+    bubble.chooseDimensions(["year", "region", "children", "survival", "population", "region"]);
     bubble.initControls();
     var preInterval = bubble.interval;
     notEqual(preInterval, 0, "set animation ok");
@@ -59,8 +59,3 @@ test("Animation and clearAnimation", function () {
     var postInterval = bubble.interval;
     equal(postInterval, 0, "clear animation ok");
 });
-
-test("uniq", function () {
-    var arr1 = [1, 1, 2, 2, 3, 3].uniq();
-    ok(arr1.length === 3, "uniq a number array ok");
-})
