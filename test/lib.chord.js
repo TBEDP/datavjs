@@ -7,19 +7,19 @@ test("prototype.createCanvas", function () {
     equal(fdnet.defaults.innerRadius, 328, "innerRadius should be 328 by default");
 
     fdnet.createCanvas();
-  
+
     equal(typeof fdnet.canvas, "object", "canvas should be an object");
 });
 
 test("prototype.setSource", function () {
-    var source=[
+    var source = [
         ["A", "B", "C", "D"],
         [11975, 5871, 8916, 2868],
         [1951, 10048, 2060, 6171],
         [8010, 16145, 8090, 8045],
         [1013, 990, 940, 6907]
     ];
-    
+
     fdnet.setSource(source);
 
     equal(fdnet.matrix.length, 4, "There should be 4 groups.");
@@ -29,7 +29,7 @@ test("prototype.setSource", function () {
 });
 
 test("prototype.render", function () {
-    var source=[
+    var source = [
         ["A", "B", "C", "D"],
         [11975, 5871, 8916, 2868],
         [1951, 10048, 2060, 6171],
