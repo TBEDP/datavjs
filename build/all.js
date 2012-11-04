@@ -27453,7 +27453,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     return Brush;
 });
 
-﻿/*global Raphael, d3 */
+/*global Raphael, d3 */
 /*!
  * Bubble的兼容性定义
  */
@@ -27549,21 +27549,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     Bubble.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
-        conf.dimensions = [];
-        var strInArray = function (str, array) {
-            for (var i = 0, l = array.length; i < l; i++){
-                if (array[i] === str) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        for(var i = 0, l = dimen.length; i < l; i++){
-            if(strInArray(dimen[i], conf.allDimensions)) {
-                conf.dimensions.push(dimen[i]);
-            }
-        }
+        conf.dimensions = dimen.filter(function (item) {
+            return _.indexOf(conf.allDimensions, item) !== -1;
+        });
 
         this.timeDimen = conf.dimensions[0];
         this.keyDimen = conf.dimensions[1];
@@ -27582,9 +27570,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
         this.times = _.uniq(this.times);
         this.keys = _.uniq(this.keys);
-        for (var i = 0, l = this.times.length; i < l; i++) {
-            this.timeKeys.push(i);
-        }
+        this.timeKeys = _.range(this.times.length);
         this.startTime = 0;
     };
 
@@ -30629,7 +30615,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     return Force;
 });
-﻿/*global Raphael, d3, $, define */
+/*global Raphael, d3, $, define */
 ;(function (name, definition) {
     if (typeof define === 'function') { // Module
         define(definition);
