@@ -105,3 +105,22 @@ test("extend", function () {
     equal(jackson instanceof Jackson, true, "should be Jackson instance");
     equal(jackson instanceof Person, true, "should be Person instance");
 });
+
+test('detect', function () {
+    var table = [
+        ["武汉", "12345"],
+        ["杭州", "45677"]
+    ];
+    equal(DataV.detect(table), "Table", "should be table");
+    var tableWithHead = [
+        ["city", "value"],
+        ["武汉", "12345"],
+        ["杭州", "45677"]
+    ];
+    equal(DataV.detect(tableWithHead), "Table_WITH_HEAD", "should be table");
+    var list = [
+        {"city":"武汉", "value":"12345"},
+        {"city":"杭州", "value":"45677"}
+    ];
+    equal(DataV.detect(list), "List", "should be table");
+});
