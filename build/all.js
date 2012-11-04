@@ -27580,8 +27580,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.times.push(this.source[i][this.timeDimen]);
         }
 
-        this.times.uniq();
-        this.keys.uniq();
+        this.times = _.uniq(this.times);
+        this.keys = _.uniq(this.keys);
         for (var i = 0, l = this.times.length; i < l; i++) {
             this.timeKeys.push(i);
         }
@@ -27652,8 +27652,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.times.push(this.source[i][this.timeDimen]);
         }
 
-        this.times.uniq();
-        this.keys.uniq();
+        this.times = _.uniq(this.times);
+        this.keys = _.uniq(this.keys);
         for (var i = 0, l = this.times.length; i < l; i++) {
             this.timeKeys.push(i);
         }
@@ -27664,11 +27664,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * different visualization scale is defined here
      */
     Bubble.prototype.getScale = function() {
+        var that = this;
         var conf = this.defaults;
             m = conf.borderMargin,
             w = conf.width - m[0] - m[2],
             h = conf.height - m[1] - m[3],
-            colorData = [],
+            
             maxRadius = conf.maxRadius,
             minRadius = conf.minRadius,
             backCanvas = this.backCanvas,
@@ -27698,11 +27699,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         this.c = {};
         this.c[colorDimen] = this.colorDB({mode: "random", ratio: 0.5});
 
-        for (var i = 0, l = this.keys.length; i < l; i++) {
-            c0 = this.getColorData(this.keys[i]);
-            colorData.push(c0);
-        }
-        colorData.uniq();
+        var colorData = _.uniq(this.keys.map(function (key) {
+            return that.getColorData(key);
+        }));
 
         // draw colorbar
         var tagArea = [20, (conf.height - m[3] - colorData.length * 23), 200, 220],
@@ -28254,27 +28253,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         var p = (year-lowYear) / (highYear-lowYear);
         var value = +lower + +((higher-lower)*p) ;
         return value;
-    };
-
-    /**
-     * make an array's every element unique by delete other same element
-     * TODO: 用underscore的uniq替换该方法
-     */
-    Array.prototype.uniq = function () {
-        var temp = {},
-            len = this.length;
-
-        for (var i = 0; i < len; i++) {
-            if (typeof temp[this[i]] == "undefined") {
-                temp[this[i]] = 1;
-            }
-        }
-        this.length = 0;
-        len = 0;
-        for (var i in temp) {
-            this[len++] = i;
-        }
-        return this;
     };
 
     /**
@@ -30745,26 +30723,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         conf.dimensionY = yTemp;
         conf.xAxisData = [];
         this.source = [];
-        
-        for (i = 1, l = source.length; i < l; i++) {
-            if (conf.typeNames.length == 1) {
-                var line = {}, dimenT = conf.allDimensions;
-                for (j = 0, ll = dimenT.length; j < ll; j++) {
-                    line[dimenT[j]] = source[i][j]; //each line is an array, contains value for each dimension
-                }
-                this.source.push(line);
-            }
-            else if (conf.typeNames.length == 2) {
-                var lineY = {}, lineZ = {}, dimenT = conf.allDimensions;
-                lineY[dimenT[0]] = i;
-                lineY[dimenT[1]] = source[i][1];
-                this.source.push(lineY);
-                lineZ[dimenT[0]] = i;
-                lineZ[dimenT[1]] = source[i][2];
-                this.source.push(lineZ);
-                conf.xAxisData.push(source[i][0]);
+        var dimenT = conf.allDimensions;
+        if (conf.typeNames == null) {
+            conf.typeNames = [];
+            for (i = 0, j = source[0].length; i < j; i++) {
+                conf.typeNames.push(source[0][i]);
             }
         }
+        for (i = 1, l = source.length; i < l; i++) {
+            for(j = 1; j <= conf.typeNames.length; j++) {
+                var line = {};
+                line[dimenT[0]] = i;
+                line[dimenT[1]] = source[i][j];
+                this.source.push(line);
+            }
+            conf.xAxisData.push(source[i][0]);
+            
+        }
+        
         //设置默认的定义域
         var getExtent = function (s, dimen) {
             return d3.extent(s, function (p) {
@@ -30830,7 +30806,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             tickText.push(paper.text(x[dimenX](ticks[j]), downPos+10, conf.xAxisData[ticks[j]-1]).attr({
                 "fill": "#878791",
                 "fill-opacity": 0.7,
-                "font-family": "雅黑",
+                "font-family": "宋",
                 "font-size": 12
             }).attr({
                 "text-anchor": "middle"
@@ -30850,7 +30826,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             tickText.push(paper.text(leftPos - 10, y[dimenY](ticks[j]), ticks[j]).attr({
                 "fill": "#878791",
                 "fill-opacity": 0.7,
-                "font-family": "雅黑",
+                "font-family": "宋",
                 "font-size": 12
             }).attr({
                 "text-anchor": "end"
@@ -30886,24 +30862,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         //bars
         var mouseOverBar = function (event) {
             var bars = this.data.container;
-            var seq = this.data.seqNum - this.data.seqNum % 2;
             var rectBn = this.data.rectBn;
             var clicked = false;
             var typeSeq = -1;
             var typeNum = this.data.typeNum;
+            var seq = this.data.seqNum - this.data.seqNum % typeNum;
             var xPos, yPos;
             var temp;
             var paper = bars[0].paper;
-            for(i = 0, j = rectBn.length; i < j; i++)
+            var i, j, k;
+            var textWidth;
+            for (i = 0, j = rectBn.length; i < j; i++)
                 if(rectBn[i].data.isClicked) {
                     clicked = true;
                     typeSeq = i;
                 }
             //hover
-            if(clicked) {
-                if(typeSeq != this.data.seqNum % typeNum)
+            if (clicked) {
+                if (typeSeq != this.data.seqNum % typeNum) {
                     return;
-                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
+                }
+                for (i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
                     bars[i].attr({
                         "fill-opacity":0.3
                     });
@@ -30911,46 +30890,110 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                 bars[this.data.seqNum].attr({
                     "fill-opacity":1
                 });
+                xPos = bars[this.data.seqNum].attrs.x + 16;
+                yPos = bars[this.data.seqNum].attrs.y;
+                textWidth = 5 * bars[this.data.seqNum].data.yAxisLabel.length + 20;
+                temp = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
+                    "fill": this.data.color[this.data.seqNum % typeNum],
+                    "fill-opacity": 1,
+                    "stroke": "none"
+                });
+                bars.push(temp);
+                temp = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos +
+                    "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
+                        "fill" : this.data.color[this.data.seqNum % typeNum],
+                        "stroke" : this.data.color[this.data.seqNum % typeNum]
+                    });
+                bars.push(temp);
+                temp = paper.text(xPos + 16, yPos, bars[this.data.seqNum].data.yAxisLabel).attr({
+                    "fill": "#ffffff",
+                    "fill-opacity": 1,
+                    "font-family": "宋",
+                    "font-weight": "bold",
+                    "font-size": 12,
+                    "text-anchor": "middle"
+                });
+                bars.push(temp);
             } else {
-                for(i = 0, j = bars.length; i < j; i++) {
+                for (i = 0, j = bars.length; i < j; i++) {
                     if(i == seq) {
-                        i++;
+                        i += typeNum - 1;
                     }
                     else {
-                        
-                            bars[i].attr({
-                                "fill-opacity":0.3
-                            });
+                        bars[i].attr({
+                            "fill-opacity":0.3
+                        });
                     }
+                }
+                //check if the labels will be overlapped
+                var overlapped = false;
+                var pos = [];
+                for (i = 0; i < typeNum; i++) {
+                    pos.push(bars[seq + i].attrs.y);
+                }
+                pos.sort();
+                var sub = [];
+                for (i = 0; i < pos.length - 1; i++) {
+                    sub.push(pos[i+1] - pos[i]);
+                }
+                sub.sort();
+                if (sub[0] < 20) {
+                    overlapped = true;
+                }
+                for (i = 0; i < typeNum; i++) {
+                    xPos = bars[seq].attrs.x + 8 * typeNum + 8;
+                    yPos = overlapped?(bars[seq + typeNum - 1].attrs.y + 20 * (typeNum - i - 1)):bars[seq + i].attrs.y;
+                    textWidth = 5 * bars[seq + i].data.yAxisLabel.length + 20;
+                    temp = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
+                        "fill": this.data.color[i],
+                        "fill-opacity": 1,
+                        "stroke": "none"
+                    });
+                    bars.push(temp);
+                    temp = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos +
+                        "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
+                            "fill" : this.data.color[i],
+                            "stroke" : this.data.color[i]
+                        });
+                    bars.push(temp);
+                    temp = paper.text(xPos + 16, yPos, bars[seq + i].data.yAxisLabel).attr({
+                        "fill": "#ffffff",
+                        "fill-opacity": 1,
+                        "font-family": "宋",
+                        "font-weight": "bold",
+                        "font-size": 12,
+                        "text-anchor": "middle"
+                    });
+                    bars.push(temp);
                 }
             }
             //pins
             xPos = bars[seq].attrs.x + 4 * typeNum;
             yPos = bars[seq].attrs.y + bars[seq].attrs.height;
-            //axis x text
-            temp = paper.text(xPos, yPos, this.data.xAxisLabel).attr({
-                "file": "#ffffff",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
-                "font-size": 12,
-                "text-anchor": "middle"
-            });
-            var textWidth = temp.node.clientWidth + 8;
-            temp.remove();
+            
+            textWidth = 6 * this.data.xAxisLabel.length + 20;
             //axis x rect
-            temp = paper.rect(xPos - textWidth/2, yPos, textWidth, 20, 2).attr({
+            temp = paper.rect(xPos - textWidth/2, yPos + 8, textWidth, 20, 2).attr({
                 "fill": "#5f5f5f",
                 "fill-opacity": 1,
                 "stroke": "none"
             });;
             bars.push(temp);
-            temp = paper.text(xPos, yPos + 10, this.data.xAxisLabel).attr({
-                "file": "#abcdef",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
+            //axis x text
+            temp = paper.text(xPos, yPos + 18, this.data.xAxisLabel).attr({
+                "fill": "#ffffff",
+                "fill-opacity": 1,
+                "font-family": "宋",
+                "font-weight": "bold",
                 "font-size": 12,
                 "text-anchor": "middle"
             });
+            bars.push(temp);
+            temp = paper.path("M" + (xPos - 4) + "," + (yPos + 8) + "L" + xPos + "," + yPos +
+                "L" + (xPos + 4) + "," + (yPos + 8) + "H" + xPos + "Z").attr({
+                    "fill" : "#5F5F5F",
+                    "stroke" : "#5F5F5F"
+                });
             bars.push(temp);
         };
         
@@ -30962,42 +31005,48 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             var typeSeq = -1;
             var typeNum = this.data.typeNum;
             var temp;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked) {
+            var i, j, k;
+            for (i = 0, j = rectBn.length; i < j; i++) {
+                if (rectBn[i].data.isClicked) {
                     clicked = true;
                     typeSeq = i;
                 }
+            }
             //hover
             if(clicked) {
-                if(typeSeq != this.data.seqNum % typeNum)
+                if (typeSeq != this.data.seqNum % typeNum) {
                     return;
-                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
+                }
+                for (i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
                     bars[i].attr({
                         "fill-opacity":1
                     });
                 }
+                for (i = 0; i < 3; i++) {
+                    temp = bars.pop();
+                    temp.remove();
+                }
             } else {
-                for(i = 0, j = bars.length; i < j; i++) {
-                    if(i == seq) {
-                        i++;
-                    }
-                    else {
-                        bars[i].attr({
+                for (i = 0, j = bars.length; i < j; i++) {
+                    bars[i].attr({
                             "fill-opacity":1
-                        });
-                    }
+                    });
+                }
+                for (i = 0, j = typeNum * 3; i < j; i++) {
+                    temp = bars.pop();
+                    temp.remove();
                 }
             }
             //pins
-            temp = bars.pop();
-            temp.remove();
-            temp = bars.pop();
-            temp.remove();
+            for (i = 0; i < 3; i++) {
+                temp = bars.pop();
+                temp.remove();
+            }
         };
         
         for (i = 0, j = this.source.length; i < j; i++) {
-            for (k = 0, l = conf.typeNames.length; k < l; k++)
-                if(i%l == k) {
+            for (k = 0, l = conf.typeNames.length; k < l; k++) {
+                if (i%l == k) {
                     temp = paper.rect((x[dimenX](this.source[i][dimenX])-barWidth * (l / 2 - i % l)), y[dimenY](this.source[i][dimenY]), 
                         barWidth, downPos - y[dimenY](this.source[i][dimenY])).attr({
                             "fill": conf.barColor[k],
@@ -31009,26 +31058,33 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                     temp.data.seqNum = i;
                     temp.data.rectBn = rectBn;
                     temp.data.typeNum = conf.typeNames.length;
-                    temp.data.xAxisLabel = conf.xAxisData[d3.round((i-1)/l)];
+                    temp.data.xAxisLabel = conf.xAxisData[Math.floor(i/l)];
                     temp.data.yAxisLabel = this.source[i][dimenY];
+                    temp.data.color = conf.barColor;
                     temp.mouseover(mouseOverBar);
                     temp.mouseout(mouseOutBar);
                     bars.push(temp);
                 }
+            }
         }
         //legend
         var mouseOverLegend = function (event) {
             var bars = this.data.container;
             var seq = this.data.seqNum;
             var rectBn = this.data.rectBn;
-            for(i = 0, j = rectBn.length; i < j; i++)
+            var typeNum = this.data.typeNum;
+            var i, j, k;
+            for (i = 0, j = rectBn.length; i < j; i++)
                 if(rectBn[i].data.isClicked)
                     return;
-            //
-            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
-                bars[i].attr({
-                    "fill-opacity":0.3
-                });
+            for (k = 0; k < typeNum; k++) {
+                if (seq % typeNum != k) {
+                    for (i = k, j = bars.length; i < j; i+=typeNum) {
+                        bars[i].attr({
+                            "fill-opacity":0.3
+                        });
+                    }
+                }
             }
             this.data.underBn[seq].attr({
                 "fill-opacity":0.5
@@ -31038,14 +31094,22 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             var bars = this.data.container;
             var seq = this.data.seqNum;
             var rectBn = this.data.rectBn;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked)
+            var typeNum = this.data.typeNum;
+            var i, j, k;
+            for (i = 0, j = rectBn.length; i < j; i++) {
+                if(rectBn[i].data.isClicked) {
                     return;
+                }
+            }
             //
-            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
-                bars[i].attr({
-                    "fill-opacity":1
-                });
+            for (k = 0; k < typeNum; k++) {
+                if (seq % typeNum != k) {
+                    for (i = k, j = bars.length; i < j; i+=typeNum) {
+                        bars[i].attr({
+                            "fill-opacity":1
+                        });
+                    }
+                }
             }
             this.data.underBn[seq].attr({
                 "fill-opacity":0
@@ -31059,9 +31123,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             var rectBn = this.data.rectBn;
             var lastClickedSeq;
             var typeNum = this.data.typeNum;
+            var i, j, k;
             //check if any legend has been already clicked
-            for(i = 0, j = rectBn.length; i < j; i++) {
-                if(rectBn[i].data.isClicked) {
+            for (i = 0, j = rectBn.length; i < j; i++) {
+                if (rectBn[i].data.isClicked) {
                     clicked = true;
                     lastClickedSeq = i;
                     break;
@@ -31070,17 +31135,18 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             if(this.data.isClicked) {
                 for(i = 0; i < typeNum; i++) {
                     if(i != seq % typeNum) {
-                        for(var j = i, m = bars.length; j < m; j+=typeNum)
+                        for(var j = i, m = bars.length; j < m; j+=typeNum) {
                             bars[j].attr({
                                 "fill-opacity":0.3
                             });
+                        }
                     }
                 }
                 this.data.isClicked = false;
             } else if(!clicked) {
-                for(i = 0; i < typeNum; i++) {
-                    if(i != seq % typeNum) {
-                        for(j = i, m = bars.length; j < m; j+=typeNum)
+                for (i = 0; i < typeNum; i++) {
+                    if (i != seq % typeNum) {
+                        for (j = i, m = bars.length; j < m; j+=typeNum)
                             bars[j].attr({
                                 "fill-opacity":0.1
                             });
@@ -31092,14 +31158,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                 underBn[lastClickedSeq].attr({
                     "fill-opacity":0
                 });
-                for(i = lastClickedSeq % typeNum, j = bars.length; i < j; i+=typeNum)
+                for (i = lastClickedSeq % typeNum, j = bars.length; i < j; i+=typeNum) {
                     bars[i].attr({
                         "fill-opacity":0.1
                     });
-                for(i = seq % typeNum, j = bars.length; i < j; i+=typeNum)
+                }
+                for (i = seq % typeNum, j = bars.length; i < j; i+=typeNum) {
                     bars[i].attr({
                         "fill-opacity":1
                     });
+                }
                 this.data.rectBn[lastClickedSeq].data.isClicked = false;
                 this.data.isClicked = true;
             }

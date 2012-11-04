@@ -1,5 +1,5 @@
 module("Treemap");
-var treemap = new DataV.Treemap(document.createElement("div"), {});
+var treemap = new Treemap(document.createElement("div"), {});
 var source = {
   "name": "flare",
   "children": [
@@ -73,8 +73,9 @@ test("_goToRoot", function () {
 
 
 test("_arrayToJson", function () {
-var source1 =[ ["ID","name","size","parentID"],
-            [2,"name1",1, ]];
+var source1 =[
+  ["ID","name","size","parentID"],
+  [2,"name1",1, ]];
 var source2 = [["ID", "name", "size", "parentID"], ["0", "flare", "", ""], ["1", "analytics", "", "0"], ["2", "cluster", "", "1"], ["3", "AgglomerativeCluster", "3938", "2"], ["4", "CommunityStructure", "3812", "2"], ["5", "HierarchicalCluster", "6714", "2"], ["6", "MergeEdge", "743", "2"], ["7", "graph", "", "0"], ["8", "BetweennessCentrality", "3534", "7"], ["9", "LinkDistance", "5731", "7"], ["10", "MaxFlowMinCut", "7840", "7"], ["11", "shortestPaths", "5914", "7"], ["12", "SpanningTree", "3416", "7"], ["13", "optimization", "", "1"], ["14", "AspectRatioBanker", "7074", "13"]];        
   var json;
     json= treemap._arrayToJson(source1);
