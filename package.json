@@ -14,5 +14,8 @@
   "dependencies": {
     "uglify-js": "*"
   },
+  "scripts": {
+    "build": "node bin/build.js"
+  },
   "tracker": "UA-17170593-4"
 }
