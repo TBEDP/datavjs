@@ -26191,18 +26191,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         var gotColor = [];
 
         if (_.isArray(color[0])) {
-            for (var i = 0; i < colorLineCount ; i++) {
-                getColor.push(color[i][0]);
+            for (var i = 0, l = color[i].length; i < l; i++) {
+                gotColor.push(color[i][0]);
             }
         } else {
             gotColor = color;
         }
 
         return function (num) {
-            var thisColor = gotColor;
-            var thisColorCount = colorCount;
-
-            return thisColor[num % thisolorCount];
+            return gotColor[num % colorCount];
         };
     };
 
@@ -26266,9 +26263,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * @param {String} url JSON文件地址
      * @param {Function} callback 回调函数
      */
-    DataV.json = function (url, callback) {
-        d3.json(url, callback);
-    };
+    DataV.json = d3.json;
 
     /**
      * 请求一个CSV文件，并解析
@@ -26279,6 +26274,23 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         d3.text(url, "text/csv", function (text) {
             callback(text && d3.csv.parseRows(text));
         });
+    };
+
+    /**
+     * 侦测数据，检测是二维表（带表头否），还是JSON对象数组
+     */
+    DataV.detect = function (input) {
+        var first = input[0];
+        if (_.isArray(first)) {
+            var withHead = _.all(first, function (item) {
+                return !DataV.isNumeric(item);
+            });
+            return withHead ? "Table_WITH_HEAD" : "Table";
+        } else if (_.isObject(first)) {
+            return "List";
+        } else {
+            return "Unknown";
+        }
     };
 
     /**
@@ -26335,8 +26347,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var Chart = DataV.extend(EventProxy, {
         type: "Chart",
         initialize: function (node, options) {
+            // 默认设置
             this.defaults = {};
+            // 插件
             this.plugins = {};
+            // 纬度
+            this.dimension = {};
         }
     });
 
@@ -26414,6 +26430,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             delete this[name];
         }
         return this;
+    };
+
+    /**
+     * 数据源映射
+     */
+    Chart.prototype.map = function (map) {
+        var that = this;
+        _.forEach(map, function (val, key) {
+            if (that.dimension.hasOwnProperty(key)) {
+                that.dimension[key].index = map[key];
+            }
+        });
+        var ret = {};
+        _.forEach(that.dimension, function (val, key) {
+            ret[key] = val.index;
+        });
+
+        ret.hasField = _.any(ret, function (val) {
+            return typeof val === 'string';
+        });
+        return ret;
     };
 
     DataV.Chart = Chart;

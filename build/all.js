@@ -26191,18 +26191,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         var gotColor = [];
 
         if (_.isArray(color[0])) {
-            for (var i = 0; i < colorLineCount ; i++) {
-                getColor.push(color[i][0]);
+            for (var i = 0, l = color[i].length; i < l; i++) {
+                gotColor.push(color[i][0]);
             }
         } else {
             gotColor = color;
         }
 
         return function (num) {
-            var thisColor = gotColor;
-            var thisColorCount = colorCount;
-
-            return thisColor[num % thisolorCount];
+            return gotColor[num % colorCount];
         };
     };
 
@@ -26266,9 +26263,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * @param {String} url JSON文件地址
      * @param {Function} callback 回调函数
      */
-    DataV.json = function (url, callback) {
-        d3.json(url, callback);
-    };
+    DataV.json = d3.json;
 
     /**
      * 请求一个CSV文件，并解析
@@ -26279,6 +26274,23 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         d3.text(url, "text/csv", function (text) {
             callback(text && d3.csv.parseRows(text));
         });
+    };
+
+    /**
+     * 侦测数据，检测是二维表（带表头否），还是JSON对象数组
+     */
+    DataV.detect = function (input) {
+        var first = input[0];
+        if (_.isArray(first)) {
+            var withHead = _.all(first, function (item) {
+                return !DataV.isNumeric(item);
+            });
+            return withHead ? "Table_WITH_HEAD" : "Table";
+        } else if (_.isObject(first)) {
+            return "List";
+        } else {
+            return "Unknown";
+        }
     };
 
     /**
@@ -26335,8 +26347,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var Chart = DataV.extend(EventProxy, {
         type: "Chart",
         initialize: function (node, options) {
+            // 默认设置
             this.defaults = {};
+            // 插件
             this.plugins = {};
+            // 纬度
+            this.dimension = {};
         }
     });
 
@@ -26414,6 +26430,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             delete this[name];
         }
         return this;
+    };
+
+    /**
+     * 数据源映射
+     */
+    Chart.prototype.map = function (map) {
+        var that = this;
+        _.forEach(map, function (val, key) {
+            if (that.dimension.hasOwnProperty(key)) {
+                that.dimension[key].index = map[key];
+            }
+        });
+        var ret = {};
+        _.forEach(that.dimension, function (val, key) {
+            ret[key] = val.index;
+        });
+
+        ret.hasField = _.any(ret, function (val) {
+            return typeof val === 'string';
+        });
+        return ret;
     };
 
     DataV.Chart = Chart;
@@ -27523,7 +27560,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     });
 
     /**
-     * create a backCanvas for the visualization
+     * Creates a backCanvas for the visualization
      */
     Bubble.prototype.createCanvas = function () {
         var conf = this.defaults;
@@ -27545,7 +27582,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
-     * choose bubble graph setted visualization dimens orderly
+     * Chooses bubble graph setted visualization dimens orderly
      */
     Bubble.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
@@ -27585,10 +27622,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         conf.dimensions = source[0];
 
         this.source = [];
-        for(var i = 1, l = source.length; i < l; i++){
+        for (var i = 1, l = source.length; i < l; i++){
             var dot = {},
                 dimen = conf.allDimensions;
-            for(var j=0, ll=dimen.length; j < ll; j++){
+            for (var j=0, ll=dimen.length; j < ll; j++){
                 dot[dimen[j]] = source[i][j];
             }
             this.source.push(dot);
@@ -27596,14 +27633,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
         // judge dimesions type auto
         conf.dimensionType = {};
-        function isNumber(n) {
-            return !isNaN(parseFloat(n)) && isFinite(n);
-        }
-        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+        for (var i = 0, l = conf.allDimensions.length; i < l; i++){
             var type = "quantitative";
-            for(var j = 1, ll = source.length; j < ll; j++){
+            for (var j = 1, ll = source.length; j < ll; j++){
                 var d = source[j][i];
-                if(d && (! isNumber(d))){
+                if(d && (!DataV.isNumeric(d))){
                     type = "ordinal";
                     break;
                 }
@@ -27612,12 +27646,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         // set default dimensionDomain
-        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+        for (var i = 0, l = conf.allDimensions.length; i < l; i++){
             var dimen = conf.allDimensions[i];
-            if(conf.dimensionType[dimen] === "quantitative"){
+            if (conf.dimensionType[dimen] === "quantitative") {
                 conf.dimensionDomain[dimen] = d3.extent(this.source,
-                     function(p){return Math.abs(p[dimen])});
-            }else{
+                     function (p) {return Math.abs(p[dimen]);});
+            } else {
                 conf.dimensionDomain[dimen] =
                     this.source.map(function(p){return p[dimen]});
             }
@@ -27938,6 +27972,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         var floatTag = this.floatTag;
+        var that = this;
         var tip = '<b>' + that.keyDimen + ':{key}</b><br/><b>' +
             that.xDimen + ':{xDimen}</b><br/><b>' +
             that.yDimen + ':{yDimen}</b><br/><b>' +
@@ -32279,6 +32314,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.groups = [];
             this.click = 0;
 
+            /**
+             * 标签纬度
+             */
+            this.dimension.label = {
+                type: "string",
+                required: false,
+                index: 0,
+                value: "" // 未指定下标时，使用该值作为默认值
+            };
+            /**
+             * 值纬度
+             */
+            this.dimension.value = {
+                type: "number",
+                required: true,
+                index: 1
+            };
+
             //图的大小设置
             this.defaults.legend = true;
             this.defaults.width = 800;
@@ -32300,25 +32353,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.createCanvas();
         }
     });
-
-    /**
-     * 饼图纬度描述
-     */
-    Pie.dimension = {};
-    /**
-     * 标签纬度
-     */
-    Pie.dimension.label = {
-        type: "string",
-        required: false
-    };
-    /**
-     * 值纬度
-     */
-    Pie.dimension.value = {
-        type: "number",
-        required: true
-    };
 
     /**
      * 创建画布
@@ -32527,7 +32561,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             }));
         }
         rectBn.forEach(function (d, i) {
-            // TODO 这里的事件建议采用事件委托
+            // TODO: 这里的事件建议采用事件委托
             d.mouseover(function () {
                 if (!that.donutGroups[i].data("click")) {
                     underBn[i].attr('opacity', 0.5);
@@ -32581,9 +32615,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 对原始数据进行处理
      * @param {Array} table 将要被绘制成饼图的二维表数据
      */
-    Pie.prototype.setSource = function (table) {
-        this.groupNames = _.pluck(table, 0);
-        this.groupValue = _.pluck(table, 1).map(function (item) {
+    Pie.prototype.setSource = function (table, map) {
+        map = this.map(map);
+        this.groupNames = _.pluck(table, map.label);
+        this.groupValue = _.pluck(table, map.value).map(function (item) {
             return parseFloat(item);
         });
     };
