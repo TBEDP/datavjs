@@ -22,15 +22,15 @@
         <div id="chart"></div>
         <script>
             seajs.use(["DataV", "Column"], function (DataV, Column) {
-                var Column = new Column("chart", {
+                var column = new Column("chart", {
                     "width": 1024,
                     "height": 600,
                     "margin": 30,
                     "typeNames": ["Y", "Z"]
                 });
                 DataV.csv("DataExample.csv", function (dataSource) {
-                    Column.setSource(dataSource);
-                    Column.render();
+                    column.setSource(dataSource);
+                    column.render();
                 });
             });
         </script>
