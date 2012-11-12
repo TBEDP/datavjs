@@ -3,7 +3,7 @@
     
     <head>
         <meta charset="utf-8" />
-        <title>Histogram</title>
+        <title>Column</title>
         <style type="text/css"></style>
     </head>
 
@@ -15,22 +15,22 @@
             seajs.config({
                 alias: {
                     'DataV': dir + '/../../lib/datav.js',
-                    'Histogram': dir + '/../../lib/charts/Histogram.js'
+                    'Column': dir + '/../../lib/charts/Column.js'
                 }
             });
         </script>
         <div id="chart"></div>
         <script>
-            seajs.use(["DataV", "Histogram"], function (DataV, Histogram) {
-                var Histogram = new Histogram("chart", {
+            seajs.use(["DataV", "Column"], function (DataV, Column) {
+                var column = new Column("chart", {
                     "width": 1024,
                     "height": 600,
                     "margin": 30,
                     "typeNames": ["Y", "Z"]
                 });
                 DataV.csv("DataExample.csv", function (dataSource) {
-                    Histogram.setSource(dataSource);
-                    Histogram.render();
+                    column.setSource(dataSource);
+                    column.render();
                 });
             });
         </script>
