@@ -46,14 +46,13 @@
       ['Y','2012/3/11',68],
       ['Z','2012/3/11',68]
     ];
-    source = source.filter(function (row) {
-      return true || row[1] === '2012/3/6' || row[1] === '2012/3/7'; // && row[0] !== 'X';
-    });
+
     var column = new Column("chart", {
       "width": 980,
       "height": 600,
       "margin": 50,
-      "gap": 20
+      "gap": 20,
+      "yBase": 50
     });
     column.setSource(source, {
       column: 0,
