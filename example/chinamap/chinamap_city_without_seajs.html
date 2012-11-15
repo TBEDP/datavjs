@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>chinamap</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/chinamap.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+
+  <body>
+    <div>
+    <div class="mapTable"><span>上海</span><span>杭州</span></div>
+    <div id="chart"></div>
+    </div>
+    <script>
+        $("div.mapTable").css({"float": "right"});
+        var w = 720;
+        var h = 600;
+        $("#chart").css({"width": w});
+        var searchIndexColor = "steelblue";
+        var tradeIndexColor = "#78E700";
+
+        var areaInfo = {
+            '北京': 19612368,
+            '天津': 12938224,
+            '河北': 71854202,
+            '山西': 35712111,
+            '内蒙古': 24706321,
+            '辽宁': 43746323,
+            '吉林': 27462297,
+            '黑龙江': 38312224,
+            '上海': 23019148,
+            '江苏': 78659903,
+            '浙江': 54426891,
+            '安徽': 59500510,
+            '福建': 36894216,
+            '江西': 44567475,
+            '山东': 95793065,
+            '河南': 94023567,
+            '湖北': 57237740,
+            '湖南': 65683722,
+            '广东': 104303132,
+            '广西': 46026629,
+            '海南': 8671518,
+            '重庆': 28846170,
+            '四川': 80418200,
+            '贵州': 34746468,
+            '云南': 45966239,
+            '西藏': 3002166,
+            '陕西': 37327378,
+            '甘肃': 25575254,
+            '青海': 5626722,
+            '宁夏': 6301350,
+            '新疆': 21813334,
+            '香港': 7097600,
+            '澳门': 552300,
+            '台湾': 23162123
+        };
+
+        var tgi = {
+            'searchTopProvinces': ['江西', '山东', '湖北', '安徽', '河南'],
+            'tradeTopProvinces': ['青海', '宁夏', '甘肃', '江西', '湖北'],
+            'searchTopCities': [
+                {'name': '上海', 'search': 1, 'trade': 5},
+                {'name': '北京', 'search': 2, 'trade': 2},
+                {'name': '杭州', 'search': 3, 'trade': 25},
+                {'name': '苏州', 'search': 4, 'trade': 7},
+                {'name': '宁波', 'search': 5, 'trade': 45},
+                {'name': '克拉玛依', 'search': 6, 'trade': 55},
+                {'name': '九江', 'search': 7, 'trade': 65},
+                {'name': '厦门', 'search': 8, 'trade': 8},
+                {'name': '常州', 'search': 9, 'trade': 9},
+                {'name': '黑龙江', 'search': 10, 'trade': 215}
+            ],
+            'tradeTopCities': [
+                {'name': '无锡', 'search': 11, 'trade': 1},
+                {'name': '大连', 'search': 21, 'trade': 2},
+                {'name': '澳门', 'search': 31, 'trade': 3},
+                {'name': '南宁', 'search': 41, 'trade': 4},
+                {'name': '上海', 'search': 1, 'trade': 5},
+                {'name': '北京', 'search': 2, 'trade': 6},
+                {'name': '苏州', 'search': 4, 'trade': 7},
+                {'name': '厦门', 'search': 8, 'trade': 8},
+                {'name': '常州', 'search': 9, 'trade': 9},
+                {'name': '南京', 'search': 110, 'trade': 10}
+            ]
+        };
+        var popu = {
+            'searchTopProvinces': ['江苏', '山西', '湖南', '安徽', '河南'],
+            'tradeTopProvinces': ['新疆', '吉林', '甘肃', '江西', '湖北'],
+            'searchTopCities': [
+                {'name': '上海', 'search': 1, 'trade': 5},
+                {'name': '北京', 'search': 2, 'trade': 2},
+                {'name': '杭州', 'search': 3, 'trade': 25},
+                {'name': '苏州', 'search': 4, 'trade': 7},
+                {'name': '宁波', 'search': 5, 'trade': 45},
+                {'name': '克拉玛依', 'search': 6, 'trade': 55},
+                {'name': '九江', 'search': 7, 'trade': 65},
+                {'name': '厦门', 'search': 8, 'trade': 8},
+                {'name': '常州', 'search': 9, 'trade': 9},
+                {'name': '黑龙江', 'search': 10, 'trade': 215}
+            ],
+            'tradeTopCities': [
+                {'name': '无锡', 'search': 11, 'trade': 1},
+                {'name': '大连', 'search': 21, 'trade': 2},
+                {'name': '澳门', 'search': 31, 'trade': 3},
+                {'name': '南宁', 'search': 41, 'trade': 4},
+                {'name': '上海', 'search': 1, 'trade': 5},
+                {'name': '北京', 'search': 2, 'trade': 6},
+                {'name': '苏州', 'search': 4, 'trade': 7},
+                {'name': '厦门', 'search': 8, 'trade': 8},
+                {'name': '常州', 'search': 9, 'trade': 9},
+                {'name': '南京', 'search': 110, 'trade': 10}
+            ]
+        };    
+
+        var chinamap = new Chinamap("chart", {
+                'width': w,
+                'height': h,
+                "geoDataPath": '../../lib/charts/data/chinaMap/'
+                });
+        chinamap.setOptions({'showWords': false});
+        chinamap.setOptions({'levelChangeable': false});
+        chinamap.setOptions({'mapId': 0});
+
+        chinamap.setOptions({
+            //"wordStyle": {'stroke': "black"},
+            //"colorModel": "gradient",
+            //"colors": ["#ddd", "#88f"]
+        });
+        //2010 人口统计
+        chinamap.setSource();
+
+        chinamap.setCustomEvent('areaHoverIn', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            map.floatTag.html("<p>" + info.properties.name + "</p>"
+                            + "<p>" + areaInfo[info.properties.name] + "</p>");
+            map.floatTag.css({"visibility": "visible"});
+            this.attr({"fill": "pink"});
+        });
+        chinamap.setCustomEvent('areaHoverOut', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            map.floatTag.css({"visibility": "hidden"});
+            this.attr({"fill": info.fillColor});
+        });
+
+        var mouseoverCity = function () {
+        };
+
+        var mouseoutCity = function () {
+        };
+
+        chinamap.renderCallback = function () {
+            var searchP = chinamap.createCityPoints([
+                    {'name': '南京'},
+                    {'name': '杭州'},
+                    {'name': '澳门'},
+                    {'name': '香港'},
+                    {'name': '广州'},
+                    {'name': '重庆'},
+                    {'name': '天津'},
+                    {'name': '北京'},
+                    {'name': '吉林'},
+                    {'name': '上海'}
+                    ], function (city) {
+                        return this.paper.circle(city.coord[0], city.coord[1], 20)
+                            .attr({
+                                "fill": searchIndexColor,
+                                "fill-opacity": 0.5
+                                })
+                            .data("map", this)
+                            .mouseover(function () {
+                                    this.attr({"r": 40});
+                                    this.data("map").floatTag
+                                    .html("<p>" + city.formatName + "</p>")
+                                    .css("visibility", "visible");
+                                })
+                            .mouseout(function () {
+                                    this.attr({"r": 20});
+                                    this.data("map").floatTag
+                                    .css("visibility", "hidden");
+                                });
+                    });
+            var tradeP = chinamap.createCityPoints([
+                    //{'name': 'centerCity', 'lanlon': [102.573, 36.477]},
+                    {'name': '苏州'},
+                    {'name': '杭州'},
+                    {'name': '福州'},
+                    {'name': '香港'},
+                    {'name': '南宁'},
+                    {'name': '西安'},
+                    {'name': '大连'},
+                    {'name': '北京'},
+                    {'name': '拉萨'},
+                    {'name': '上海'}
+                    ], function (city) {
+                        return this.paper.circle(city.coord[0], city.coord[1], 20)
+                            .attr({
+                                "fill": tradeIndexColor,
+                                "fill-opacity": 0.5
+                                })
+                            .data("map", this)
+                            .data("cityInfo", city)
+                            .mouseover(function () {
+                                    this.attr({"r": 40});
+                                    this.data("map").floatTag
+                                    .html("<p>" + city.formatName + "</p>")
+                                    .css("visibility", "visible");
+                                })
+                            .mouseout(function () {
+                                    this.attr({"r": 20});
+                                    this.data("map").floatTag
+                                    .css("visibility", "hidden");
+                                });
+                    });
+            searchP.forEach(function (d) {
+                    d.attr({"stroke": "none"});
+                    });
+            tradeP.forEach(function (d) {
+                    d.attr({"stroke": "none"});
+                    });
+            chinamap.floatTag.creator.mouseToFloatTag({x: 10, y: 10});
+            //warning: html must be set before changeLoc, because dom node's height and width will affect floatTag's loc;
+            chinamap.floatTag.html(tradeP[0].data("cityInfo").name)
+                .css("visibility", "visible");
+            chinamap.floatTag.creator.changeLoc(tradeP[0].data("cityInfo").pointLoc);
+
+        };
+        chinamap.render();
+
+    </script>
+
+    <script>
+        //legend
+        var legend = $("<div/>")
+            .css({"position": "absolute",
+                    "left": 0,
+                    "top": 0})
+            .appendTo($("#chart").css("position", "relative"));
+        var legendPaper = new Raphael(legend[0], 180, 100);
+        //legendPaper.rect(0, 0, 180, 100).attr({"fill": "gray"});
+        legendPaper.text(20, 20, "热门城市分布")
+            .attr({"text-anchor": "start",
+                    "font-size": "16px",
+                    "font-family": "微软雅黑"
+                    });
+        legendPaper.rect(20, 44 + (Raphael.vml ? 0 : 1), 12, 12)
+            .attr({"fill": searchIndexColor,
+                    "fill-opacity": 0.5,
+                    "stroke": "none"});
+        legendPaper.text(40, 50, "搜索指数")
+            .attr({"text-anchor": "start",
+                    "font-size": "14px",
+                    "font-family": "微软雅黑"
+                    });
+        legendPaper.rect(20, 74 + (Raphael.vml ? 0 : 1), 12, 12)
+            .attr({"fill": tradeIndexColor,
+                    "fill-opacity": 0.5,
+                    "stroke": "none"});
+        legendPaper.text(40, 80, "成交指数")
+            .attr({"text-anchor": "start",
+                    "font-size": "14px",
+                    "font-family": "微软雅黑"
+                    });
+    </script>
+
+  </body>
+</html>
