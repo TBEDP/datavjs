@@ -44,7 +44,7 @@ exports.all = exports.datav.concat([
   'lib/charts/diff.js',
   'lib/charts/flow.js',
   'lib/charts/force.js',
-  'lib/charts/histogram.js',
+  'lib/charts/column.js',
   'lib/charts/matrix.js',
   'lib/charts/parallel.js',
   'lib/charts/pie.js',
