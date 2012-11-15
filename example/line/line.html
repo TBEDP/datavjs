@@ -20,10 +20,26 @@
     <div id="chart"></div>
     <script type="text/javascript">
 	seajs.use(["Line", "DataV"], function (Line, DataV) {
-		var line = new Line("chart");
-		var source = [["name", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],["first", 1, 2, 3, 6, 5, 4],["second", 4, 4, 4, 4, 2, 8, 1],["third", 3, 4, 5, 2, 2, 9, 6]];
-		line.setSource(source);
-		line.render();
+    var line = new Line("chart");
+    var source = [
+      ["line", "day", "value"],
+      ["first", "Monday", 1],
+      ["first", "Tuesday", 2],
+      ["first", "Wednesday", 3],
+      ["first", "Thursday", 6],
+      ["first", "Friday", 5],
+      ["first", "Saturday", 4],
+      ["first", "Sunday", 0],
+      ["second", "Monday", 4],
+      ["second", "Tuesday", 3],
+      ["second", "Wednesday", 7],
+      ["second", "Thursday", 3],
+      ["second", "Friday", 2],
+      ["second", "Saturday", 7],
+      ["second", "Sunday", 3]
+    ];
+    line.setSource(source, {line: "line", x: "day", value: "value"});
+    line.render();
 	});
     </script>
   </body>

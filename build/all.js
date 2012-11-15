@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3 */
+/*global d3, _, EventProxy, $, jQuery */
 /*!
  * DataV兼容定义
  */
@@ -26055,7 +26055,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     DataV.Themes.add = function () {
         var args = [].slice.call(arguments, 0);
-        theme = args.pop();
+        var theme = args.pop();
         if (arguments.length < 2) {
             throw new Error("Arguments format error. should be: (themsName, theme)");
         } else if (typeof theme !== "object") {
@@ -26191,18 +26191,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         var gotColor = [];
 
         if (_.isArray(color[0])) {
-            for (var i = 0; i < colorLineCount ; i++) {
-                getColor.push(color[i][0]);
+            for (var i = 0, l = color[i].length; i < l; i++) {
+                gotColor.push(color[i][0]);
             }
         } else {
             gotColor = color;
         }
 
         return function (num) {
-            var thisColor = gotColor;
-            var thisColorCount = colorCount;
-
-            return thisColor[num % thisolorCount];
+            return gotColor[num % colorCount];
         };
     };
 
@@ -26266,9 +26263,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * @param {String} url JSON文件地址
      * @param {Function} callback 回调函数
      */
-    DataV.json = function (url, callback) {
-        d3.json(url, callback);
-    };
+    DataV.json = d3.json;
 
     /**
      * 请求一个CSV文件，并解析
@@ -26279,6 +26274,87 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         d3.text(url, "text/csv", function (text) {
             callback(text && d3.csv.parseRows(text));
         });
+    };
+
+    /**
+     * 侦测数据，检测是二维表（带表头否），还是JSON对象数组
+     * @param {Array} input 输入的数组对象，元素可能为数组，也可能是对象
+     */
+    DataV.detect = function (input) {
+        var first = input[0];
+        if (_.isArray(first)) {
+            var withHead = _.all(first, function (item) {
+                return !DataV.isNumeric(item);
+            });
+            return withHead ? "Table_WITH_HEAD" : "Table";
+        } else if (_.isObject(first)) {
+            return "List";
+        } else {
+            return "Unknown";
+        }
+    };
+
+    /**
+     * 将一个对象集合转化为二维表格，第一行为key，后续为每个对象的数据
+     * Examples:
+     * ```
+     *  [
+     *    {"username": "JacksonTian", "nick": "朴灵", "hometown": "Chongqing"},
+     *    {"username": "Fengmk2", "nick": "苏千", "hometown": "Guangzhou"}
+     *  ];
+     * =>
+     *  [
+     *    ["username", "nick", "hometown"],
+     *    ["JacksonTian", "朴灵", "Chongqing"],
+     *    ["Fengmk2", "苏千", "Guangzhou"]
+     *  ]
+     * ```
+     * @param {Array} list 待转化的二维表集合
+     */
+    DataV.tablify = function (list) {
+      if (!list.length) {
+        return [];
+      }
+      var keys = _.keys(list[0]);
+      var ret = [keys];
+      _.each(list, function (obj, index) {
+        ret.push(_.values(obj));
+      });
+      return ret;
+    };
+
+    /**
+     * tablify的反向工程，如果不传入head，那么第一行取出作为key，后续当作数据
+     * Examples:
+     * ```
+     *  [
+     *    ["username", "nick", "hometown"],
+     *    ["JacksonTian", "朴灵", "Chongqing"],
+     *    ["Fengmk2", "苏千", "Guangzhou"]
+     *  ]
+     * =>
+     *  [
+     *    {"username": "JacksonTian", "nick": "朴灵", "hometown": "Chongqing"},
+     *    {"username": "Fengmk2", "nick": "苏千", "hometown": "Guangzhou"}
+     *  ];
+     * ```
+     * @param {Array} table 二维表数据
+     * @param {Array} head 可选的表头数组，如果不指定，将取出二维表数据第一行作为表头
+     */
+    DataV.collectionify = function (table, head) {
+      var ret = [];
+      if (table.length < 2) {
+        return ret;
+      }
+      var keys = head || table[0];
+      _.each(table.slice(1), function (row) {
+        var obj = {};
+        _.each(keys, function (key, index) {
+          obj[key] = row[index];
+        });
+        ret.push(obj);
+      });
+      return ret;
     };
 
     /**
@@ -26335,8 +26411,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var Chart = DataV.extend(EventProxy, {
         type: "Chart",
         initialize: function (node, options) {
+            // 默认设置
             this.defaults = {};
+            // 插件
             this.plugins = {};
+            // 纬度
+            this.dimension = {};
         }
     });
 
@@ -26414,6 +26494,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             delete this[name];
         }
         return this;
+    };
+
+    /**
+     * 数据源映射
+     */
+    Chart.prototype.map = function (map) {
+        var that = this;
+        _.forEach(map, function (val, key) {
+            if (that.dimension.hasOwnProperty(key)) {
+                that.dimension[key].index = map[key];
+            }
+        });
+        var ret = {};
+        _.forEach(that.dimension, function (val, key) {
+            ret[key] = val.index;
+        });
+
+        ret.hasField = _.any(ret, function (val) {
+            return typeof val === 'string';
+        });
+        return ret;
     };
 
     DataV.Chart = Chart;
@@ -27470,7 +27571,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     return Brush;
 });
 
-﻿/*global Raphael, d3 */
+/*global Raphael, d3 */
 /*!
  * Bubble的兼容性定义
  */
@@ -27540,7 +27641,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     });
 
     /**
-     * create a backCanvas for the visualization
+     * Creates a backCanvas for the visualization
      */
     Bubble.prototype.createCanvas = function () {
         var conf = this.defaults;
@@ -27562,25 +27663,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
-     * choose bubble graph setted visualization dimens orderly
+     * Chooses bubble graph setted visualization dimens orderly
      */
     Bubble.prototype.chooseDimensions = function (dimen) {
         var conf = this.defaults;
-        conf.dimensions = [];
-        var strInArray = function (str, array) {
-            for (var i = 0, l = array.length; i < l; i++){
-                if (array[i] === str) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        for(var i = 0, l = dimen.length; i < l; i++){
-            if(strInArray(dimen[i], conf.allDimensions)) {
-                conf.dimensions.push(dimen[i]);
-            }
-        }
+        conf.dimensions = dimen.filter(function (item) {
+            return _.indexOf(conf.allDimensions, item) !== -1;
+        });
 
         this.timeDimen = conf.dimensions[0];
         this.keyDimen = conf.dimensions[1];
@@ -27597,11 +27686,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.times.push(this.source[i][this.timeDimen]);
         }
 
-        this.times.uniq();
-        this.keys.uniq();
-        for (var i = 0, l = this.times.length; i < l; i++) {
-            this.timeKeys.push(i);
-        }
+        this.times = _.uniq(this.times);
+        this.keys = _.uniq(this.keys);
+        this.timeKeys = _.range(this.times.length);
         this.startTime = 0;
     };
 
@@ -27616,10 +27703,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         conf.dimensions = source[0];
 
         this.source = [];
-        for(var i = 1, l = source.length; i < l; i++){
+        for (var i = 1, l = source.length; i < l; i++){
             var dot = {},
                 dimen = conf.allDimensions;
-            for(var j=0, ll=dimen.length; j < ll; j++){
+            for (var j=0, ll=dimen.length; j < ll; j++){
                 dot[dimen[j]] = source[i][j];
             }
             this.source.push(dot);
@@ -27627,14 +27714,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
         // judge dimesions type auto
         conf.dimensionType = {};
-        function isNumber(n) {
-            return !isNaN(parseFloat(n)) && isFinite(n);
-        }
-        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+        for (var i = 0, l = conf.allDimensions.length; i < l; i++){
             var type = "quantitative";
-            for(var j = 1, ll = source.length; j < ll; j++){
+            for (var j = 1, ll = source.length; j < ll; j++){
                 var d = source[j][i];
-                if(d && (! isNumber(d))){
+                if(d && (!DataV.isNumeric(d))){
                     type = "ordinal";
                     break;
                 }
@@ -27643,12 +27727,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         // set default dimensionDomain
-        for(var i = 0, l = conf.allDimensions.length; i < l; i++){
+        for (var i = 0, l = conf.allDimensions.length; i < l; i++){
             var dimen = conf.allDimensions[i];
-            if(conf.dimensionType[dimen] === "quantitative"){
+            if (conf.dimensionType[dimen] === "quantitative") {
                 conf.dimensionDomain[dimen] = d3.extent(this.source,
-                     function(p){return Math.abs(p[dimen])});
-            }else{
+                     function (p) {return Math.abs(p[dimen]);});
+            } else {
                 conf.dimensionDomain[dimen] =
                     this.source.map(function(p){return p[dimen]});
             }
@@ -27669,8 +27753,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.times.push(this.source[i][this.timeDimen]);
         }
 
-        this.times.uniq();
-        this.keys.uniq();
+        this.times = _.uniq(this.times);
+        this.keys = _.uniq(this.keys);
         for (var i = 0, l = this.times.length; i < l; i++) {
             this.timeKeys.push(i);
         }
@@ -27681,11 +27765,12 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * different visualization scale is defined here
      */
     Bubble.prototype.getScale = function() {
+        var that = this;
         var conf = this.defaults;
             m = conf.borderMargin,
             w = conf.width - m[0] - m[2],
             h = conf.height - m[1] - m[3],
-            colorData = [],
+            
             maxRadius = conf.maxRadius,
             minRadius = conf.minRadius,
             backCanvas = this.backCanvas,
@@ -27715,11 +27800,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         this.c = {};
         this.c[colorDimen] = this.colorDB({mode: "random", ratio: 0.5});
 
-        for (var i = 0, l = this.keys.length; i < l; i++) {
-            c0 = this.getColorData(this.keys[i]);
-            colorData.push(c0);
-        }
-        colorData.uniq();
+        var colorData = _.uniq(this.keys.map(function (key) {
+            return that.getColorData(key);
+        }));
 
         // draw colorbar
         var tagArea = [20, (conf.height - m[3] - colorData.length * 23), 200, 220],
@@ -27970,6 +28053,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         var floatTag = this.floatTag;
+        var that = this;
         var tip = '<b>' + that.keyDimen + ':{key}</b><br/><b>' +
             that.xDimen + ':{xDimen}</b><br/><b>' +
             that.yDimen + ':{yDimen}</b><br/><b>' +
@@ -28271,27 +28355,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         var p = (year-lowYear) / (highYear-lowYear);
         var value = +lower + +((higher-lower)*p) ;
         return value;
-    };
-
-    /**
-     * make an array's every element unique by delete other same element
-     * TODO: 用underscore的uniq替换该方法
-     */
-    Array.prototype.uniq = function () {
-        var temp = {},
-            len = this.length;
-
-        for (var i = 0; i < len; i++) {
-            if (typeof temp[this[i]] == "undefined") {
-                temp[this[i]] = 1;
-            }
-        }
-        this.length = 0;
-        len = 0;
-        for (var i in temp) {
-            this[len++] = i;
-        }
-        return this;
     };
 
     /**
@@ -30668,523 +30731,509 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     return Force;
 });
-﻿/*global Raphael, d3, $, define */
+/*global Raphael, d3, $, define, _ */
+/*!
+ * Column图的兼容性定义
+ */
 ;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
+  if (typeof define === 'function') { // Module
+    define(definition);
+  } else { // Assign to common namespaces or simply the global object (window)
+    this[name] = definition(function (id) { return this[id];});
+  }
+})('Column', function (require) {
+  var DataV = require('DataV');
+
+  /**
+   * Column构造函数
+   * Creates Column in a DOM node with id "chart", default width is 522; height is 522px;
+   * Options:
+   *
+   * - `width` 宽度，默认为节点宽度
+   * - `yBase` 纵坐标的基线值，有的以0为起始值，有的则以数据中的最小值为起始值
+   * - `gap` 组与组之间的缝隙宽度
+   *
+   * Examples:
+   * ```
+   * var column = new Column("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
+   * ```
+   * @param {Mix} node The dom node or dom node Id
+   * @param {Object} options options json object for determin column style.
+   */
+  var Column = DataV.extend(DataV.Chart, {
+    initialize: function (node, options) {
+      this.type = "Column";
+      this.node = this.checkContainer(node);
+
+      /**
+       * 柱纬度
+       */
+      this.dimension.column = {
+        type: "string",
+        required: true,
+        index: 0
+      };
+      /**
+       * 横向纬度
+       */
+      this.dimension.x = {
+        type: "string",
+        required: true,
+        index: 1
+      };
+      /**
+       * 值纬度
+       */
+      this.dimension.value = {
+        type: "number",
+        required: true,
+        index: 2
+      };
+
+      this.defaults.typeNames = [];
+      // canvas parameters
+      this.defaults.width = 522;
+      this.defaults.height = 522;
+      this.defaults.margin = 50;
+      this.defaults.gap = 15;
+      this.defaults.circleR = 3;
+      this.defaults.barColor = ["#308BE6","#8EEC00","#DDDF0D"];
+      this.defaults.xTickNumber = 5;
+      this.defaults.yTickNumber = 5;
+
+      this.defaults.yBase = undefined;
+
+      //图例区域的左上顶点坐标x，y，宽，高
+      this.defaults.legendArea = [422, 50, 472, 220];
+      //散点矩阵区域的左上顶点坐标x，y，宽，高
+      this.defaults.diagramArea = [50, 50, 422, 472];
+      this.columnSet = [];
+
+      this.setOptions(options);
+      this.createCanvas();
+      this.initEvents();
     }
-})('Histogram', function (require) {
-    var DataV = require('DataV');
+  });
 
-    /**
-     * Histogram构造函数
-     * Create histogram in a dom node with id "chart", default width is 522; height is 522px;
-     * Options:
-     *
-     *   - `width` 宽度，默认为节点宽度
-     *   - `typeNames` 指定y轴上数据类目
-     *
-     * Examples:
-     * ```
-     * var histogram = new Histogram("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
-     * ```
-     * @param {Mix} node The dom node or dom node Id
-     * @param {Object} options options json object for determin histogram style.
-     */
-    var Histogram = DataV.extend(DataV.Chart, {
-        initialize: function (node, options) {
-            this.type = "Histogram";
-            this.node = this.checkContainer(node);
-            this.defaults = {};
+  /**
+   * 创建画布
+   */
+  Column.prototype.createCanvas = function () {
+    var conf = this.defaults;
+    this.node.style.position = "relative";
+    this.canvas = new Raphael(this.node, conf.width, conf.height);
+  };
 
-            // Properties
-            this.defaults.dimensionX = {}; //dimension of X axis(horizonal).  array type
-            this.defaults.demensionY = {}; //dimension of Y axis(vertical).  array type
-            this.defaults.allDimensions = {};
-            this.defaults.dimensionDomain = {};
-            this.defaults.typeNames = [];
-
-            // canvas parameters
-            this.defaults.width = 522;
-            this.defaults.height = 522;
-            this.defaults.margin = 50;
-            this.defaults.gap = 15;
-            this.defaults.circleR = 3;
-            this.defaults.barColor = ["#308BE6","#8EEC00"];
-            
-            //图例区域的左上顶点坐标x，y，宽，高
-            this.defaults.legendArea = [422, 50, 472, 220];
-            //散点矩阵区域的左上顶点坐标x，y，宽，高
-            this.defaults.diagramArea = [50, 50, 422, 472];
-
-            this.defaults.typeName = "undefined"; //默认情况是没有分类
-            this.defaults.tagDimen = "undefined";
-
-
-            this.setOptions(options);
-            this.createCanvas();
-        }   
+  Column.prototype.initEvents = function () {
+    var that = this;
+    this.on('legendOver', function (columnIndex) {
+      that.columnSet.forEach(function (set, index) {
+        if (index !== columnIndex) {
+          set.attr({
+            "fill-opacity": 0.3
+          });
+        }
+      });
     });
-	/**
-     * 创建画布
-     */
-	Histogram.prototype.createCanvas = function () {
-        var conf = this.defaults;
-        this.node.style.position = "relative";
-        this.canvas = new Raphael(this.node, conf.width, conf.height);
 
-        this.canvasF = document.getElementById(this.container);
-        this.floatTag = DataV.FloatTag()(this.canvasF);
-        this.floatTag.css({"visibility": "hidden"});
-	};
-	/**
-     * 设置数据源
-     *
-     * Examples：
-     * ```
-     * histogram.setSource(source);
-     * ```
-     *
-     * @param {Array} source 数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据
-     */
-	Histogram.prototype.setSource = function (source) {
-        var conf = this.defaults;
-        var i, j, l;
-        var xTemp = [],
-            yTemp = [];
-        xTemp = source[0][0];
-        yTemp = source[0][1];
-        
-        conf.allDimensions = source[0];
-        conf.dimensionX = xTemp;
-        conf.dimensionY = yTemp;
-        conf.xAxisData = [];
-        this.source = [];
-        
-        for (i = 1, l = source.length; i < l; i++) {
-            if (conf.typeNames.length == 1) {
-                var line = {}, dimenT = conf.allDimensions;
-                for (j = 0, ll = dimenT.length; j < ll; j++) {
-                    line[dimenT[j]] = source[i][j]; //each line is an array, contains value for each dimension
-                }
-                this.source.push(line);
-            }
-            else if (conf.typeNames.length == 2) {
-                var lineY = {}, lineZ = {}, dimenT = conf.allDimensions;
-                lineY[dimenT[0]] = i;
-                lineY[dimenT[1]] = source[i][1];
-                this.source.push(lineY);
-                lineZ[dimenT[0]] = i;
-                lineZ[dimenT[1]] = source[i][2];
-                this.source.push(lineZ);
-                conf.xAxisData.push(source[i][0]);
-            }
+    this.on('legendOut', function (columnIndex) {
+      that.columnSet.forEach(function (set, index) {
+        set.attr({
+          "fill-opacity": 1
+        });
+      });
+    });
+
+    this.on('legendClick', function (clicked, columnIndex) {
+      that.clicked = clicked;
+      that.clickedColumnIndex = columnIndex;
+      that.columnSet.forEach(function (set, index) {
+        if (index !== columnIndex) {
+          if (clicked) {
+            set.attr({"fill-opacity": 0.1});
+          } else {
+            set.attr({"fill-opacity": 0.5});
+          }
+        } else {
+          set.attr({"fill-opacity": 1});
         }
-        //设置默认的定义域
-        var getExtent = function (s, dimen) {
-            return d3.extent(s, function (p) {
-                return +p[dimen];
-            });
-        };
-        var dimen;
-        for (i = 0, l = conf.allDimensions.length; i < l; i++) {
-            dimen = conf.allDimensions[i];
-            conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
-            conf.dimensionDomain[dimen][0] = 0;
-        }
-	};
-    /**
-     * 设置坐标轴
-     */
-	Histogram.prototype.setAxis = function () {
-        var conf = this.defaults;
-        var tagWidth = conf.width / 5 > 50 ? 50 : conf.width / 5;
-        conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
-        conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
-    
-        var w = conf.diagramArea[2] - 2 * conf.margin;
-        var h = conf.diagramArea[3] - conf.margin;
-		
-        this.x = {};
-        this.y = {};
-        var x = this.x,
-            y = this.y;
-        var tickAr = [5];
-        //设置x轴
-        x[conf.dimensionX] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionX]).range([conf.margin, w]);
-        x[conf.dimensionX].ticks = x[conf.dimensionX].ticks.apply(x[conf.dimensionX], tickAr);
-        //设置y轴
-        y[conf.dimensionY] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionY]).range([h, conf.margin]);
-        y[conf.dimensionY].ticks = y[conf.dimensionY].ticks.apply(y[conf.dimensionY], tickAr);
+      });
+    });
+  };
+
+  /**
+   * 设置数据源
+   * Examples：
+   * ```
+   * column.setSource(source);
+   * ```
+   * @param {Array} source 数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据
+   */
+  Column.prototype.setSource = function (source, map) {
+    var conf = this.defaults;
+    map = this.map(map);
+    var dataTable;
+    if (DataV.detect(source) === 'Table_WITH_HEAD') {
+      dataTable = DataV.collectionify(source);
+    } else {
+      dataTable = source;
+    }
+    this.columns = _.groupBy(dataTable, map.column);
+    this.columnCount = _.keys(this.columns).length;
+    conf.xAxisData = _.pluck(_.first(_.values(this.columns)), map.x);
+    conf.xTickNumber = Math.min(conf.xAxisData.length, conf.xTickNumber);
+    // 纵坐标的范围
+    conf.yExtent = d3.extent(dataTable, function (item) {
+      return item[map.value];
+    });
+    // 纵坐标基线值
+    if (conf.yBase !== undefined) {
+      conf.yExtent.push(conf.yBase);
+      conf.yExtent = d3.extent(conf.yExtent);
+    }
+  };
+
+  /**
+   * 设置坐标轴
+   */
+  Column.prototype.setAxis = function () {
+    var conf = this.defaults;
+    var tagWidth = conf.width / 5 > 50 ? 50 : conf.width / 5;
+    conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
+    conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
+    var w = conf.diagramArea[2] - 2 * conf.margin;
+    var h = conf.diagramArea[3] - conf.margin;
+
+    //设置x轴
+    this.x = d3.scale.linear().domain([0, conf.xAxisData.length]).range([conf.margin, w]);
+    //设置y轴
+    this.value = d3.scale.linear().domain(conf.yExtent).range([h, conf.margin]);
+    var xRange = this.x.range();
+    var valueRange = this.value.range();
+    this.axisPosition = {
+      left: xRange[0],
+      right: xRange[1],
+      up: valueRange[1],
+      down: valueRange[0]
     };
-    /**
-     * 进行柱状图的绘制
-     */
-    Histogram.prototype.drawDiagram = function () {
-        var that = this;
-        var conf = this.defaults;
-        var paper = this.canvas;
-        var x = this.x;
-        var y = this.y;
-        var i, j, k, l;
-        //画坐标轴
-        var axisLines = paper.set();
-        var tickText = paper.set();
-        var hLines = paper.set();
-        var dimenX = conf.dimensionX;
-        var dimenY = conf.dimensionY;
-        var leftPos = x[dimenX].range()[0],
-            rightPos = x[dimenX].range()[1],
-            upPos = y[dimenY].range()[1],
-            downPos = y[dimenY].range()[0];
-        var linePos,
-            lineGap;
-        //X轴
-        ticks = x[dimenX].ticks;
-        for (j = 1; j < ticks.length; j++) {
-            tickText.push(paper.text(x[dimenX](ticks[j]), downPos+10, conf.xAxisData[ticks[j]-1]).attr({
-                "fill": "#878791",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "middle"
-            }).rotate(0, x[dimenX](ticks[j]), upPos));
-            axisLines.push(paper.path("M" + x[dimenX](ticks[j]) + "," + downPos + "L" + x[dimenX](ticks[j]) + "," + (downPos+5)).attr({
-                "stroke": "#D7D7D7",
-                "stroke-width": 2
-            }));
-        }
-        axisLines.push(paper.path("M" + leftPos + "," + upPos + "L" + leftPos + "," + downPos).attr({
-            "stroke": "#D7D7D7",
-            "stroke-width": 2
-        }));
-        //Y轴
-        ticks = y[dimenY].ticks;
-        for (j = 0; j < ticks.length; j++) {
-            tickText.push(paper.text(leftPos - 10, y[dimenY](ticks[j]), ticks[j]).attr({
-                "fill": "#878791",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "end"
-            }).rotate(0, rightPos + 6, y[dimenY](ticks[j])));
-            axisLines.push(paper.path("M" + leftPos + "," + y[dimenY](ticks[j]) + "L" + (leftPos - 5) + "," + y[dimenY](ticks[j])).attr({
-                "stroke": "#D7D7D7",
-                "stroke-width": 2
-            }));
-        }
-        axisLines.push(paper.path("M" + leftPos + "," + downPos + "L" + rightPos + "," + downPos).attr({
-            "stroke": "#D7D7D7",
-            "stroke-width": 2
-        }));
-        var numOfHLine = d3.round((downPos - upPos)/30-1);
-        for (j = 1; j <= numOfHLine; j++) {
-            hLinesPos = downPos - j * 30;
-            hLines.push(paper.path("M" + leftPos + "," + hLinesPos + "L" + rightPos + "," + hLinesPos).attr({
-                "stroke": "#ECECEC",
-                "stroke-width":1
-            }));
-        }
-        //定义变量
-        //bars
-        var barWidth = 8;
-        this.defaults.bars = paper.set();
-        var bars = paper.set();
-        //legend
-        var legendArea = this.defaults.legendArea;
-        var rectBn = paper.set();
-        var underBn = [];
-        var temp;
-        //绘制
-        //bars
-        var mouseOverBar = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum - this.data.seqNum % 2;
-            var rectBn = this.data.rectBn;
-            var clicked = false;
-            var typeSeq = -1;
-            var typeNum = this.data.typeNum;
-            var xPos, yPos;
-            var temp;
-            var paper = bars[0].paper;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked) {
-                    clicked = true;
-                    typeSeq = i;
-                }
-            //hover
-            if(clicked) {
-                if(typeSeq != this.data.seqNum % typeNum)
-                    return;
-                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":0.3
-                    });
-                }
-                bars[this.data.seqNum].attr({
-                    "fill-opacity":1
-                });
+  };
+
+  /**
+   * 绘制坐标
+   */
+  Column.prototype.drawAxis = function () {
+    var that = this;
+    var conf = this.defaults;
+    var paper = this.canvas;
+    var i, j, k, l;
+    //画坐标轴
+    var axisLines = paper.set();
+    var tickText = paper.set();
+    var axis = this.axisPosition;
+    var ticks;
+    // X轴
+    ticks = this.x.ticks(conf.xTickNumber);
+    console.log(ticks);
+    var range = this.x.range();
+    var diff = (range[1] - range[0]) / ticks.length;
+    for (j = 1; j < ticks.length; j++) {
+      var x = this.x(ticks[j]) - diff + conf.gap / 2;
+      tickText.push(paper.text(x, axis.down + 14, conf.xAxisData[ticks[j] - 1]).rotate(0, x, axis.up));
+      axisLines.push(paper.path("M" + x + "," + axis.down + "L" + x + "," + (axis.down + 5)));
+    }
+    tickText.attr({
+      "fill": "#878791",
+      "fill-opacity": 0.7,
+      "font-size": 12,
+      "text-anchor": "middle"
+    });
+
+    axisLines.push(paper.path("M" + axis.left + "," + axis.up + "L" + axis.left + "," + axis.down));
+    axisLines.attr({
+      "stroke": "#D7D7D7",
+      "stroke-width": 2
+    });
+    //Y轴
+    ticks = this.value.ticks(conf.yTickNumber);
+    for (j = 0; j < ticks.length; j++) {
+      tickText.push(paper.text(axis.left - 8, this.value(ticks[j]), ticks[j]).attr({
+        "fill": "#878791",
+        "fill-opacity": 0.7,
+        "font-size": 12,
+        "text-anchor": "end"
+      }).rotate(0, axis.right + 6, this.value(ticks[j])));
+      axisLines.push(paper.path("M" + axis.left + "," + this.value(ticks[j]) + "L" + (axis.left - 5) + "," + this.value(ticks[j])));
+    }
+    axisLines.push(paper.path("M" + axis.left + "," + axis.down + "L" + axis.right + "," + axis.down));
+    axisLines.attr({
+      "stroke": "#D7D7D7",
+      "stroke-width": 2
+    });
+
+    var numOfHLine = d3.round((axis.down - axis.up) / 30 - 1);
+    var hLines = paper.set();
+    for (j = 1; j <= numOfHLine; j++) {
+      var hLinesPos = axis.down - j * 30;
+      hLines.push(paper.path("M" + axis.left + "," + hLinesPos + "L" + axis.right + "," + hLinesPos));
+    }
+    hLines.attr({
+      "stroke": "#ECECEC",
+      "stroke-width": 1
+    });
+  };
+
+  /**
+   * 进行柱状图的绘制
+   */
+  Column.prototype.drawDiagram = function () {
+    var that = this;
+    var conf = this.defaults;
+    var axis = this.axisPosition;
+    var paper = this.canvas;
+    var dim = that.dimension;
+    //bars
+    var maxLength = _.max(this.columns, function (column) {
+      return column.length;
+    }).length;
+    var barWidth = (axis.right - axis.left - maxLength * conf.gap) / maxLength / _.keys(this.columns).length;
+    var columnCount = this.columnCount;
+    var columnSet = this.columnSet;
+    var values = _.values(this.columns);
+    var tagSet = paper.set();
+
+    //bars
+    var mouseOverBar = function (event) {
+      var columnIndex = this.data('column');
+      var xIndex = this.data('index');
+      if (that.clicked && that.clickedColumnIndex !== columnIndex) {
+        return;
+      }
+      tagSet.remove();
+      var currentSet = columnSet.filter(function (set, columnIndex) {
+        return that.clicked ? that.clickedColumnIndex === columnIndex : true;
+      });
+      currentSet.forEach(function (set, columnIndex) {
+        set.animate({
+          "fill-opacity": 0.3
+        }, 10);
+        set[xIndex].animate({
+          "fill-opacity":1
+        }, 10);
+      });
+
+      var hovered = currentSet.map(function (set) {
+        return set[xIndex];
+      });
+      var xPos = _.max(hovered, function (item) {
+        return item.attrs.x;
+      }).attrs.x + barWidth + 8;
+
+      var y = _.map(hovered, function (item) {
+        return item.attrs.y;
+      });
+      // TODO: 防遮罩算法
+      for (var i = 1; i < y.length; i++) {
+        for (var j = i - 1; j >= 0; j--) {
+          var overlapped = y.filter(function (item, index) {
+            return index < i && Math.abs(item - y[i]) < 20;
+          });
+          if (overlapped.length > 0) {
+            var extent = d3.extent(overlapped);
+            if (y[i] <= extent[0]) {
+              y[i] = extent[0] - 20;
             } else {
-                for(i = 0, j = bars.length; i < j; i++) {
-                    if(i == seq) {
-                        i++;
-                    }
-                    else {
-                        
-                            bars[i].attr({
-                                "fill-opacity":0.3
-                            });
-                    }
-                }
+              y[i] = extent[1] + 20;
             }
-            //pins
-            xPos = bars[seq].attrs.x + 4 * typeNum;
-            yPos = bars[seq].attrs.y + bars[seq].attrs.height;
-            //axis x text
-            temp = paper.text(xPos, yPos, this.data.xAxisLabel).attr({
-                "file": "#ffffff",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
-                "font-size": 12,
-                "text-anchor": "middle"
-            });
-            var textWidth = temp.node.clientWidth + 8;
-            temp.remove();
-            //axis x rect
-            temp = paper.rect(xPos - textWidth/2, yPos, textWidth, 20, 2).attr({
-                "fill": "#5f5f5f",
-                "fill-opacity": 1,
-                "stroke": "none"
-            });;
-            bars.push(temp);
-            temp = paper.text(xPos, yPos + 10, this.data.xAxisLabel).attr({
-                "file": "#abcdef",
-                "fill-opacity": 0.7,
-                "font-family": "雅黑",
-                "font-size": 12,
-                "text-anchor": "middle"
-            });
-            bars.push(temp);
-        };
-        
-        var mouseOutBar = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum - this.data.seqNum % 2;
-            var rectBn = this.data.rectBn;
-            var clicked = false;
-            var typeSeq = -1;
-            var typeNum = this.data.typeNum;
-            var temp;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked) {
-                    clicked = true;
-                    typeSeq = i;
-                }
-            //hover
-            if(clicked) {
-                if(typeSeq != this.data.seqNum % typeNum)
-                    return;
-                for(i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":1
-                    });
-                }
-            } else {
-                for(i = 0, j = bars.length; i < j; i++) {
-                    if(i == seq) {
-                        i++;
-                    }
-                    else {
-                        bars[i].attr({
-                            "fill-opacity":1
-                        });
-                    }
-                }
-            }
-            //pins
-            temp = bars.pop();
-            temp.remove();
-            temp = bars.pop();
-            temp.remove();
-        };
-        
-        for (i = 0, j = this.source.length; i < j; i++) {
-            for (k = 0, l = conf.typeNames.length; k < l; k++)
-                if(i%l == k) {
-                    temp = paper.rect((x[dimenX](this.source[i][dimenX])-barWidth * (l / 2 - i % l)), y[dimenY](this.source[i][dimenY]), 
-                        barWidth, downPos - y[dimenY](this.source[i][dimenY])).attr({
-                            "fill": conf.barColor[k],
-                            "fill-opacity": 1,
-                            "stroke": "none"
-                            });
-                    temp.data = {};
-                    temp.data.container = bars;
-                    temp.data.seqNum = i;
-                    temp.data.rectBn = rectBn;
-                    temp.data.typeNum = conf.typeNames.length;
-                    temp.data.xAxisLabel = conf.xAxisData[d3.round((i-1)/l)];
-                    temp.data.yAxisLabel = this.source[i][dimenY];
-                    temp.mouseover(mouseOverBar);
-                    temp.mouseout(mouseOutBar);
-                    bars.push(temp);
-                }
+          }
         }
-        //legend
-        var mouseOverLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var rectBn = this.data.rectBn;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked)
-                    return;
-            //
-            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
-                bars[i].attr({
-                    "fill-opacity":0.3
-                });
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":0.5
-            });
-        };
-        var mouseOutLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var rectBn = this.data.rectBn;
-            for(i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked)
-                    return;
-            //
-            for(i = (seq + 1)%2, j = bars.length; i < j; i+=2) {
-                bars[i].attr({
-                    "fill-opacity":1
-                });
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":0
-            });
-        };
-        var clickLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var clicked = false;
-            var underBn = this.data.underBn;
-            var rectBn = this.data.rectBn;
-            var lastClickedSeq;
-            var typeNum = this.data.typeNum;
-            //check if any legend has been already clicked
-            for(i = 0, j = rectBn.length; i < j; i++) {
-                if(rectBn[i].data.isClicked) {
-                    clicked = true;
-                    lastClickedSeq = i;
-                    break;
-                }
-            }
-            if(this.data.isClicked) {
-                for(i = 0; i < typeNum; i++) {
-                    if(i != seq % typeNum) {
-                        for(var j = i, m = bars.length; j < m; j+=typeNum)
-                            bars[j].attr({
-                                "fill-opacity":0.3
-                            });
-                    }
-                }
-                this.data.isClicked = false;
-            } else if(!clicked) {
-                for(i = 0; i < typeNum; i++) {
-                    if(i != seq % typeNum) {
-                        for(j = i, m = bars.length; j < m; j+=typeNum)
-                            bars[j].attr({
-                                "fill-opacity":0.1
-                            });
-                    }
-                }
-                this.data.isClicked = true;
-            } else {
-                //cancle the clicked button
-                underBn[lastClickedSeq].attr({
-                    "fill-opacity":0
-                });
-                for(i = lastClickedSeq % typeNum, j = bars.length; i < j; i+=typeNum)
-                    bars[i].attr({
-                        "fill-opacity":0.1
-                    });
-                for(i = seq % typeNum, j = bars.length; i < j; i+=typeNum)
-                    bars[i].attr({
-                        "fill-opacity":1
-                    });
-                this.data.rectBn[lastClickedSeq].data.isClicked = false;
-                this.data.isClicked = true;
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":(this.data.isClicked?1:0)
-            });
-        };
-        for (i = 0; i < conf.typeNames.length; i++) {
-            //底框
-            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "#ebebeb",
-                "fill-opacity":0,
-                "stroke": "none"
-            }));
-            //色框
-            temp = paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
-                "fill": conf.barColor[i],
-                "stroke": "none"
-            });
-            //文字
-            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
-                "fill": "black",
-                "fill-opacity": 1,
-                "font-family": "Verdana",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "start"
-            });
-            //选框
-            temp = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "white",
-                "fill-opacity": 0,
-                "stroke": "none"
-                //"r": 3
-            }).data("type", i);
-            temp.mouseover(mouseOverLegend);
-            temp.mouseout(mouseOutLegend);
-            temp.click(clickLegend);
-            temp.data = {};
-            temp.data.seqNum = i;
-            temp.data.container = bars;
-            temp.data.rectBn = rectBn;
-            temp.data.isClicked = false;
-            temp.data.underBn = underBn;
-            temp.data.typeNum = conf.typeNames.length;
-            rectBn.push(temp);
-        }
+      }
+      hovered.forEach(function (item, columnIndex) {
+        var yPos = y[columnIndex];
+        var valueLabel = '' + values[columnIndex][xIndex][dim.value.index];
+        var textWidth = 5 * valueLabel.length + 20;
+
+        var rect = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
+          "fill": conf.barColor[columnIndex],
+          "fill-opacity": 1,
+          "stroke": "none"
+        });
+        var path = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos + "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
+          "fill" : conf.barColor[columnIndex],
+          "stroke" : conf.barColor[columnIndex]
+        });
+        var text = paper.text(xPos + 16, yPos, valueLabel).attr({
+          "fill": "#ffffff",
+          "fill-opacity": 1,
+          "font-weight": "bold",
+          "font-size": 12,
+          "text-anchor": "middle"
+        });
+        tagSet.push(rect, path, text);
+      });
+
+      xPos = hovered.reduce(function (pre, cur) {
+        return pre + cur.attrs.x;
+      }, 0) / hovered.length + barWidth / 2;
+      var xLabel = '' + values[columnIndex][xIndex][dim.x.index];
+      var textWidth = 6 * xLabel.length + 20;
+      //axis x rect
+      var rect = paper.rect(xPos - textWidth / 2, axis.down + 8, textWidth, 20, 2).attr({
+        "fill": "#5f5f5f",
+        "fill-opacity": 1,
+        "stroke": "none"
+      });
+      // axis x text
+      var text = paper.text(xPos, axis.down + 18, xLabel).attr({
+        "fill": "#ffffff",
+        "fill-opacity": 1,
+        "font-weight": "bold",
+        "font-size": 12,
+        "text-anchor": "middle"
+      });
+      var arrow = paper.path("M" + (xPos - 4) + "," + (axis.down + 8) + "L" + xPos + "," + axis.down +
+          "L" + (xPos + 4) + "," + (axis.down + 8) + "H" + xPos + "Z").attr({
+          "fill": "#5F5F5F",
+          "stroke": "#5F5F5F"
+      });
+      tagSet.push(rect, text, arrow);
     };
-    /**
-     * 绘制柱状图
-     * Options:
-     *
-     *   - `width` 宽度，默认为节点宽度
-     *   - `typeNames` 指定y轴上数据类目
-     *
-     * Examples:
-     * ```
-     * histogram.render({"width": 1024})
-     * ```
-     * @param {Object} options options json object for determin histogram style.
+
+    var mouseOutBar = function (event) {
+      var columnIndex = this.data('column');
+      var xIndex = this.data('index');
+      var currentSet = columnSet.filter(function (set, columnIndex) {
+        return that.clicked ? that.clickedColumnIndex === columnIndex : true;
+      });
+      tagSet.animate({"opacity": 0}, 1000, function () {
+        tagSet.remove();
+      });
+      currentSet.forEach(function (set, columnIndex) {
+        set.attr({"fill-opacity": 1});
+      });
+    };
+
+    values.forEach(function (column, index) {
+      columnSet[index] = paper.set();
+      column.forEach(function (row, i) {
+        var value = row[dim.value.index];
+        var height = that.value(value);
+        var x = that.x(i);
+        var rect = paper.rect(x + barWidth * index + conf.gap / 2, height, barWidth, axis.down - height).attr({
+          "fill": conf.barColor[index],
+          "fill-opacity": 1,
+          "stroke": "none"
+        });
+        rect.data('column', index).data('index', i);
+        rect.mouseover(mouseOverBar);
+        rect.mouseout(mouseOutBar);
+        columnSet[index].push(rect);
+      });
+    });
+  };
+
+  /**
+   * 绘制图例
+   */
+  Column.prototype.drawLegend = function () {
+    var that = this;
+    var paper = this.canvas;
+    var legendSet = paper.set();
+    var bgSet = paper.set();
+    var conf = this.defaults;
+    var legendArea = conf.legendArea;
+    var columnCount = this.columnCount;
+    //legend
+    var mouseOverLegend = function (event) {
+      if (legendSet.clicked) {
+        return;
+      }
+      bgSet[this.data('type')].attr({
+        "fill-opacity":0.5
+      });
+      that.fire('legendOver', this.data('type'));
+    };
+
+    var mouseOutLegend = function (event) {
+      if (legendSet.clicked) {
+        return;
+      }
+      bgSet[this.data('type')].attr({"fill-opacity": 0});
+      that.fire('legendOut', this.data('type'));
+    };
+
+    var clickLegend = function (event) {
+      if (legendSet.clicked && legendSet.clickedColumn === this.data('type')) {
+        legendSet.clicked = false;
+      } else {
+        legendSet.clicked = true;
+        legendSet.clickedColumn = this.data('type');
+      }
+      bgSet.attr({"fill-opacity": 0});
+      bgSet[this.data('type')].attr({
+        "fill-opacity": legendSet.clicked ? 1 : 0
+      });
+      that.fire('legendClick', legendSet.clicked, this.data('type'));
+    };
+
+    var labels = _.keys(this.columns);
+    for (var i = 0; i < labels.length; i++) {
+      //底框
+      bgSet.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "#ebebeb",
+        "fill-opacity": 0,
+        "stroke": "none"
+      }));
+      // 色框
+      paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+        "fill": conf.barColor[i],
+        "stroke": "none"
+      });
+      // 文字
+      paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, labels[i]).attr({
+        "fill": "black",
+        "fill-opacity": 1,
+        "font-family": "Verdana",
+        "font-size": 12,
+        "text-anchor": "start"
+      });
+      // 选框
+      var rect = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "white",
+        "fill-opacity": 0,
+        "stroke": "none"
+      }).data("type", i);
+      rect.mouseover(mouseOverLegend);
+      rect.mouseout(mouseOutLegend);
+      rect.click(clickLegend);
+      legendSet.push(rect);
+    }
+  };
+
+  /**
+   * 绘制柱状图
+   * Options:
+   *
+   *   - `width` 宽度，默认为节点宽度
+   *   - `typeNames` 指定y轴上数据类目
+   *
+   * Examples:
+   * ```
+   * column.render({"width": 1024})
+   * ```
+   * @param {Object} options options json object for determin column style.
+   */
+  Column.prototype.render = function (options) {
+    this.setOptions(options);
+    this.canvas.clear();
+    this.setAxis();
+    this.drawAxis();
+    this.drawDiagram();
+    this.drawLegend();
+  };
+    /*!
+     * 导出
      */
-	Histogram.prototype.render = function (options) {
-        this.setOptions(options);
-        this.canvas.clear();
-        this.setAxis();
-        this.drawDiagram();
-	};
-	return Histogram;
+  return Column;
 });
 /*global EventProxy, d3, Raphael, $ */
 /*!
@@ -32242,6 +32291,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.groups = [];
             this.click = 0;
 
+            /**
+             * 标签纬度
+             */
+            this.dimension.label = {
+                type: "string",
+                required: false,
+                index: 0,
+                value: "" // 未指定下标时，使用该值作为默认值
+            };
+            /**
+             * 值纬度
+             */
+            this.dimension.value = {
+                type: "number",
+                required: true,
+                index: 1
+            };
+
             //图的大小设置
             this.defaults.legend = true;
             this.defaults.width = 800;
@@ -32263,25 +32330,6 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             this.createCanvas();
         }
     });
-
-    /**
-     * 饼图纬度描述
-     */
-    Pie.dimension = {};
-    /**
-     * 标签纬度
-     */
-    Pie.dimension.label = {
-        type: "string",
-        required: false
-    };
-    /**
-     * 值纬度
-     */
-    Pie.dimension.value = {
-        type: "number",
-        required: true
-    };
 
     /**
      * 创建画布
@@ -32490,7 +32538,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             }));
         }
         rectBn.forEach(function (d, i) {
-            // TODO 这里的事件建议采用事件委托
+            // TODO: 这里的事件建议采用事件委托
             d.mouseover(function () {
                 if (!that.donutGroups[i].data("click")) {
                     underBn[i].attr('opacity', 0.5);
@@ -32544,9 +32592,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 对原始数据进行处理
      * @param {Array} table 将要被绘制成饼图的二维表数据
      */
-    Pie.prototype.setSource = function (table) {
-        this.groupNames = _.pluck(table, 0);
-        this.groupValue = _.pluck(table, 1).map(function (item) {
+    Pie.prototype.setSource = function (table, map) {
+        map = this.map(map);
+        this.groupNames = _.pluck(table, map.label);
+        this.groupValue = _.pluck(table, map.value).map(function (item) {
             return parseFloat(item);
         });
     };
@@ -37194,7 +37243,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     /**
      * 设置自定义事件
      */
-    Chinamap.prototype.on = function (eventName, callback) {
+    Chinamap.prototype.setCustomEvent = function (eventName, callback) {
         if ($.inArray(eventName, ["areaHoverIn", "areaHoverOut", "areaClick",
                     "wordHoverIn", "wordHoverOut", "wordClick"]) !== -1) {
             this.defaults.customEvent[eventName] = callback;
