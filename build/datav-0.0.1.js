@@ -26424,6 +26424,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     DataV.FloatTag = function () {
         //set floatTag location, warning: the html content must be set before call this func, because jqNode's width and height depend on it's content;
         var _changeLoc = function (m) {
+            //m is mouse location, example: {x: 10, y: 20}
             var x = m.x;
             var y = m.y;
             var floatTagWidth = jqNode.outerWidth();
@@ -26497,10 +26498,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             return floatTag;
         };
 
-        floatTag.changeLoc = function (m) {
-            //m is mouse location, example: {x: 10, y: 20}
-            _changeLoc(m);
-        };
+        floatTag.changeLoc = _changeLoc;
 
         return floatTag;
     };

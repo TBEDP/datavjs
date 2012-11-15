@@ -893,13 +893,13 @@
         //2010 人口统计
         chinamap.setSource();
 
-        chinamap.on('areaHoverIn', function () {
+        chinamap.setCustomEvent('areaHoverIn', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
             this.attr({"fill": "pink"});
         });
-        chinamap.on('areaHoverOut', function () {
+        chinamap.setCustomEvent('areaHoverOut', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");

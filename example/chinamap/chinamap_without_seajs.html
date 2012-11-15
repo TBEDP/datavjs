@@ -162,7 +162,7 @@
         //console.log(chinamap.getCityFormatName("阿拉善盟"));
         //chinamap.setOptions({'levelChangeable': false})o
 
-        chinamap.on('areaHoverIn', function () {
+        chinamap.setCustomEvent('areaHoverIn', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -173,7 +173,7 @@
             state.attr({"fill": "pink"});
             word.attr({"font-weight": "bold"});
         });
-        chinamap.on('areaHoverOut', function () {
+        chinamap.setCustomEvent('areaHoverOut', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -182,7 +182,7 @@
             state.attr({"fill": info.fillColor});
             word.attr({"font-weight": "normal"});
         });
-        chinamap.on('wordHoverIn', function () {
+        chinamap.setCustomEvent('wordHoverIn', function () {
             var map = this.data("map");
             var state = this.data("state");
             var info = this.data("info");
@@ -191,18 +191,18 @@
             map.floatTag.css({"visibility": "visible"});
             state.attr({"fill": "pink"});
         });
-        chinamap.on('wordHoverOut', function () {
+        chinamap.setCustomEvent('wordHoverOut', function () {
             var map = this.data("map");
             var state = this.data("state");
             var info = this.data("info");
             map.floatTag.css({"visibility": "hidden"});
             state.attr({"fill": info.fillColor});
         });
-        chinamap.on('areaClick', function () {
+        chinamap.setCustomEvent('areaClick', function () {
             var info = this.data("info");
             alert("click area " + info.properties.name);
         });
-        chinamap.on('wordClick', function () {
+        chinamap.setCustomEvent('wordClick', function () {
             var info = this.data("info");
             alert("click word " + info.properties.name);
         });
@@ -236,22 +236,7 @@
         };
 
         chinamap.render();
-        /*
-        d3.json("category_ratio.json", function (source) {
-            treemap.setSource(source);
-            treemap.on("leafNodeClick", function () {
-                $("#info").html(this.name + " is a leaf node.");
-            });
-            treemap.on("hoverIn", function () {
-                $("#hover").html("hover " + this.name);
-            });
-            treemap.on("hoverOut", function () {
-                $("#hover").html("leave " + this.name);
-            });
-            
-            treemap.render();
-        });
-        */
+
     </script>
 
   </body>

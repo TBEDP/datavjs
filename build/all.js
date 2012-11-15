@@ -26424,6 +26424,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     DataV.FloatTag = function () {
         //set floatTag location, warning: the html content must be set before call this func, because jqNode's width and height depend on it's content;
         var _changeLoc = function (m) {
+            //m is mouse location, example: {x: 10, y: 20}
             var x = m.x;
             var y = m.y;
             var floatTagWidth = jqNode.outerWidth();
@@ -26497,10 +26498,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             return floatTag;
         };
 
-        floatTag.changeLoc = function (m) {
-            //m is mouse location, example: {x: 10, y: 20}
-            _changeLoc(m);
-        };
+        floatTag.changeLoc = _changeLoc;
 
         return floatTag;
     };
@@ -36080,6 +36078,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     var Chinamap = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
+            var noop = function () {};
             this.type = "Chinamap";
             this.node = this.checkContainer(node);
 
@@ -36576,7 +36575,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             // Canvas
             this.defaults = {};
             this.defaults.geoDataPath = "";
-            this.defaults.width = 750;
+            this.defaults.width = 600;
             this.defaults.height = 500;
             this.defaults.mapId = "0";
             this.defaults.showWords = true; // show words or not
@@ -36594,15 +36593,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
             //event
             this.defaults.customEvent = {
-                areaHoverIn : function () {},
-                areaHoverOut : function () {},
-                areaClick: function () {},
-                wordHoverIn: function () {},
-                wordHoverOut: function () {},
-                wordClick: function () {}
+                areaHoverIn : noop,
+                areaHoverOut : noop,
+                areaClick: noop,
+                wordHoverIn: noop,
+                wordHoverOut: noop,
+                wordClick: noop
                 //mousemove : function () {}
             };
-            this.renderCallback = function () {};
+            this.renderCallback = noop;
 
             this.setOptions(options);
             this.createCanvas();
@@ -36659,24 +36658,21 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * regionType is optional, if it's undefined, then first search province, then city
      */
     Chinamap.prototype.getLoc = function (name, regionType) {
-        var result =  this._searchIndex('loc', name, regionType);
-        return result;
+        return this._searchIndex('loc', name, regionType);
     };
 
     /**
      * get longitude and latitude center by porvince name
      */
     Chinamap.prototype.getProvinceCenter = function (name) {
-        var result =  this.getLoc(name, 'province');
-        return result;
+        return this.getLoc(name, 'province');
     };
 
     /**
      * get longitude and latitude center by city name
      */
     Chinamap.prototype.getCityCenter = function (name) {
-        var result =  this.getLoc(name, 'city');
-        return result;
+        return this.getLoc(name, 'city');
     };
 
     /**
@@ -36684,24 +36680,21 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * regionType is optional, if it's undefined, then first search province, then city
      */
     Chinamap.prototype.getFormatName = function (name, regionType) {
-        var result =  this._searchIndex('fullName', name, regionType);
-        return result;
+        return this._searchIndex('fullName', name, regionType);
     };
 
     /**
      * get fullName by porvince name
      */
     Chinamap.prototype.getProvinceFormatName = function (name) {
-        var result =  this.getFormatName(name, 'province');
-        return result;
+        return this.getFormatName(name, 'province');
     };
 
     /**
      * get fullName by city name
      */
     Chinamap.prototype.getCityFormatName = function (name) {
-        var result =  this.getFormatName(name, 'city');
-        return result;
+        return this.getFormatName(name, 'city');
     };
 
     /**
@@ -36782,68 +36775,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                         );
             }
         }
-        /*
-        */
-        //return this.colorGenerator(d.id);
     };
-    /*
-     Chinamap.prototype.getColor = (function () {
-             return d3.scale.ordinal().range(d3_category10);
-        var color = d3.scale.category10();
-        return function (d) {
-                return color(d.id);
-            };
-    }());
-    */
-    /*
-    Chinamap.prototype.getColor = function (colorJson) {
-        var colorMatrix = DataV.getColor();
-        var color;
-        var colorStyle = colorJson || {};
-        var colorMode = colorStyle.mode || 'default';
-        var i, l;
 
-        switch (colorMode) {
-        case "multiColorGradient":
-            color = (function () {
-                var c = [];
-                colorMatrix.forEach(function (d, i) {
-                    c.push(d[0]);
-                });
-                return function (ratio) {
-                    var index = (c.length - 1) * ratio;
-                    var floor = Math.floor(index);
-                    var ceil = Math.ceil(index);
-                    if (floor === ceil) {
-                        return c[floor];
-                    } else {
-                        return d3.interpolateRgb.apply(null, [c[floor], c[ceil]])(index - floor);
-                    }
-                };
-            }());
-            //color = d3.interpolateRgb.apply(null, ["green", "purple"]);
-            break;
-        case "gradient":
-            var index = colorJson.index || 0;
-            index = index < 0 ? 0 : Math.min(index, colorMatrix.length - 1);
-            color = d3.interpolateRgb.apply(null, [colorMatrix[index][0], colorMatrix[index][1]]);
-            break;
-        case "random":
-        case "default":
-            var ratio = colorStyle.ratio || 0;
-            if (ratio < 0) { ratio = 0; }
-            if (ratio > 1) { ratio = 1; }
-            var colorArray = [];
-            for (i = 0, l = colorMatrix.length; i < l; i++) {
-                var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
-                colorArray.push(colorFunc(ratio));
-            }
-            color = d3.scale.ordinal().range(colorArray);
-            break;
-        }
-        return color;
-    };
-    */
 
     /*
      * 设置数据源
@@ -36908,6 +36841,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     Chinamap.prototype.generatePaths = function () {
         var conf = this.defaults;
+        var customEvent = conf.customEvent;
         var map = this;
         var states = map.states;
         var words = map.words;
@@ -36930,7 +36864,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                                  return;
                               }
                               if (typeof mapCache[d.id] === 'undefined') {
-                                  d3.json(conf.geoDataPath + d.id + ".json", function(j) {
+                                  d3.json(conf.geoDataPath + d.id + ".json", function (j) {
                                       render(d.id, j);
                                   });
                               } else {
@@ -36939,7 +36873,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                           }()) 
                           : (function () {
                               if (typeof map.mapCache[0] === 'undefined') {
-                                  d3.json(conf.geoDataPath + "0.json", function(j) {
+                                  d3.json(conf.geoDataPath + "0.json", function (j) {
                                       render(0, j);
                                   });
                               } else {
@@ -36984,9 +36918,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                         "stroke": "#fff"
                     })
                     .data("info", d)
-                    .click(conf.customEvent.areaClick)
-                    .mouseover(conf.customEvent.areaHoverIn)
-                    .mouseout(conf.customEvent.areaHoverOut);
+                    .click(customEvent.areaClick)
+                    .mouseover(customEvent.areaHoverIn)
+                    .mouseout(customEvent.areaHoverOut);
                     if (conf.levelChangeable) {
                         state.click(getCallback(d));
                     }
@@ -37002,9 +36936,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                         "font-family": '"微软雅黑", "宋体"'
                         })
                     .data("info", d)
-                    .click(conf.customEvent.wordClick)
-                    .mouseover(conf.customEvent.wordHoverIn)
-                    .mouseout(conf.customEvent.wordHoverOut);
+                    .click(customEvent.wordClick)
+                    .mouseover(customEvent.wordHoverIn)
+                    .mouseout(customEvent.wordHoverOut);
                     if (!conf.showWords) {
                         word.hide();
                     }
@@ -37183,8 +37117,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     Chinamap.prototype._scaleLocToPixelLoc = function (scaleLoc) {
         var map = this;
         var scale = map.viewBoxShift.scale;
-        var viewCenter = {'x': map.viewBox[0] + map.viewBox[2] / 2,
-                        'y': map.viewBox[1] + map.viewBox[3] / 2};
+        var viewCenter = {
+            'x': map.viewBox[0] + map.viewBox[2] / 2,
+            'y': map.viewBox[1] + map.viewBox[3] / 2
+        };
         return {
             'x': (scaleLoc.x - viewCenter.x) * scale + map.defaults.width / 2,
             'y': (scaleLoc.y - viewCenter.y) * scale + map.defaults.height / 2
@@ -37192,7 +37128,23 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
-     * 并渲染城市点
+     * 将实际显示点相对于图片左上角的位置（像素距离） 转化为 点在矢量图中的位置
+     */
+    Chinamap.prototype._pixelLocToScaleLoc = function (pixelLoc) {
+        var map = this;
+        var scale = map.viewBoxShift.scale;
+        var viewCenter = {
+            'x': map.viewBox[0] + map.viewBox[2] / 2,
+            'y': map.viewBox[1] + map.viewBox[3] / 2
+        };
+        return {
+            'x': (pixelLoc.x - map.defaults.width / 2) / scale + viewCenter.x,
+            'y': (pixelLoc.y - map.defaults.height / 2) / scale + viewCenter.y
+        };
+    };
+
+    /**
+     * 渲染城市点
      */
     Chinamap.prototype.createCityPoints = function (cities, callback) {
         var conf = this.defaults;
@@ -37210,8 +37162,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         cities.forEach(function (d) {
             //get format name
             var formatName = map.getCityFormatName(d.name);
-            var viewCenter = {'x': map.viewBox[0] + map.viewBox[2] / 2,
-                                'y': map.viewBox[1] + map.viewBox[3] / 2};
+            var viewCenter = {
+                'x': map.viewBox[0] + map.viewBox[2] / 2,
+                'y': map.viewBox[1] + map.viewBox[3] / 2
+            };
             if (typeof formatName === 'undefined') {
                 if (typeof d.lanlon === 'undefined') {
                     return;
