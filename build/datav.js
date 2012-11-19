@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3 */
+/*global d3, _, EventProxy, $, jQuery */
 /*!
  * DataV兼容定义
  */
@@ -26055,7 +26055,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     DataV.Themes.add = function () {
         var args = [].slice.call(arguments, 0);
-        theme = args.pop();
+        var theme = args.pop();
         if (arguments.length < 2) {
             throw new Error("Arguments format error. should be: (themsName, theme)");
         } else if (typeof theme !== "object") {
@@ -26080,7 +26080,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 默认主题
      */
     DataV.Themes.add('default', 'theme0', {
-         COLOR_ARGS: [
+        COLOR_ARGS: [
             ["#3dc6f4", "#8ce3ff"],
             ["#214fd9", "#7396ff"],
             ["#4f21d9", "#9673ff"],
@@ -26367,6 +26367,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
+     * 添加数值边缘检测
+     * @param {Number} number 数字
+     * @param {Number} min 下边缘
+     * @param {Number} max 上边缘
+     * @return {Boolean} 返回边缘检测后的数值
+     */
+    DataV.limit = function (number, min, max) {
+        var ret;
+        if (typeof min !== 'undefined') {
+            ret = number < min ? min : number;
+        }
+        if (typeof max !== 'undefined') {
+            if (max < min) {
+                throw new Error('The max value should bigger than min value');
+            }
+            ret = number > max ? max: number;
+        }
+        return ret;
+    };
+
+    /**
      * 继承
      * @param {Function} parent 父类
      * @param {Object} properties 新属性
@@ -26523,21 +26544,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 浮动标签
      */
     DataV.FloatTag = function () {
-        var _mousemove = function (e) {
-            var jqNode = e.data.jqNode;
-            var container = e.data.container;
-            var mouseToFloatTag = {x: 20, y: 20};
-            var offset = $(container).offset();
-            if (!(e.pageX && e.pageY)) {return false;}
-            var x = e.pageX - offset.left,
-                y = e.pageY - offset.top;
-            var position = $(container).position();
-
-            setContent.call(this);
-
-            //set floatTag location
-            floatTagWidth = jqNode.outerWidth();
-            floatTagHeight = jqNode.outerHeight();
+        //set floatTag location, warning: the html content must be set before call this func, because jqNode's width and height depend on it's content;
+        var _changeLoc = function (m) {
+            //m is mouse location, example: {x: 10, y: 20}
+            var x = m.x;
+            var y = m.y;
+            var floatTagWidth = jqNode.outerWidth();
+            var floatTagHeight = jqNode.outerHeight();
             if (floatTagWidth + x + 2 * mouseToFloatTag.x <=  $(container).width()) {
                 x += mouseToFloatTag.x;
             } else {
@@ -26551,12 +26564,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             jqNode.css("left",  x  + "px");
             jqNode.css("top",  y + "px");
         };
+        var _mousemove = function (e) {
+            var offset = $(container).offset();
+            if (!(e.pageX && e.pageY)) {return false;}
+            var x = e.pageX - offset.left,
+                y = e.pageY - offset.top;
 
+            setContent.call(this);
+            _changeLoc({'x': x, 'y': y});
+        };
+
+        var mouseToFloatTag = {x: 20, y: 20};
         var setContent = function () {};
+        var jqNode;
+        var container;
 
-        function floatTag(cont) {
-            var container = cont;
-            var jqNode = $("<div/>").css({
+        var floatTag = function (cont) {
+            container = cont;
+            jqNode = $("<div/>").css({
                 "border": "1px solid",
                 "border-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.8)",
                 "background-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.75)",
@@ -26574,16 +26599,29 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                 "position": "absolute"
             });
             $(container).append(jqNode)
-                .mousemove({"jqNode": jqNode, "container": container}, _mousemove);
+                .mousemove(_mousemove);
+            jqNode.creator = floatTag;
             return jqNode;
-        }
+        };
 
         floatTag.setContent = function (sc) {
             if (arguments.length === 0) {
                 return setContent;
             }
             setContent = sc;
+            return floatTag;
         };
+
+        floatTag.mouseToFloatTag = function (m) {
+            if (arguments.length === 0) {
+                return mouseToFloatTag;
+            }
+            mouseToFloatTag = m;
+            return floatTag;
+        };
+
+        floatTag.changeLoc = _changeLoc;
+
         return floatTag;
     };
 
