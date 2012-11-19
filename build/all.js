@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3 */
+/*global d3, _, EventProxy, $, jQuery, Raphael */
 /*!
  * DataV兼容定义
  */
@@ -26055,7 +26055,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     DataV.Themes.add = function () {
         var args = [].slice.call(arguments, 0);
-        theme = args.pop();
+        var theme = args.pop();
         if (arguments.length < 2) {
             throw new Error("Arguments format error. should be: (themsName, theme)");
         } else if (typeof theme !== "object") {
@@ -26080,7 +26080,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 默认主题
      */
     DataV.Themes.add('default', 'theme0', {
-         COLOR_ARGS: [
+        COLOR_ARGS: [
             ["#3dc6f4", "#8ce3ff"],
             ["#214fd9", "#7396ff"],
             ["#4f21d9", "#9673ff"],
@@ -26215,7 +26215,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         var startColor = color[0];
-        var colorColor;
+        var endColor;
         var colorCount = color.length;
 
         var hsb;
@@ -26317,7 +26317,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       }
       var keys = _.keys(list[0]);
       var ret = [keys];
-      _.each(list, function (obj, index) {
+      _.each(list, function (obj) {
         ret.push(_.values(obj));
       });
       return ret;
@@ -26367,6 +26367,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
+     * 添加数值边缘检测
+     * @param {Number} number 数字
+     * @param {Number} min 下边缘
+     * @param {Number} max 上边缘
+     * @return {Boolean} 返回边缘检测后的数值
+     */
+    DataV.limit = function (number, min, max) {
+        var ret;
+        if (typeof min !== 'undefined') {
+            ret = number < min ? min : number;
+        }
+        if (typeof max !== 'undefined') {
+            if (max < min) {
+                throw new Error('The max value should bigger than min value');
+            }
+            ret = number > max ? max: number;
+        }
+        return ret;
+    };
+
+    /**
      * 继承
      * @param {Function} parent 父类
      * @param {Object} properties 新属性
@@ -26410,7 +26431,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     var Chart = DataV.extend(EventProxy, {
         type: "Chart",
-        initialize: function (node, options) {
+        initialize: function () {
             // 默认设置
             this.defaults = {};
             // 插件
@@ -26523,21 +26544,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 浮动标签
      */
     DataV.FloatTag = function () {
-        var _mousemove = function (e) {
-            var jqNode = e.data.jqNode;
-            var container = e.data.container;
-            var mouseToFloatTag = {x: 20, y: 20};
-            var offset = $(container).offset();
-            if (!(e.pageX && e.pageY)) {return false;}
-            var x = e.pageX - offset.left,
-                y = e.pageY - offset.top;
-            var position = $(container).position();
-
-            setContent.call(this);
-
-            //set floatTag location
-            floatTagWidth = jqNode.outerWidth();
-            floatTagHeight = jqNode.outerHeight();
+        //set floatTag location, warning: the html content must be set before call this func, because jqNode's width and height depend on it's content;
+        var _changeLoc = function (m) {
+            //m is mouse location, example: {x: 10, y: 20}
+            var x = m.x;
+            var y = m.y;
+            var floatTagWidth = jqNode.outerWidth();
+            var floatTagHeight = jqNode.outerHeight();
             if (floatTagWidth + x + 2 * mouseToFloatTag.x <=  $(container).width()) {
                 x += mouseToFloatTag.x;
             } else {
@@ -26551,12 +26564,24 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             jqNode.css("left",  x  + "px");
             jqNode.css("top",  y + "px");
         };
+        var _mousemove = function (e) {
+            var offset = $(container).offset();
+            if (!(e.pageX && e.pageY)) {return false;}
+            var x = e.pageX - offset.left,
+                y = e.pageY - offset.top;
 
+            setContent.call(this);
+            _changeLoc({'x': x, 'y': y});
+        };
+
+        var mouseToFloatTag = {x: 20, y: 20};
         var setContent = function () {};
+        var jqNode;
+        var container;
 
-        function floatTag(cont) {
-            var container = cont;
-            var jqNode = $("<div/>").css({
+        var floatTag = function (cont) {
+            container = cont;
+            jqNode = $("<div/>").css({
                 "border": "1px solid",
                 "border-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.8)",
                 "background-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.75)",
@@ -26574,16 +26599,29 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                 "position": "absolute"
             });
             $(container).append(jqNode)
-                .mousemove({"jqNode": jqNode, "container": container}, _mousemove);
+                .mousemove(_mousemove);
+            jqNode.creator = floatTag;
             return jqNode;
-        }
+        };
 
         floatTag.setContent = function (sc) {
             if (arguments.length === 0) {
                 return setContent;
             }
             setContent = sc;
+            return floatTag;
         };
+
+        floatTag.mouseToFloatTag = function (m) {
+            if (arguments.length === 0) {
+                return mouseToFloatTag;
+            }
+            mouseToFloatTag = m;
+            return floatTag;
+        };
+
+        floatTag.changeLoc = _changeLoc;
+
         return floatTag;
     };
 
@@ -30714,614 +30752,517 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     return Force;
 });
-/*global Raphael, d3, $, define */
+/*global Raphael, d3, $, define, _ */
+/*!
+ * Column图的兼容性定义
+ */
 ;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
+  if (typeof define === 'function') { // Module
+    define(definition);
+  } else { // Assign to common namespaces or simply the global object (window)
+    this[name] = definition(function (id) { return this[id];});
+  }
+})('Column', function (require) {
+  var DataV = require('DataV');
+
+  /**
+   * Column构造函数
+   * Creates Column in a DOM node with id "chart", default width is 522; height is 522px;
+   * Options:
+   *
+   * - `width` 宽度，默认为节点宽度
+   * - `yBase` 纵坐标的基线值，有的以0为起始值，有的则以数据中的最小值为起始值
+   * - `gap` 组与组之间的缝隙宽度
+   *
+   * Examples:
+   * ```
+   * var column = new Column("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
+   * ```
+   * @param {Mix} node The dom node or dom node Id
+   * @param {Object} options options json object for determin column style.
+   */
+  var Column = DataV.extend(DataV.Chart, {
+    initialize: function (node, options) {
+      this.type = "Column";
+      this.node = this.checkContainer(node);
+
+      /**
+       * 柱纬度
+       */
+      this.dimension.column = {
+        type: "string",
+        required: true,
+        index: 0
+      };
+      /**
+       * 横向纬度
+       */
+      this.dimension.x = {
+        type: "string",
+        required: true,
+        index: 1
+      };
+      /**
+       * 值纬度
+       */
+      this.dimension.value = {
+        type: "number",
+        required: true,
+        index: 2
+      };
+
+      this.defaults.typeNames = [];
+      // canvas parameters
+      this.defaults.width = 522;
+      this.defaults.height = 522;
+      this.defaults.margin = 50;
+      this.defaults.gap = 15;
+      this.defaults.circleR = 3;
+      this.defaults.barColor = ["#308BE6","#8EEC00","#DDDF0D"];
+      this.defaults.xTickNumber = 5;
+      this.defaults.yTickNumber = 5;
+
+      this.defaults.yBase = undefined;
+
+      //图例区域的左上顶点坐标x，y，宽，高
+      this.defaults.legendArea = [422, 50, 472, 220];
+      //散点矩阵区域的左上顶点坐标x，y，宽，高
+      this.defaults.diagramArea = [50, 50, 422, 472];
+      this.columnSet = [];
+
+      this.setOptions(options);
+      this.createCanvas();
+      this.initEvents();
     }
-})('Histogram', function (require) {
-    var DataV = require('DataV');
+  });
 
-    /**
-     * Histogram构造函数
-     * Create histogram in a dom node with id "chart", default width is 522; height is 522px;
-     * Options:
-     *
-     *   - `width` 宽度，默认为节点宽度
-     *   - `typeNames` 指定y轴上数据类目
-     *
-     * Examples:
-     * ```
-     * var histogram = new Histogram("chart", {"width": 500, "height": 600, "typeNames": ["Y", "Z"]});
-     * ```
-     * @param {Mix} node The dom node or dom node Id
-     * @param {Object} options options json object for determin histogram style.
-     */
-    var Histogram = DataV.extend(DataV.Chart, {
-        initialize: function (node, options) {
-            this.type = "Histogram";
-            this.node = this.checkContainer(node);
-            this.defaults = {};
+  /**
+   * 创建画布
+   */
+  Column.prototype.createCanvas = function () {
+    var conf = this.defaults;
+    this.node.style.position = "relative";
+    this.canvas = new Raphael(this.node, conf.width, conf.height);
+  };
 
-            // Properties
-            this.defaults.dimensionX = {}; //dimension of X axis(horizonal).  array type
-            this.defaults.demensionY = {}; //dimension of Y axis(vertical).  array type
-            this.defaults.allDimensions = {};
-            this.defaults.dimensionDomain = {};
-            this.defaults.typeNames = [];
-
-            // canvas parameters
-            this.defaults.width = 522;
-            this.defaults.height = 522;
-            this.defaults.margin = 50;
-            this.defaults.gap = 15;
-            this.defaults.circleR = 3;
-            this.defaults.barColor = ["#308BE6","#8EEC00"];
-            
-            //图例区域的左上顶点坐标x，y，宽，高
-            this.defaults.legendArea = [422, 50, 472, 220];
-            //散点矩阵区域的左上顶点坐标x，y，宽，高
-            this.defaults.diagramArea = [50, 50, 422, 472];
-
-            this.defaults.typeName = "undefined"; //默认情况是没有分类
-            this.defaults.tagDimen = "undefined";
-
-
-            this.setOptions(options);
-            this.createCanvas();
-        }   
+  Column.prototype.initEvents = function () {
+    var that = this;
+    this.on('legendOver', function (columnIndex) {
+      that.columnSet.forEach(function (set, index) {
+        if (index !== columnIndex) {
+          set.attr({
+            "fill-opacity": 0.3
+          });
+        }
+      });
     });
-	/**
-     * 创建画布
-     */
-	Histogram.prototype.createCanvas = function () {
-        var conf = this.defaults;
-        this.node.style.position = "relative";
-        this.canvas = new Raphael(this.node, conf.width, conf.height);
 
-        this.canvasF = document.getElementById(this.container);
-        this.floatTag = DataV.FloatTag()(this.canvasF);
-        this.floatTag.css({"visibility": "hidden"});
-	};
-	/**
-     * 设置数据源
-     *
-     * Examples：
-     * ```
-     * histogram.setSource(source);
-     * ```
-     *
-     * @param {Array} source 数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据
-     */
-	Histogram.prototype.setSource = function (source) {
-        var conf = this.defaults;
-        var i, j, l;
-        var xTemp = [],
-            yTemp = [];
-        xTemp = source[0][0];
-        yTemp = source[0][1];
-        
-        conf.allDimensions = source[0];
-        conf.dimensionX = xTemp;
-        conf.dimensionY = yTemp;
-        conf.xAxisData = [];
-        this.source = [];
-        var dimenT = conf.allDimensions;
-        if (conf.typeNames == null) {
-            conf.typeNames = [];
-            for (i = 0, j = source[0].length; i < j; i++) {
-                conf.typeNames.push(source[0][i]);
-            }
+    this.on('legendOut', function (columnIndex) {
+      that.columnSet.forEach(function (set, index) {
+        set.attr({
+          "fill-opacity": 1
+        });
+      });
+    });
+
+    this.on('legendClick', function (clicked, columnIndex) {
+      that.clicked = clicked;
+      that.clickedColumnIndex = columnIndex;
+      that.columnSet.forEach(function (set, index) {
+        if (index !== columnIndex) {
+          if (clicked) {
+            set.attr({"fill-opacity": 0.1});
+          } else {
+            set.attr({"fill-opacity": 0.5});
+          }
+        } else {
+          set.attr({"fill-opacity": 1});
         }
-        for (i = 1, l = source.length; i < l; i++) {
-            for(j = 1; j <= conf.typeNames.length; j++) {
-                var line = {};
-                line[dimenT[0]] = i;
-                line[dimenT[1]] = source[i][j];
-                this.source.push(line);
-            }
-            conf.xAxisData.push(source[i][0]);
-            
-        }
-        
-        //设置默认的定义域
-        var getExtent = function (s, dimen) {
-            return d3.extent(s, function (p) {
-                return +p[dimen];
-            });
-        };
-        var dimen;
-        for (i = 0, l = conf.allDimensions.length; i < l; i++) {
-            dimen = conf.allDimensions[i];
-            conf.dimensionDomain[dimen] = getExtent(this.source, dimen);
-            conf.dimensionDomain[dimen][0] = 0;
-        }
-	};
-    /**
-     * 设置坐标轴
-     */
-	Histogram.prototype.setAxis = function () {
-        var conf = this.defaults;
-        var tagWidth = conf.width / 5 > 50 ? 50 : conf.width / 5;
-        conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
-        conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
-    
-        var w = conf.diagramArea[2] - 2 * conf.margin;
-        var h = conf.diagramArea[3] - conf.margin;
-		
-        this.x = {};
-        this.y = {};
-        var x = this.x,
-            y = this.y;
-        var tickAr = [5];
-        //设置x轴
-        x[conf.dimensionX] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionX]).range([conf.margin, w]);
-        x[conf.dimensionX].ticks = x[conf.dimensionX].ticks.apply(x[conf.dimensionX], tickAr);
-        //设置y轴
-        y[conf.dimensionY] = d3.scale.linear().domain(conf.dimensionDomain[conf.dimensionY]).range([h, conf.margin]);
-        y[conf.dimensionY].ticks = y[conf.dimensionY].ticks.apply(y[conf.dimensionY], tickAr);
+      });
+    });
+  };
+
+  /**
+   * 设置数据源
+   * Examples：
+   * ```
+   * column.setSource(source);
+   * ```
+   * @param {Array} source 数据源 第一列为排布在x轴的数据，后n列为排布在y轴的数据
+   */
+  Column.prototype.setSource = function (source, map) {
+    var conf = this.defaults;
+    map = this.map(map);
+    var dataTable;
+    if (DataV.detect(source) === 'Table_WITH_HEAD') {
+      dataTable = DataV.collectionify(source);
+    } else {
+      dataTable = source;
+    }
+    this.columns = _.groupBy(dataTable, map.column);
+    this.columnCount = _.keys(this.columns).length;
+
+    conf.xAxisData = _.pluck(_.first(_.values(this.columns)), map.x);
+    conf.xTickNumber = Math.min(conf.xAxisData.length, conf.xTickNumber);
+    // 纵坐标的范围
+    conf.yExtent = d3.extent(dataTable, function (item) {
+      return item[map.value];
+    });
+    // 纵坐标基线值
+    if (conf.yBase !== undefined) {
+      conf.yExtent.push(conf.yBase);
+      conf.yExtent = d3.extent(conf.yExtent);
+    }
+  };
+
+  /**
+   * 设置坐标轴
+   */
+  Column.prototype.setAxis = function () {
+    var conf = this.defaults;
+    var tagWidth = conf.width / 5 > 50 ? 50 : conf.width / 5;
+    conf.legendArea = [conf.width - tagWidth - conf.margin, 0, conf.width, conf.height];
+    conf.diagramArea = [0, 0, conf.width - tagWidth - conf.margin, conf.height];
+    var w = conf.diagramArea[2] - 2 * conf.margin;
+    var h = conf.diagramArea[3] - conf.margin;
+
+    //设置x轴
+    this.x = d3.scale.linear().domain([0, conf.xAxisData.length]).range([conf.margin, w]);
+    //设置y轴
+    this.value = d3.scale.linear().domain(conf.yExtent).range([h, conf.margin]);
+    var xRange = this.x.range();
+    var valueRange = this.value.range();
+    var axis = this.axisPosition = {
+      left: xRange[0],
+      right: xRange[1],
+      up: valueRange[1],
+      down: valueRange[0]
     };
-    /**
-     * 进行柱状图的绘制
-     */
-    Histogram.prototype.drawDiagram = function () {
-        var that = this;
-        var conf = this.defaults;
-        var paper = this.canvas;
-        var x = this.x;
-        var y = this.y;
-        var i, j, k, l;
-        //画坐标轴
-        var axisLines = paper.set();
-        var tickText = paper.set();
-        var hLines = paper.set();
-        var dimenX = conf.dimensionX;
-        var dimenY = conf.dimensionY;
-        var leftPos = x[dimenX].range()[0],
-            rightPos = x[dimenX].range()[1],
-            upPos = y[dimenY].range()[1],
-            downPos = y[dimenY].range()[0];
-        var linePos,
-            lineGap;
-        //X轴
-        ticks = x[dimenX].ticks;
-        for (j = 1; j < ticks.length; j++) {
-            tickText.push(paper.text(x[dimenX](ticks[j]), downPos+10, conf.xAxisData[ticks[j]-1]).attr({
-                "fill": "#878791",
-                "fill-opacity": 0.7,
-                "font-family": "宋",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "middle"
-            }).rotate(0, x[dimenX](ticks[j]), upPos));
-            axisLines.push(paper.path("M" + x[dimenX](ticks[j]) + "," + downPos + "L" + x[dimenX](ticks[j]) + "," + (downPos+5)).attr({
-                "stroke": "#D7D7D7",
-                "stroke-width": 2
-            }));
-        }
-        axisLines.push(paper.path("M" + leftPos + "," + upPos + "L" + leftPos + "," + downPos).attr({
-            "stroke": "#D7D7D7",
-            "stroke-width": 2
-        }));
-        //Y轴
-        ticks = y[dimenY].ticks;
-        for (j = 0; j < ticks.length; j++) {
-            tickText.push(paper.text(leftPos - 10, y[dimenY](ticks[j]), ticks[j]).attr({
-                "fill": "#878791",
-                "fill-opacity": 0.7,
-                "font-family": "宋",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "end"
-            }).rotate(0, rightPos + 6, y[dimenY](ticks[j])));
-            axisLines.push(paper.path("M" + leftPos + "," + y[dimenY](ticks[j]) + "L" + (leftPos - 5) + "," + y[dimenY](ticks[j])).attr({
-                "stroke": "#D7D7D7",
-                "stroke-width": 2
-            }));
-        }
-        axisLines.push(paper.path("M" + leftPos + "," + downPos + "L" + rightPos + "," + downPos).attr({
-            "stroke": "#D7D7D7",
-            "stroke-width": 2
-        }));
-        var numOfHLine = d3.round((downPos - upPos)/30-1);
-        for (j = 1; j <= numOfHLine; j++) {
-            hLinesPos = downPos - j * 30;
-            hLines.push(paper.path("M" + leftPos + "," + hLinesPos + "L" + rightPos + "," + hLinesPos).attr({
-                "stroke": "#ECECEC",
-                "stroke-width":1
-            }));
-        }
-        //定义变量
-        //bars
-        var barWidth = 8;
-        this.defaults.bars = paper.set();
-        var bars = paper.set();
-        //legend
-        var legendArea = this.defaults.legendArea;
-        var rectBn = paper.set();
-        var underBn = [];
-        var temp;
-        //绘制
-        //bars
-        var mouseOverBar = function (event) {
-            var bars = this.data.container;
-            var rectBn = this.data.rectBn;
-            var clicked = false;
-            var typeSeq = -1;
-            var typeNum = this.data.typeNum;
-            var seq = this.data.seqNum - this.data.seqNum % typeNum;
-            var xPos, yPos;
-            var temp;
-            var paper = bars[0].paper;
-            var i, j, k;
-            var textWidth;
-            for (i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked) {
-                    clicked = true;
-                    typeSeq = i;
-                }
-            //hover
-            if (clicked) {
-                if (typeSeq != this.data.seqNum % typeNum) {
-                    return;
-                }
-                for (i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":0.3
-                    });
-                }
-                bars[this.data.seqNum].attr({
-                    "fill-opacity":1
-                });
-                xPos = bars[this.data.seqNum].attrs.x + 16;
-                yPos = bars[this.data.seqNum].attrs.y;
-                textWidth = 5 * bars[this.data.seqNum].data.yAxisLabel.length + 20;
-                temp = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
-                    "fill": this.data.color[this.data.seqNum % typeNum],
-                    "fill-opacity": 1,
-                    "stroke": "none"
-                });
-                bars.push(temp);
-                temp = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos +
-                    "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
-                        "fill" : this.data.color[this.data.seqNum % typeNum],
-                        "stroke" : this.data.color[this.data.seqNum % typeNum]
-                    });
-                bars.push(temp);
-                temp = paper.text(xPos + 16, yPos, bars[this.data.seqNum].data.yAxisLabel).attr({
-                    "fill": "#ffffff",
-                    "fill-opacity": 1,
-                    "font-family": "宋",
-                    "font-weight": "bold",
-                    "font-size": 12,
-                    "text-anchor": "middle"
-                });
-                bars.push(temp);
+    var columnsMaxLen = _.max(this.columns, function (column) {
+      return column.length;
+    }).length;
+    this.barWidth = (axis.right - axis.left - columnsMaxLen * conf.gap) / columnsMaxLen / _.keys(this.columns).length;
+  };
+
+  /**
+   * 绘制坐标
+   */
+  Column.prototype.drawAxis = function () {
+    var that = this;
+    var conf = this.defaults;
+    var paper = this.canvas;
+    var i, j, k, l;
+    //画坐标轴
+    var axisLines = paper.set();
+    var tickText = paper.set();
+    var axis = this.axisPosition;
+    var ticks;
+    // X轴
+    ticks = this.x.ticks(conf.xTickNumber);
+    console.log(ticks);
+    var range = this.x.range();
+
+    // 修复显示不从第一个x轴单位显示的bug
+    for (j = 0; j < ticks.length; j++) {
+      // 修改x轴单位显示在所有Column组的中间位置
+      // 修复x轴单位对于柱位置的偏移
+      var x = this.x(ticks[j]) + conf.gap / 2 + this.columnCount * Math.floor(this.barWidth) / 2;
+      tickText.push(paper.text(x, axis.down + 14, conf.xAxisData[ticks[j]]).rotate(0, x, axis.up));
+      axisLines.push(paper.path("M" + x + "," + axis.down + "L" + x + "," + (axis.down + 5)));
+    }
+
+    tickText.attr({
+      "fill": "#878791",
+      "fill-opacity": 0.7,
+      "font-size": 12,
+      "text-anchor": "middle"
+    });
+
+    axisLines.push(paper.path("M" + axis.left + "," + axis.up + "L" + axis.left + "," + axis.down));
+    axisLines.attr({
+      "stroke": "#D7D7D7",
+      "stroke-width": 2
+    });
+    //Y轴
+    ticks = this.value.ticks(conf.yTickNumber);
+    for (j = 0; j < ticks.length; j++) {
+      tickText.push(paper.text(axis.left - 8, this.value(ticks[j]), ticks[j]).attr({
+        "fill": "#878791",
+        "fill-opacity": 0.7,
+        "font-size": 12,
+        "text-anchor": "end"
+      }).rotate(0, axis.right + 6, this.value(ticks[j])));
+      axisLines.push(paper.path("M" + axis.left + "," + this.value(ticks[j]) + "L" + (axis.left - 5) + "," + this.value(ticks[j])));
+    }
+    axisLines.push(paper.path("M" + axis.left + "," + axis.down + "L" + axis.right + "," + axis.down));
+    axisLines.attr({
+      "stroke": "#D7D7D7",
+      "stroke-width": 2
+    });
+
+    var numOfHLine = d3.round((axis.down - axis.up) / 30 - 1);
+    var hLines = paper.set();
+    for (j = 1; j <= numOfHLine; j++) {
+      var hLinesPos = axis.down - j * 30;
+      hLines.push(paper.path("M" + axis.left + "," + hLinesPos + "L" + axis.right + "," + hLinesPos));
+    }
+    hLines.attr({
+      "stroke": "#ECECEC",
+      "stroke-width": 1
+    });
+  };
+
+  /**
+   * 进行柱状图的绘制
+   */
+  Column.prototype.drawDiagram = function () {
+    var that = this;
+    var conf = this.defaults;
+    var axis = this.axisPosition;
+    var paper = this.canvas;
+    var dim = that.dimension;
+    //bars
+    var barWidth = this.barWidth;
+    var columnCount = this.columnCount;
+    var columnSet = this.columnSet;
+    var values = _.values(this.columns);
+    var tagSet = paper.set();
+
+    //bars
+    var mouseOverBar = function (event) {
+      var columnIndex = this.data('column');
+      var xIndex = this.data('index');
+      if (that.clicked && that.clickedColumnIndex !== columnIndex) {
+        return;
+      }
+      tagSet.remove();
+      var currentSet = columnSet.filter(function (set, columnIndex) {
+        return that.clicked ? that.clickedColumnIndex === columnIndex : true;
+      });
+      currentSet.forEach(function (set, columnIndex) {
+        set.animate({
+          "fill-opacity": 0.3
+        }, 10);
+        set[xIndex].animate({
+          "fill-opacity":1
+        }, 10);
+      });
+
+      var hovered = currentSet.map(function (set) {
+        return set[xIndex];
+      });
+      var xPos = _.max(hovered, function (item) {
+        return item.attrs.x;
+      }).attrs.x + barWidth + 8;
+
+      var y = _.map(hovered, function (item) {
+        return item.attrs.y;
+      });
+      // TODO: 防遮罩算法
+      for (var i = 1; i < y.length; i++) {
+        for (var j = i - 1; j >= 0; j--) {
+          var overlapped = y.filter(function (item, index) {
+            return index < i && Math.abs(item - y[i]) < 20;
+          });
+          if (overlapped.length > 0) {
+            var extent = d3.extent(overlapped);
+            if (y[i] <= extent[0]) {
+              y[i] = extent[0] - 20;
             } else {
-                for (i = 0, j = bars.length; i < j; i++) {
-                    if(i == seq) {
-                        i += typeNum - 1;
-                    }
-                    else {
-                        bars[i].attr({
-                            "fill-opacity":0.3
-                        });
-                    }
-                }
-                //check if the labels will be overlapped
-                var overlapped = false;
-                var pos = [];
-                for (i = 0; i < typeNum; i++) {
-                    pos.push(bars[seq + i].attrs.y);
-                }
-                pos.sort();
-                var sub = [];
-                for (i = 0; i < pos.length - 1; i++) {
-                    sub.push(pos[i+1] - pos[i]);
-                }
-                sub.sort();
-                if (sub[0] < 20) {
-                    overlapped = true;
-                }
-                for (i = 0; i < typeNum; i++) {
-                    xPos = bars[seq].attrs.x + 8 * typeNum + 8;
-                    yPos = overlapped?(bars[seq + typeNum - 1].attrs.y + 20 * (typeNum - i - 1)):bars[seq + i].attrs.y;
-                    textWidth = 5 * bars[seq + i].data.yAxisLabel.length + 20;
-                    temp = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
-                        "fill": this.data.color[i],
-                        "fill-opacity": 1,
-                        "stroke": "none"
-                    });
-                    bars.push(temp);
-                    temp = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos +
-                        "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
-                            "fill" : this.data.color[i],
-                            "stroke" : this.data.color[i]
-                        });
-                    bars.push(temp);
-                    temp = paper.text(xPos + 16, yPos, bars[seq + i].data.yAxisLabel).attr({
-                        "fill": "#ffffff",
-                        "fill-opacity": 1,
-                        "font-family": "宋",
-                        "font-weight": "bold",
-                        "font-size": 12,
-                        "text-anchor": "middle"
-                    });
-                    bars.push(temp);
-                }
+              y[i] = extent[1] + 20;
             }
-            //pins
-            xPos = bars[seq].attrs.x + 4 * typeNum;
-            yPos = bars[seq].attrs.y + bars[seq].attrs.height;
-            
-            textWidth = 6 * this.data.xAxisLabel.length + 20;
-            //axis x rect
-            temp = paper.rect(xPos - textWidth/2, yPos + 8, textWidth, 20, 2).attr({
-                "fill": "#5f5f5f",
-                "fill-opacity": 1,
-                "stroke": "none"
-            });;
-            bars.push(temp);
-            //axis x text
-            temp = paper.text(xPos, yPos + 18, this.data.xAxisLabel).attr({
-                "fill": "#ffffff",
-                "fill-opacity": 1,
-                "font-family": "宋",
-                "font-weight": "bold",
-                "font-size": 12,
-                "text-anchor": "middle"
-            });
-            bars.push(temp);
-            temp = paper.path("M" + (xPos - 4) + "," + (yPos + 8) + "L" + xPos + "," + yPos +
-                "L" + (xPos + 4) + "," + (yPos + 8) + "H" + xPos + "Z").attr({
-                    "fill" : "#5F5F5F",
-                    "stroke" : "#5F5F5F"
-                });
-            bars.push(temp);
-        };
-        
-        var mouseOutBar = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum - this.data.seqNum % 2;
-            var rectBn = this.data.rectBn;
-            var clicked = false;
-            var typeSeq = -1;
-            var typeNum = this.data.typeNum;
-            var temp;
-            var i, j, k;
-            for (i = 0, j = rectBn.length; i < j; i++) {
-                if (rectBn[i].data.isClicked) {
-                    clicked = true;
-                    typeSeq = i;
-                }
-            }
-            //hover
-            if(clicked) {
-                if (typeSeq != this.data.seqNum % typeNum) {
-                    return;
-                }
-                for (i = this.data.seqNum % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":1
-                    });
-                }
-                for (i = 0; i < 3; i++) {
-                    temp = bars.pop();
-                    temp.remove();
-                }
-            } else {
-                for (i = 0, j = bars.length; i < j; i++) {
-                    bars[i].attr({
-                            "fill-opacity":1
-                    });
-                }
-                for (i = 0, j = typeNum * 3; i < j; i++) {
-                    temp = bars.pop();
-                    temp.remove();
-                }
-            }
-            //pins
-            for (i = 0; i < 3; i++) {
-                temp = bars.pop();
-                temp.remove();
-            }
-        };
-        
-        for (i = 0, j = this.source.length; i < j; i++) {
-            for (k = 0, l = conf.typeNames.length; k < l; k++) {
-                if (i%l == k) {
-                    temp = paper.rect((x[dimenX](this.source[i][dimenX])-barWidth * (l / 2 - i % l)), y[dimenY](this.source[i][dimenY]), 
-                        barWidth, downPos - y[dimenY](this.source[i][dimenY])).attr({
-                            "fill": conf.barColor[k],
-                            "fill-opacity": 1,
-                            "stroke": "none"
-                            });
-                    temp.data = {};
-                    temp.data.container = bars;
-                    temp.data.seqNum = i;
-                    temp.data.rectBn = rectBn;
-                    temp.data.typeNum = conf.typeNames.length;
-                    temp.data.xAxisLabel = conf.xAxisData[Math.floor(i/l)];
-                    temp.data.yAxisLabel = this.source[i][dimenY];
-                    temp.data.color = conf.barColor;
-                    temp.mouseover(mouseOverBar);
-                    temp.mouseout(mouseOutBar);
-                    bars.push(temp);
-                }
-            }
+          }
         }
-        //legend
-        var mouseOverLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var rectBn = this.data.rectBn;
-            var typeNum = this.data.typeNum;
-            var i, j, k;
-            for (i = 0, j = rectBn.length; i < j; i++)
-                if(rectBn[i].data.isClicked)
-                    return;
-            for (k = 0; k < typeNum; k++) {
-                if (seq % typeNum != k) {
-                    for (i = k, j = bars.length; i < j; i+=typeNum) {
-                        bars[i].attr({
-                            "fill-opacity":0.3
-                        });
-                    }
-                }
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":0.5
-            });
-        };
-        var mouseOutLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var rectBn = this.data.rectBn;
-            var typeNum = this.data.typeNum;
-            var i, j, k;
-            for (i = 0, j = rectBn.length; i < j; i++) {
-                if(rectBn[i].data.isClicked) {
-                    return;
-                }
-            }
-            //
-            for (k = 0; k < typeNum; k++) {
-                if (seq % typeNum != k) {
-                    for (i = k, j = bars.length; i < j; i+=typeNum) {
-                        bars[i].attr({
-                            "fill-opacity":1
-                        });
-                    }
-                }
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":0
-            });
-        };
-        var clickLegend = function (event) {
-            var bars = this.data.container;
-            var seq = this.data.seqNum;
-            var clicked = false;
-            var underBn = this.data.underBn;
-            var rectBn = this.data.rectBn;
-            var lastClickedSeq;
-            var typeNum = this.data.typeNum;
-            var i, j, k;
-            //check if any legend has been already clicked
-            for (i = 0, j = rectBn.length; i < j; i++) {
-                if (rectBn[i].data.isClicked) {
-                    clicked = true;
-                    lastClickedSeq = i;
-                    break;
-                }
-            }
-            if(this.data.isClicked) {
-                for(i = 0; i < typeNum; i++) {
-                    if(i != seq % typeNum) {
-                        for(var j = i, m = bars.length; j < m; j+=typeNum) {
-                            bars[j].attr({
-                                "fill-opacity":0.3
-                            });
-                        }
-                    }
-                }
-                this.data.isClicked = false;
-            } else if(!clicked) {
-                for (i = 0; i < typeNum; i++) {
-                    if (i != seq % typeNum) {
-                        for (j = i, m = bars.length; j < m; j+=typeNum)
-                            bars[j].attr({
-                                "fill-opacity":0.1
-                            });
-                    }
-                }
-                this.data.isClicked = true;
-            } else {
-                //cancle the clicked button
-                underBn[lastClickedSeq].attr({
-                    "fill-opacity":0
-                });
-                for (i = lastClickedSeq % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":0.1
-                    });
-                }
-                for (i = seq % typeNum, j = bars.length; i < j; i+=typeNum) {
-                    bars[i].attr({
-                        "fill-opacity":1
-                    });
-                }
-                this.data.rectBn[lastClickedSeq].data.isClicked = false;
-                this.data.isClicked = true;
-            }
-            this.data.underBn[seq].attr({
-                "fill-opacity":(this.data.isClicked?1:0)
-            });
-        };
-        for (i = 0; i < conf.typeNames.length; i++) {
-            //底框
-            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "#ebebeb",
-                "fill-opacity":0,
-                "stroke": "none"
-            }));
-            //色框
-            temp = paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
-                "fill": conf.barColor[i],
-                "stroke": "none"
-            });
-            //文字
-            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, conf.typeNames[i]).attr({
-                "fill": "black",
-                "fill-opacity": 1,
-                "font-family": "Verdana",
-                "font-size": 12
-            }).attr({
-                "text-anchor": "start"
-            });
-            //选框
-            temp = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "white",
-                "fill-opacity": 0,
-                "stroke": "none"
-                //"r": 3
-            }).data("type", i);
-            temp.mouseover(mouseOverLegend);
-            temp.mouseout(mouseOutLegend);
-            temp.click(clickLegend);
-            temp.data = {};
-            temp.data.seqNum = i;
-            temp.data.container = bars;
-            temp.data.rectBn = rectBn;
-            temp.data.isClicked = false;
-            temp.data.underBn = underBn;
-            temp.data.typeNum = conf.typeNames.length;
-            rectBn.push(temp);
-        }
+      }
+      hovered.forEach(function (item, columnIndex) {
+        var yPos = y[columnIndex];
+        var valueLabel = '' + values[columnIndex][xIndex][dim.value.index];
+        var textWidth = 5 * valueLabel.length + 20;
+
+        var rect = paper.rect(xPos, yPos - 10, textWidth, 20, 2).attr({
+          "fill": conf.barColor[columnIndex],
+          "fill-opacity": 1,
+          "stroke": "none"
+        });
+        var path = paper.path("M" + xPos + "," + (yPos - 4) + "L" + (xPos - 8) + "," + yPos + "L" + xPos + "," + (yPos + 4) + "V" + yPos + "Z").attr({
+          "fill" : conf.barColor[columnIndex],
+          "stroke" : conf.barColor[columnIndex]
+        });
+        var text = paper.text(xPos + 16, yPos, valueLabel).attr({
+          "fill": "#ffffff",
+          "fill-opacity": 1,
+          "font-weight": "bold",
+          "font-size": 12,
+          "text-anchor": "middle"
+        });
+        tagSet.push(rect, path, text);
+      });
+
+      xPos = hovered.reduce(function (pre, cur) {
+        return pre + cur.attrs.x;
+      }, 0) / hovered.length + barWidth / 2;
+      var xLabel = '' + values[columnIndex][xIndex][dim.x.index];
+      var textWidth = 6 * xLabel.length + 20;
+      //axis x rect
+      var rect = paper.rect(xPos - textWidth / 2, axis.down + 8, textWidth, 20, 2).attr({
+        "fill": "#5f5f5f",
+        "fill-opacity": 1,
+        "stroke": "none"
+      });
+      // axis x text
+      var text = paper.text(xPos, axis.down + 18, xLabel).attr({
+        "fill": "#ffffff",
+        "fill-opacity": 1,
+        "font-weight": "bold",
+        "font-size": 12,
+        "text-anchor": "middle"
+      });
+      var arrow = paper.path("M" + (xPos - 4) + "," + (axis.down + 8) + "L" + xPos + "," + axis.down +
+          "L" + (xPos + 4) + "," + (axis.down + 8) + "H" + xPos + "Z").attr({
+          "fill": "#5F5F5F",
+          "stroke": "#5F5F5F"
+      });
+      tagSet.push(rect, text, arrow);
     };
-    /**
-     * 绘制柱状图
-     * Options:
-     *
-     *   - `width` 宽度，默认为节点宽度
-     *   - `typeNames` 指定y轴上数据类目
-     *
-     * Examples:
-     * ```
-     * histogram.render({"width": 1024})
-     * ```
-     * @param {Object} options options json object for determin histogram style.
+
+    var mouseOutBar = function (event) {
+      var columnIndex = this.data('column');
+      var xIndex = this.data('index');
+      var currentSet = columnSet.filter(function (set, columnIndex) {
+        return that.clicked ? that.clickedColumnIndex === columnIndex : true;
+      });
+      tagSet.animate({"opacity": 0}, 1000, function () {
+        tagSet.remove();
+      });
+      currentSet.forEach(function (set, columnIndex) {
+        set.attr({"fill-opacity": 1});
+      });
+    };
+
+    values.forEach(function (column, index) {
+      columnSet[index] = paper.set();
+      column.forEach(function (row, i) {
+        var value = row[dim.value.index];
+        var height = that.value(value);
+        var x = that.x(i);
+        var rect = paper.rect(x + barWidth * index + conf.gap / 2, height, barWidth, axis.down - height).attr({
+          "fill": conf.barColor[index],
+          "fill-opacity": 1,
+          "stroke": "none"
+        });
+        rect.data('column', index).data('index', i);
+        rect.mouseover(mouseOverBar);
+        rect.mouseout(mouseOutBar);
+        columnSet[index].push(rect);
+      });
+    });
+  };
+
+  /**
+   * 绘制图例
+   */
+  Column.prototype.drawLegend = function () {
+    var that = this;
+    var paper = this.canvas;
+    var legendSet = paper.set();
+    var bgSet = paper.set();
+    var conf = this.defaults;
+    var legendArea = conf.legendArea;
+    var columnCount = this.columnCount;
+    //legend
+    var mouseOverLegend = function (event) {
+      if (legendSet.clicked) {
+        return;
+      }
+      bgSet[this.data('type')].attr({
+        "fill-opacity":0.5
+      });
+      that.fire('legendOver', this.data('type'));
+    };
+
+    var mouseOutLegend = function (event) {
+      if (legendSet.clicked) {
+        return;
+      }
+      bgSet[this.data('type')].attr({"fill-opacity": 0});
+      that.fire('legendOut', this.data('type'));
+    };
+
+    var clickLegend = function (event) {
+      if (legendSet.clicked && legendSet.clickedColumn === this.data('type')) {
+        legendSet.clicked = false;
+      } else {
+        legendSet.clicked = true;
+        legendSet.clickedColumn = this.data('type');
+      }
+      bgSet.attr({"fill-opacity": 0});
+      bgSet[this.data('type')].attr({
+        "fill-opacity": legendSet.clicked ? 1 : 0
+      });
+      that.fire('legendClick', legendSet.clicked, this.data('type'));
+    };
+
+    var labels = _.keys(this.columns);
+    for (var i = 0; i < labels.length; i++) {
+      //底框
+      bgSet.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "#ebebeb",
+        "fill-opacity": 0,
+        "stroke": "none"
+      }));
+      // 色框
+      paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+        "fill": conf.barColor[i],
+        "stroke": "none"
+      });
+      // 文字
+      paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, labels[i]).attr({
+        "fill": "black",
+        "fill-opacity": 1,
+        "font-family": "Verdana",
+        "font-size": 12,
+        "text-anchor": "start"
+      });
+      // 选框
+      var rect = paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "white",
+        "fill-opacity": 0,
+        "stroke": "none"
+      }).data("type", i);
+      rect.mouseover(mouseOverLegend);
+      rect.mouseout(mouseOutLegend);
+      rect.click(clickLegend);
+      legendSet.push(rect);
+    }
+  };
+
+  /**
+   * 绘制柱状图
+   * Options:
+   *
+   *   - `width` 宽度，默认为节点宽度
+   *   - `typeNames` 指定y轴上数据类目
+   *
+   * Examples:
+   * ```
+   * column.render({"width": 1024})
+   * ```
+   * @param {Object} options options json object for determin column style.
+   */
+  Column.prototype.render = function (options) {
+    this.setOptions(options);
+    this.canvas.clear();
+    this.setAxis();
+    this.drawAxis();
+    this.drawDiagram();
+    this.drawLegend();
+  };
+    /*!
+     * 导出
      */
-	Histogram.prototype.render = function (options) {
-        this.setOptions(options);
-        this.canvas.clear();
-        this.setAxis();
-        this.drawDiagram();
-	};
-	return Histogram;
+  return Column;
 });
+
 /*global EventProxy, d3, Raphael, $ */
 /*!
  * Matrix的兼容定义
@@ -32348,371 +32289,363 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     return Parallel;
 });
 
-/*global Raphael, d3 */
+/*global Raphael, d3, $, _ */
 /*!
  * Pie的兼容定义
  */
 ;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) {
-            return this[id];
-        });
-    }
+  if (typeof define === 'function') { // Module
+    define(definition);
+  } else { // Assign to common namespaces or simply the global object (window)
+    this[name] = definition(function (id) {
+      return this[id];
+    });
+  }
 })('Pie', function (require) {
-    var DataV = require('DataV');
+  var DataV = require('DataV');
 
-    /**
-     * 构造函数
-     * @param {Object} node 表示在html的哪个容器中绘制该组件
-     * @param {Object} options 为用户自定义的组件的属性，比如画布大小
-     */
-    var Pie = DataV.extend(DataV.Chart, {
-        type: "Pie",
-        initialize: function (node, options) {
-            this.node = this.checkContainer(node);
-            this.sum = 0;
-            this.groupNames = []; //数组：记录每个group的名字
-            this.groupValue = [];
-            this.groups = [];
-            this.click = 0;
+  /**
+   * 构造函数
+   * @param {Object} node 表示在html的哪个容器中绘制该组件
+   * @param {Object} options 为用户自定义的组件的属性，比如画布大小
+   * Options:
+   * - `width` 图宽度
+   * - `height` 图高度
+   */
+  var Pie = DataV.extend(DataV.Chart, {
+    type: "Pie",
+    initialize: function (node, options) {
+      this.node = this.checkContainer(node);
+      this.sum = 0;
+      this.groupNames = []; //数组：记录每个group的名字
+      this.groupValue = [];
+      this.groups = [];
+      this.click = 0;
 
-            /**
-             * 标签纬度
-             */
-            this.dimension.label = {
-                type: "string",
-                required: false,
-                index: 0,
-                value: "" // 未指定下标时，使用该值作为默认值
-            };
-            /**
-             * 值纬度
-             */
-            this.dimension.value = {
-                type: "number",
-                required: true,
-                index: 1
-            };
+      /**
+       * 标签纬度
+       */
+      this.dimension.label = {
+        type: "string",
+        required: false,
+        index: 0,
+        value: "" // 未指定下标时，使用该值作为默认值
+      };
+      /**
+       * 值纬度
+       */
+      this.dimension.value = {
+        type: "number",
+        required: true,
+        index: 1
+      };
 
-            //图的大小设置
-            this.defaults.legend = true;
-            this.defaults.width = 800;
-            this.defaults.height = 800;
+      //图的大小设置
+      this.defaults.legend = true;
+      this.defaults.width = 800;
+      this.defaults.height = 800;
 
-            //设置用户指定的属性
-            this.setOptions(options);
+      //设置用户指定的属性
+      this.setOptions(options);
 
-            this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
-            if (this.defaults.legend) {
-                this.xOffset = this.legendArea[2];
-            } else {
-                this.xOffset = 0;
-            }
+      this.legendArea = [20, (this.defaults.height - 20 - 220), 200, 220];
+      if (this.defaults.legend) {
+        this.xOffset = this.legendArea[2];
+      } else {
+        this.xOffset = 0;
+      }
 
-            this.defaults.radius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.3;
-            this.defaults.protrude = this.defaults.radius * 0.1;
-            //创建画布
-            this.createCanvas();
-        }
+      this.defaults.radius = Math.min((this.defaults.width - this.xOffset), this.defaults.height) * 0.3;
+      this.defaults.protrude = this.defaults.radius * 0.1;
+      //创建画布
+      this.createCanvas();
+    }
+  });
+
+  /**
+   * 创建画布
+   */
+  Pie.prototype.createCanvas = function () {
+    this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
+    var canvasStyle = this.node.style;
+    canvasStyle.position = "relative";
+    this.floatTag = DataV.FloatTag()(this.node);
+    this.floatTag.css({
+      "visibility": "hidden"
+    });
+  };
+
+  /**
+   * 获取颜色
+   * @param {Number} i 元素类别编号
+   * @return {String} 返回颜色值
+   */
+  Pie.prototype.getColor = function (i) {
+    var color = DataV.getColor();
+    return color[i % color.length][0];
+  };
+
+  /**
+   * 绘制饼图
+   */
+  Pie.prototype.render = function () {
+    var conf = this.defaults;
+    var floatTag = this.floatTag;
+    var that = this;
+    this.layout();
+    var groups = this.groups;
+
+    //由内外半径、起始角度计算路径字符串
+    var pathCalc = d3.svg.arc()
+    .innerRadius(conf.radius)
+    .outerRadius(0)
+    .startAngle(function (d) {
+      return d.startAngle;
+    }).endAngle(function (d) {
+      return d.endAngle;
     });
 
-    /**
-     * 创建画布
-     */
-    Pie.prototype.createCanvas = function () {
-        this.canvas = new Raphael(this.node, this.defaults.width, this.defaults.height);
-        var canvasStyle = this.node.style;
-        canvasStyle.position = "relative";
-        this.floatTag = DataV.FloatTag()(this.node);
-        this.floatTag.css({
-            "visibility": "hidden"
+    var donutEle;
+    //获取每个环形的字符串表示
+    var spline;
+    var tips;
+    that.donutGroups = that.canvas.set();
+
+    $(this.node).append(this.floatTag);
+    //添加透明效果
+    var mouseOver = function () {
+      floatTag.html('<div style="text-align:center; margin:auto; color:#ffffff">' + this.data('text') + '</div>');
+      floatTag.css({
+        "visibility": "visible"
+      });
+      var index = this.data("donutIndex");
+      if (!this.data('click')) {
+        that.underBn[index].attr('opacity', 0.5).show();
+      }
+      if (that.click === 0) {
+        that.donutGroups.forEach(function (d) {
+          if (index !== d.data("donutIndex")) {
+            d.attr('fill-opacity', 0.5);
+          }
         });
+      }
+      this.attr('fill-opacity', 1);
     };
 
-    /**
-     * 获取颜色
-     * @param {Number} i 元素类别编号
-     * @return {String} 返回颜色值
-     */
-    Pie.prototype.getColor = function (i) {
-        var color = DataV.getColor();
-        return color[i % color.length][0];
+    var mouseOut = function () {
+      floatTag.css({
+        "visibility": "hidden"
+      });
+      var index = this.data("donutIndex");
+      //fade(this.data("donutIndex"), 0.6);
+      if (!this.data('click')) {
+        that.underBn[index].hide();
+      }
+      if (that.click === 0) {
+        that.donutGroups.forEach(function (d) {
+          d.attr('fill-opacity', 1);
+        });
+      } else if (!this.data('click')) {
+        this.attr('fill-opacity', 0.5);
+      }
     };
 
-    /**
-     * 绘制饼图
-     */
-    Pie.prototype.render = function () {
-        var conf = this.defaults;
-        var floatTag = this.floatTag;
-        var that = this;
-        this.layout();
-        var groups = this.groups;
-
-        //由内外半径、起始角度计算路径字符串
-        var pathCalc = d3.svg.arc()
-        .innerRadius(conf.radius)
-        .outerRadius(0)
-        .startAngle(function (d) {
-            return d.startAngle;
-        }).endAngle(function (d) {
-            return d.endAngle;
-        });
-
-        var donutEle;
-        //获取每个环形的字符串表示
-        var spline;
-        var tips;
-        that.donutGroups = that.canvas.set();
-
-        $(this.node).append(this.floatTag);
-
-        //添加透明效果
-
-        var mouseOver = function () {
-            floatTag.html('<div style="text-align:center;margin:auto;color:#ffffff">' + this.data('text') + '</div>');
-            floatTag.css({
-                "visibility": "visible"
-            });
-            var index = this.data("donutIndex");
-            if (!this.data('click')) {
-                that.underBn[index].attr('opacity', 0.5).show();
+    var mouseClick = function () {
+      var index = this.data("donutIndex");
+      var flag = !this.data('click');
+      this.data('click', flag);
+      var a = 0.5 * ((that.groups[index].startAngle + that.groups[index].endAngle) - Math.PI);
+      var nameX = conf.protrude * Math.cos(a);
+      var nameY = conf.protrude * Math.sin(a);
+      if (flag) {
+        if (that.click === 0) {
+          that.donutGroups.forEach(function (d) {
+            if (!d.data('click')) {
+              d.attr('fill-opacity', 0.5);
             }
-            if (that.click === 0) {
-                that.donutGroups.forEach(function (d) {
-                    if (index !== d.data("donutIndex")) {
-                        d.attr('fill-opacity', 0.5);
-                    }
-                });
-            }
-            this.attr('fill-opacity', 1);
-        };
-
-        var mouseOut = function () {
-            floatTag.css({
-                "visibility": "hidden"
-            });
-            var index = this.data("donutIndex");
-            //fade(this.data("donutIndex"), 0.6);
-            if (!this.data('click')) {
-                that.underBn[index].hide();
-            }
-            if (that.click === 0) {
-                that.donutGroups.forEach(function (d) {
-                    d.attr('fill-opacity', 1);
-                });
-            } else if (!this.data('click')) {
-
-                this.attr('fill-opacity', 0.5);
-            }
-        };
-
-        var mouseClick = function () {
-            var index = this.data("donutIndex");
-            var flag = !this.data('click');
-            this.data('click', flag);
-            var a = 0.5 * ((that.groups[index].startAngle + that.groups[index].endAngle) - Math.PI);
-            var nameX = conf.protrude * Math.cos(a);
-            var nameY = conf.protrude * Math.sin(a);
-            if (flag) {
-                if (that.click === 0) {
-                    that.donutGroups.forEach(function (d) {
-                        if (!d.data('click')) {
-                            d.attr('fill-opacity', 0.5);
-                        }
-                    });
-                }
-                that.underBn[index].attr('opacity', 1).show();
-                this.attr('fill-opacity', 1);
-                this.data('nameTag').translate(0, - conf.protrude);
-                this.data('line').translate(0, - conf.protrude);
-                this.translate(nameX, nameY);
-                that.click += 1;
-            } else {
-                this.data('nameTag').translate(0, conf.protrude);
-                this.data('line').translate(0, conf.protrude);
-                this.translate(-nameX, - nameY);
-                that.click -= 1;
-                if (that.click > 0) {
-                    this.attr('fill-opacity', 0.5);
-                }
-            }
-        };
-
-
-        //画圆弧
-        var i;
-        var nameStr;
-        var nameX, nameY;
-        var ro, a;
-        for (i = 0; i <= groups.length - 1; i++) {
-            //画外圈的pie图
-            //计算每个group的path
-            spline = pathCalc(groups[i]);
-            tips = that.groupNames[i] + ": " + Math.round(groups[i].value) + " " + (groups[i].value * 100 / this.sum).toFixed(2) + "%";
-
-            donutEle = that.canvas.path(spline)
-            .translate((conf.width - this.xOffset) / 2 + this.xOffset, conf.height / 2)
-            .data("donutIndex", i)
-            .attr({
-                "path": spline,
-                "fill": that.getColor(i),
-                "stroke": '#ffffff'
-            })
-            .mouseover(mouseOver)
-            .mouseout(mouseOut)
-            .click(mouseClick);
-
-            //每个donut上显示名称
-            ro = (groups[i].startAngle + groups[i].endAngle) * 90 / Math.PI;
-            a = 0.5 * ((groups[i].startAngle + groups[i].endAngle) - Math.PI);
-            nameX = (conf.radius + 2 * conf.protrude) * Math.cos(a);
-            nameY = (conf.radius + 2 * conf.protrude) * Math.sin(a);
-            nameStr = "T" + ((conf.width - that.xOffset) / 2 + that.xOffset) + "," + conf.height / 2 + "R" + ro + "T" + nameX + "," + nameY;
-
-            var line = that.canvas.path("M,0,-" + conf.protrude + "L0," + conf.protrude).transform(nameStr).translate(0, conf.protrude + 9);
-            var nameTag = that.canvas.text().attr("font", "18px Verdana").attr("text", that.groupNames[i]).transform(nameStr);
-
-            donutEle.data('text', tips).data('click', false).data('nameTag', nameTag).data('line', line);
-            that.donutGroups.push(donutEle);
+          });
         }
-
-        if (conf.legend) {
-            this.legend();
+        that.underBn[index].attr('opacity', 1).show();
+        this.attr('fill-opacity', 1);
+        this.data('nameTag').translate(0, - conf.protrude);
+        this.data('line').translate(0, - conf.protrude);
+        this.translate(nameX, nameY);
+        that.click += 1;
+      } else {
+        this.data('nameTag').translate(0, conf.protrude);
+        this.data('line').translate(0, conf.protrude);
+        this.translate(-nameX, - nameY);
+        that.click -= 1;
+        if (that.click > 0) {
+          this.attr('fill-opacity', 0.5);
         }
+      }
     };
 
-    /**
-     * 绘制图例
-     */
-    Pie.prototype.legend = function () {
-        var that = this;
-        var conf = this.defaults;
-        var paper = this.canvas;
-        var legendArea = this.legendArea;
-        this.rectBn = paper.set();
-        var rectBn = this.rectBn;
-        this.underBn = [];
-        var underBn = this.underBn;
-        for (var i = 0, l = this.groups.length; i < l; i++) {
-            //底框
-            underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "#ebebeb",
-                "stroke": "none"
-                //"r": 3
-            }).hide());
-            //色框
-            paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
-                "fill": this.getColor(i),
-                "stroke": "none"
-            });
-            //文字
-            paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
-                "fill": "black",
-                "fill-opacity": 1,
-                "font-family": "Verdana",
-                "font-size": 12,
-                "text-anchor": "start"
-            });
-            //选框
-            rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
-                "fill": "white",
-                "fill-opacity": 0,
-                "stroke": "none"
-                //"r": 3
-            }));
+    //画圆弧
+    var i;
+    var nameStr;
+    var nameX, nameY;
+    var ro, a;
+    for (i = 0; i <= groups.length - 1; i++) {
+      //画外圈的pie图
+      //计算每个group的path
+      spline = pathCalc(groups[i]);
+      tips = that.groupNames[i] + ": " + Math.round(groups[i].value) + " " + (groups[i].value * 100 / this.sum).toFixed(2) + "%";
+
+      donutEle = that.canvas.path(spline)
+      .translate((conf.width - this.xOffset) / 2 + this.xOffset, conf.height / 2)
+      .data("donutIndex", i)
+      .attr({
+        "path": spline,
+        "fill": that.getColor(i),
+        "stroke": '#ffffff'
+      })
+      .mouseover(mouseOver)
+      .mouseout(mouseOut)
+      .click(mouseClick);
+
+      //每个donut上显示名称
+      ro = (groups[i].startAngle + groups[i].endAngle) * 90 / Math.PI;
+      a = 0.5 * ((groups[i].startAngle + groups[i].endAngle) - Math.PI);
+      nameX = (conf.radius + 2 * conf.protrude) * Math.cos(a);
+      nameY = (conf.radius + 2 * conf.protrude) * Math.sin(a);
+      nameStr = "T" + ((conf.width - that.xOffset) / 2 + that.xOffset) + "," + conf.height / 2 + "R" + ro + "T" + nameX + "," + nameY;
+
+      var line = that.canvas.path("M,0,-" + conf.protrude + "L0," + conf.protrude).transform(nameStr).translate(0, conf.protrude + 9);
+      var nameTag = that.canvas.text().attr("font", "18px Verdana").attr("text", that.groupNames[i]).transform(nameStr);
+
+      donutEle.data('text', tips).data('click', false).data('nameTag', nameTag).data('line', line);
+      that.donutGroups.push(donutEle);
+    }
+
+    if (conf.legend) {
+      this.drawLegend();
+    }
+  };
+
+  /**
+   * 绘制图例
+   */
+  Pie.prototype.drawLegend = function () {
+    var that = this;
+    var conf = this.defaults;
+    var paper = this.canvas;
+    var legendArea = this.legendArea;
+    this.rectBn = paper.set();
+    var rectBn = this.rectBn;
+    this.underBn = [];
+    var underBn = this.underBn;
+    for (var i = 0, l = this.groups.length; i < l; i++) {
+      //底框
+      underBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "#ebebeb",
+        "stroke": "none"
+      }).hide());
+      //色框
+      paper.rect(legendArea[0] + 10 + 3, legendArea[1] + 10 + (20 + 3) * i + 6, 16, 8).attr({
+        "fill": this.getColor(i),
+        "stroke": "none"
+      });
+      //文字
+      paper.text(legendArea[0] + 10 + 3 + 16 + 8, legendArea[1] + 10 + (20 + 3) * i + 10, this.groupNames[i]).attr({
+        "fill": "black",
+        "fill-opacity": 1,
+        "font-family": "Verdana",
+        "font-size": 12,
+        "text-anchor": "start"
+      });
+      //选框
+      rectBn.push(paper.rect(legendArea[0] + 10, legendArea[1] + 10 + (20 + 3) * i, 180, 20).attr({
+        "fill": "white",
+        "fill-opacity": 0,
+        "stroke": "none"
+      }));
+    }
+    rectBn.forEach(function (d, i) {
+      // TODO: 这里的事件建议采用事件委托
+      d.mouseover(function () {
+        if (!that.donutGroups[i].data("click")) {
+          underBn[i].attr('opacity', 0.5).show();
         }
-        rectBn.forEach(function (d, i) {
-            // TODO: 这里的事件建议采用事件委托
-            d.mouseover(function () {
-                if (!that.donutGroups[i].data("click")) {
-                    underBn[i].attr('opacity', 0.5);
-                    underBn[i].show();
-                }
-            }).mouseout(function () {
-                if (!that.donutGroups[i].data("click")) {
-                    underBn[i].hide();
-                }
+      }).mouseout(function () {
+        if (!that.donutGroups[i].data("click")) {
+          underBn[i].hide();
+        }
+      });
+      d.click(function () {
+        var a = 0.5 * ((that.groups[i].startAngle + that.groups[i].endAngle) - Math.PI);
+        var nameX = conf.protrude * Math.cos(a);
+        var nameY = conf.protrude * Math.sin(a);
+        if (!that.donutGroups[i].data("click")) {
+          if (that.click === 0) {
+            that.donutGroups.forEach(function (d) {
+              if (!d.data('click')) {
+                d.attr('fill-opacity', 0.5);
+              }
             });
-            d.click(function () {
-                var a = 0.5 * ((that.groups[i].startAngle + that.groups[i].endAngle) - Math.PI);
-                var nameX = conf.protrude * Math.cos(a);
-                var nameY = conf.protrude * Math.sin(a);
-                if (!that.donutGroups[i].data("click")) {
-                    if (that.click === 0) {
-                        that.donutGroups.forEach(function (d) {
-                            if (!d.data('click')) {
-                                d.attr('fill-opacity', 0.5);
-                            }
-                        });
-                    }
-                    underBn[i].attr('opacity', 1).show();
-                    that.donutGroups[i].data("click", true).attr('fill-opacity', 1);
-                    that.donutGroups[i].data('nameTag').translate(0, - conf.protrude);
-                    that.donutGroups[i].data('line').translate(0, - conf.protrude);
-                    that.donutGroups[i].translate(nameX, nameY);
-                    that.click += 1;
-
-                } else if (that.donutGroups[i].data("click")) {
-                    that.donutGroups[i].data('nameTag').translate(0, conf.protrude);
-                    that.donutGroups[i].data('line').translate(0, conf.protrude);
-                    that.donutGroups[i].translate(-nameX, - nameY);
-                    that.click -= 1;
-                    if (that.click > 0) {
-                        that.donutGroups[i].attr('fill-opacity', 0.5);
-                    } else {
-                        that.donutGroups.forEach(function (d) {
-                            d.attr('fill-opacity', 1);
-                        });
-                    }
-                    underBn[i].hide();
-                    that.donutGroups[i].data("click", false);
-
-                }
+          }
+          underBn[i].attr('opacity', 1).show();
+          that.donutGroups[i].data("click", true).attr('fill-opacity', 1);
+          that.donutGroups[i].data('nameTag').translate(0, - conf.protrude);
+          that.donutGroups[i].data('line').translate(0, - conf.protrude);
+          that.donutGroups[i].translate(nameX, nameY);
+          that.click += 1;
+        } else if (that.donutGroups[i].data("click")) {
+          that.donutGroups[i].data('nameTag').translate(0, conf.protrude);
+          that.donutGroups[i].data('line').translate(0, conf.protrude);
+          that.donutGroups[i].translate(-nameX, - nameY);
+          that.click -= 1;
+          if (that.click > 0) {
+            that.donutGroups[i].attr('fill-opacity', 0.5);
+          } else {
+            that.donutGroups.forEach(function (d) {
+              d.attr('fill-opacity', 1);
             });
-        });
-    };
+          }
+          underBn[i].hide();
+          that.donutGroups[i].data("click", false);
+        }
+      });
+    });
+  };
 
-    /**
-     * 对原始数据进行处理
-     * @param {Array} table 将要被绘制成饼图的二维表数据
-     */
-    Pie.prototype.setSource = function (table, map) {
-        map = this.map(map);
-        this.groupNames = _.pluck(table, map.label);
-        this.groupValue = _.pluck(table, map.value).map(function (item) {
-            return parseFloat(item);
-        });
-    };
+  /**
+   * 对原始数据进行处理
+   * @param {Array} table 将要被绘制成饼图的二维表数据
+   */
+  Pie.prototype.setSource = function (table, map) {
+    map = this.map(map);
+    this.groupNames = _.pluck(table, map.label);
+    this.groupValue = _.pluck(table, map.value).map(function (item) {
+      return parseFloat(item);
+    });
+  };
 
-    /**
-     * 创建pie布局
-     */
-    Pie.prototype.layout = function () {
-        var that = this;
+  /**
+   * 创建pie布局
+   */
+  Pie.prototype.layout = function () {
+    var that = this;
+    that.canvas.clear();
+    var acc = 0;
+    this.sum = DataV.sum(this.groupValue);
+    var sum = this.sum;
+    this.groups = this.groupValue.map(function (item, index) {
+      var startAngle = 2 * acc * Math.PI / sum;
+      acc += item;
+      var endAngle = 2 * acc * Math.PI / sum;
+      var ret = {
+        index: index,
+        value: item,
+        startAngle: startAngle,
+        endAngle: endAngle
+      };
+      return ret;
+    });
+  };
 
-        that.canvas.clear();
-
-        var acc = 0;
-        this.sum = DataV.sum(this.groupValue);
-        var sum = this.sum;
-        this.groups = this.groupValue.map(function (item, index) {
-            var startAngle = 2 * acc * Math.PI / sum;
-            acc += item;
-            var endAngle = 2 * acc * Math.PI / sum;
-            var ret = {
-                index: index,
-                value: item,
-                startAngle: startAngle,
-                endAngle: endAngle
-            };
-            return ret;
-        });
-    };
-
-    return Pie;
+  return Pie;
 });
 /*global Raphael, d3, $, define */
 /*!
@@ -33327,1533 +33260,2178 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
     return ScatterplotMatrix;
 });
-/*global Raphael, d3, $, define */
+/*global Raphael, d3, $, define, _ */
 /*!
  * Stream的兼容定义
  */
 ;(function (name, definition) {
-    if (typeof define === 'function') { // Module
-        define(definition);
-    } else { // Assign to common namespaces or simply the global object (window)
-        this[name] = definition(function (id) { return this[id];});
-    }
+  if (typeof define === 'function') { // Module
+    define(definition);
+  } else { // Assign to common namespaces or simply the global object (window)
+    this[name] = definition(function (id) { return this[id];});
+  }
 })('Stream', function (require) {
-    var DataV = require('DataV');
-    var Axis = require('Axis');
+  var DataV = require('DataV');
+  DataV.Axis = require('Axis');
 
-    /*
-     * Stream构造函数
-     * Create stream in a dom node with id "chart", width is 500; height is 600px;
-     * Options:
-     *
-     *   - `width` 宽度，默认为节点宽度
-     *
-     * Examples:
-     * ```
-     * var stream = new Stream("chart", {"width": 500, "height": 600});
-     * ```
-     * @param {Mix} node The dom node or dom node Id
-     * @param {Object} options options json object for determin stream style.
-     */
-    var Stream = DataV.extend(DataV.Chart, {
-        initialize: function (node, options) {
-            this.type = "Stream";
-            this.node = this.checkContainer(node);
+  var Widget = function () {};
+  Widget.prototype.show = function () {
+    this.node.css('visibility', 'visible');
+    return this;
+  };
+  Widget.prototype.hidden = function () {
+    this.node.css('visibility', 'hidden');
+    return this;
+  };
 
-            this.level = 0;
-            // Properties
-            this.defaults.offset = "zero";//"expand";
-            this.defaults.order = "default";
-            this.defaults.columnNameUsed = "auto";
-            this.defaults.rowNameUsed = "auto";
-            this.defaults.topInterval = 0;
-            this.defaults.bottomInterval = 0;
-            this.defaults.legend = true;
-            this.defaults.axis = true;
-            this.defaults.pathLabel = true;
-            this.defaults.fontSize = 12;
-            this.defaults.heightWidthRatio = 0.618;
-            //this.defaults.axisTickNumber = 8; // axis ticks number
-    
-            this.defaults.indexMargin = 3; // if dates.length < indexMargin * 2 + 1, do not show label
-    
-            this.userConfig = {"more": true, "max": 20, "other": 0.1};
+  //streamChart
+  var StreamChart = DataV.extend(DataV.Chart, {
+    initialize: function (node, options) {
+      this.node = this.checkContainer(node);
+      this.defaults = {};
+      this.defaults.width = 500;
+      this.defaults.height = 300;
+      this.defaults.offset = "expand";//zero, expand, silhou-ette, wiggle;
+      this.defaults.order = "default";//default, reverse, inside-out //in this Stream application, it will always be default, the real order is adjusted in Stream's data-process.
 
-            this.timeRange = [];
-            // Canvas
-            this.defaults.width = 750;
-            this.defaults.height = 360;
-            this.defaults.totalWidth = 820;
-            this.defaults.naviBackWidth = 80;
-            this.defaults.legendHeight = 50;
-            this.defaults.legendWidth = 150;
-            this.defaults.legendIndent = 21;
-            this.defaults.axisHeight = 30;
-            this.defaults.margin = [0, 40, 0, 40];
+      this.defaults.animateDuration = 750;
+      this.defaults.animateOrder = undefined;
+      this.paths = undefined;
+      this.source = undefined;
+      this.layoutData = undefined;
+      this.pathSource = undefined; 
+      this.setOptions(options);
+      this.createPaper();
+    }
+  });
 
-            this.defaults.customEventHandle = {"mousemove": null};
+  StreamChart.prototype.createPaper = function () {
+    var conf = this.defaults;
+    this.paper = new Raphael(this.node, conf.width, conf.height);
+  };
 
-            //test related
-            this.defaults.testMakeup = false;
-            this.defaults.testDays = 30;
-            this.defaults.testDataType = 0; //0: random; 1: false random; 2: same; >2: small change;
-    
-            this.setOptions(options);
-            this.createCanvas();
-        }
+  StreamChart.prototype.setSource = function (source) {
+    this.source = source;
+    this.layoutData = this.remapSource(source.slice());
+  };
+
+  StreamChart.prototype.remapSource = function (data) {
+    var row = data.length;
+    var column = data[0].length;
+    var remap = [];
+    for (var i = 0; i < row; i++) {
+      remap[i] = [];
+      for (var j = 0; j < column; j++) {
+        remap[i][j] = {};
+        remap[i][j].x =  j;
+        remap[i][j].y =  data[i][j];
+      }
+    }
+    return remap;
+  };
+
+  StreamChart.prototype.layout = function () {
+    var conf = this.defaults;
+    d3.layout.stack().offset(conf.offset).order(conf.order)(this.layoutData);
+  };
+
+  StreamChart.prototype.generateChartElements = function () {
+    var conf = this.defaults;
+    var paper = this.paper,
+      paths = [],
+      area = this.generateArea(),
+      areaString,
+      colorFunc = this.getColor(),
+      color,
+      path;
+
+    // set div's background instread;
+    paper.rect(0, 0, conf.width, conf.height).attr({
+      "stroke": "none",
+      "fill": "#e0e0e0"
     });
 
-    /**
-     * Stream图纬度描述
-     */
-    Stream.dimension = {};
-    /**
-     * 流向纬度，例如，时间
-     */
-    Stream.dimension.stream = {
-        type: "string",
-        required: true
+    for (var i = 0, l = this.layoutData.length; i < l; i++) {
+      areaString = area(this.pathSource[i]);
+      color = colorFunc(i);
+      path = paper.path(areaString).attr({
+        fill: color,
+        stroke: color,
+        "stroke-width": 1
+      });
+      paths[i] = path;
+    }
+    this.paths = paths;
+  };
+
+  StreamChart.prototype.render = function (animate) {
+    if (animate !== "animate") {
+      this.clear();
+      this.layout();
+      this.generateChartElements();
+    } else {
+      this.layout();
+      this.animate();
+    }
+  };
+
+  StreamChart.prototype.animate = function () {
+    var time = 0,
+      area,
+      colorFunc,
+      color,
+      i, l,
+      _area,
+      paths = [],
+      order,
+      anim,
+      count = this.paths.length;
+    var that = this;
+    var animateCallback = function () {
+      count -= 1;
+      if (count > 0) {
+        return;
+      }
+      that.animateCallback();
     };
-    /**
-     * 堆叠纬度，例如，按类目
-     */
-    Stream.dimension.stack = {
-        type: "string",
-        required: true
-    };
-    /**
-     * 值纬度，在流向和堆叠纬度上的值
-     */
-    Stream.dimension.value = {
-        type: "number",
-        required: true
-    };
+    if (typeof this.defaults.animateDuration !== 'undefined') {
+      time = this.defaults.animateDuration;
+    }
 
-    /*!
-     * 创建画布
-     */
-    Stream.prototype.createCanvas = function () {
-        var conf = this.defaults,
-            canvasFatherContainer = document.createElement("div"),
-            coverStyle,
-            naviStyle,
-            naviTraceStyle,
-            naviBackStyle,
-            percentageStyle,
-            axisStyle,
-            brushStyle,
-            getBack;
+    // if paths have not been created
+    if (typeof this.paths === 'undefined') {
+      this.generateChartElements();
+    }
 
-        this.node.style.position = "relative";
-        this.node.style.width = conf.totalWidth + "px";
+    area = this.generateArea();
+    colorFunc = this.getColor();
+    if (typeof this.defaults.animateOrder !== 'undefined') {
+      order = this.defaults.animateOrder;
+    } else {
+      order = d3.range(this.pathSource.length);
+    }
+    for (i = 0, l = this.pathSource.length; i < l; i++) {
+      _area = area(this.pathSource[i]);
+      paths.push(_area);
+    }
+    for (i = 0, l = this.pathSource.length; i < l; i++) {
+      color = colorFunc(i);
+      anim = Raphael.animation({"path": paths[i]}, time, animateCallback);
+      this.paths[order[i]].animate(anim);
+    }
+  };
 
-        this.legend = document.createElement("div");
-        //this.legendPaper = new Raphael(this.legend, conf.legendWidth - conf.legendIndent, 500);
-        $(this.legend).css({"overflow": "hidden",
-                            "width": conf.legendWidth - conf.legendIndent + "px",
-                            "padding": "10px 0 10px 0"
-                            });
+  StreamChart.prototype.animateCallback = function () {
+    var newOrderPaths = [];
+    var that = this;
+    if (typeof this.defaults.animateOrder !== 'undefined') {
+      this.defaults.animateOrder.forEach(function (d, i) {
+        newOrderPaths[i] = that.paths[d];
+      });
+      this.paths = newOrderPaths;
+    }
+  };
 
-        this.navi = document.createElement("div");
-        $(this.navi).css({
-            //"width": conf.totalWidth + "px",
-            "border-top": "1px solid #ddd",
-            "border-bottom": "1px solid #ddd",
-            //"height": "22px",
-            "padding-top": "5px",
-            "padding-bottom": "10px",
-            "padding-left": "10px",
-            "padding-right": "10px",
-            "font": (conf.fontSize + 1) + "px 宋体"
+  StreamChart.prototype.clear = function () {
+    this.paper.clear();
+  };
+
+  StreamChart.prototype.getColor = function () {
+    return d3.scale.category10();
+  };
+
+  StreamChart.prototype.getMaxY = function () {
+    return d3.max(this.layoutData, function (d) {
+      return d3.max(d, function (d) {
+        return d.y0 + d.y;
+      });
+    });
+  };
+
+  StreamChart.prototype.mapPathSource = function () {
+    var conf = this.defaults,
+      maxX = this.layoutData[0].length - 1,//this.digitData[0].length - 1,
+      maxY = this.getMaxY(), 
+      width = conf.width,
+      height = conf.height;
+    var i, j, l, l2, s, ps;
+    this.pathSource = [];
+    for (i = 0, l = this.layoutData.length; i < l; i++) {
+      this.pathSource[i] = [];
+      for (j = 0, l2 = this.layoutData[0].length; j < l2; j++) {
+        s = this.layoutData[i][j];
+        ps = this.pathSource[i][j] = {};
+        ps.x = s.x * width / maxX;
+        ps.y0 = height - s.y0 * height / maxY;
+        ps.y = s.y * height / maxY;
+      }
+    }
+  };
+
+  StreamChart.prototype.generateArea = function () {
+    this.mapPathSource();
+    var area = d3.svg.area().x(function (d) {
+      return d.x;
+    }).y0(function (d) {
+      return d.y0;
+    }).y1(function (d) {
+      return d.y0 - d.y; 
+    });
+    return area;
+  };
+
+  var Legend = function (stream, container) {
+    this.stream = stream;
+    this.container = container;
+    this.legendIndent = 21;
+    var conf = stream.defaults;
+    this.legend = document.createElement("div");
+    $(this.legend).css({
+      "overflow": "hidden",
+      "padding": "10px 0 10px 0",
+      "width": conf.leftLegendWidth - this.legendIndent + "px"
+    });
+    if (!conf.showLegend) {
+      $(this.legend).css({
+        "visibility": "hidden",
+        "position": "absolute"
+      });
+    }
+    this.container.appendChild(this.legend);
+  };
+
+  Legend.prototype.render = function () {
+    this.clear();
+    var stream = this.stream,
+      legends = [],
+      li;
+    var colorFunc = stream.getColor();
+    var colorArray = [],
+      color,
+      i,
+      l,
+      leftHeight,
+      legendHeight,
+      hoverIn = function (e) {
+        var index = e.data.index;
+        var stream = e.data.stream;
+        var path = stream.paths[index];
+        stream.preIndex = index;
+        this.highlight(index);
+        path.attr({"opacity": 0.5});
+      },
+      hoverOut = function (e) {
+        var index = e.data.index;
+        var stream = e.data.stream;
+        var path = stream.paths[index];
+        stream.preIndex = index;
+        this.lowlight(index);
+        path.attr({"opacity": 1.0});
+      };
+
+    var ul = $("<ul/>");
+    $(this.legend).append(ul);
+    for (i = 0, l = stream.displayData.allInfos.length; i < l; i++) {
+      colorArray.push(colorFunc(i));
+    }
+    for (i = 0, l = stream.displayData.allInfos.length; i < l; i++) {
+      color = colorArray[stream.displayData.rowIndex[i].slicedData];
+      li = $('<li style="color: "' + color + '"><span style="color: black">' + stream.getDisplayRowInfo(i).rowName + '</span></li>');
+      ul.append(li);
+      li.mouseenter({"index": i, "stream": stream}, $.proxy(hoverIn, this));
+      li.mouseleave({"index": i, "stream": stream}, $.proxy(hoverOut, this));
+      legends.push(li);
+    }
+    ul.css({
+      "margin": "0px 0px 0px 10px",
+      "padding-left": "0px" 
+    });
+    ul.find("li").css({
+      "list-style-type": "square",
+      "list-style-position": "inside",
+      "white-space": "nowrap",
+      "padding-left": 5
+    });
+
+    stream.legends = legends;
+
+    //height and margin
+    leftHeight = $(stream.legendBesidesContainer).height();
+    legendHeight = $(this.legend).outerHeight();
+    $(stream.legendContainer).css({
+      "height": leftHeight
+    });
+    var marginTop = leftHeight > legendHeight ? (leftHeight - legendHeight) / 2 : 0;
+    $(this.legend).css({"margin-top": marginTop});
+  };
+
+  Legend.prototype.highlight = function (index) {
+    this.stream.legends[index].css({"background": "#dddddd"});
+  };
+  Legend.prototype.lowlight = function (index) {
+    this.stream.legends[index].css({"background": "white"});
+  };
+  Legend.prototype.clear = function () {
+    this.legend.innerHTML = "";
+  };
+
+  var TopLegend = function (stream, container) {
+    this.stream = stream;
+    this.container = container;
+    var conf = stream.defaults;
+    this.legend = document.createElement("div");
+    this.legendPaper = new Raphael(this.legend, conf.width, 50);
+    $(this.legend).css({"width": conf.width + "px", "backgroundColor": "#f4f4f4"});
+    if (!conf.showLegend) {
+      $(this.legend).css({
+        "visibility": "hidden",
+        "position": "absolute"
+      });
+    }
+    this.container.appendChild(this.legend);
+  };
+
+  TopLegend.prototype.render = function () {
+    this.clear();
+
+    var stream = this.stream,
+      conf = stream.defaults,
+      paper = this.legendPaper,
+      legends = [],
+      m = [10, 20, 10, 20],
+      left = m[3],
+      top = m[0],
+      lineHeight = 25,
+      legendInterval = 10,
+      lineWidth = conf.width,
+      r0 = 5,
+      r1 = 7,
+      circleW = 18,
+      circle,
+      text,
+      box,
+      colorFunc = stream.getColor(),
+      colorArray = [],
+      color,
+      i,
+      l,
+      hoverIn = function () {
+        var index = this.data("index");
+        var stream = this.data("stream");
+        var r = this.data("r1");
+        var path = stream.paths[index];
+        stream.preIndex = index;
+        stream.legends[index].circle.animate({"r": r, "opacity": 0.5}, 300);
+        path.attr({"opacity": 0.5});
+      },
+      hoverOut = function () {
+        var index = this.data("index");
+        var stream = this.data("stream");
+        var r = this.data("r0");
+        var path = stream.paths[index];
+        stream.preIndex = index;
+        stream.legends[index].circle.animate({"r": r, "opacity": 1}, 300);
+        path.attr({"opacity": 1.0});
+      };
+
+    for (i = 0, l = stream.displayData.allInfos.length; i < l; i++) {
+      colorArray.push(colorFunc(i));
+    }
+
+    for (i = 0, l = stream.displayData.allInfos.length; i < l; i++) {
+      text = paper.text(0, 0, stream.getDisplayRowInfo(i).rowName)
+        .attr({
+          "font-size": conf.fontSize,
+          "text-anchor": "start",
+          "font-family": "微软雅黑"
         });
-        this.naviTrace = document.createElement("div");
-        $(this.naviTrace).css({
-            "width": conf.totalWidth - conf.naviBackWidth - 50 + "px",
-            "margin-top": "5px"
-        });
-
-        this.naviBack = document.createElement("div");
-        this.naviBack.innerHTML = "返回上层";
-        $(this.naviBack).css({
-            "width": conf.naviBackWidth + "px",
-            "float": "right",
-            "background-color": "#f4f4f4",
-            "padding-top": "4px",
-            "padding-bottom": "4px",
-            "border": "1px solid #ddd",
-            "border-radius": "2px",
-            "cursor": "pointer",
-            "text-align": "center",
-            "visibility": "hidden"
-        });
-        //naviBackStyle.float = "right";
-        //naviBackStyle.visibility = "hidden";
-        this.navi.appendChild(this.naviBack);
-        this.navi.appendChild(this.naviTrace);
-
-        this.percentage = document.createElement("div");
-        if (this.userConfig.more) {
-            this.percentagePaper = new Raphael(this.percentage, conf.margin[3], conf.height);
-        }
-        percentageStyle = this.percentage.style;
-        percentageStyle.width = conf.margin[3] + "px";
-        percentageStyle.height = conf.height + "px";
-        $(this.percentage).css({
-            "float": "left",
-            "margin-bottom": "0px",
-            "border-bottom": "0px",
-            "padding-bottom": "0px"
-        });
-
-        this.canvasContainer = document.createElement("div");
-        $(this.canvasContainer).css({
-            "float": "left",
-            "width": conf.width + "px",
-            "margin-bottom": "0px",
-            "border-bottom": "0px",
-            "padding-bottom": "0px"
+      box = text.getBBox();
+      if (left + circleW + box.width >= lineWidth - m[1]) {
+          //new line
+          left = m[3];
+          top += lineHeight;
+      }
+      color = colorArray[stream.displayData.rowIndex[i].slicedData];
+      circle = paper.circle(left + circleW / 2, top + lineHeight / 2, r0)
+        .attr({
+          "stroke": "none",
+          "fill": color
         })
-            .append($(canvasFatherContainer).css({"position": "relative"}));
-        this.canvas = new Raphael(canvasFatherContainer, conf.width, conf.height);
-        $(this.canvasContainer).height(conf.height);
+        .data("index", i)
+        .data("stream", stream)
+        .data("r0", r0)
+        .data("r1", r1)
+        .hover(hoverIn, hoverOut);
+      text.transform("t" + (left + circleW) + "," + (top + lineHeight / 2));
+      paper.rect(left + circleW, top, box.width, lineHeight)
+        .attr({
+          "stroke": "none",
+          "fill": "#000",
+          "opacity": 0
+        })
+        .data("index", i)
+        .data("stream", stream)
+        .data("r0", r0)
+        .data("r1", r1)
+        .hover(hoverIn, hoverOut);
 
-        this.floatTag = DataV.FloatTag()(canvasFatherContainer);
-        this.floatTag.css({"visibility": "hidden"});
+      legends.push({"text": text, "circle": circle});
 
-        // cover can block stream canvas when animating to prevent some default mouse event
-        this.cover = document.createElement("div");
-        coverStyle = this.cover.style;
-        coverStyle.position = "absolute";
-        coverStyle.width = conf.width + "px";
-        coverStyle.height = conf.height + "px";
-        coverStyle.zIndex = 100;
-        coverStyle.visibility = "hidden";
-        $(this.cover).bind("mousemove", {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.coverMouse = {x: e.pageX, y: e.pageY};
-        });
-        $(this.cover).bind("mouseleave", {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.coverMouse = undefined;
-        });
+      left += legendInterval + circleW + box.width;
+    }
+    stream.legends = legends;
+    paper.setSize(lineWidth, top + lineHeight + m[2]);
+  };
 
-        this.axis = document.createElement("div");
-        this.axisPaper = new Raphael(this.axis, conf.totalWidth - conf.legendWidth, conf.axisHeight);
-        //axisStyle = this.axis.style;
-        $(this.axis).css({
-            "margin-top": "0px",
-            "border-top": "1px solid #ddd",
-            "height": conf.axisHeight + "px"
-        });
+  TopLegend.prototype.highlight = function (index) {
+    var stream = this.stream;
+    var circle = stream.legends[index].circle;
+    circle.attr({"r": circle.data("r1"), "opacity": 0.5});
+  };
+  TopLegend.prototype.lowlight = function (index) {
+    var stream = this.stream;
+    var circle = stream.legends[index].circle;
+    circle.attr({"r": circle.data("r0"), "opacity": 1});
+  };
+  TopLegend.prototype.clear = function () {
+    this.legendPaper.clear();
+  };
 
-        this.leftContainer = document.createElement("div");
-        this.rightContainer = document.createElement("div");
+  var Axis = function (stream, container) {
+    this.stream = stream;
+    this.axis = container;
+    var conf = this.stream.defaults;
+    this.axisPaper = new Raphael(this.axis, conf.legendBesidesWidth, conf.axisHeight);
+    $(this.axis).css({
+      "margin-top": "0px",
+      "border-top": "1px solid #ddd",
+      "height": conf.axisHeight + "px"
+    });
+    if (!conf.showAxis) {
+      $(this.axis).css({
+        "visibility": "hidden",
+        "position": "absolute"
+      });
+    }
+  };
 
-        this.leftContainer.appendChild(this.legend);
+  Axis.prototype.render = function () {
+    this.clear();
+    //all date strings' format are same, string length are same 
+    var stream = this.stream,
+      conf = stream.defaults,
+      date = stream.date.slice(stream.timeRange[0], stream.timeRange[1] + 1),
+      left = conf.percentageWidth,
+      right = conf.legendBesidesWidth - conf.percentageWidth,
+      tempWord,
+      tickNumber,
+      getPopPath = function (El) {
+        //down pop
+        var x = 0,
+          y = 0,
+          size = 4,
+          cw = 23,
+          bb = {height: 8};
+        if (El) {
+          bb = El.getBBox();
+          bb.height *= 0.6;
+          cw = bb.width / 2 - size;
+        }
+        return [
+          'M', x, y,
+          'l', size, size, cw, 0,
+          'a', size, size, 0, 0, 1, size, size,
+          'l', 0, bb.height,
+          'a', size, size, 0, 0, 1, -size, size,
+          'l', -(size * 2 + cw * 2), 0,
+          'a', size, size, 0, 0, 1, -size, -size,
+          'l', 0, -bb.height,
+          'a', size, size, 0, 0, 1, size, -size,
+          'l', cw, 0,
+          'z'
+        ].join(',');
+      };
 
-        this.rightContainer.appendChild(this.navi);
-        this.middleContainer = document.createElement("div");
-        $(this.middleContainer).css("height", conf.height);
-        this.middleContainer.appendChild(this.percentage);
-        this.middleContainer.appendChild(this.canvasContainer);
-        this.middleContainer.appendChild(this.cover);
-        $(this.canvasFatherContainer).append(this.floatTag);
-        this.rightContainer.appendChild(this.middleContainer);
-        this.rightContainer.appendChild(this.axis);
+    this.dateScale = d3.scale.linear()
+      .domain([0, date.length - 1])
+      .range([left, right]);
 
-        this.node.appendChild(this.rightContainer);
-        this.node.appendChild(this.leftContainer);
-        $(this.rightContainer).css({"float": "right",
-                                    //"border": "solid 1px",
-                                    "width": conf.totalWidth - conf.legendWidth
-                                    });
-        $(this.leftContainer).css({ "width": conf.legendWidth - 4 + "px",
-                                    //"float": "left",
-                                    //"border": "solid 1px",
-                                    //"margin-left": "-5px",
-                                    //"height": 300,
-                                    //"max-height": 300,
-                                    //"overflow-y": "scroll",
-                                    "overflow-x": "hidden"
-                                    });
+    tempWord = this.axisPaper.text(0, 0, date[0]);
+    tickNumber = Math.floor((right - left) / tempWord.getBBox().width / 2) + 1;
+    tempWord.remove();
 
-        getBack = function (stream) {
-            stream.cover.style.visibility = "visible";
-            stream.coverMouse = undefined;
-            stream.getLevelSource();
-            stream.reRender();
+    DataV.Axis().scale(this.dateScale)
+      .ticks(tickNumber)
+      .tickSize(6, 3, 3)
+      .tickAttr({"stroke": "none"})
+      .minorTickAttr({"stroke": "none"})
+      .domainAttr({"stroke": "none"})
+      .tickFormat(function (d) {
+        return date[d] || "";
+      })(this.axisPaper);
 
-            //hidden
-            stream.indicatorLine.attr({"stroke": "none"});
-            stream.highlightLine.attr({"stroke": "none"});
-            stream.floatTag.css({"visibility" : "hidden"});
+    this.axisPopText = this.axisPaper.text(0, 11, date[0])
+      .attr({
+        "text-anchor": "middle",
+        "fill": "#fff",
+        "transform": "t" + left + ",0"
+      })
+      .hide();
+    this.axisPopBubble = this.axisPaper.path(getPopPath(this.axisPopText))
+      .attr({
+        "fill": "#000",
+        "transform": "t" + (-10000) + ",0"
+      })
+      .toBack()
+      .hide();
+  };
+  Axis.prototype.hideTab = function () {
+    this.axisPopText.hide();
+    this.axisPopBubble.hide();
+  };
+  Axis.prototype.showTab = function () {
+    this.axisPopText.show();
+    this.axisPopBubble.show();
+  };
+  Axis.prototype.refreshTab = function (timeText, transX) {
+    this.axisPopText.attr({
+      "text": timeText
+    }).transform("t" + transX + ",0");
+    this.axisPopBubble.transform("t" + transX + ",0");
+  };
+  Axis.prototype.clear = function () {
+    this.axisPaper.clear();
+  };
 
-            stream.paths.forEach(function (d, i, array) {
-                d.attr({transform: "s1,0.001,0,0"});
-                d.label.hide();
-                d.animate({transform: "t0,0"}, 750, "linear", function () {
-                    stream.cover.style.visibility = "hidden";
-                    if (typeof stream.coverMouse !== 'undefined') {
-                        stream.indicatorLine.attr({"stroke": "#000"});
-                        stream.highlightLine.attr({"stroke": "white"});
-                        stream.floatTag.css({"visibility" : "visible"});
-                        $(stream.canvas.canvas).trigger("mousemove",
-                            [stream.coverMouse.x, stream.coverMouse.y]);
-                        stream.coverMouse = undefined;
-                    }
-                    if (d.labelLoc.showLabel) {
-                        d.label.show();
-                    }
-                });
-            });
+  var Percentage = function (stream, container) {
+    this.percentage = container;
+    this.stream = stream;
+    var conf = stream.defaults;
+    this.percentagePaper = new Raphael(this.percentage, conf.percentageWidth, conf.chartHeight);
+    $(this.percentage).css({
+      "width": conf.percentageWidth + "px",
+      "height": conf.chartHeight + "px",
+      "float": "left",
+      "margin-bottom": "0px",
+      "border-bottom": "0px",
+      "padding-bottom": "0px"
+    });
+    if (!conf.showPercentage) {
+      $(this.percentage).css({"visibility": "hidden"});
+    }
+    this.statDataMaxY = d3.max(stream.statisticData.columnSum);
+  };
+  Percentage.prototype.render = function () {
+    var stream = this.stream;
+
+    if (!stream.defaults.moreConfig.more) {
+      return;
+    }
+    var conf = stream.defaults;
+    var maxY = stream.chart.getMaxY(),
+      y;
+
+    maxY /= this.statDataMaxY;
+    y = maxY > 0.1 ? (1 - maxY) * conf.chartHeight + conf.fontSize * 2 / 3 
+        : (1 - maxY) * conf.chartHeight - conf.fontSize * 2 / 3;
+
+    if (!this.percentageRect) {//init
+      this.percentageRect = this.percentagePaper.rect(0, (1 - maxY) * conf.chartHeight,
+        conf.percentageWidth, maxY * conf.chartHeight)
+      .attr({"fill": "#f4f4f4", "stroke": "#aaa", "stroke-width": 0.5});
+      this.percentageText = this.percentagePaper.text(conf.percentageWidth / 2, y,
+        Math.round(maxY * 100) + "%")
+      .attr({"text-anchor": "middle"});
+    }
+    this.percentageRect.animate({"y": (1 - maxY) * conf.chartHeight, "height": maxY * conf.chartHeight}, 750);
+    this.percentageText.attr({"text": Math.round(maxY * 100) + "%"})
+        .animate({"y": y}, 750);
+  };
+
+  var Navi = function (stream, container) {
+    this.navi = container;
+    this.stream = stream;
+    this.naviBackWidth = 80;
+    var conf = this.stream.defaults;
+    $(this.navi).css({
+      "border-top": "1px solid #ddd",
+      "border-bottom": "1px solid #ddd",
+      "padding-top": "5px",
+      "padding-bottom": "10px",
+      "padding-left": "10px",
+      "padding-right": "10px",
+      "font": (conf.fontSize + 1) + "px 宋体"
+    });
+    if (!conf.showNavi) {
+      $(this.navi).css({
+        "visibility": "hidden",
+        "position": "absolute"
+      });
+    }
+    this.naviTrace = document.createElement("div");
+    $(this.naviTrace).css({
+      "width": conf.legendBesidesWidth - this.naviBackWidth - 50 + "px",
+      "margin-top": "5px"
+    });
+
+    this.naviBack = document.createElement("div");
+    this.naviBack.innerHTML = "返回上层";
+    $(this.naviBack).css({
+      "width": this.naviBackWidth + "px",
+      "float": "right",
+      "background-color": "#f4f4f4",
+      "padding-top": "4px",
+      "padding-bottom": "4px",
+      "border": "1px solid #ddd",
+      "border-radius": "2px",
+      "cursor": "pointer",
+      "text-align": "center",
+      "visibility": "hidden"
+    });
+    this.navi.appendChild(this.naviBack);
+    this.navi.appendChild(this.naviTrace);
+
+    $(this.naviTrace).on("click", ".navi", {stream: this.stream}, function (e) {
+      var stream = e.data.stream;
+      stream.defaults.moreConfig.level = e.target.data.level;
+      getBack(stream);
+    });
+
+    $(this.naviBack).on("click", {stream: this.stream}, function (e) {
+      var stream = e.data.stream;
+      stream.defaults.moreConfig.level -= 1;
+      getBack(stream);
+    });
+    var getBack = function (stream) {
+      var naviCallBack = (function () {
+        return function () {
+          stream.cover.hidden();
+          if (typeof stream.cover.mouse !== 'undefined') {
+            stream.hoverLine.show();
+            stream.floatTag.show();
+            $(stream.paper.canvas).trigger("mousemove",
+                [stream.cover.mouse.x, stream.cover.mouse.y]);
+            stream.cover.mouse = undefined;
+          }
+          stream.pathLabel.show();
         };
-        $(this.naviTrace).on("click", ".navi", {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.level = e.target.data.level;
-            getBack(stream);
+      }(stream.paths.length));
+
+      stream.cover.show();
+      stream.cover.mouse = undefined;
+
+      stream.processData("slicedData");
+      stream.render("renderComponents");
+
+      //hidden
+      stream.hoverLine.hidden();
+      stream.floatTag.hidden();
+
+      stream.pathLabel.hidden();
+      stream.paths.forEach(function (d) {
+        d.attr({transform: "s1,0.001,0,0"});
+        d.animate({transform: "t0,0"}, 750, "linear", naviCallBack);
+      });
+    };
+  };
+  Navi.prototype.render = function () {
+    var stream = this.stream;
+    var level = stream.defaults.moreConfig.level;
+    var i, span;
+    this.clear();
+    for (i = 0; i <= level; i++) {
+      $(this.naviTrace).append($("<span> &gt; </span>"));
+      span = document.createElement("span");
+      span.data = {level: i};
+      span = $(span)
+        .html(i === 0 ? "第1层"/*this.userConfig.rootName*/ : "第" + (i + 1) + "层")
+        .appendTo($(this.naviTrace));
+      if (i !== level) {
+        span.css({"cursor": "pointer", "color": "#1E90FF"})
+        .addClass("navi");
+      }
+    }
+    this.naviBack.style.visibility = level > 0 ? "visible" : "hidden";
+  };
+  Navi.prototype.clear = function () {
+    $(this.naviTrace).empty();
+  };
+
+  //hoverline
+  var HoverLine = function (stream) {
+    this.stream = stream;
+  };
+
+  HoverLine.prototype.render = function () {
+    this.clear();
+    var paper = this.stream.paper;
+    var conf = this.stream.defaults;
+    this.indicatorLine = paper.path("M0 0V" + conf.chartHeight)
+      .attr({stroke: "none", "stroke-width": 1, "stroke-dasharray": "- "});
+    this.highlightLine = paper.path("M0 0V" + conf.chartHeight)
+      .attr({stroke: "none", "stroke-width": 2});
+  };
+  HoverLine.prototype.hidden = function () {
+    this.indicatorLine.attr({"stroke": "none"});
+    this.highlightLine.attr({"stroke": "none"});
+  };
+  HoverLine.prototype.show = function () {
+    this.indicatorLine.attr({"stroke": "#000"});
+    this.highlightLine.attr({"stroke": "white"});
+  };
+
+  HoverLine.prototype.refresh = function (xIdx, pathIndex) {
+    //refresh lines' position
+    var stream = this.stream;
+    var pathSource = stream.chart.pathSource;
+    var lineX = stream.defaults.chartWidth * xIdx / (stream.chart.source[0].length - 1);
+    var pathSourceCell = pathSource[pathSource.length - 1][xIdx];
+    this.indicatorLine.attr({
+      path: "M" + lineX + " " + (pathSourceCell.y0 - pathSourceCell.y) + "V" + pathSource[0][xIdx].y0
+    });
+
+    pathSourceCell = pathSource[pathIndex][xIdx];
+    this.highlightLine.attr({
+      path: "M" + lineX + " " + (pathSourceCell.y0 - pathSourceCell.y) + "V" + pathSourceCell.y0
+    });
+  
+    if (pathIndex === 0 && stream.getDisplayRowInfo(pathIndex).rowIndex === -1) {
+      this.highlightLine.attr({"cursor": "pointer"});
+    } else {
+      this.highlightLine.attr({"cursor": "auto"});
+    }
+  };
+
+  HoverLine.prototype.clear = function () {
+    this.indicatorLine && this.indicatorLine.remove();
+    this.highlightLine && this.highlightLine.remove();
+  };
+
+  //pathLabel
+  var PathLabel = function (stream) {
+      this.stream = stream;
+  };
+  PathLabel.prototype.render = function () {
+    this.clear();
+    var stream = this.stream;
+    var paths = stream.chart.paths;
+    var conf = stream.defaults;
+    var pathSource = stream.chart.pathSource;
+    var labels = [];
+    var getLabelLocation = function (locArray, el) {
+      var x = 0,
+        y = 0,
+        i;
+      var ratioMargin = 0.15;
+      var index = 0;
+      var max = 0;
+      var box = el.getBBox();
+      var xInterval;
+      var minTop, maxBottom;
+      var showLabel = true;
+      var loc;
+      var height;
+
+      xInterval = Math.ceil(box.width / (locArray[1].x - locArray[0].x) / 2);
+      if (xInterval === 0) {
+        xInterval = 1;
+      }
+
+      locArray.forEach(function (d, i, array) {
+        var m = Math.max(ratioMargin * array.length, xInterval);
+        if (i >= m && i <= array.length - m) {
+          if (d.y > max) {
+            minTop = d.y0 - d.y;
+            maxBottom = d.y0;
+            max = d.y;
+            index = i;
+          }
+        }
+      });
+      for (i = index - xInterval; i <= index + xInterval; i++) {
+        if (i < 0 || i >= locArray.length) {
+            height = 0;
+            showLabel = false;
+            break;
+        }
+        loc = locArray[i];
+        //top's y is small
+        if (loc.y0 - loc.y > minTop) {
+            minTop = loc.y0 - loc.y;
+        }
+        if (loc.y0 < maxBottom) {
+            maxBottom = loc.y0;
+        }
+      }
+
+      if (showLabel && maxBottom - minTop >= box.height * 0.8) {
+        x = locArray[index].x;
+        y = (minTop + maxBottom) / 2;
+      } else {
+        showLabel = false;
+      }
+
+      return {
+        x: x,
+        y: y,
+        showLabel: showLabel
+      };
+    };
+
+    stream.labels = labels;
+    var i, l, label, path;
+    for (i = 0, l = paths.length; i < l; i++) {
+      path = paths[i];
+      label = stream.paper.text(0, 0,
+        conf.pathLabel ?
+          stream.getDisplayRowInfo(i).rowName + " " + (Math.round(stream.getDisplayRowInfo(i).rowSum * 10000) / 100) + "%" : "")
+        .attr({
+          "text-anchor": "middle",
+          "fill": "white",
+          "font-size": conf.fontSize,
+          "font-family": "微软雅黑"
         });
+      label.labelLoc = getLabelLocation(pathSource[i], label);
 
-        $(this.naviBack).on("click", {stream: this}, function (e) {
-            var stream = e.data.stream;
-            stream.level -= 1;
-            getBack(stream);
+      if (label.labelLoc.showLabel) {
+        label.attr({
+          "x": label.labelLoc.x,
+          "y": label.labelLoc.y
         });
+      } else {
+        label.attr({"opacity": 0});
+      }
+      if (i === 0 && stream.getDisplayRowInfo(i).rowIndex === -1) {
+        path.attr({"cursor": "pointer"});
+        label.attr({"cursor": "pointer"});
+      } else {
+        path.attr({"cursor": "auto"});
+        label.attr({"cursor": "auto"});
+      }
+      labels.push(label);
+    }
+  };
+  PathLabel.prototype.hidden = function () {
+    this.stream.labels.forEach(function (d) {
+      d.hide();
+    });
+  };
+  PathLabel.prototype.show = function () {
+    this.stream.labels.forEach(function (d) {
+      if (d.labelLoc.showLabel) {
+        d.show();
+      }
+    });
+  };
+  PathLabel.prototype.clear = function () {
+    var stream = this.stream;
+    if (stream.labels) {
+      stream.labels.forEach(function (d) {
+        d.remove();
+      });
+    }
+  };
+
+  //floatTag
+  var FloatTag = DataV.extend(Widget, {
+    initialize: function (container) {
+      this.container = container;
+      this.node = DataV.FloatTag()(this.container);
+      //$(this.container).append(this.floatTag);//?
+      this.hidden();
+    }
+  });
+
+  FloatTag.prototype.setContent = function (content) {
+    this.node.html(content);
+  };
+  FloatTag.prototype.setCss = function (cssJson) {
+    this.node.css(cssJson);
+  };
+
+  //cover
+  var Cover = DataV.extend(Widget, {
+    initialize: function (stream, container) {
+      var conf = stream.defaults;
+      this.node = $(container);
+      this.node.css({
+        "position": "absolute",
+        "left": "0px",
+        "top": "0px",
+        "width": conf.chartWidth + "px",
+        "height": conf.chartHeight + "px",
+        "zIndex": 100,
+        "visibility": "hidden"
+      }).bind("mousemove", $.proxy(function (e) {
+        this.mouse = {x: e.pageX, y: e.pageY};
+        e.stopPropagation();
+      }, this)).bind("mouseleave", $.proxy(function () {
+        this.mouse = undefined;
+      }, this));
+    }
+  });
+
+  /*
+   * constructor
+   * @param node the dom node or dom node Id
+   *        options options json object for determin stream style.
+   * @example
+   * create stream in a dom node with id "chart", width is 500; height is 600px;
+   * "chart", {"width": 500, "height": 600}
+   */
+  var Stream = DataV.extend(DataV.Chart, {
+    initialize: function (node, options) {
+      this.type = "Stream";
+      this.node = this.checkContainer(node);
+      this.defaults = {};
+      // Properties
+      this.defaults.offset = "zero";//zero, expand, silhou-ette, wiggle;(d3 stack offset)
+      this.defaults.order = "default";//default, reverse, descending, ascending, inside-out(d3 stack order, sort by index of maximum value, then use balanced weighting.), inside-out-reverse(inside-out like, sort by index of maximum value, not descending but ascending);
+      this.defaults.normalized = false;//false, true; //ratio data or not;
+      //this.defaults.rowDataOrder = "default"; //default, descending, ascending(according to digitdata row sum value);
+      this.defaults.columnNameUsed = "auto";
+      this.defaults.rowNameUsed = "auto";
+      this.defaults.pathLabel = true;
+      this.defaults.fontSize = 12;
+      //this.defaults.axisTickNumber = 8; // axis ticks number
+
+      this.defaults.indexMargin = 3; // if dates.length < indexMargin * 2 + 1, do not show label
+
+      //this.userConfig = {"more": true, "max": 20, "other": 0.1};
+      this.defaults.moreConfig = {"more": true, "level": 0, "max": 20, "other": 0.1};
+
+      this.timeRange = [];
+      // paper
+
+      this.defaults.width = 800;
+      this.defaults.height = 560;//if only width has value and autoHeight is true, then height will be width * heightWidthRatio.
+      this.defaults.autoHeight = true;
+      this.defaults.heightWidthRatio = 0.6;
+
+      this.defaults.legendPosition = "top";//"top", "left"
+      this.defaults.topLegendHeight = 50;
+      this.defaults.leftLegendWidth = 150;
+      this.defaults.showLegend = true;
+
+      this.defaults.legendBesidesWidth = undefined;
+      this.defaults.legendBesidesHeight = undefined;
+
+      this.defaults.chartWidth = undefined;//depends on width, do not recommend to change
+      this.defaults.chartHeight = undefined;// depends on height, do not recommend to change
+
+      this.defaults.naviHeight = 20;//do not recommend to change
+      this.defaults.showNavi = undefined;//ture if moreConfig.more == true, else false;
+
+      this.defaults.axisHeight = 30;//do not recommend to change
+      this.defaults.showAxis = true;
+
+      this.defaults.showPercentage = undefined;//true if moreConfig.more == true, else false;
+      this.defaults.percentageWidth = 40;
+
+      this.defaults.customEventHandle = {"mousemove": null};
+
+      //data
+      this.rawData = {};//raw data user sets
+      this.statisticData = {};//add statistic info from rawData
+      this.processedData = {};//normalized and sorted
+      this.slicedData = {};//slice data from processed data according to timerange and more
+      this.displayData = {};//adjust from slicedData according to user's interactive like dropping;
+
+      this.setOptions(options);
+      //this.createPaper();
+    }
+  });
+
+  Stream.prototype.createPaper = function () {};
+
+  Stream.prototype.setOptions = function (options) {
+    var prop;
+    var conf = this.defaults;
+    var that = this;
+    var setMoreConfig = function (options) {
+      var prop;
+      var mc = that.defaults.moreConfig;
+      if (options) {
+        for (prop in options) {
+          if (options.hasOwnProperty(prop)) {
+            mc[prop] = options[prop];
+          }
+        }
+      }
     };
-
-    /**
-     * 设置自定义选项
-     */
-    Stream.prototype.setOptions = function (options) {
-        _.extend(this.defaults, options);
-
-        if (options && options.width) {
-            this.defaults.totalWidth = this.defaults.width;
-            this.defaults.width = this.defaults.totalWidth - this.defaults.margin[1]
-                - this.defaults.margin[3] - this.defaults.legendWidth;
-            if (!options.height) {
-                this.defaults.autoHeight = true;
-                this.defaults.height = this.defaults.width * this.defaults.heightWidthRatio;
-            } else {
-                this.defaults.autoHeight = false;
-            }
+    if (options) {
+      for (prop in options) {
+        if (options.hasOwnProperty(prop)) {
+          //moreConfig;
+          if (prop === "moreConfig") {
+            setMoreConfig(options[prop]);
+            continue;
+          }
+          conf[prop] = options[prop];
         }
-    };
+      }
+    }
 
-    /*!
-     * 检测行名
-     */
-    Stream.prototype.hasRowName = function () {
-        var i,
-            l,
-            firstColumn = [],
-            source = this.rawData;
+    if (options.width && !options.height) {
+      if (conf.autoHeight) {
+        conf.height = conf.width * conf.heightWidthRatio;
+      }
+    } else if (options.height) {
+      conf.autoHeight = false;
+    }
+  };
 
-        if ((typeof this.defaults.rowNameUsed) === "boolean") {
-            return this.defaults.rowNameUsed;
-        }
-        //first column from 2nd row
-        for (i = 1, l = source.length; i < l; i++) {
-            firstColumn[i] = source[i][0];
-        }
-        return !firstColumn.every(DataV.isNumeric);
-    };
+  /*
+   * @param source The data source.
+   * @example 
+   * // 例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
+   * [
+   *  [1,2,3,9],
+   *  [3,4,6,3]
+   * ]
+   */
+  Stream.prototype.hasRowName = function () {
+    var firstColumn = [],
+      source = this.rawData.rawData;
 
-    /*!
-     * 检测列名
-     */
-    Stream.prototype.hasColumnName = function () {
-        var firstRow;
-        if ((typeof this.defaults.columnNameUsed) === "boolean") {
-            return this.defaults.columnNameUsed;
-        }
-        //first row from 2nd column
-        firstRow = this.rawData[0].slice(1);
-        return !firstRow.every(DataV.isNumeric);
-    };
+    if ((typeof this.defaults.rowNameUsed) === "boolean") {
+      return this.defaults.rowNameUsed;
+    }
+    //first column from 2nd row
+    for (var i = 1, l = source.length; i < l; i++) {
+      firstColumn[i] = source[i][0];
+    }
+    return !firstColumn.every(DataV.isNumeric);
+  };
 
-    /*!
-     * 排序
-     * @param {Array} source 待排序的二维数组
-     */
-    Stream.prototype.sort = function (source) {
-        var i, j, l, ll;
-        var rowSum = [];
-        var columnSum = [];
-        var newSource = [];
-        var rowName = [];
-        var that = this;
+  Stream.prototype.hasColumnName = function () {
+    var firstRow;
+    if ((typeof this.defaults.columnNameUsed) === "boolean") {
+        return this.defaults.columnNameUsed;
+    }
+    //first row from 2nd column
+    firstRow = this.rawData.rawData[0].slice(1);
+    return !firstRow.every(DataV.isNumeric);
+  };
 
-        for (j = 0, ll = source[0].length; j < ll; j++) {
-            columnSum[j] = 0;
-        }
+  Stream.prototype.sort = function (source) {
+    var i, j, l, ll;
+    var rowSum = [];
+    var columnSum = [];
+    var newSource = [];
+    var rowName = [];
+    var that = this;
 
-        for (i = 0, l = source.length; i < l; i++) {
-            rowSum[i] = 0;
-            for (j = 0, ll = source[0].length; j < ll; j++) {
-                rowSum[i] += source[i][j];
-                columnSum[j] += source[i][j];
-            }
-            rowSum[i] = [rowSum[i]];
-            rowSum[i].index = i;
-        }
+    for (j = 0, ll = source[0].length; j < ll; j++) {
+      columnSum[j] = 0;
+    }
 
-        rowSum.sort(function (a, b) {
-            return b[0] - a[0];
+    for (i = 0, l = source.length; i < l; i++) {
+      rowSum[i] = 0;
+      for (j = 0, ll = source[0].length; j < ll; j++) {
+        rowSum[i] += source[i][j];
+        columnSum[j] += source[i][j];
+      }
+      rowSum[i] = [rowSum[i]];
+      rowSum[i].index = i;
+    }
+
+    rowSum.sort(function (a, b) {
+      return b[0] - a[0];
+    });
+
+    rowSum.forEach(function (d, i) {
+      newSource[i] = source[d.index];
+      if (that.rowName) {
+        rowName[i] = that.rowName[d.index];
+      }
+    });
+
+    for (i = 0, l = rowSum.length; i < l; i++) {
+      rowSum[i] = rowSum[i][0];
+    }
+
+    this.rowName = rowName;
+    this.rowSum = rowSum;
+    this.columnSum = columnSum;
+    this.total = d3.sum(this.rowSum);
+
+    return newSource;
+  };
+
+  Stream.prototype.getRawData = function (source, isRawInfos) {
+    var rawData = this.rawData;
+    //get column name, row name and digitData;
+    var conf = this.defaults,
+      firstRow = source[0],
+      firstColumn,
+      digitData;
+
+    var i, j, l, ll;
+
+    if (!isRawInfos) {
+      rawData.rawData = source;
+    }
+
+    firstColumn = source.map(function (d) {
+      return d[0];
+    });
+
+    if (this.hasRowName()) {
+      if (this.hasColumnName()) {
+        //row names, column names
+        digitData = source.map(function (d) {
+            return d.slice(1);
+        }).slice(1);
+        rawData.rowName = firstColumn.slice(1);
+        rawData.columnName = firstRow.slice(1);
+      } else {
+        //row names, no column names
+        digitData = source.map(function (d) {
+            return d.slice(1);
         });
-
-        rowSum.forEach(function (d, i) {
-            newSource[i] = source[d.index];
-			if (that.rowName) {
-                rowName[i] = that.rowName[d.index];
-			}
-        });
-
-        for (i = 0, l = rowSum.length; i < l; i++) {
-            rowSum[i] = rowSum[i][0];
+        rawData.rowName = firstColumn;
+        //rawData.columnName = undefined;
+        rawData.columnName = d3.range(digitData[0].length)
+          .map(function () {
+            return "";
+          });
+      }
+    } else {
+      if (this.hasColumnName()) {
+        //no row names, column names
+        digitData = source.slice(1);
+        rawData.rowName = d3.range(digitData.length)
+          .map(function () {
+            return "";
+          });
+        rawData.columnName = firstRow;
+      } else {
+        //no row names, no column names
+        if (conf.columnNameUsed === "auto" && conf.rowNameUsed === "auto" && !DataV.isNumeric(source[0][0])) {
+            //row or column name may be number, can not judge by automatically, need user to specify
+            throw new Error("Row or column name may be numbers, program can not judge automatically, Please specify whether there are column names or row names"); 
         }
+        digitData = source;
+        rawData.rowName = d3.range(digitData.length)
+          .map(function () {return "";});
+        rawData.columnName = d3.range(digitData[0].length)
+          .map(function () {return "";});
+      }
+    }
 
-        //this.mergeOthe
+    if (!isRawInfos) {
+      for (i = 0, l = digitData.length; i < l; i++) {
+        for (j = 0, ll = digitData[0].length; j < ll; j++) {
+          digitData[i][j] = parseFloat(digitData[i][j]);
+        }
+      }
+      rawData.digitData = digitData;
+    } else {
+      rawData.rawInfos = digitData;
+    }
+  };
 
-		this.rowName = rowName;
-        this.rowSum = rowSum;
-        this.columnSum = columnSum;
-        this.total = d3.sum(this.rowSum);
+  Stream.prototype.getStatisticData = function () {
+    //get statistic data;  dataRelation;
+    var statData = this.statisticData = {};
+    var rawData = this.rawData;
+    var rowSum = [];
+    var columnSum = [];
+    var totalSum;
+    var columnRatioMatrix = [];
+    var digitData;
+    var i, j, l, ll;
+    //data
+    //rowName, columnName, digitData, rawInfos
+    statData.rowName = rawData.rowName;
+    statData.columnName = rawData.columnName;
+    statData.digitData = digitData = rawData.digitData;
+    statData.rawInfos = rawData.rawInfos;
 
-        return newSource;
-    };
+    //rowSum, columnSum
+    for (j = 0, ll = digitData[0].length; j < ll; j++) {
+        columnSum[j] = 0;
+    }
+    for (i = 0, l = digitData.length; i < l; i++) {
+      rowSum[i] = 0;
+      for (j = 0, ll = digitData[0].length; j < ll; j++) {
+        rowSum[i] += digitData[i][j];
+        columnSum[j] += digitData[i][j];
+      }
+    }
+    statData.rowSum = rowSum;
+    statData.columnSum = columnSum;
 
-    /*!
-     * 合并数据
-     */
-    Stream.prototype.mergeOther = function (source) {
-        //change digitData, rowSum, rowName;
-    };
+    //totalSum
+    statData.totalSum = totalSum = d3.sum(rowSum);
 
-    /**
-     * 获取数据
-     * @param {Array} source 从二维数组中，获取纯数据的部分（排除掉列名后）
-     */
-    Stream.prototype.getDigitData = function (source) {
-		//get first column name, row name and digitData;
-        var conf = this.defaults,
-            firstRow = source[0],
-            firstColumn,
-            digitData;
+    //rowRatio, columnRatio;
+    statData.rowRatio = rowSum.slice();
+    statData.rowRatio.forEach(function (d, i, arr) {
+      arr[i] = d / totalSum;
+    });
+    statData.columnRatio = columnSum.slice();
+    statData.columnRatio.forEach(function (d, i, arr) {
+      arr[i] = d / totalSum;
+    });
 
-        var i, j, l, ll;
+    //rowIndex
+    statData.rowIndex = [];
+    for (i = 0, l = digitData.length; i < l; i++) {
+      statData.rowIndex[i] = {rawData: i};
+    }
 
-        firstColumn = source.map(function (d) {
-            return d[0];
-        });
+    //columnRatioMatrix;
+    statData.columnRatioMatrix = columnRatioMatrix = [];
+    for (i = 0, l = digitData.length; i < l; i++) {
+      columnRatioMatrix[i] = [];
+      for (j = 0, ll = digitData[0].length; j < ll; j++) {
+        columnRatioMatrix[i][j] = digitData[i][j] / columnSum[j];
+      }
+    }
+  };
 
-        if (this.hasRowName()) {
-            if (this.hasColumnName()) {
-                //row names, column names
-                this.rowName = firstColumn.slice(1);
-                this.columnName = firstRow.slice(1);
-                digitData = source.map(function (d) {
-                    return d.slice(1);
-                }).slice(1);
-            } else {
-                //row names, no column names
-                this.rowName = firstColumn;
-                this.columnName = undefined;
-                digitData = source.map(function (d) {
-                    return d.slice(1);
-                });
+  Stream.prototype.getProcessedData = function () {
+    //get processed data;  adjust options;  dataRelation;
+    var prosData = this.processedData = {};
+    var statData = this.statisticData;
+    var conf = this.defaults;
+    var i, j, l, ll;
+    var digitData;
+    //data
+    prosData.rowName = statData.rowName;
+    prosData.rowSum = statData.rowSum;
+    prosData.rowRatio = statData.rowRatio;
+    prosData.columnName = statData.columnName;
+    prosData.columnSum = statData.columnSum;
+    prosData.columnRatio = statData.columnRatio;
+    prosData.columnRatioMatrix = statData.columnRatioMatrix;
+    prosData.totalSum = statData.totalSum;
+    prosData.rawInfos = statData.rawInfos;
+
+    digitData = statData.digitData.slice();
+
+    //rowIndex(sort)
+    digitData.forEach(function (d, i) {
+      d.index = i;
+      d.rowSum = prosData.rowSum[i];
+    });
+    (function () {
+      var descending = function (a, b) {
+        return b.rowSum - a.rowSum;
+      }; 
+      var insideOut = function (digitData, rowSum, reverse) {
+        var getRowMaxIndex = function (array) {
+          var i = 1,
+            j = 0,
+            v = array[0],
+            k,
+            n = array.length;
+          for (; i < n; ++i) {
+            if ((k = array[i]) > v) {
+              j = i;
+              v = k;
             }
-        } else {
-            if (this.hasColumnName()) {
-                //no row names, column names
-                this.rowName = undefined;
-                this.columnName = firstRow;
-                digitData = source.slice(1);
-            } else {
-                //no row names, no column names
-                if (conf.columnNameUsed === "auto" && conf.rowNameUsed === "auto" && !DataV.isNumeric(source[0][0])) {
-                    throw new Error("Please specify whether there are column names or row names");
-                }
-                this.rowName = undefined;
-                this.columnName = undefined;
-                digitData = source;
-            }
-        }
-        for (i = 0, l = digitData.length; i < l; i++) {
-            for (j = 0, ll = digitData[0].length; j < ll; j++) {
-                digitData[i][j] = parseFloat(digitData[i][j]);
-            }
-        }
-		return digitData;
-    };
-
-    /**
-     * 获取信息数据
-     */
-    Stream.prototype.getInfo = function () {
-		var allInfos = [];
-		var i, j, l, ll;
-		var infos, info;
-        var column;
-        var digitData = this.digitData;
-        var descending = function (a, b) {
-                return b.value - a.value;
-            };
-		for (i = 0, l = this.digitData.length; i < l; i++) {
-			infos = allInfos[i] = [];
-			infos.ratio = this.rowSum[i] / this.total;
-			infos.value = this.rowSum[i];
-			infos.name = this.rowName[i];
-			infos.id = i;
-		}
-        for (i = 0, l = digitData.length; i < l; i++) {
-            column = [];
-            for (j = 0, ll = digitData[0].length; j < ll; j++) {
-                allInfos[i][j] = column[j] = {
-                    "date": this.columnName[j],
-                    "id": i,
-                    "name": allInfos[i].name,
-                    "tip": "<b>" + allInfos[i].name + "</b><br/>占比:"
-                        + (Math.round(digitData[i][j] / this.columnSum[j] * 10000) / 100) + "%<br/>",
-                    "total": allInfos[i].ratio,
-                    //"value": columnTotal[i]
-                    "value" : digitData[i][j],
-                    "index" : j,
-                    "rowInfo" : allInfos[i],
-                    "ratio" : digitData[i][j] / this.columnSum[j]
-                };
-            }
-
-            column.sort(descending);
-
-            for (j = 0, ll = column.length; j < ll; j++) {
-                column[j].rank = j;
-            }
-        }
-        return allInfos;
-	};
-
-    /**
-     * 设置数据源
-     * Examples:
-     * 例如下面的数组表示2个人在一年4个季度的消费。第一个人在4个季度里消费了1、2、3、9元。第二个人消费了3、4、6、3元。
-     * ```
-     * [
-     *  [1,2,3,9],
-     *  [3,4,6,3]
-     * ]
-     * ```
-     * @param {Array} source 二维数组的数据源
-     */
-    Stream.prototype.setSource = function (source) {
-        this.rawData = source;
-		this.digitData = this.getDigitData(this.rawData);
-
-        //get date, sort and allInfos;
-        //date
-        this.date = source[0].slice(1, source[0].length);
-        this.timeRange = [0, this.date.length - 1];
-        //sort
-        this.digitData = this.sort(this.digitData);
-		this.allInfos = this.getInfo(this.digitData);
-
-        this.level = 0;
-        this.getLevelSource();
-        //this.source = this.remapSource(digitData);
-        this.canAnimate = false;
-    };
-
-    /**
-     * If useString is true, start and end are date string, else start and end are index number
-     * @param {Number|String} start 起始范围
-     * @param {Number|String} end 结束范围
-     * @param {Boolean} useString 是否是字符串
-     */
-    Stream.prototype.setTimeRange = function (start, end, useString) {
-        var idx1, idx2;
-        if (useString) {
-            idx1 = _.indexOf(this.date, start);
-            idx2 = _.indexOf(this.date, end);
-        } else {
-            idx1 = start;
-            idx2 = end;
-        }
-
-        var min = Math.min(idx1, idx2);
-        var max = Math.max(idx1, idx2);
-        if (min === max) {
-            throw new Error("start index and end index can not be same.");
-        }
-        if (min < 0 || max > this.date.length - 1) {
-            throw new Error("start index or end index is beyond the time range.");
-        }
-
-        this.timeRange = [min, max];
-        this.getLevelSource();
-    };
-
-    /*!
-     * 根据时间范围获取数据
-     */
-    Stream.prototype.getDataByTimeRange = function () {
-        if (this.timeRange[0] === 0 && this.timeRange[1] === this.date.length - 1) {
-            return this.digitData;
-        } else {
-            var tr = this.timeRange;
-            return _.map(this.digitData, function (d, i) {
-                return d.slice(tr[0], tr[1] + 1);
-            });
-        }
-    };
-
-    /*!
-     * 获取等级数据
-     */
-    Stream.prototype.getLevelSource = function () {
-        var data = this.getDataByTimeRange(),//this.digitData,
-            rowStart = this.level * (this.userConfig.max - 1),
-            rowEnd,
-            needMoreRow,
-            column = data[0].length,
-            remap = [],
+          }
+          return j;
+        };
+        var digitDataSort = [];
+        var n = digitData.length,
             i,
             j,
-            k,
-            m,
-            moreRow,
-            moreSum,
-            totalSum,
-            infos = [],
-            moreRowInfo = [];
-
-        if (column < 1) {
-            throw new Error("Data source is empty.");
+            max = digitData.map(getRowMaxIndex),
+            sums = rowSum,
+            index = d3.range(n).sort(function(a, b) { return max[a] - max[b]; }),
+            top = 0,
+            bottom = 0,
+            tops = [],
+            bottoms = [];
+        for (i = 0; i < n; ++i) {
+          j = index[i];
+          if (top < bottom) {
+            top += sums[j];
+            tops.push(j);
+          } else {
+            bottom += sums[j];
+            bottoms.push(j);
+          }
         }
-        if (this.userConfig.more) {
-            if (rowStart + this.userConfig.max >= data.length) {
-                if (rowStart + this.userConfig.max === data.length && this.allInfos[data.length - 1][0].id === -2) {
-                    //last more sum < this.userConfig.other
-                    rowEnd = rowStart + this.userConfig.max - 1;
-                    needMoreRow = true;
-                } else {
-                    rowEnd = data.length;
-                    needMoreRow = false;
-                }
-            } else {
-                rowEnd = rowStart + this.userConfig.max - 1;
-                needMoreRow = true;
-            }
-        } else {
-            rowStart = 0;
-            rowEnd = data.length;
-            needMoreRow = false;
+        index = !reverse ? bottoms.reverse().concat(tops) : bottoms.concat(tops.reverse());
+
+        for (i = 0; i < n; ++i) {
+          digitDataSort[i] = digitData[index[i]];
         }
-        for (i = rowStart; i < rowEnd; i++) {
-            k = i - rowStart;
-            remap[k] = [];
-            for (j = 0; j < column; j++) {
-                remap[k][j] = {};
-                remap[k][j].x =  j;
-                remap[k][j].y =  parseFloat(data[i][j]);
-            }
-            if (this.timeRange[0] === 0 && this.timeRange[1] === this.date.length - 1) {
-                infos[k] = this.allInfos[i];
-            } else {
-                infos[k] = this.allInfos[i].slice(this.timeRange[0], this.timeRange[1] + 1);
-            }
-        }
-        if (needMoreRow) {
-            if (rowStart + this.userConfig.max === data.length && this.allInfos[data.length - 1][0].id === -2) {
-                //last more sum < this.userConfig.other
-                var valueArray = data[data.length - 1];
-                moreRow = [];
-                for (j = 0; j < column; j++) {
-                    moreRow[j] = {};
-                    moreRow[j].x =  j;
-                    moreRow[j].y =  valueArray[j];
-                }
-                moreRowInfo = this.allInfos[data.length - 1];
-            } else {
-                moreRow = [];
-                for (j = 0; j < column; j++) {
-                    moreSum = 0;
-                    totalSum = 0;
-                    for (m = data.length - 1; m >= rowEnd; m--) {
-                        moreSum += parseFloat(data[m][j]);
-                        totalSum += parseFloat(this.allInfos[m][j].total);
-                    }
-                    moreRow[j] = {};
-                    moreRow[j].x =  j;
-                    moreRow[j].y =  moreSum;
-                    moreRowInfo[j] = {
-                        "date": this.allInfos[0][j].date,
-                        "id": -1,// -1 clickable; -2 not click
-                        "name": "更多",
-                        "tip": "<b>更多</b><br/>占比:" + (Math.round(moreSum * 10000) / 100) + "%<br/>点击查看更多信息<br/>",
-                        "total": totalSum,
-                        "value": moreSum
-                    };
-                }
-            }
-            remap = [moreRow].concat(remap);
-            infos = [moreRowInfo].concat(infos);
-        }
-        this.infos = infos;
-        this.source = remap;
-    };
+        return digitDataSort;
+      };
+      var rowDataOrderAdjust = function () {
+        var rowName = prosData.rowName = [];
+        var rowSum = prosData.rowSum = [];
+        var rowRatio = prosData.rowRatio = [];
+        var columnRatioMatrix = prosData.columnRatioMatrix = [];
+        var rawInfos = prosData.rawInfos = [];
+        var statRowName = statData.rowName;
+        var statRowSum = statData.rowSum;
+        var statRowRatio = statData.rowRatio;
+        var statColumnRatioMatrix = statData.columnRatioMatrix;
+        var statRawInfos = statData.rawInfos;
 
-    /**
-     * 生成布局
-     */
-    Stream.prototype.layout = function () {
-        var conf = this.defaults;
-        d3.layout.stack().offset(conf.offset).order(conf.order)(this.source);
-    };
-
-    /**
-     * 根据选择方案获取颜色数据
-     * @param {Object} colorJson 颜色方案
-     * @return {Array} 返回颜色数据
-     */
-    Stream.prototype.getColor = function (colorJson) {
-        var colorMatrix = DataV.getColor();
-        var color;
-        var colorStyle = colorJson || {};
-        var colorMode = colorStyle.mode || 'default';
-        var i, l;
-
-        switch (colorMode) {
-        case "gradient":
-            l = this.source.length;
-            var colorL = Math.round(l / 5);
-            if (colorL > colorMatrix.length - 1) {
-                colorL = colorMatrix.length - 1;
-            }
-            var testColor = [colorMatrix[0][0], colorMatrix[colorL][0]];
-            var test1 = DataV.gradientColor(testColor, "special");
-            var testColorMatrix = [];
-            var testColorMatrix1 = [];
-            for (i = 0; i < l; i++) {
-                testColorMatrix.push([test1(i / (l - 1)), test1(i / (l - 1))]);
-            }
-
-            for (i = (l - 1); i >= 0; i--) {
-                testColorMatrix1.push(testColorMatrix[i]);
-            }
-
-            colorMatrix = testColorMatrix;
-            
-            break;
-        case "random":
-        case "default":
-            break;
-        }
-
-        var ratio = colorStyle.ratio || 0;
-        if (ratio < 0) { ratio = 0; }
-        if (ratio > 1) { ratio = 1; }
-        var colorArray = [];
-        for (i = 0, l = colorMatrix.length; i < l; i++) {
-            var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
-            colorArray.push(colorFunc(ratio));
-        }
-        color = d3.scale.ordinal().range(colorArray);
-
-        return color;
-    };
-
-    /**
-     * 生成路径
-     */
-    Stream.prototype.generatePaths = function () {
-        this.createNavi();
-        this.createPercentage();
-        this.createAxis();
-        this.createStreamPaths();
-        this.createLegend();
-    };
-
-    /**
-     * 创建图例
-     */
-    Stream.prototype.createLegend = function () {
-        var conf = this.defaults,
-            //paper = this.legendPaper,
-            legends = [],
-            m = [10, 20, 10, 20],
-            left = m[3],
-            top = m[0],
-            lineHeight = 25,
-            legendInterval = 10,
-            width = conf.legendWidth - conf.legendIndent,
-            r0 = 5,
-            r1 = 7,
-            circleW = 18,
-            x,
-            y,
-            circle,
-            text,
-            box,
-            ul,
-            li,
-            color = this.getColor({mode: conf.colorMode}),
-            i,
-            l,
-            leftHeight,
-            legendHeight,
-            legendTopMargin,
-            hoverIn = function (e) {
-                var index = e.data.index;
-                var stream = e.data.stream;
-                var path = stream.paths[index];
-                //stream.legends[stream.preIndex]
-                stream.preIndex = index;
-                stream.legends[index].css({"background": "#dddddd"});
-                path.attr({"opacity": 0.5});
-            },
-            hoverOut = function (e) {
-                var index = e.data.index;
-                var stream = e.data.stream;
-                var path = stream.paths[index];
-                stream.preIndex = index;
-                stream.legends[index].css({"background": "white"});
-                path.attr({"opacity": 1.0});
-            };
-
-        ul = $("<ul/>");
-        ul.css({
-            "margin": "0px 0px 0px 10px",
-            "padding-left": "0px"
+        digitData.forEach(function (d, i) {
+          rowName[i] = statRowName[d.index];
+          rowSum[i] = statRowSum[d.index];
+          rowRatio[i] = statRowRatio[d.index];
+          columnRatioMatrix[i] = statColumnRatioMatrix[d.index];
+          rawInfos[i] = statRawInfos[d.index];
         });
-        $(this.legend).append(ul);
-
-        for (i = 0, l = this.infos.length; i < l; i++) {
-            li = $("<li>" + "<span style=\"color: black\">" + this.infos[i][0].name + "</span>" + "</li>");
-            li.css({"list-style-type": "square",
-                    "list-style-position": "inside",
-                    //"background": "gray",
-                    "color": color(i),
-                    //"display": "inline",
-                    "white-space": "nowrap",
-                    "padding-left": 5
-                    });
-            ul.append(li);
-            li.mouseenter({"index": i, "stream": this}, hoverIn);
-            li.mouseleave({"index": i, "stream": this}, hoverOut);
-            legends.push(li);
-        }
-        this.legends = legends;
-        //paper.setSize(width, top + lineHeight + m[2]);
-
-        //height and margin
-        leftHeight = $(this.rightContainer).height();
-        legendHeight = $(this.legend).height();
-        $(this.leftContainer).css({
-            "height": leftHeight
+      };
+      var getProcessedRowIndex = function () {
+        var rowIndex = [];
+        digitData.forEach(function (d, i) {
+          rowIndex[i] = $.extend({}, statData.rowIndex[d.index]);
+          rowIndex[i].statisticData = d.index;
         });
-        if (leftHeight > legendHeight) {
-            $(this.legend).css({"margin-top": leftHeight - legendHeight - 30});
-        } else {
-            $(this.legend).css({"margin-top": 0});
+        prosData.rowIndex = rowIndex;
+      };
+      switch (conf.order) {
+        case 'reverse':
+          digitData.reverse();
+          rowDataOrderAdjust();
+          break;
+        case 'descending':
+          digitData.sort(descending);
+          rowDataOrderAdjust();
+          break;
+        case 'ascending':
+          digitData.sort(descending).reverse();
+          rowDataOrderAdjust();
+          break;
+        case 'inside-out':
+          digitData = insideOut(digitData, prosData.rowSum);
+          rowDataOrderAdjust();
+          break;
+        case 'inside-out-reverse':
+          digitData = insideOut(digitData, prosData.rowSum, true);
+          rowDataOrderAdjust();
+          break;
+        default:
+      }
+      getProcessedRowIndex();
+    }());
+
+    //allInfos
+    (function (){
+      var allInfos = [];
+      var rowInfos = [];
+      var columnInfos = [];
+      var columnDescending = function (a, b) {
+        return b.value - a.value;
+      }; 
+      //rowinfo
+      for (i = 0, l = digitData.length; i < l; i++) {
+        rowInfos[i] = {
+          "rowName": prosData.rowName[i],
+          "rowRatio": prosData.rowRatio[i],
+          "rowSum": prosData.rowSum[i],
+          "rowIndex": i
+        };
+      }
+      //columninfo
+      for (j = 0, ll = digitData[0].length; j < ll; j++) {
+        columnInfos[j] = {
+          "columnName": prosData.columnName[j],
+          "columnRatio": prosData.columnRatio[j],
+          "columnSum": prosData.columnSum[j],
+          "columnIndex": j
+        };
+      }
+      //allInfo
+      for (i = 0, l = digitData.length; i < l; i++) {
+        allInfos[i] = [];
+        for (j = 0, ll = digitData[0].length; j < ll; j++) {
+          allInfos[i][j] = {
+            "value": digitData[i][j],
+            "ratioInColumn": prosData.columnRatioMatrix[i][j], 
+            "rowInfo": rowInfos[i],
+            "columnInfo": columnInfos[j]
+          };
         }
+      }
+      //allInfos rank in column
+      for (j = 0, ll = digitData[0].length; j < ll; j++) {
+        var column = [];
+        for (i = 0, l = digitData.length; i < l; i++) {
+          column[i] = {"value": digitData[i][j]};
+          column[i].index = i;
+        }
+        column.sort(columnDescending);
+
+        for (i = 0, l = column.length; i < l; i++) {
+          allInfos[column[i].index][j].rank = i;
+        }
+      }
+      prosData.allInfos = allInfos;
+    }());
+
+    //digitData(origin or normalized)
+    prosData.digitData = conf.normalized ? prosData.columnRatioMatrix: digitData;
+  };
+
+  Stream.prototype.getSlicedData = function () {
+    //get sliced data;  timeRange; more;  
+    var slicedData = this.slicedData = {};
+    var prosData = this.processedData;
+    var digitData, allInfos, topRowRatioSum, rowIndex;
+    var conf = this.defaults;
+    var moreConfig = conf.moreConfig;
+    var i, l;
+    var that = this;
+    //data
+    //digitData, allInfos
+    slicedData.digitData = digitData = prosData.digitData;
+    slicedData.allInfos = allInfos = prosData.allInfos;
+    slicedData.rowIndex = rowIndex = [];
+
+    //time Range Slice
+    var timeRangeSlice = function (data) {
+      var tr = that.timeRange;
+      var sliceData = [];
+      if (tr[0] === 0 && tr[1] === digitData.length - 1) {
+        return data;
+      } else {
+        data.forEach(function (d, i) {
+          sliceData[i] = d.slice(tr[0], tr[1] + 1);
+        });
+        return sliceData;
+      }
     };
+    digitData = slicedData.digitData = timeRangeSlice(digitData);
+    allInfos = slicedData.allInfos = timeRangeSlice(allInfos);
 
-    /**
-     * 创建导航
-     */
-    Stream.prototype.createNavi = function () {
-        if (!this.userConfig.more) {
-            $(this.navi).css({
-                "visibility": "hidden",
-                "position": "absolute"
-            });
-        } else {
-            $(this.navi).css({"visibility": "visible",
-                "position": "relative"
-            });
-        }
-        var i,
-            span;
-        $(this.naviTrace).empty();
-        for (i = 0; i <= this.level; i++) {
-            $(this.naviTrace).append($("<span> &gt; </span>"));
-            span = document.createElement("span");
-            span.data = {level: i};
-            span = $(span)
-                .html(i === 0 ? "第1层" : "第" + (i + 1) + "层")
-                .appendTo($(this.naviTrace));
-            if (i !== this.level) {
-                span.css({"cursor": "pointer", "color": "#1E90FF"})
-                    .addClass("navi");
-                    //.data("level", i);
-            }
-        }
-        if (this.level > 0) {
-            this.naviBack.style.visibility = "visible";
-        } else {
-            this.naviBack.style.visibility = "hidden";
-        }
-    };
-
-    /**
-     * 获取最大百分比
-     */
-    Stream.prototype.getMaxPercentage = function () {
-        this.maxPercentage = this.allInfos.reduce(function (a, b, i, array) {
-            return [{total: a[0].total + b[0].total}];
-        })[0].total;
-    };
-
-    /**
-     * 生成百分比数据
-     */
-    Stream.prototype.createPercentage = function () {
-        if (!this.userConfig.more) {
-            return;
-        }
-        var conf = this.defaults;
-        var maxY = this.getMaxY(),
-            y;
-        if (this.firstRender) {
-            this.getMaxPercentage();
-        }
-
-        maxY /= this.maxPercentage;
-        y = maxY > 0.1
-            ? (1 - maxY) * conf.height + conf.fontSize * 2 / 3
-            : (1 - maxY) * conf.height - conf.fontSize * 2 / 3;
-
-        if (this.firstRender) {
-            this.percentageRect = this.percentagePaper.rect(0, (1 - maxY) * conf.height,
-                    conf.margin[3], maxY * conf.height)
-                .attr({"fill": "#f4f4f4", "stroke": "#aaa", "stroke-width": 0.5});
-            this.percentageText = this.percentagePaper.text(conf.margin[3] / 2, y,
-                    Math.round(maxY * 100) + "%")
-                .attr({"text-anchor": "middle"});
-        } else {
-            this.percentageRect.animate({"y": (1 - maxY) * conf.height, "height": maxY * conf.height}, 750);
-            this.percentageText.attr({"text": Math.round(maxY * 100) + "%"})
-                .animate({"y": y}, 750);
-        }
-    };
-
-    /**
-     * 生成Stream路径
-     */
-    Stream.prototype.createStreamPaths = function () {
-        var canvas = this.canvas,
-            paths = [],
-            labels = [],
-            area = this.generateArea(),
-            color = this.getColor({mode: this.defaults.colorMode}),
-            conf = this.defaults,
-            i,
-            l,
-            _area,
-            pathLegend,
-            path,
-            pathLegendMouseOver = function () {
-                var path = this.path,
-                    anchorIndex = path.index;
-                path.paths.forEach(function (d, i, array) {
-                    if (i !== anchorIndex) {
-                        array[i].attr({"fill": d3.interpolateRgb.apply(null, [array[i].color, "#fff"])(0.5)});
-                    }
-                });
-				this.style.backgroundColor = d3.interpolateRgb.apply(null, [path.color, "#fff"])(0.8);
+    //no more
+    if (moreConfig.more !== true) {
+      //rowIndex without more
+      for (i = 0, l = prosData.rowIndex.length; i < l; i++) {
+        rowIndex[i] = $.extend({}, prosData.rowIndex[i]);
+        rowIndex[i].processedData = i;
+      }
+      return;
+    }
+    //more
+    topRowRatioSum = slicedData.topRowRatioSum = [];
+    var rowRatio = prosData.rowRatio;
+    topRowRatioSum[0] = rowRatio[0];
+    for (i = 1, l = rowRatio.length; i < l; i++) {
+      topRowRatioSum[i] = topRowRatioSum[i - 1] + rowRatio[i];
+    }
+    //more's digitData and allInfos
+    (function () {
+      var rowStart = moreConfig.level * (moreConfig.max - 1),
+        max = moreConfig.max,
+        rowEnd,
+        needMoreRow,
+        i, j, l, k,
+        moreSum,
+        moreRowSum,
+        moreRow = [],
+        datas = [],
+        infos = [],
+        moreRowInfo = [];
+  
+      if (rowStart >= digitData.length) {
+        //prevent level is too large after setSource;
+        moreConfig.level = 0;
+        rowStart = 0;
+      }
+      if (rowStart + max >= digitData.length) {
+        rowEnd = digitData.length;
+        needMoreRow = false;
+      } else {
+        rowEnd = rowStart + max - 1;
+        needMoreRow = true;
+      }
+      for (i = rowStart; i < rowEnd; i++) {
+        k = i - rowStart;
+        datas[k] = digitData[i];
+        infos[k] = allInfos[i];
+      }
+      if (needMoreRow) {
+        moreRowSum = 1 - topRowRatioSum[rowEnd - 1];
+        for (j = 0, l = digitData[0].length; j < l; j++) {
+          moreSum = 0;
+          for (i = digitData.length - 1; i >= rowEnd; i--) {
+            moreSum += digitData[i][j];
+          }
+          moreRow[j] = moreSum;
+          moreRowInfo[j] = {
+            "value": moreSum,
+            "ratioInColumn": moreSum / prosData.columnSum[j],
+            "rowInfo": {
+              "rowName": "more",
+              "rowRatio": moreSum / moreRowSum,
+              "rowSum": moreRowSum,
+              "rowIndex": -1 // -1, clickable; -2, not clickable
             },
-            
-            pathLegendMouseOut = function () {
-                var path = this.path,
-                    anchorIndex = path.index;
-                path.paths.forEach(function (d, i, array) {
-                    if (i !== anchorIndex) {
-                        array[i].attr({"fill": array[i].color});
-                    }
-                });
-				path.legend.style.backgroundColor = path.color;
-            },
-
-            getLabelLocation = function (locArray, el) {
-                var x = 0,
-                    y = 0,
-                    i;
-                var ratioMargin = 0.15;
-                var index = 0;
-                var max = 0;
-                var box = el.getBBox();
-                var xInterval;
-                var minTop, maxBottom;
-                var showLabel = true;
-                var loc;
-                var height;
-
-                xInterval = Math.ceil(box.width / (locArray[1].x - locArray[0].x) / 2);
-                if (xInterval === 0) {
-                    xInterval = 1;
-                }
-
-                locArray.forEach(function (d, i, array) {
-                    var m = Math.max(ratioMargin * array.length, xInterval);
-                    if (i >= m && i <= array.length - m) {
-                        if (d.y > max) {
-                            minTop = d.y0 - d.y;
-                            maxBottom = d.y0;
-                            max = d.y;
-                            index = i;
-                        }
-                    }
-                });
-                for (i = index - xInterval; i <= index + xInterval; i++) {
-                    if (i < 0 || i >= locArray.length) {
-                        height = 0;
-                        showLabel = false;
-                        break;
-                        //return;
-                    }
-                    loc = locArray[i];
-                    //top's y is small
-                    if (loc.y0 - loc.y > minTop) {
-                        minTop = loc.y0 - loc.y;
-                    }
-                    if (loc.y0 < maxBottom) {
-                        maxBottom = loc.y0;
-                    }
-                }
-
-                if (showLabel && maxBottom - minTop >= box.height * 0.8) {
-                    x = locArray[index].x;
-                    y = (minTop + maxBottom) / 2;
-                    //y = locArray[index].y0 - locArray[index].y / 2;
-                } else {
-                    showLabel = false;
-                }
-
-                return {x: x,
-                        y: y,
-                        showLabel: showLabel};
-            },
-
-            getLabelLocation_old2 = function (locArray, conf) {
-                var x, y, height = 0, i;
-                var indexMargin = Math.min(conf.indexMargin, Math.floor((locArray.length - 1) / 2));
-                var ratioMargin = 0.15;
-                var index = indexMargin;
-                var max = 0;
-                if (locArray.length >= conf.indexMargin * 2 + 1) {
-                    locArray.forEach(function (d, i, array) {
-                        var m = Math.max(indexMargin, ratioMargin * array.length);
-                        if (i >= m && i <= array.length - m) {
-                            if (d.y > max) {
-                                max = d.y;
-                                index = i;
-                            }
-                        }
-                    });
-                    x = locArray[index].x;
-                    y = locArray[index].y0 - locArray[index].y / 2;
-                    for (i = index - indexMargin; i <= index + indexMargin; i++) {
-                        height += locArray[i].y;
-                    }
-                    height = height / (2 * indexMargin + 1);
-                } else {
-                    x = -100;
-                    y = -100;
-                    height = 0;
-                }
-
-                return {
-                    x: x,
-                    y: y,
-                    height: height
-                };
-            };
-
-        canvas.rect(0, 0, conf.width, conf.height)
-            .attr({"stroke": "none",
-                    "fill": "#e0e0e0"});
-        for (i = 0, l = this.source.length; i < l; i++) {
-            _area = area(this.pathSource[i]);
-            path = canvas.path(_area).attr({fill: color(i),
-                    stroke: color(i),
-                    "stroke-width": 1,
-                    "stroke-linejoin": "round",
-                    "transform":  "t0," + conf.topInterval
-                    });
-            path.color = color(i);
-            path.index = i;
-            path.info = this.infos[i];
-
-            path.paths = paths;
-            path.topTrans = conf.topInterval;
-            path.bottomTrans = conf.bottomInterval;
-            path.stream = this;
-
-            path.node.streamPath = path;
-            path.node.setAttribute("class", "streamPath rvml");
-
-            //path.click(pathClick);
-            //path.mouseover(pathMouseOver);
-            //path.mouseout(pathMouseOut);
-            //path.mousemove(pathMouseMove);
-
-            paths[path.index] = path;
-            //brush canvas background
+            "columnInfo": $.extend({}, allInfos[0][j])
+          };
+          moreRowInfo[j].columnInfo.columnRatio = moreSum / moreRowInfo[j].columnInfo.columnSum;
+          //if (moreRowSum < this.userConfig.other) {
+          if (moreRowSum < conf.moreConfig.other) {
+             moreRowInfo[j].rowInfo.rowIndex = -2; // not clickable
+          }
         }
+        datas = [moreRow].concat(datas);
+        infos = [moreRowInfo].concat(infos);
+      }
+      digitData = slicedData.digitData = datas;
+      allInfos = slicedData.allInfos = infos;
 
-        //label
-        for (i = 0, l = paths.length; i < l; i++) {
-            path = paths[i];
-            path.label = this.canvas.text(0, 0,
-                    conf.pathLabel ?
-                    path.info[0].name + " " + (Math.round(path.info[0].total * 10000) / 100) + "%" : "")
-                .attr({"text-anchor": "middle",
-                        "fill": "white",
-                        "font-size": conf.fontSize,
-                        "font-family": "微软雅黑"});
-            path.labelLoc = getLabelLocation(this.pathSource[i], path.label);
+      //row Index with more
+      for (i = rowStart; i < rowEnd; i++) {
+        k = i - rowStart;
+        rowIndex[k] = $.extend({}, prosData.rowIndex[i]);
+        rowIndex[k].processedData = i;
+      }
+      if (needMoreRow) {
+        rowIndex = [{"processedData": "more"}].concat(rowIndex);
+      }
+      slicedData.rowIndex = rowIndex;
+    }());
+  };
 
-            if (path.labelLoc.showLabel) {
-                path.label.attr({"x": path.labelLoc.x,
-                                "y": path.labelLoc.y});
-            } else {
-                path.label.attr({"opacity": 0});
-                //path.labelOpacity = 1;
-            }
-            if (i === 0 && path.info[0].id === -1) {
-                path.attr({"cursor": "pointer"});
-                path.label.attr({"cursor": "pointer"});
-            }
-            labels.push(path.label);
-            path.label.node.setAttribute("class", "streamPath rvml");
+  //options examples:
+  //undefined, same as init without orderchange
+  //{"type": "init", "order": [0,1,2,3,4,...]} ,init and change order
+  //{"type": "changeOrder", "order": [0,1,2,3,4,...]}
+  Stream.prototype.getDisplayData = function (options) {
+    //get display data;  timeRange; more;
+    var type = (options && options.type) || "init";
+    var order = options && options.order;
+
+    var displayData = this.displayData;
+    var slicedData = this.slicedData;
+    var digitData, allInfos, rowIndex;
+
+    if (type === "init") {
+      displayData.digitData = digitData = slicedData.digitData;
+      displayData.allInfos = allInfos = slicedData.allInfos;
+      displayData.rowIndex = rowIndex = [];
+      if (typeof order === 'undefined') {
+        d3.range(digitData.length).forEach(function (d, i) {
+          rowIndex[i] = $.extend({}, slicedData.rowIndex[d]);
+          rowIndex[i].slicedData = d;
+        });
+      } else {
+        if (order.length !== digitData.length) {
+          throw new Error("order's length is different from row number");
+        } else {
+          digitData = [];
+          allInfos = [];
+          order.forEach(function (d, i) {
+            digitData[i] = slicedData.digitData[d];
+            allInfos[i] = slicedData.allInfos[d];
+            rowIndex[i] = $.extend({}, slicedData.rowIndex[d]);
+            rowIndex[i].slicedData = d;
+          });
+          displayData.digitData = digitData;
+          displayData.allInfos = allInfos;
         }
+      }
+    } else {//changeOrder
+      digitData = displayData.digitData.slice();
+      allInfos = displayData.allInfos.slice();
+      rowIndex = displayData.rowIndex.slice();
+      order.forEach(function (d, i) {
+        digitData[i] = displayData.digitData[d];
+        allInfos[i] = displayData.allInfos[d];
+        rowIndex[i] = displayData.rowIndex[d];
+      });
+      displayData.digitData = digitData;
+      displayData.allInfos = allInfos;
+      displayData.rowIndex = rowIndex;
+    }
+  };
 
-        $(this.canvas.canvas).unbind();
+  Stream.prototype.setSource = function (source, rawInfos) {
+    this.rawData = {};
+    this.getRawData(source);
+    if (rawInfos) {
+      this.getRawData(rawInfos, true);
+    }
+    this.timeRange = [0, this.rawData.columnName.length - 1];
+    this.date = this.rawData.columnName;
+  };
 
-        var mouseenter = function (e) {
-                var stream = e.data.stream;
-                stream.indicatorLine.attr({"stroke": "#000"});
-                stream.highlightLine.attr({"stroke": "white"});
-                stream.floatTag.css({"visibility" : "visible"});
-                stream.axisPopText.show();
-                stream.axisPopBubble.show();
-            };
+  //if useSting is true, start and end are date string, else start and end are index number;
+  Stream.prototype.setTimeRange = function (start, end, useString) {
+    var idx1, idx2, temp;
+    if (useString) {
+      idx1 = this.date.indexOf(start);
+      if (idx1 === "") {
+        throw new Error(start + " is not found");
+      }
+      idx2 = this.date.indexOf(end);
+      if (idx2 === "") {
+        throw new Error(end + " is not found");
+      }
+    } else {
+      idx1 = start;
+      idx2 = end;
+    }
+    if (idx1 > idx2) {
+      temp = idx1;
+      idx1 = idx2;
+      idx2 = temp;
+    }
+    if (idx1 === idx2) {
+      throw new Error("start index and end index can not be same.");
+    }
+    if (idx2 > this.date.length - 1) {
+      throw new Error("start index or end index is beyond the time range.");
+    }
+    this.timeRange = [idx1, idx2];
+    this.getLevelSource();
+  };
 
-        var mouseleave = function (e) {
-                var stream = e.data.stream,
-                    circle;
-                stream.indicatorLine.attr({"stroke": "none"});
-                stream.highlightLine.attr({"stroke": "none"});
-                stream.floatTag.css({"visibility" : "hidden"});
-                stream.axisPopText.hide();
-                stream.axisPopBubble.hide();
-                //recover prepath;
-                if (typeof stream.prePath !== 'undefined') {
-                    stream.prePath.attr({"opacity": 1, "stroke-width": 1});
-                    // set legend
-                    //circle = stream.legends[stream.prePath.index].circle;
-                    //circle.attr({"r": circle.data("r0"), "opacity": 1});
-                    stream.legends[stream.prePath.index].css({"background": "white"});
-                    stream.prePath = undefined;
-                }
-            };
+  Stream.prototype.getDataByTimeRange = function () {
+    if (this.timeRange[0] === 0 && this.timeRange[1] === this.date.length - 1) {
+      return this.digitData;
+    } else {
+      var tr = this.timeRange;
+      return this.digitData.map(function (d) {
+        return d.slice(tr[0], tr[1] + 1);
+      });
+    }
+  };
 
-        var click = function (e) {
-                var stream = e.data.stream,
-                    position;
-                if (typeof stream.prePath !== 'undefined'
-                        && stream.prePath.info[0].id === -1) {
+  Stream.prototype.getColor = function (colorJson) {
+    var colorMatrix = DataV.getColor();
+    var color;
+    var colorStyle = colorJson || {};
+    var colorMode = colorStyle.mode || 'default';
+    var i, l;
+
+    switch (colorMode) {
+    case "gradient":
+      l = this.source.length;
+      // 最大为 colorMatrix.length - 1
+      var colorL = Math.min(Math.round(l / 5), colorMatrix.length - 1);
+      var testColor = [colorMatrix[0][0], colorMatrix[colorL][0]];
+      var test1 = DataV.gradientColor(testColor, "special");
+      var testColorMatrix = [];
+      var testColorMatrix1 = [];
+      for (i = 0; i < l; i++) {
+        testColorMatrix.push([test1(i / (l - 1)), test1(i / (l - 1))]);
+      }
+
+      for (i = l - 1; i >= 0; i--) {
+        testColorMatrix1.push(testColorMatrix[i]);
+      }
+      colorMatrix = testColorMatrix;
+      break;
+    case "random":
+    case "default":
+      break;
+    }
+
+    var ratio = colorStyle.ratio || 0;
+    ratio = Math.max(ratio, 0);
+    ratio = Math.min(ratio, 1);
+
+    var colorArray = colorMatrix.map(function () {
+      return d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]])(ratio);
+    });
+    color = d3.scale.ordinal().range(colorArray);
+
+    return color;
+  };
+
+  /*
+   */
+  Stream.prototype.getColor = function () {
+    var count = this.layoutData ? this.layoutData.length : this.labels.length;
+    var color = this.defaults.gradientColor || ["#8be62f", "#1F4FD8"];
+    var gradientColor = DataV.gradientColor(color, "special");
+    var percent = 1 / count;
+    var gotColors = [];
+
+    for (var i = 0; i < count; i++) {
+      gotColors.push(gradientColor(i * percent));
+    }
+
+    var midderNum = Math.round(count / 2);
+    return function (num) {
+      return num % 2 === 0 ? gotColors[midderNum + num / 2] : gotColors[midderNum - (num + 1) / 2];
+    };
+  };
+
+  Stream.prototype.generatePaths = function () {};
+
+  Stream.prototype.createLegend = function () {};
+
+  Stream.prototype.createNavi = function () {};
+
+  Stream.prototype.getMaxPercentage = function () {};
+
+  Stream.prototype.createPercentage = function () {};
+
+  Stream.prototype.createStreamPaths = function () {};
+
+  Stream.prototype.createAxis = function () {};
+
+  Stream.prototype.getMaxY = function () {
+    return d3.max(this.source, function (d) {
+      return d3.max(d, function (d) {
+        return d.y0 + d.y;
+      });
+    });
+  };
+
+  Stream.prototype.mapPathSource = function () {
+    var conf = this.defaults,
+      maxX = this.source[0].length - 1,//this.digitData[0].length - 1,
+      maxY = this.getMaxY(), 
+      width = conf.chartWidth,
+      height = conf.height;
+    var i, j, l, l2, s, ps;
+    this.pathSource = [];
+    for (i = 0, l = this.source.length; i < l; i++) {
+      this.pathSource[i] = [];
+      for (j = 0, l2 = this.source[0].length; j < l2; j++) {
+        s = this.source[i][j];
+        ps = this.pathSource[i][j] = {};
+        ps.x = s.x * width / maxX;
+        ps.y0 = height - s.y0 * height / maxY;
+        ps.y = s.y * height / maxY;
+      }
+    }
+  };
+
+  Stream.prototype.generateArea = function () {
+    this.mapPathSource();
+    var area = d3.svg.area().x(function (d) {
+        return d.x;
+      }).y0(function (d) {
+        return d.y0;
+      }).y1(function (d) {
+        return d.y0 - d.y; 
+      });
+    return area;
+  };
+
+  Stream.prototype.clearCanvas = function () {};
+
+  Stream.prototype.reRender = function () {
+    this.clearCanvas();
+    this.layout();
+    this.generatePaths();
+    this.canAnimate = true;
+  };
+
+  Stream.prototype.processData = function (stage) {
+    switch (stage) {
+      case undefined:
+      case "statisticData":
+        this.getStatisticData();
+        // break;
+      case "processedData":
+        this.getProcessedData();
+        // break;
+      case "slicedData":
+        this.getSlicedData();
+        // break;
+      case "displayData":
+        this.getDisplayData();
+        // break;
+      default:
+        break;
+    }
+  };
+
+  Stream.prototype.createComponents = function () {
+    var conf = this.defaults,
+      canvasFatherContainer;
+
+    //components height and width compute
+    if (conf.moreConfig.more) {
+      conf.showNavi = true;
+      conf.showPercentage = true;
+    } else {
+      conf.showNavi = false;
+      conf.showPercentage = false;
+    }
+    if (!conf.showLegend) {
+      conf.legendBesidesWidth = conf.width;
+      conf.legendBesidesHeight = conf.height;
+    } else {
+      if (conf.legendPosition === "left") {
+        conf.legendBesidesWidth = conf.width - conf.leftLegendWidth;
+        conf.legendBesidesHeight = conf.height;
+      } else {
+        conf.legendBesidesWidth = conf.width;
+        conf.legendBesidesHeight = conf.height - conf.topLegendHeight;
+      }
+    }
+    conf.chartWidth = conf.legendBesidesWidth - 2 * conf.percentageWidth;
+    conf.chartHeight = conf.legendBesidesHeight - (conf.showNavi ? conf.naviHeight : 0)
+        - (conf.showAxis ? conf.axisHeight : 0);
+
+    this.node.style.position = "relative";
+    this.node.style.width = conf.width + "px";
+
+    this.canvasContainer = document.createElement("div");
+    canvasFatherContainer = document.createElement("div");
+    $(this.canvasContainer).css({
+      "position": "relative",
+      "float": "left",
+      "width": conf.chartWidth + "px",
+      "height": conf.chartHeight + "px",
+      "margin-bottom": "0px",
+      "border-bottom": "0px",
+      "padding-bottom": "0px"
+    }).append($(canvasFatherContainer).css({"position": "relative"}));
+
+    //chart and paper
+    this.chart = new StreamChart(canvasFatherContainer, {"width": conf.chartWidth, "height": conf.chartHeight});
+    this.chart.getColor = this.getColor;
+    this.chart.defaults.gradientColor = this.defaults.gradientColor;
+    this.paper = this.chart.paper;
+
+    this.legendContainer = document.createElement("div");
+    this.legendBesidesContainer = document.createElement("div");
+
+    //legend
+    this.legend = conf.legendPosition === "left" ? new Legend(this, this.legendContainer)
+      : new TopLegend(this, this.legendContainer);
     
-                    //hidden
-                    stream.indicatorLine.attr({"stroke": "none"});
-                    stream.highlightLine.attr({"stroke": "none"});
-                    stream.floatTag.css({"visibility" : "hidden"});
+    //aixs
+    this.axisContainer = document.createElement("div");
+    this.axis = new Axis(this, this.axisContainer);
 
-                    stream.level += 1;
+    //percentage
+    this.percentageContainer = document.createElement("div");
+    this.percentage = new Percentage(this, this.percentageContainer);
 
-                    //set cover
-                    position = $(this).parent().position();
-                    $(stream.cover).css({left: position.left + "px",
-                                        top: position.top + "px"});
-                    stream.cover.style.visibility = "visible";
-                    stream.coverMouse = {x: e.pageX, y: e.pageY};
+    //navi
+    this.naviContainer = document.createElement("div");
+    this.navi = new Navi(this, this.naviContainer);
 
-                    //redraw
-                    stream.getLevelSource();
-                    stream.reRender();
+    //hoverLine
+    this.hoverLine = new HoverLine(this);
 
-                    //hidden
-                    stream.indicatorLine.attr({"stroke": "none"});
-                    stream.highlightLine.attr({"stroke": "none"});
-                    stream.floatTag.css({"visibility" : "hidden"});
+    //pathLabel
+    this.pathLabel = new PathLabel(this);
 
-                    stream.paths.forEach(function (d, i, array) {
-                        d.attr({transform: "s1,0.001,0," + stream.defaults.height});
-                        d.label.hide();
-                        d.animate({transform: "t0,0"}, 750, "linear", function () {
-                            stream.cover.style.visibility = "hidden";
-                            if (typeof stream.coverMouse !== 'undefined') {
-                                stream.indicatorLine.attr({"stroke": "#000"});
-                                stream.highlightLine.attr({"stroke": "white"});
-                                stream.floatTag.css({"visibility" : "visible"});
-                                $(stream.canvas.canvas).trigger("mousemove",
-                                    [stream.coverMouse.x, stream.coverMouse.y]);
-                                stream.coverMouse = undefined;
-                            }
-                            //if (d.labelOpacity === 1)
-                            if (d.labelLoc.showLabel) {
-                                d.label.show();
-                            }
-                        });
-                    });
-                }
-            };
+    //floatTag
+    this.floatTag = new FloatTag(canvasFatherContainer);
+        
+    // cover can block stream paper when animating to prevent some default mouse event
+    this.coverContainer = document.createElement("div");
+    this.cover = new Cover(this, this.coverContainer);
 
-        var mousemove = function (e, pageX, pageY) {
-                var stream = e.data.stream;
-                var offset = $(this).parent().offset();
-                var position = $(this).parent().position();
-                //var offset = $(this).offset();
-                var x = (e.pageX || pageX) - offset.left,
-                    y = (e.pageY || pageY) - offset.top;
-                var floatTag,
-                    floatTagWidth,
-                    floatTagHeight,
-					mouseToFloatTag = {x: 20, y: 20};
-                var path,
-                    pathSource = stream.pathSource,
-                    pathSourceP,
-                    pathIndex,
-                    circle;
-                var i, l;
-                var xIdx = Math.floor((x / (stream.defaults.width
-                                / (stream.source[0].length - 1) / 2) + 1) / 2);
-                var pathsourceP,
-                    lineX;
+    this.legendBesidesContainer.appendChild(this.naviContainer);
+    this.middleContainer = document.createElement("div");
+    $(this.middleContainer).css({
+      "height": conf.chartHeight
+    });
+    this.middleContainer.appendChild(this.percentageContainer);
+    this.middleContainer.appendChild(this.canvasContainer);
 
-                //get path
-                path = undefined;
-                pathSource = stream.pathSource;
-                for (i = 0, l = pathSource.length; i < l; i++) {
-                    if (y >= pathSource[i][xIdx].y0 - pathSource[i][xIdx].y && y <= pathSource[i][xIdx].y0) {
-                        path = stream.paths[i];
-                        pathIndex = i;
-                        break;
-                    }
-                }
-                if (typeof path === 'undefined') {
-                    return;
-                }
+    this.canvasContainer.appendChild(this.coverContainer);
 
+    this.legendBesidesContainer.appendChild(this.middleContainer);
+    this.legendBesidesContainer.appendChild(this.axisContainer);
 
-                //recover prepath;
-                if (typeof stream.prePath !== 'undefined') {
-                    stream.prePath.attr({"opacity": 1, "stroke-width": 1});
-                    // set legend
-                    stream.legends[stream.prePath.index].css({"background": "white"});
-                }
-                //change new path;
-                stream.prePath = path;
-                path.attr({"opacity": 0.5, "stroke-width": 0});
+    if (conf.legendPosition === "left") {
+      this.node.appendChild(this.legendBesidesContainer);
+      this.node.appendChild(this.legendContainer);
+      $(this.legendBesidesContainer).css({
+        "float": "right",
+        "width": conf.legendBesidesWidth
+      });
+      $(this.legendContainer).css({
+        "width": conf.leftLegendWidth - 4 + "px",
+        "overflow-x": "hidden"
+      });
+    } else {
+      this.node.appendChild(this.legendContainer);
+      this.node.appendChild(this.legendBesidesContainer);
+      $(this.legendBesidesContainer).css({"width": conf.legendBesidesWidth});
+      $(this.legendContainer).css({"width": conf.leftLegendWidth + "px"});
+    }
+  };
 
-                // set legend
-                stream.legends[stream.prePath.index].css({"background": "#dddddd"});
+  Stream.prototype.renderComponents = function (animate) {
+    this.chart.setSource(this.displayData.digitData);
+    this.chart.render(animate);// animate if animate === "animate"
 
-                //set indicator and highlight line
-                lineX = stream.defaults.width * xIdx / (stream.source[0].length - 1);
-                pathSourceP = pathSource[pathSource.length - 1][xIdx];
-                stream.indicatorLine.attr({path: "M" + lineX
-                        + " " + (pathSourceP.y0 - pathSourceP.y)
-                        + "V" + pathSource[0][xIdx].y0});
+    if (this.defaults.pathLabel) {
+      this.pathLabel.render();
+    }
 
-                pathSourceP = pathSource[pathIndex][xIdx];
-                stream.highlightLine.attr({path: "M" + lineX
-                        + " " + (pathSourceP.y0 - pathSourceP.y)
-                        + "V" + pathSourceP.y0});
-                if (pathIndex === 0 && path.info[0].id === -1) {
-                    stream.highlightLine.attr({"cursor": "pointer"});
-                } else {
-                    stream.highlightLine.attr({"cursor": "auto"});
-                }
+    this.hoverLine.render();//lines should be to front, so at last
 
-                floatTag = stream.floatTag;
-                floatTag.html(path.info[xIdx].tip);
+    this.axis.render();
+    this.percentage.render();
+    this.navi.render();
+    //legend should be after legend besides to get right height
+    this.legend.render();
+  };
 
-                //axis pop bubble
-                stream.axisPopText.attr({"text": stream.date[xIdx + stream.timeRange[0]]})
-                    .transform("t" + (lineX + stream.defaults.margin[3]) + ",0");
-                stream.axisPopBubble.transform("t" + (lineX + stream.defaults.margin[3]) + ",0");
+  Stream.prototype.createInteractive = function () {
+    this.paths = this.chart.paths;
+    $(this.paper.canvas).unbind();//prevent event rebind.
 
-                //customevent;
-                if (stream.defaults.customEventHandle.mousemove) {
-                    stream.defaults.customEventHandle.mousemove.call(stream,
-                            {"timeIndex": xIdx, "pathIndex": pathIndex});
-                }
-            };
-        var $canvas = $(this.canvas.canvas);
-        $canvas.bind("mouseenter", {"stream": this}, mouseenter);
-        $canvas.bind("mouseleave", {"stream": this}, mouseleave);
-        $canvas.bind("click", {"stream": this}, click);
-        $canvas.bind("mousemove", {"stream": this}, mousemove);
-
-        this.paths = paths;
-        this.labels = labels;
-        this.indicatorLine = canvas.path("M0 " + conf.topInterval + "V" + (conf.height - conf.bottomInterval))
-            .attr({stroke: "none", "stroke-width": 1, "stroke-dasharray": "- "});
-        this.highlightLine = canvas.path("M0 " + conf.topInterval + "V" + (conf.height - conf.bottomInterval))
-            .attr({stroke: "none", "stroke-width": 2});
-    };
-
-    /**
-     * 创建坐标轴
-     */
-    Stream.prototype.createAxis = function () {
-        //all date strings' format are same, string length are same
-        var conf = this.defaults,
-            date = this.date.slice(this.timeRange[0], this.timeRange[1] + 1),
-            left = conf.margin[3],
-            //left = conf.margin[3] + conf.legendWidth,
-            right = conf.totalWidth - conf.margin[1] - conf.legendWidth,
-            tempWord,
-            tickNumber,
-            getPopPath = function (El) {
-                //down pop
-                var x = 0,
-                    y = 0,
-                    size = 4,
-                    cw = 23,
-                    bb = {height: 8};
-                if (El) {
-                    bb = El.getBBox();
-                    bb.height *= 0.6;
-                    cw = bb.width / 2 - size;
-                }
-                return [
-                    'M', x, y,
-                    'l', size, size, cw, 0,
-                    'a', size, size, 0, 0, 1, size, size,
-                    'l', 0, bb.height,
-                    'a', size, size, 0, 0, 1, -size, size,
-                    'l', -(size * 2 + cw * 2), 0,
-                    'a', size, size, 0, 0, 1, -size, -size,
-                    'l', 0, -bb.height,
-                    'a', size, size, 0, 0, 1, size, -size,
-                    'l', cw, 0,
-                    'z'
-                ].join(',');
-            };
-
-        this.dateScale = d3.scale.linear()
-            .domain([0, date.length - 1])
-            .range([left, right]);
-
-        tempWord = this.axisPaper.text(0, 0, date[0]);
-        tickNumber = Math.floor((right - left)
-                / tempWord.getBBox().width / 2) + 1;
-        tempWord.remove();
-        //tickNumber = 4;
-
-        Axis().scale(this.dateScale)
-            .ticks(tickNumber)
-            //.ticks(conf.axisTickNumber)
-            .tickSize(6, 3, 3)
-            .tickAttr({"stroke": "none"})
-            .minorTickAttr({"stroke": "none"})
-            .domainAttr({"stroke": "none"})
-            //.tickTextAttr({"font-size": conf.fontSize})
-            .tickFormat(function (d) {
-                return date[d] || "";
-            })(this.axisPaper);//.attr({transform: "t0," + (conf.height - 0)});
-
-        this.axisPopText = this.axisPaper.text(0, 11, date[0])
-            .attr({ "text-anchor": "middle",
-                    "fill": "#fff",
-                    //"font-size": conf.fontSize,
-                    "transform": "t" + left + ",0"})
-            .hide();
-        this.axisPopBubble = this.axisPaper.path(getPopPath(this.axisPopText))
-            .attr({ "fill": "#000",
-                    //"opacity": 0,
-                    "transform": "t" + left + ",0"})
-            .toBack()
-            .hide();
-    };
-
-    /**
-     * 获取纵轴最大值
-     */
-    Stream.prototype.getMaxY = function () {
-        return d3.max(this.source, function (d) {
-            return d3.max(d, function (d) {
-                return d.y0 + d.y;
-            });
+    //refactor stream chart's animate function, especially change the callback
+    var stream = this;
+    this.chart.animateCallback = function () {
+      var newOrderPaths = [];
+      var that = this;
+      if (typeof this.defaults.animateOrder !== 'undefined') {
+        this.defaults.animateOrder.forEach(function (d, i) {
+          newOrderPaths[i] = that.paths[d];
         });
+        this.paths = newOrderPaths;
+      }
+
+      stream.cover.hidden();
+      if (typeof stream.cover.mouse !== 'undefined') {
+        stream.hoverLine.show();
+        stream.floatTag.show();
+        $(stream.paper.canvas).trigger("mousemove",
+            [stream.cover.mouse.x, stream.cover.mouse.y]);
+        $(stream.floatTag).trigger("mousemove",
+            [stream.cover.mouse.x, stream.cover.mouse.y]);
+        stream.cover.mouse = undefined;
+      }
+
+      stream.pathLabel.show();
     };
 
-    /**
-     * 映射路径源
-     */
-    Stream.prototype.mapPathSource = function () {
-        var conf = this.defaults,
-            maxX = this.source[0].length - 1,//this.digitData[0].length - 1,
-            maxY = this.getMaxY(),
-            width = conf.width,
-            height = conf.height - conf.topInterval - conf.bottomInterval;
-        var i, j, l, l2, s, ps;
-        this.pathSource = [];
-        for (i = 0, l = this.source.length; i < l; i++) {
-            this.pathSource[i] = [];
-            for (j = 0, l2 = this.source[0].length; j < l2; j++) {
-                s = this.source[i][j];
-                ps = this.pathSource[i][j] = {};
-                ps.x = s.x * width / maxX;
-                ps.y0 = height - s.y0 * height / maxY;
-                ps.y = s.y * height / maxY;
-            }
+    //chart mouseenter
+    var mouseenter = function (e) {
+      var stream = e.data.stream;
+      stream.hoverLine.show();
+      stream.floatTag.show();
+      stream.axis.showTab();
+    };
+
+    //chart mouseleave
+    var mouseleave = function (e) {
+      var stream = e.data.stream;
+
+      stream.hoverLine.hidden();
+      stream.floatTag.hidden();
+
+      stream.axis.hideTab();
+      //recover prepath;
+      if (typeof stream.prePath !== 'undefined') {
+        stream.prePath.attr({"opacity": 1, "stroke-width": 1});
+        // set legend
+        stream.legend.lowlight(stream.prePath.index);
+        stream.prePath = undefined;
+      }
+    };
+
+    //chart click
+    var click = function (e) {
+      var stream = e.data.stream;
+      var count = stream.paths.length;
+      var animateCallback = function () {
+        count -= 1;
+        if (count > 0) {
+          return;
         }
-    };
+        stream.cover.hidden();
+        if (typeof stream.cover.mouse !== 'undefined') {
+          stream.hoverLine.show();
+          stream.floatTag.show();
+          var canvas = $(stream.paper.canvas);
+          var cover = stream.cover;
+          canvas.trigger("mousemove", [cover.mouse.x, cover.mouse.y]);
+          canvas.trigger("mousemove", [cover.mouse.x, cover.mouse.y]);
+          cover.mouse = undefined;
+        }
+        stream.pathLabel.show();
+      };
 
-    /**
-     * 生成区域
-     */
-    Stream.prototype.generateArea = function () {
-        this.mapPathSource();
-        return d3.svg.area().x(function (d) {
-            return d.x;
-        }).y0(function (d) {
-            return d.y0;
-        }).y1(function (d) {
-            return d.y0 - d.y;
+      //more expand
+      var path = stream.prePath;
+      if (typeof path !== 'undefined' && path.index === 0 && stream.getDisplayRowInfo(path.index).rowIndex === -1) {
+        stream.defaults.moreConfig.level += 1;
+        stream.cover.show();
+        stream.cover.mouse = {x: e.pageX, y: e.pageY};
+        //redraw
+        stream.processData("slicedData");
+        stream.render("renderComponents");
+
+        //hidden
+        stream.hoverLine.hidden();
+        stream.floatTag.hidden();
+
+        stream.pathLabel.hidden();
+        stream.paths.forEach(function (d) {
+          d.attr({transform: "s1,0.001,0," + stream.defaults.chartHeight});
+          d.animate({transform: "t0,0"}, 750, "linear", animateCallback);
         });
-    };
+      }
 
-    /*!
-     * 生成区域
-     */
-    Stream.prototype.generateArea_old = function () {
-        var conf = this.defaults,
-            maxX = this.digitData[0].length - 1,
-            maxY = this.getMaxY(),
-            width = conf.width,
-            height = conf.height - conf.topInterval - conf.bottomInterval,
-            area = d3.svg.area()
-                .x(function (d) {
-                    return d.x * width / maxX;
-                })
-                .y0(function (d) {
-                    return height - d.y0 * height / maxY;
-                })
-                .y1(function (d) {
-                    return height - (d.y + d.y0) * height / maxY;
-                });
-        return area;
-    };
-
-    /**
-     * 清除画布
-     */
-    Stream.prototype.clearCanvas = function () {
-        this.canvas.clear();
-        this.legend.innerHTML = "";
-        this.axisPaper.clear();
-    };
-
-    /**
-     * 重绘图表
-     */
-    Stream.prototype.reRender = function (options) {
-        this.setOptions(options);
-        this.clearCanvas();
-        this.layout();
-        this.generatePaths();
-        this.canAnimate = true;
-    };
-
-    /**
-     * 绘制图表
-     */
-    Stream.prototype.render = function (options) {
-        this.firstRender = true;
-        this.setOptions(options);
-        this.clearCanvas();
-        this.layout();
-        this.generatePaths();
-        this.firstRender = false;
-        this.canAnimate = true;
-    };
-
-    /**
-     * 重设图表
-     */
-    Stream.prototype.resize = function (options) {
-        var conf = this.defaults;
-
-        if (!options.width && !options.height) {
-            throw new Error("no width and height input");
-        } else if (options.width && !options.height) {
-            if (conf.autoHeight) {
-                this.setOptions({"width": options.width});
-            } else {
-                this.setOptions({"width": options.width, "height": conf.height});
+      //drop
+      if (typeof stream.prePath !== 'undefined' && stream.prePath.index > 0) {
+        (function (index) {
+          var order = d3.range(stream.displayData.digitData.length);
+          order.forEach(function (d, i, array) {
+            if (i === 0) {
+              array[i] = index;
+            } else if (i <= index) {
+              array[i] = i - 1;
             }
-        } else if (!options.width && options.height) {
-            this.setOptions({"width": conf.totalWidth, "height": options.height});
-        } else {
-            this.setOptions({"width": options.width, "height": options.height});
-        }
+          });
 
-        this.node.innerHTML = "";
-        this.createCanvas();
-        this.reRender();
+          stream.cover.show();
+          stream.cover.mouse = {x: e.pageX, y: e.pageY};
+
+          //stream.displayDataDropReorder(stream.prePath.index);
+          stream.getDisplayData({"type": "changeOrder", "order": order});
+          stream.chart.setOptions({"animateOrder": order});
+          stream.render("renderComponents", "animate");
+
+          stream.pathLabel.hidden();
+
+        }(stream.prePath.index));
+      }
     };
+
+    //chart mousemove
+    var mousemove = function (e, pageX, pageY) {
+      var stream = e.data.stream;
+      var offset = $(this).parent().offset();
+      var x = (e.pageX || pageX) - offset.left,
+        y = (e.pageY || pageY) - offset.top;
+      var path,
+        pathSource = stream.pathSource,
+        pathIndex;
+      var xIdx = Math.floor((x / (stream.defaults.chartWidth / (stream.chart.source[0].length - 1) / 2) + 1) / 2);
+      var lineX;
+      //get path and pathIndex
+      pathSource = stream.chart.pathSource;
+      for (var i = 0, l = pathSource.length; i < l; i++) {
+        if (y >= pathSource[i][xIdx].y0 - pathSource[i][xIdx].y && y <= pathSource[i][xIdx].y0) {
+          path = stream.chart.paths[i];
+          pathIndex = i;
+          break;
+        }
+      }
+      if (typeof path === 'undefined') {
+        return;
+      }
+
+      //recover prepath;
+      if (typeof stream.prePath !== 'undefined') {
+        stream.prePath.attr({"opacity": 1, "stroke-width": 1});
+        // set legend
+        stream.legend.lowlight(stream.prePath.index);
+      }
+      //change new path;
+      stream.prePath = path;
+      stream.prePath.index = pathIndex;
+      path.attr({"opacity": 0.5, "stroke-width": 0});
+
+      // set legend
+      stream.legend.highlight(stream.prePath.index);
+      //set indicator and highlight line new position
+      stream.hoverLine.refresh(xIdx, pathIndex);
+
+      //set floatTag content
+      stream.floatTag.setContent(stream.getFloatTagContent(stream.displayData.allInfos[i][0]));
+      //axis pop bubble
+      lineX = stream.defaults.chartWidth * xIdx / (stream.chart.source[0].length - 1);
+      stream.axis.refreshTab(stream.date[xIdx + stream.timeRange[0]], lineX + stream.defaults.percentageWidth);
+
+      //customevent;
+      if (stream.defaults.customEventHandle.mousemove) {
+        stream.defaults.customEventHandle.mousemove.call(stream,
+          {"timeIndex": xIdx, "pathIndex": pathIndex});
+      }
+    };
+    var canvas = $(this.paper.canvas);
+    canvas.bind("mouseenter", {"stream": this}, mouseenter)
+      .bind("mouseleave", {"stream": this}, mouseleave)
+      .bind("click", {"stream": this}, click)
+      .bind("mousemove", {"stream": this}, mousemove);
+  };
+
+  Stream.prototype.getFloatTagContent = function (info) {
+    return "<b>" + info.rowInfo.rowName + "</b><br/>" +
+          "<b>" + (Math.floor(info.ratioInColumn * 1000) / 100) + "%</b>";
+  };
+
+  Stream.prototype.getDisplayRowInfo = function (index) {
+    return this.displayData.allInfos[index][0].rowInfo;
+  };
+  
+  Stream.prototype.getDisplayColumnInfo = function (index) {
+    return this.displayData.allInfos[index][0].columnInfo;
+  };
+  
+  Stream.prototype.render = function (stage, animate) {
+    switch (stage) {
+      case undefined:
+      case "processData":
+        this.processData();
+        // break;
+      case "createComponents":
+        //clear old components, layout, create, css
+        this.node.innerHTML = '';
+        this.createComponents();
+        // break;
+      case "renderComponents":
+        //clear old component content, render new content
+        this.clearCanvas();
+        this.renderComponents(animate);
+        // break;
+      case "createInteractive":
+        this.createInteractive();
+        // break;
+      default:
+        break;
+    }
+  };
+
+  Stream.prototype.resize = function () {};
     
-    /**
-     * 侦听自定义事件
-     * @param {String} eventName 事件名
-     * @param {Function} callback 事件回调函数
-     */
-    Stream.prototype.on = function (eventName, callback) {
-        if (typeof this.defaults.customEventHandle[eventName] !== 'undefined') {
-            this.defaults.customEventHandle[eventName] = callback;
-        }
-    };
+  Stream.prototype.setCustomEvent = function (eventName, callback) {
+    if (typeof this.defaults.customEventHandle[eventName] !== 'undefined') {
+      this.defaults.customEventHandle[eventName] = callback;
+    }
+  };
 
-    /**
-     * 设置动画
-     * @param {Object} options 选项对象
-     * @param {Number} timeDuration 时间
-     */
-    Stream.prototype.animate = function (options, timeDuration) {
-        //must after render if new Source has been set;
-        if (!this.canAnimate) {
-            throw new Error("Function animate must be called after render if new Source has been set.");
-        }
-        var time = 0,
-            area,
-            color,
-            i,
-            l;
-        if (arguments.length > 1) {
-            time = timeDuration;
-        }
+  Stream.prototype.animate = function (options, timeDuration) {
+    //must after render if new Source has been set;
+    if (!this.canAnimate) {
+      throw new Error("Function animate must be called after render if new Source has been set.");
+    }
+    var time = 0;
+    if (arguments.length > 1) {
+      time = timeDuration;
+    }
 
-        //this.setOptions(options);
-        if (options.offset || options.order) {
-            this.source = this.remapSource(this.digitData);
-            this.layout();
-        }
-        area = this.generateArea();
-        color = this.getColor();
-        for (i = 0, l = this.source.length; i < l; i++) {
-            var _area = area(this.source[i]);
-            var anim = Raphael.animation({path: _area, fill: color(i)}, time);
-            this.paths[i].animate(anim);
-        }
-    };
+    if (options.offset || options.order) {
+      this.source = this.remapSource(this.digitData);
+      this.layout();
+    }
+    var area = this.generateArea();
+    var color = this.getColor();
+    for (var i = 0, l = this.source.length; i < l; i++) {
+      var _area = area(this.source[i]);
+      var anim = Raphael.animation({path: _area, fill: color(i)}, time);
+      this.paths[i].animate(anim);
+    }
+  };
 
-    /*!
-     * 导出Stream
-     */
-    return Stream;
+  /*!
+   * 导出Stream
+   */
+  return Stream;
 });
 
 /*global EventProxy, d3, Raphael, $ */
@@ -36214,6 +36792,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     var Chinamap = DataV.extend(DataV.Chart, {
         initialize: function (node, options) {
+            var noop = function () {};
             this.type = "Chinamap";
             this.node = this.checkContainer(node);
 
@@ -36221,8 +36800,53 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             /*
             this.floatTag;//浮框对象，这是个可操作的对象。
             */
-            this.recentViewBox = [];
-            this.areaBoxes = {
+            this.viewBox = [];
+            this.mapCache = {};
+            this.states = [];
+            this.words = [];
+            this.projection = function () {}; // d3 map prejection function
+            this.getAreaPath = function () {}; // input geojson feature, return area path string
+            this.colorGenerator = function () {}; // produce gradient or discrete color;
+            this.sourceData = {};
+            this.geoData = {};
+            this.geoData.areaIdIndex = {
+                '全国': 0,
+                '新疆': 65,
+                '西藏': 54,
+                '内蒙古': 15,
+                '青海': 63,
+                '四川': 51,
+                '黑龙江': 23,
+                '甘肃': 62,
+                '云南': 53,
+                '广西': 45,
+                '湖南': 43,
+                '陕西': 61,
+                '广东': 44,
+                '吉林': 22,
+                '河北': 13,
+                '湖北': 42,
+                '贵州': 52,
+                '山东': 37,
+                '江西': 36,
+                '河南': 41,
+                '辽宁': 21,
+                '山西': 14,
+                '安徽': 34,
+                '福建': 35,
+                '浙江': 33,
+                '江苏': 32,
+                '重庆': 50,
+                '宁夏': 64,
+                '海南': 46,
+                '台湾': 71,
+                '北京': 11,
+                '天津': 12,
+                '上海': 31,
+                '香港': 81,
+                '澳门': 82
+            };
+            this.geoData.areaBoxes = {
                 //x, y, width, height when projection scale is 4000
                 0: [-1174.6445229087194, -1437.3577680805693, 3039.3970214233723, 2531.19589698184],
                 65: [-1174.9404317915883, -1136.0130934711678, 1216.4169237052663, 939.4360818385251],
@@ -36260,18 +36884,422 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                 81: [1061.983645387268, 769.0837862603122, 50.65584483626753, 32.17422147262721],
                 82: [1043.1350056914507, 798.0786255550063, 5.387452843479423, 7.564113979470676]
             };
-            this.mapCache = {};
-            this.states = [];
-            this.words = [];
-            this.projection = function () {}; // d3 map prejection function
-            this.getAreaPath = function () {}; // input geojson feature, return area path string
+            this.geoData.provinceIndex = {
+                '新疆': {'loc': [84.9023,41.748], 'fullName': '新疆'},
+                '西藏': {'loc': [88.7695,31.6846], 'fullName': '西藏'},
+                '内蒙': {'loc': [117.5977,44.3408], 'fullName': '内蒙古'},
+                '青海': {'loc': [96.2402,35.4199], 'fullName': '青海'},
+                '四川': {'loc': [102.9199,30.1904], 'fullName': '四川'},
+                '黑龙': {'loc': [128.1445,48.5156], 'fullName': '黑龙江'},
+                '甘肃': {'loc': [95.7129,40.166], 'fullName': '甘肃'},
+                '云南': {'loc': [101.8652,25.1807], 'fullName': '云南'},
+                '广西': {'loc': [108.2813,23.6426], 'fullName': '广西'},
+                '湖南': {'loc': [111.5332,27.3779], 'fullName': '湖南'},
+                '陕西': {'loc': [109.5996,35.6396], 'fullName': '陕西'},
+                '广东': {'loc': [113.4668,22.8076], 'fullName': '广东'},
+                '吉林': {'loc': [126.4746,43.5938], 'fullName': '吉林'},
+                '河北': {'loc': [115.4004,37.9688], 'fullName': '河北'},
+                '湖北': {'loc': [112.2363,31.1572], 'fullName': '湖北'},
+                '贵州': {'loc': [106.6113,26.9385], 'fullName': '贵州'},
+                '山东': {'loc': [118.7402,36.4307], 'fullName': '山东'},
+                '江西': {'loc': [116.0156,27.29], 'fullName': '江西'},
+                '河南': {'loc': [113.4668,33.8818], 'fullName': '河南'},
+                '辽宁': {'loc': [122.3438,41.0889], 'fullName': '辽宁'},
+                '山西': {'loc': [112.4121,37.6611], 'fullName': '山西'},
+                '安徽': {'loc': [117.2461,32.0361], 'fullName': '安徽'},
+                '福建': {'loc': [118.3008,25.9277], 'fullName': '福建'},
+                '浙江': {'loc': [120.498,29.0918], 'fullName': '浙江'},
+                '江苏': {'loc': [120.0586,32.915], 'fullName': '江苏'},
+                '重庆': {'loc': [107.7539,30.1904], 'fullName': '重庆'},
+                '宁夏': {'loc': [105.9961,37.3096], 'fullName': '宁夏'},
+                '海南': {'loc': [109.9512,19.2041], 'fullName': '海南'},
+                '台湾': {'loc': [121.0254,23.5986], 'fullName': '台湾'},
+                '北京': {'loc': [116.4551,40.2539], 'fullName': '北京'},
+                '天津': {'loc': [117.4219,39.4189], 'fullName': '天津'},
+                '上海': {'loc': [121.4648,31.2891], 'fullName': '上海'},
+                '香港': {'loc': [114.2578,22.3242], 'fullName': '香港'},
+                '澳门': {'loc': [113.5547,22.1484], 'fullName': '澳门'}
+            };
+            this.geoData.cityIndex = {
+                '重庆': {'loc': [107.7539,30.1904], 'fullName': '重庆'},
+                '北京': {'loc': [116.4551,40.2539], 'fullName': '北京'},
+                '天津': {'loc': [117.4219,39.4189], 'fullName': '天津'},
+                '上海': {'loc': [121.4648,31.2891], 'fullName': '上海'},
+                '香港': {'loc': [114.2578,22.3242], 'fullName': '香港'},
+                '澳门': {'loc': [113.5547,22.1484], 'fullName': '澳门'},
+                '巴音': {'loc': [88.1653,39.6002], 'fullName': '巴音郭楞蒙古自治州'},
+                '和田': {'loc': [81.167,36.9855], 'fullName': '和田地区'},
+                '哈密': {'loc': [93.7793,42.9236], 'fullName': '哈密地区'},
+                '阿克': {'loc': [82.9797,41.0229], 'fullName': '阿克苏地区'},
+                '阿勒': {'loc': [88.2971,47.0929], 'fullName': '阿勒泰地区'},
+                '喀什': {'loc': [77.168,37.8534], 'fullName': '喀什地区'},
+                '塔城': {'loc': [86.6272,45.8514], 'fullName': '塔城地区'},
+                '昌吉': {'loc': [89.6814,44.4507], 'fullName': '昌吉回族自治州'},
+                '克孜': {'loc': [74.6301,39.5233], 'fullName': '克孜勒苏柯尔克孜自治州'},
+                '吐鲁': {'loc': [89.6375,42.4127], 'fullName': '吐鲁番地区'},
+                '伊犁': {'loc': [82.5513,43.5498], 'fullName': '伊犁哈萨克自治州'},
+                '博尔': {'loc': [81.8481,44.6979], 'fullName': '博尔塔拉蒙古自治州'},
+                '乌鲁': {'loc': [87.9236,43.5883], 'fullName': '乌鲁木齐市'},
+                '克拉': {'loc': [85.2869,45.5054], 'fullName': '克拉玛依市'},
+                '阿拉尔': {'loc': [81.2769,40.6549], 'fullName': '阿拉尔市'},
+                '图木': {'loc': [79.1345,39.8749], 'fullName': '图木舒克市'},
+                '五家': {'loc': [87.5391,44.3024], 'fullName': '五家渠市'},
+                '石河': {'loc': [86.0229,44.2914], 'fullName': '石河子市'},
+                '那曲': {'loc': [88.1982,33.3215], 'fullName': '那曲地区'},
+                '阿里': {'loc': [82.3645,32.7667], 'fullName': '阿里地区'},
+                '日喀': {'loc': [86.2427,29.5093], 'fullName': '日喀则地区'},
+                '林芝': {'loc': [95.4602,29.1138], 'fullName': '林芝地区'},
+                '昌都': {'loc': [97.0203,30.7068], 'fullName': '昌都地区'},
+                '山南': {'loc': [92.2083,28.3392], 'fullName': '山南地区'},
+                '拉萨': {'loc': [91.1865,30.1465], 'fullName': '拉萨市'},
+                '呼伦': {'loc': [120.8057,50.2185], 'fullName': '呼伦贝尔市'},
+                '阿拉善': {'loc': [102.019,40.1001], 'fullName': '阿拉善盟'},
+                '锡林': {'loc': [115.6421,44.176], 'fullName': '锡林郭勒盟'},
+                '鄂尔': {'loc': [108.9734,39.2487], 'fullName': '鄂尔多斯市'},
+                '赤峰': {'loc': [118.6743,43.2642], 'fullName': '赤峰市'},
+                '巴彦': {'loc': [107.5562,41.3196], 'fullName': '巴彦淖尔市'},
+                '通辽': {'loc': [121.4758,43.9673], 'fullName': '通辽市'},
+                '乌兰': {'loc': [112.5769,41.77], 'fullName': '乌兰察布市'},
+                '兴安': {'loc': [121.3879,46.1426], 'fullName': '兴安盟'},
+                '包头': {'loc': [110.3467,41.4899], 'fullName': '包头市'},
+                '呼和': {'loc': [111.4124,40.4901], 'fullName': '呼和浩特市'},
+                '乌海': {'loc': [106.886,39.4739], 'fullName': '乌海市'},
+                '海西': {'loc': [94.9768,37.1118], 'fullName': '海西蒙古族藏族自治州'},
+                '玉树': {'loc': [93.5925,33.9368], 'fullName': '玉树藏族自治州'},
+                '果洛': {'loc': [99.3823,34.0466], 'fullName': '果洛藏族自治州'},
+                '海南': {'loc': [100.3711,35.9418], 'fullName': '海南藏族自治州'},
+                '海北': {'loc': [100.3711,37.9138], 'fullName': '海北藏族自治州'},
+                '黄南': {'loc': [101.5686,35.1178], 'fullName': '黄南藏族自治州'},
+                '海东': {'loc': [102.3706,36.2988], 'fullName': '海东地区'},
+                '西宁': {'loc': [101.4038,36.8207], 'fullName': '西宁市'},
+                '甘孜': {'loc': [99.9207,31.0803], 'fullName': '甘孜藏族自治州'},
+                '阿坝': {'loc': [102.4805,32.4536], 'fullName': '阿坝藏族羌族自治州'},
+                '凉山': {'loc': [101.9641,27.6746], 'fullName': '凉山彝族自治州'},
+                '绵阳': {'loc': [104.7327,31.8713], 'fullName': '绵阳市'},
+                '达州': {'loc': [107.6111,31.333], 'fullName': '达州市'},
+                '广元': {'loc': [105.6885,32.2284], 'fullName': '广元市'},
+                '雅安': {'loc': [102.6672,29.8938], 'fullName': '雅安市'},
+                '宜宾': {'loc': [104.6558,28.548], 'fullName': '宜宾市'},
+                '乐山': {'loc': [103.5791,29.1742], 'fullName': '乐山市'},
+                '南充': {'loc': [106.2048,31.1517], 'fullName': '南充市'},
+                '巴中': {'loc': [107.0618,31.9977], 'fullName': '巴中市'},
+                '泸州': {'loc': [105.4578,28.493], 'fullName': '泸州市'},
+                '成都': {'loc': [103.9526,30.7617], 'fullName': '成都市'},
+                '资阳': {'loc': [104.9744,30.1575], 'fullName': '资阳市'},
+                '攀枝': {'loc': [101.6895,26.7133], 'fullName': '攀枝花市'},
+                '眉山': {'loc': [103.8098,30.0146], 'fullName': '眉山市'},
+                '广安': {'loc': [106.6333,30.4376], 'fullName': '广安市'},
+                '德阳': {'loc': [104.48,31.1133], 'fullName': '德阳市'},
+                '内江': {'loc': [104.8535,29.6136], 'fullName': '内江市'},
+                '遂宁': {'loc': [105.5347,30.6683], 'fullName': '遂宁市'},
+                '自贡': {'loc': [104.6667,29.2786], 'fullName': '自贡市'},
+                '黑河': {'loc': [127.1448,49.2957], 'fullName': '黑河市'},
+                '大兴': {'loc': [124.1016,52.2345], 'fullName': '大兴安岭地区'},
+                '哈尔': {'loc': [127.9688,45.368], 'fullName': '哈尔滨市'},
+                '齐齐': {'loc': [124.541,47.5818], 'fullName': '齐齐哈尔市'},
+                '牡丹': {'loc': [129.7815,44.7089], 'fullName': '牡丹江市'},
+                '绥化': {'loc': [126.7163,46.8018], 'fullName': '绥化市'},
+                '伊春': {'loc': [129.1992,47.9608], 'fullName': '伊春市'},
+                '佳木': {'loc': [133.0005,47.5763], 'fullName': '佳木斯市'},
+                '鸡西': {'loc': [132.7917,45.7361], 'fullName': '鸡西市'},
+                '双鸭': {'loc': [133.5938,46.7523], 'fullName': '双鸭山市'},
+                '大庆': {'loc': [124.7717,46.4282], 'fullName': '大庆市'},
+                '鹤岗': {'loc': [130.4407,47.7081], 'fullName': '鹤岗市'},
+                '七台': {'loc': [131.2756,45.9558], 'fullName': '七台河市'},
+                '酒泉': {'loc': [96.2622,40.4517], 'fullName': '酒泉市'},
+                '张掖': {'loc': [99.7998,38.7433], 'fullName': '张掖市'},
+                '甘南': {'loc': [102.9199,34.6893], 'fullName': '甘南藏族自治州'},
+                '武威': {'loc': [103.0188,38.1061], 'fullName': '武威市'},
+                '陇南': {'loc': [105.304,33.5632], 'fullName': '陇南市'},
+                '庆阳': {'loc': [107.5342,36.2], 'fullName': '庆阳市'},
+                '白银': {'loc': [104.8645,36.5076], 'fullName': '白银市'},
+                '定西': {'loc': [104.5569,35.0848], 'fullName': '定西市'},
+                '天水': {'loc': [105.6445,34.6289], 'fullName': '天水市'},
+                '兰州': {'loc': [103.5901,36.3043], 'fullName': '兰州市'},
+                '平凉': {'loc': [107.0728,35.321], 'fullName': '平凉市'},
+                '临夏': {'loc': [103.2715,35.5737], 'fullName': '临夏回族自治州'},
+                '金昌': {'loc': [102.074,38.5126], 'fullName': '金昌市'},
+                '嘉峪': {'loc': [98.1738,39.8035], 'fullName': '嘉峪关市'},
+                '普洱': {'loc': [100.7446,23.4229], 'fullName': '普洱市'},
+                '红河': {'loc': [103.0408,23.6041], 'fullName': '红河哈尼族彝族自治州'},
+                '文山': {'loc': [104.8865,23.5712], 'fullName': '文山壮族苗族自治州'},
+                '曲靖': {'loc': [103.9417,25.7025], 'fullName': '曲靖市'},
+                '楚雄': {'loc': [101.6016,25.3619], 'fullName': '楚雄彝族自治州'},
+                '大理': {'loc': [99.9536,25.6805], 'fullName': '大理白族自治州'},
+                '临沧': {'loc': [99.613,24.0546], 'fullName': '临沧市'},
+                '迪庆': {'loc': [99.4592,27.9327], 'fullName': '迪庆藏族自治州'},
+                '昭通': {'loc': [104.0955,27.6031], 'fullName': '昭通市'},
+                '昆明': {'loc': [102.9199,25.4663], 'fullName': '昆明市'},
+                '丽江': {'loc': [100.448,26.955], 'fullName': '丽江市'},
+                '西双': {'loc': [100.8984,21.8628], 'fullName': '西双版纳傣族自治州'},
+                '保山': {'loc': [99.0637,24.9884], 'fullName': '保山市'},
+                '玉溪': {'loc': [101.9312,23.8898], 'fullName': '玉溪市'},
+                '怒江': {'loc': [99.1516,26.5594], 'fullName': '怒江傈僳族自治州'},
+                '德宏': {'loc': [98.1299,24.5874], 'fullName': '德宏傣族景颇族自治州'},
+                '百色': {'loc': [106.6003,23.9227], 'fullName': '百色市'},
+                '河池': {'loc': [107.8638,24.5819], 'fullName': '河池市'},
+                '桂林': {'loc': [110.5554,25.318], 'fullName': '桂林市'},
+                '南宁': {'loc': [108.479,23.1152], 'fullName': '南宁市'},
+                '柳州': {'loc': [109.3799,24.9774], 'fullName': '柳州市'},
+                '崇左': {'loc': [107.3364,22.4725], 'fullName': '崇左市'},
+                '来宾': {'loc': [109.7095,23.8403], 'fullName': '来宾市'},
+                '玉林': {'loc': [110.2148,22.3792], 'fullName': '玉林市'},
+                '梧州': {'loc': [110.9949,23.5052], 'fullName': '梧州市'},
+                '贺州': {'loc': [111.3135,24.4006], 'fullName': '贺州市'},
+                '钦州': {'loc': [109.0283,22.0935], 'fullName': '钦州市'},
+                '贵港': {'loc': [109.9402,23.3459], 'fullName': '贵港市'},
+                '防城': {'loc': [108.0505,21.9287], 'fullName': '防城港市'},
+                '北海': {'loc': [109.314,21.6211], 'fullName': '北海市'},
+                '怀化': {'loc': [109.9512,27.4438], 'fullName': '怀化市'},
+                '永州': {'loc': [111.709,25.752], 'fullName': '永州市'},
+                '邵阳': {'loc': [110.9619,26.8121], 'fullName': '邵阳市'},
+                '郴州': {'loc': [113.2361,25.8673], 'fullName': '郴州市'},
+                '常德': {'loc': [111.4014,29.2676], 'fullName': '常德市'},
+                '湘西': {'loc': [109.7864,28.6743], 'fullName': '湘西土家族苗族自治州'},
+                '衡阳': {'loc': [112.4121,26.7902], 'fullName': '衡阳市'},
+                '岳阳': {'loc': [113.2361,29.1357], 'fullName': '岳阳市'},
+                '益阳': {'loc': [111.731,28.3832], 'fullName': '益阳市'},
+                '长沙': {'loc': [113.0823,28.2568], 'fullName': '长沙市'},
+                '株洲': {'loc': [113.5327,27.0319], 'fullName': '株洲市'},
+                '张家界': {'loc': [110.5115,29.328], 'fullName': '张家界市'},
+                '娄底': {'loc': [111.6431,27.7185], 'fullName': '娄底市'},
+                '湘潭': {'loc': [112.5439,27.7075], 'fullName': '湘潭市'},
+                '榆林': {'loc': [109.8743,38.205], 'fullName': '榆林市'},
+                '延安': {'loc': [109.1052,36.4252], 'fullName': '延安市'},
+                '汉中': {'loc': [106.886,33.0139], 'fullName': '汉中市'},
+                '安康': {'loc': [109.1162,32.7722], 'fullName': '安康市'},
+                '商洛': {'loc': [109.8083,33.761], 'fullName': '商洛市'},
+                '宝鸡': {'loc': [107.1826,34.3433], 'fullName': '宝鸡市'},
+                '渭南': {'loc': [109.7864,35.0299], 'fullName': '渭南市'},
+                '咸阳': {'loc': [108.4131,34.8706], 'fullName': '咸阳市'},
+                '西安': {'loc': [109.1162,34.2004], 'fullName': '西安市'},
+                '铜川': {'loc': [109.0393,35.1947], 'fullName': '铜川市'},
+                '清远': {'loc': [112.9175,24.3292], 'fullName': '清远市'},
+                '韶关': {'loc': [113.7964,24.7028], 'fullName': '韶关市'},
+                '湛江': {'loc': [110.3577,20.9894], 'fullName': '湛江市'},
+                '梅州': {'loc': [116.1255,24.1534], 'fullName': '梅州市'},
+                '河源': {'loc': [114.917,23.9722], 'fullName': '河源市'},
+                '肇庆': {'loc': [112.1265,23.5822], 'fullName': '肇庆市'},
+                '惠州': {'loc': [114.6204,23.1647], 'fullName': '惠州市'},
+                '茂名': {'loc': [111.0059,22.0221], 'fullName': '茂名市'},
+                '江门': {'loc': [112.6318,22.1484], 'fullName': '江门市'},
+                '阳江': {'loc': [111.8298,22.0715], 'fullName': '阳江市'},
+                '云浮': {'loc': [111.7859,22.8516], 'fullName': '云浮市'},
+                '广州': {'loc': [113.5107,23.2196], 'fullName': '广州市'},
+                '汕尾': {'loc': [115.5762,23.0438], 'fullName': '汕尾市'},
+                '揭阳': {'loc': [116.1255,23.313], 'fullName': '揭阳市'},
+                '珠海': {'loc': [113.7305,22.1155], 'fullName': '珠海市'},
+                '佛山': {'loc': [112.8955,23.1097], 'fullName': '佛山市'},
+                '潮州': {'loc': [116.7847,23.8293], 'fullName': '潮州市'},
+                '汕头': {'loc': [117.1692,23.3405], 'fullName': '汕头市'},
+                '深圳': {'loc': [114.5435,22.5439], 'fullName': '深圳市'},
+                '东莞': {'loc': [113.8953,22.901], 'fullName': '东莞市'},
+                '中山': {'loc': [113.4229,22.478], 'fullName': '中山市'},
+                '延边': {'loc': [129.397,43.2587], 'fullName': '延边朝鲜族自治州'},
+                '吉林': {'loc': [126.8372,43.6047], 'fullName': '吉林市'},
+                '白城': {'loc': [123.0029,45.2637], 'fullName': '白城市'},
+                '松原': {'loc': [124.0906,44.7198], 'fullName': '松原市'},
+                '长春': {'loc': [125.8154,44.2584], 'fullName': '长春市'},
+                '白山': {'loc': [127.2217,42.0941], 'fullName': '白山市'},
+                '通化': {'loc': [125.9583,41.8579], 'fullName': '通化市'},
+                '四平': {'loc': [124.541,43.4894], 'fullName': '四平市'},
+                '辽源': {'loc': [125.343,42.7643], 'fullName': '辽源市'},
+                '承德': {'loc': [117.5757,41.4075], 'fullName': '承德市'},
+                '张家口': {'loc': [115.1477,40.8527], 'fullName': '张家口市'},
+                '保定': {'loc': [115.0488,39.0948], 'fullName': '保定市'},
+                '唐山': {'loc': [118.4766,39.6826], 'fullName': '唐山市'},
+                '沧州': {'loc': [116.8286,38.2104], 'fullName': '沧州市'},
+                '石家': {'loc': [114.4995,38.1006], 'fullName': '石家庄市'},
+                '邢台': {'loc': [114.8071,37.2821], 'fullName': '邢台市'},
+                '邯郸': {'loc': [114.4775,36.535], 'fullName': '邯郸市'},
+                '秦皇': {'loc': [119.2126,40.0232], 'fullName': '秦皇岛市'},
+                '衡水': {'loc': [115.8838,37.7161], 'fullName': '衡水市'},
+                '廊坊': {'loc': [116.521,39.0509], 'fullName': '廊坊市'},
+                '恩施': {'loc': [109.5007,30.2563], 'fullName': '恩施土家族苗族自治州'},
+                '十堰': {'loc': [110.5115,32.3877], 'fullName': '十堰市'},
+                '宜昌': {'loc': [111.1707,30.7617], 'fullName': '宜昌市'},
+                '襄樊': {'loc': [111.9397,31.9263], 'fullName': '襄樊市'},
+                '黄冈': {'loc': [115.2686,30.6628], 'fullName': '黄冈市'},
+                '荆州': {'loc': [113.291,30.0092], 'fullName': '荆州市'},
+                '荆门': {'loc': [112.6758,30.9979], 'fullName': '荆门市'},
+                '咸宁': {'loc': [114.2578,29.6631], 'fullName': '咸宁市'},
+                '随州': {'loc': [113.4338,31.8768], 'fullName': '随州市'},
+                '孝感': {'loc': [113.9502,31.1188], 'fullName': '孝感市'},
+                '武汉': {'loc': [114.3896,30.6628], 'fullName': '武汉市'},
+                '黄石': {'loc': [115.0159,29.9213], 'fullName': '黄石市'},
+                '神农': {'loc': [110.4565,31.5802], 'fullName': '神农架林区'},
+                '天门': {'loc': [113.0273,30.6409], 'fullName': '天门市'},
+                '仙桃': {'loc': [113.3789,30.3003], 'fullName': '仙桃市'},
+                '潜江': {'loc': [112.7637,30.3607], 'fullName': '潜江市'},
+                '鄂州': {'loc': [114.7302,30.4102], 'fullName': '鄂州市'},
+                '遵义': {'loc': [106.908,28.1744], 'fullName': '遵义市'},
+                '黔东': {'loc': [108.4241,26.4166], 'fullName': '黔东南苗族侗族自治州'},
+                '毕节': {'loc': [105.1611,27.0648], 'fullName': '毕节地区'},
+                '黔南': {'loc': [107.2485,25.8398], 'fullName': '黔南布依族苗族自治州'},
+                '铜仁': {'loc': [108.6218,28.0096], 'fullName': '铜仁地区'},
+                '黔西': {'loc': [105.5347,25.3949], 'fullName': '黔西南布依族苗族自治州'},
+                '六盘': {'loc': [104.7546,26.0925], 'fullName': '六盘水市'},
+                '安顺': {'loc': [105.9082,25.9882], 'fullName': '安顺市'},
+                '贵阳': {'loc': [106.6992,26.7682], 'fullName': '贵阳市'},
+                '烟台': {'loc': [120.7397,37.5128], 'fullName': '烟台市'},
+                '临沂': {'loc': [118.3118,35.2936], 'fullName': '临沂市'},
+                '潍坊': {'loc': [119.0918,36.524], 'fullName': '潍坊市'},
+                '青岛': {'loc': [120.4651,36.3373], 'fullName': '青岛市'},
+                '菏泽': {'loc': [115.6201,35.2057], 'fullName': '菏泽市'},
+                '济宁': {'loc': [116.8286,35.3375], 'fullName': '济宁市'},
+                '德州': {'loc': [116.6858,37.2107], 'fullName': '德州市'},
+                '滨州': {'loc': [117.8174,37.4963], 'fullName': '滨州市'},
+                '聊城': {'loc': [115.9167,36.4032], 'fullName': '聊城市'},
+                '东营': {'loc': [118.7073,37.5513], 'fullName': '东营市'},
+                '济南': {'loc': [117.1582,36.8701], 'fullName': '济南市'},
+                '泰安': {'loc': [117.0264,36.0516], 'fullName': '泰安市'},
+                '威海': {'loc': [121.9482,37.1393], 'fullName': '威海市'},
+                '日照': {'loc': [119.2786,35.5023], 'fullName': '日照市'},
+                '淄博': {'loc': [118.0371,36.6064], 'fullName': '淄博市'},
+                '枣庄': {'loc': [117.323,34.8926], 'fullName': '枣庄市'},
+                '莱芜': {'loc': [117.6526,36.2714], 'fullName': '莱芜市'},
+                '赣州': {'loc': [115.2795,25.8124], 'fullName': '赣州市'},
+                '吉安': {'loc': [114.884,26.9659], 'fullName': '吉安市'},
+                '上饶': {'loc': [117.8613,28.7292], 'fullName': '上饶市'},
+                '九江': {'loc': [115.4224,29.3774], 'fullName': '九江市'},
+                '抚州': {'loc': [116.4441,27.4933], 'fullName': '抚州市'},
+                '宜春': {'loc': [115.0159,28.3228], 'fullName': '宜春市'},
+                '南昌': {'loc': [116.0046,28.6633], 'fullName': '南昌市'},
+                '景德': {'loc': [117.334,29.3225], 'fullName': '景德镇市'},
+                '萍乡': {'loc': [113.9282,27.4823], 'fullName': '萍乡市'},
+                '鹰潭': {'loc': [117.0813,28.2349], 'fullName': '鹰潭市'},
+                '新余': {'loc': [114.95,27.8174], 'fullName': '新余市'},
+                '南阳': {'loc': [112.4011,33.0359], 'fullName': '南阳市'},
+                '信阳': {'loc': [114.8291,32.0197], 'fullName': '信阳市'},
+                '洛阳': {'loc': [112.0605,34.3158], 'fullName': '洛阳市'},
+                '驻马': {'loc': [114.1589,32.9041], 'fullName': '驻马店市'},
+                '周口': {'loc': [114.873,33.6951], 'fullName': '周口市'},
+                '商丘': {'loc': [115.741,34.2828], 'fullName': '商丘市'},
+                '三门': {'loc': [110.8301,34.3158], 'fullName': '三门峡市'},
+                '新乡': {'loc': [114.2029,35.3595], 'fullName': '新乡市'},
+                '平顶': {'loc': [112.9724,33.739], 'fullName': '平顶山市'},
+                '郑州': {'loc': [113.4668,34.6234], 'fullName': '郑州市'},
+                '安阳': {'loc': [114.5325,36.0022], 'fullName': '安阳市'},
+                '开封': {'loc': [114.5764,34.6124], 'fullName': '开封市'},
+                '焦作': {'loc': [112.8406,35.1508], 'fullName': '焦作市'},
+                '许昌': {'loc': [113.6975,34.0466], 'fullName': '许昌市'},
+                '濮阳': {'loc': [115.1917,35.799], 'fullName': '濮阳市'},
+                '漯河': {'loc': [113.8733,33.6951], 'fullName': '漯河市'},
+                '鹤壁': {'loc': [114.3787,35.744], 'fullName': '鹤壁市'},
+                '大连': {'loc': [122.2229,39.4409], 'fullName': '大连市'},
+                '朝阳': {'loc': [120.0696,41.4899], 'fullName': '朝阳市'},
+                '丹东': {'loc': [124.541,40.4242], 'fullName': '丹东市'},
+                '铁岭': {'loc': [124.2773,42.7423], 'fullName': '铁岭市'},
+                '沈阳': {'loc': [123.1238,42.1216], 'fullName': '沈阳市'},
+                '抚顺': {'loc': [124.585,41.8579], 'fullName': '抚顺市'},
+                '葫芦': {'loc': [120.1575,40.578], 'fullName': '葫芦岛市'},
+                '阜新': {'loc': [122.0032,42.2699], 'fullName': '阜新市'},
+                '锦州': {'loc': [121.6626,41.4294], 'fullName': '锦州市'},
+                '鞍山': {'loc': [123.0798,40.6055], 'fullName': '鞍山市'},
+                '本溪': {'loc': [124.1455,41.1987], 'fullName': '本溪市'},
+                '营口': {'loc': [122.4316,40.4297], 'fullName': '营口市'},
+                '辽阳': {'loc': [123.4094,41.1383], 'fullName': '辽阳市'},
+                '盘锦': {'loc': [121.9482,41.0449], 'fullName': '盘锦市'},
+                '忻州': {'loc': [112.4561,38.8971], 'fullName': '忻州市'},
+                '吕梁': {'loc': [111.3574,37.7325], 'fullName': '吕梁市'},
+                '临汾': {'loc': [111.4783,36.1615], 'fullName': '临汾市'},
+                '晋中': {'loc': [112.7747,37.37], 'fullName': '晋中市'},
+                '运城': {'loc': [111.1487,35.2002], 'fullName': '运城市'},
+                '大同': {'loc': [113.7854,39.8035], 'fullName': '大同市'},
+                '长治': {'loc': [112.8625,36.4746], 'fullName': '长治市'},
+                '朔州': {'loc': [113.0713,39.6991], 'fullName': '朔州市'},
+                '晋城': {'loc': [112.7856,35.6342], 'fullName': '晋城市'},
+                '太原': {'loc': [112.3352,37.9413], 'fullName': '太原市'},
+                '阳泉': {'loc': [113.4778,38.0951], 'fullName': '阳泉市'},
+                '六安': {'loc': [116.3123,31.8329], 'fullName': '六安市'},
+                '安庆': {'loc': [116.7517,30.5255], 'fullName': '安庆市'},
+                '滁州': {'loc': [118.1909,32.536], 'fullName': '滁州市'},
+                '宣城': {'loc': [118.8062,30.6244], 'fullName': '宣城市'},
+                '阜阳': {'loc': [115.7629,32.9919], 'fullName': '阜阳市'},
+                '宿州': {'loc': [117.5208,33.6841], 'fullName': '宿州市'},
+                '黄山': {'loc': [118.0481,29.9542], 'fullName': '黄山市'},
+                '巢湖': {'loc': [117.7734,31.4978], 'fullName': '巢湖市'},
+                '亳州': {'loc': [116.1914,33.4698], 'fullName': '亳州市'},
+                '池州': {'loc': [117.3889,30.2014], 'fullName': '池州市'},
+                '合肥': {'loc': [117.29,32.0581], 'fullName': '合肥市'},
+                '蚌埠': {'loc': [117.4109,33.1073], 'fullName': '蚌埠市'},
+                '芜湖': {'loc': [118.3557,31.0858], 'fullName': '芜湖市'},
+                '淮北': {'loc': [116.6968,33.6896], 'fullName': '淮北市'},
+                '淮南': {'loc': [116.7847,32.7722], 'fullName': '淮南市'},
+                '马鞍': {'loc': [118.6304,31.5363], 'fullName': '马鞍山市'},
+                '铜陵': {'loc': [117.9382,30.9375], 'fullName': '铜陵市'},
+                '南平': {'loc': [118.136,27.2845], 'fullName': '南平市'},
+                '三明': {'loc': [117.5317,26.3013], 'fullName': '三明市'},
+                '龙岩': {'loc': [116.8066,25.2026], 'fullName': '龙岩市'},
+                '宁德': {'loc': [119.6521,26.9824], 'fullName': '宁德市'},
+                '福州': {'loc': [119.4543,25.9222], 'fullName': '福州市'},
+                '漳州': {'loc': [117.5757,24.3732], 'fullName': '漳州市'},
+                '泉州': {'loc': [118.3228,25.1147], 'fullName': '泉州市'},
+                '莆田': {'loc': [119.0918,25.3455], 'fullName': '莆田市'},
+                '厦门': {'loc': [118.1689,24.6478], 'fullName': '厦门市'},
+                '丽水': {'loc': [119.5642,28.1854], 'fullName': '丽水市'},
+                '杭州': {'loc': [119.5313,29.8773], 'fullName': '杭州市'},
+                '温州': {'loc': [120.498,27.8119], 'fullName': '温州市'},
+                '宁波': {'loc': [121.5967,29.6466], 'fullName': '宁波市'},
+                '舟山': {'loc': [122.2559,30.2234], 'fullName': '舟山市'},
+                '台州': {'loc': [121.1353,28.6688], 'fullName': '台州市'},
+                '金华': {'loc': [120.0037,29.1028], 'fullName': '金华市'},
+                '衢州': {'loc': [118.6853,28.8666], 'fullName': '衢州市'},
+                '绍兴': {'loc': [120.564,29.7565], 'fullName': '绍兴市'},
+                '嘉兴': {'loc': [120.9155,30.6354], 'fullName': '嘉兴市'},
+                '湖州': {'loc': [119.8608,30.7782], 'fullName': '湖州市'},
+                '盐城': {'loc': [120.2234,33.5577], 'fullName': '盐城市'},
+                '徐州': {'loc': [117.5208,34.3268], 'fullName': '徐州市'},
+                '南通': {'loc': [121.1023,32.1625], 'fullName': '南通市'},
+                '淮安': {'loc': [118.927,33.4039], 'fullName': '淮安市'},
+                '苏州': {'loc': [120.6519,31.3989], 'fullName': '苏州市'},
+                '宿迁': {'loc': [118.5535,33.7775], 'fullName': '宿迁市'},
+                '连云': {'loc': [119.1248,34.552], 'fullName': '连云港市'},
+                '扬州': {'loc': [119.4653,32.8162], 'fullName': '扬州市'},
+                '南京': {'loc': [118.8062,31.9208], 'fullName': '南京市'},
+                '泰州': {'loc': [120.0586,32.5525], 'fullName': '泰州市'},
+                '无锡': {'loc': [120.3442,31.5527], 'fullName': '无锡市'},
+                '常州': {'loc': [119.4543,31.5582], 'fullName': '常州市'},
+                '镇江': {'loc': [119.4763,31.9702], 'fullName': '镇江市'},
+                '吴忠': {'loc': [106.853,37.3755], 'fullName': '吴忠市'},
+                '中卫': {'loc': [105.4028,36.9525], 'fullName': '中卫市'},
+                '固原': {'loc': [106.1389,35.9363], 'fullName': '固原市'},
+                '银川': {'loc': [106.3586,38.1775], 'fullName': '银川市'},
+                '石嘴': {'loc': [106.4795,39.0015], 'fullName': '石嘴山市'},
+                '儋州': {'loc': [109.3291,19.5653], 'fullName': '儋州市'},
+                '文昌': {'loc': [110.8905,19.7823], 'fullName': '文昌市'},
+                '乐东': {'loc': [109.0283,18.6301], 'fullName': '乐东黎族自治县'},
+                '三亚': {'loc': [109.3716,18.3698], 'fullName': '三亚市'},
+                '琼中': {'loc': [109.8413,19.0736], 'fullName': '琼中黎族苗族自治县'},
+                '东方': {'loc': [108.8498,19.0414], 'fullName': '东方市'},
+                '海口': {'loc': [110.3893,19.8516], 'fullName': '海口市'},
+                '万宁': {'loc': [110.3137,18.8388], 'fullName': '万宁市'},
+                '澄迈': {'loc': [109.9937,19.7314], 'fullName': '澄迈县'},
+                '白沙': {'loc': [109.3703,19.211], 'fullName': '白沙黎族自治县'},
+                '琼海': {'loc': [110.4208,19.224], 'fullName': '琼海市'},
+                '昌江': {'loc': [109.0407,19.2137], 'fullName': '昌江黎族自治县'},
+                '临高': {'loc': [109.6957,19.8063], 'fullName': '临高县'},
+                '陵水': {'loc': [109.9924,18.5415], 'fullName': '陵水黎族自治县'},
+                '屯昌': {'loc': [110.0377,19.362], 'fullName': '屯昌县'},
+                '定安': {'loc': [110.3384,19.4698], 'fullName': '定安县'},
+                '保亭': {'loc': [109.6284,18.6108], 'fullName': '保亭黎族苗族自治县'},
+                '五指': {'loc': [109.5282,18.8299], 'fullName': '五指山市'}
+            };
 
             // Canvas
             this.defaults = {};
             this.defaults.geoDataPath = "";
-            this.defaults.width = 750;
+            this.defaults.width = 600;
             this.defaults.height = 500;
             this.defaults.mapId = "0";
+            this.defaults.showWords = true; // show words or not
+            this.defaults.levelChangeable = true; // show words or not
+            this.defaults.colorModel = "discrete"; // discrete or gradient color
+            //this.defaults.colors = ["#1f77b4", "#ff7f0e"];
+            this.defaults.colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+            this.defaults.defaultAreaColor = "#dddddd"; // if area with no data show this color
+            this.defaults.wordStyle = {};
+            this.defaults.borderStyle = {};
 
             /*
             this.defaults.fontSizeRatio = 1.0;
@@ -36279,16 +37307,109 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
             //event
             this.defaults.customEvent = {
-                leafNodeClick : function () {},
-                hoverIn : function () {},
-                hoverOut : function () {},
-                mousemove : function () {}
+                areaHoverIn : noop,
+                areaHoverOut : noop,
+                areaClick: noop,
+                wordHoverIn: noop,
+                wordHoverOut: noop,
+                wordClick: noop
+                //mousemove : function () {}
             };
+            this.renderCallback = noop;
 
             this.setOptions(options);
             this.createCanvas();
         }
     });
+
+    /**
+     * get value from indexes
+     */
+    Chinamap.prototype._searchIndex = function (key, name, regionType) {
+        var conf = this.defaults;
+        var map = this;
+        var result;
+        var search = function (regionType, name) {
+            var shortName = name.substr(0, 2);
+            if (regionType === 'city') {
+                //prevent duplicate，张家口市,张家界市，阿拉善盟, 阿拉尔市
+                if (shortName === '阿拉' || shortName === '张家') {
+                    shortName = name.substr(0, 3);
+                }
+            }
+
+            var hash = regionType === 'city' ? map.geoData.cityIndex : map.geoData.provinceIndex;
+            var result = hash[shortName];
+            if (typeof result === 'undefined') {
+                return undefined;
+            }
+            return result[key];
+        };
+
+        if (typeof regionType === 'undefined') {
+            //province, then city
+            if (name === '吉林市' || name === '海南藏族自治州') {
+                //吉林省， 吉林市； 海南省，海南藏族自治州
+                result = search("city", name);
+            } else {
+                result = search("province", name) || search("city", name);
+            }
+        } else {
+            if (regionType === 'province') {
+                //province
+                result = search("province", name);
+            } else if (regionType === 'city') {
+                //city
+                result = search("city", name);
+            }
+        }
+
+        return result;
+    };
+
+    /**
+     * get longitude and latitude center by city or porvince name
+     * regionType is optional, if it's undefined, then first search province, then city
+     */
+    Chinamap.prototype.getLoc = function (name, regionType) {
+        return this._searchIndex('loc', name, regionType);
+    };
+
+    /**
+     * get longitude and latitude center by porvince name
+     */
+    Chinamap.prototype.getProvinceCenter = function (name) {
+        return this.getLoc(name, 'province');
+    };
+
+    /**
+     * get longitude and latitude center by city name
+     */
+    Chinamap.prototype.getCityCenter = function (name) {
+        return this.getLoc(name, 'city');
+    };
+
+    /**
+     * get format name by city or porvince name
+     * regionType is optional, if it's undefined, then first search province, then city
+     */
+    Chinamap.prototype.getFormatName = function (name, regionType) {
+        return this._searchIndex('fullName', name, regionType);
+    };
+
+    /**
+     * get fullName by porvince name
+     */
+    Chinamap.prototype.getProvinceFormatName = function (name) {
+        return this.getFormatName(name, 'province');
+    };
+
+    /**
+     * get fullName by city name
+     */
+    Chinamap.prototype.getCityFormatName = function (name) {
+        return this.getFormatName(name, 'city');
+    };
 
     /**
      * Create dom node relate to chinamap
@@ -36308,10 +37429,10 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         this.paper = new Raphael(this.canvas, conf.width, conf.height);
         //$(this.node).css("opacity", 0.01);
 
-        /*
-        this.node.style.position = "relative";
+        //this.node.style.position = "relative";
         this.floatTag = DataV.FloatTag()(this.canvas);
         this.floatTag.css({"visibility": "hidden"});
+        /*
         */
 
     };
@@ -36333,61 +37454,43 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * @param {Object} colorJson Way to get color from color theme matrix
      * @return {Array} 返回颜色数组
      */
-     Chinamap.prototype.getColor = (function () {
-        var color = d3.scale.category10();
-        return function (d) {
-                return color(d.id);
-            };
-    }());
-    /*
-    Chinamap.prototype.getColor = function (colorJson) {
-        var colorMatrix = DataV.getColor();
-        var color;
-        var colorStyle = colorJson || {};
-        var colorMode = colorStyle.mode || 'default';
-        var i, l;
-
-        switch (colorMode) {
-        case "multiColorGradient":
-            color = (function () {
-                var c = [];
-                colorMatrix.forEach(function (d, i) {
-                    c.push(d[0]);
-                });
-                return function (ratio) {
-                    var index = (c.length - 1) * ratio;
-                    var floor = Math.floor(index);
-                    var ceil = Math.ceil(index);
-                    if (floor === ceil) {
-                        return c[floor];
-                    } else {
-                        return d3.interpolateRgb.apply(null, [c[floor], c[ceil]])(index - floor);
-                    }
-                };
-            }());
-            //color = d3.interpolateRgb.apply(null, ["green", "purple"]);
-            break;
-        case "gradient":
-            var index = colorJson.index || 0;
-            index = index < 0 ? 0 : Math.min(index, colorMatrix.length - 1);
-            color = d3.interpolateRgb.apply(null, [colorMatrix[index][0], colorMatrix[index][1]]);
-            break;
-        case "random":
-        case "default":
-            var ratio = colorStyle.ratio || 0;
-            if (ratio < 0) { ratio = 0; }
-            if (ratio > 1) { ratio = 1; }
-            var colorArray = [];
-            for (i = 0, l = colorMatrix.length; i < l; i++) {
-                var colorFunc = d3.interpolateRgb.apply(null, [colorMatrix[i][0], colorMatrix[i][1]]);
-                colorArray.push(colorFunc(ratio));
+    Chinamap.prototype.getColor = function (d) {
+        var colors = this.defaults.colors;
+        var value;
+        if (typeof this.colorGenerator.range === 'undefined') {
+            if (this.defaults.colorModel === 'discrete') {
+                this.colorGenerator = d3.scale.ordinal().range(colors);
+            } else {
+                this.colorGenerator = d3.scale.linear()
+                    .range(colors.length === 1 ? colors.concat(colors) : colors)
+                    .domain(d3.range(0, 1, 1 / (colors.length - 1)).concat([1])); 
             }
-            color = d3.scale.ordinal().range(colorArray);
-            break;
+            this.colorGenerator.min = d3.min(d3.values(this.sourceData));
+            this.colorGenerator.domainBand = d3.max(d3.values(this.sourceData)) - this.colorGenerator.min;
         }
-        return color;
+        //return this.colorGenerator(d.id);
+        //return this.colorGenerator(this.sourceData(d.properties.name));
+        /*
+        console.log((parseInt(d.id, 10) % 100) / 50);
+        console.log(this.colorGenerator((parseInt(d.id, 10) % 100) / 50));
+        return this.colorGenerator((parseInt(d.id, 10) % 100) / 50);
+        */
+        value = this.sourceData[d.properties.name];
+        if (typeof value === 'undefined') {
+            //no data area color
+            return this.defaults.defaultAreaColor;
+        } else {
+            if (this.defaults.colorModel === 'discrete') {
+                return this.colorGenerator(value);
+            } else {
+                return this.colorGenerator(this.colorGenerator.domainBand === 0
+                        ? 1
+                        : (value - this.colorGenerator.min) / this.colorGenerator.domainBand
+                        );
+            }
+        }
     };
-    */
+
 
     /*
      * 设置数据源
@@ -36409,27 +37512,16 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      *  ]
      * ```
      * 数据还可以是json格式。每个结点都有`name`，如果是父节点则还有`children`，如果为叶节点则还有`size`。以上数组数据对应的json数据如下：
-     * ```
-     * {
-     *   "name": "2000",
-     *   "children": [
-     *      {
-     *       "name": "season1",
-     *       "children": [
-     *            {"name": "January", "size": 31},
-     *            {"name": "February", "size": 29},
-     *            {"name": "Match", "size": 31}
-     *          ]
-     *      },
-     *      {"name": "season2", "size": 91},
-     *      {"name": "season3", "size": 92},
-     *      {"name": "season4", "size": 92},
-     *   ]
-     * }
-     * ```
      * @param {Array|Object} source json or 2-d array
      */
     Chinamap.prototype.setSource = function (source) {
+        var key, value, formatName;
+        for (key in source) {
+            var formatName = this.getFormatName(key);
+            if (typeof formatName !== 'undefined') {
+                this.sourceData[formatName] = source[key];
+            }
+        }
         /*
         if (source instanceof Array) {
             this.rawData = this._arrayToJson(source);
@@ -36463,15 +37555,15 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     Chinamap.prototype.generatePaths = function () {
         var conf = this.defaults;
+        var customEvent = conf.customEvent;
         var map = this;
         var states = map.states;
         var words = map.words;
         var projection = map.projection;
         var getAreaPath = map.getAreaPath;
         var mapCache = map.mapCache;
-        var recentViewBox = map.recentViewBox;
         var paper = this.paper;
-        var areaBoxes = this.areaBoxes;
+        var areaBoxes = this.geoData.areaBoxes;
 
         var render = function (areaId, json) {
             var getTitle = function (d) {
@@ -36486,7 +37578,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                                  return;
                               }
                               if (typeof mapCache[d.id] === 'undefined') {
-                                  d3.json(conf.geoDataPath + d.id + ".json", function(j) {
+                                  d3.json(conf.geoDataPath + d.id + ".json", function (j) {
                                       render(d.id, j);
                                   });
                               } else {
@@ -36494,12 +37586,13 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                               }
                           }()) 
                           : (function () {
-                              /*
-                              d3.json("./jsonData/0.json", function(j) {
-                                  render(0, j);
-                              });
-                              */
-                              render(0);
+                              if (typeof map.mapCache[0] === 'undefined') {
+                                  d3.json(conf.geoDataPath + "0.json", function (j) {
+                                      render(0, j);
+                                  });
+                              } else {
+                                render(0);
+                              }
                           }());
                 };
             };
@@ -36532,12 +37625,19 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
           
                 //state
                 json.features.forEach(function (d, i) {
-                    var state = paper.path(getAreaPath(d)); 
+                    var state = paper.path(getAreaPath(d));
+                    d.fillColor = map.getColor(d);
                     state.attr({
-                        "fill": map.getColor(d),
+                        "fill": d.fillColor,
                         "stroke": "#fff"
-                        });
-                    state.click(getCallback(d));
+                    })
+                    .data("info", d)
+                    .click(customEvent.areaClick)
+                    .mouseover(customEvent.areaHoverIn)
+                    .mouseout(customEvent.areaHoverOut);
+                    if (conf.levelChangeable) {
+                        state.click(getCallback(d));
+                    }
                     states.push(state);
                     state.node.debugName = d.id;
                     cache.states.push(state);
@@ -36548,10 +37648,26 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                     var word = paper.text(getCenterX(d), getCenterY(d), getText(d));
                     word.attr({
                         "font-family": '"微软雅黑", "宋体"'
-                        });
-                    word.click(getCallback(d));
+                        })
+                    .data("info", d)
+                    .click(customEvent.wordClick)
+                    .mouseover(customEvent.wordHoverIn)
+                    .mouseout(customEvent.wordHoverOut);
+                    if (!conf.showWords) {
+                        word.hide();
+                    }
+                    if (conf.levelChangeable) {
+                        word.click(getCallback(d));
+                    }
                     words.push(word);
                     cache.words.push(word);
+                });
+
+                states.forEach(function (d, i) {
+                    d.data("word", words[i])
+                        .data("map", map);
+                    words[i].data("state", d)
+                        .data("map", map);
                 });
           
             } else {//cached 
@@ -36563,9 +37679,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
               
                 //word
                 words = mapCache[areaId].words;
-                words.forEach(function (d) {
-                        d.show();
-                });
+                if (conf.showWords) {
+                    words.forEach(function (d) {
+                            d.show();
+                    });
+                }
             }
         
             var getStatesBox = function () {
@@ -36581,26 +37699,11 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             };
         
             (function trans () {
+                var recentViewBox = map.viewBox.slice();
                 var statesBox = getStatesBox();
-                var ratio = Math.max(statesBox.width / conf.width, statesBox.height / conf.height);
-                var i, l;
                 var newBox = [statesBox.x, statesBox.y, statesBox.width, statesBox.height];
-                //console.log(newBox[0] + " " + newBox[1] + " " + newBox[2] + " " + newBox[3]);
-        
-                for (i = 0, l = states.length; i < l; i++) {
-                    states[i].attr({
-                        "stroke-width": 1 //2 * ratio
-                    });
-                    words[i].attr({
-                        "font-size": Math.round(Math.max(14 * ratio, 1))//14 * ratio + "px"
-                    });
-                }
-                /*
-                svg.transition()
-                    .duration(750)
-                    .attr("viewBox", statesBox.x + ", " + statesBox.y + ", " + statesBox.width + ", " + statesBox.height )
-                    .attr("preserveAspectRatio", "xMidYMid meet");
-                    */
+                var scale = Math.max(statesBox.width / conf.width, statesBox.height / conf.height); // the ratio that keep the font be the same size no matter what view box size is.
+
                 var viewBoxAnim = function (oldBox, newBox, time) {
                     var ti = 30;
                     var flag = true;
@@ -36648,6 +37751,18 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                     };
                     var interval = setInterval(anim, ti);
                 };
+        
+                states.forEach(function (d, i) {
+                    states[i].attr({
+                        "stroke-width": 1 //2 * scale
+                    })
+                    .attr(conf.wordStyle);
+                    words[i].attr({
+                        "font-size": Math.round(Math.max(14 * scale, 1))//14 * scale + "px"
+                    })
+                    .attr(conf.borderStyle);
+                });
+
                 if (recentViewBox.length === 0) { // first render 
                     paper.setViewBox(newBox[0], newBox[1], newBox[2], newBox[3], true);
                     $("#chart").css("opacity", 1);
@@ -36658,8 +37773,32 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
                         viewBoxAnim(recentViewBox, newBox, 750);
                     }
                 }
-                recentViewBox = newBox;
+
+                map.viewBox = newBox;
+                map.viewBoxShift = (function (x, y, w, h, fit) {
+                    var width = conf.width,
+                        height = conf.height,
+                        size = 1 / Math.max(w / width, h / height),
+                        H, W;
+                    if (fit) {
+                        H = height / h;
+                        W = width / w;
+                        if (w * H < width) {
+                            x -= (width - w * H) / 2 / H;
+                        }
+                        if (h * W < height) {
+                            y -= (height - h * W) / 2 / W;
+                        }
+                    }
+                    return {
+                        dx: -x,
+                        dy: -y,
+                        scale: size
+                    };
+                }(newBox[0], newBox[1], newBox[2], newBox[3], true));
             }());
+
+            map.renderCallback();
         };
         
         d3.json(conf.geoDataPath + conf.mapId + ".json", function(json) {
@@ -36687,10 +37826,91 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
+     * 将点在矢量图中的位置 转化为 实际显示点相对于图片左上角的位置（像素距离）
+     */
+    Chinamap.prototype._scaleLocToPixelLoc = function (scaleLoc) {
+        var map = this;
+        var scale = map.viewBoxShift.scale;
+        var viewCenter = {
+            'x': map.viewBox[0] + map.viewBox[2] / 2,
+            'y': map.viewBox[1] + map.viewBox[3] / 2
+        };
+        return {
+            'x': (scaleLoc.x - viewCenter.x) * scale + map.defaults.width / 2,
+            'y': (scaleLoc.y - viewCenter.y) * scale + map.defaults.height / 2
+        };
+    };
+
+    /**
+     * 将实际显示点相对于图片左上角的位置（像素距离） 转化为 点在矢量图中的位置
+     */
+    Chinamap.prototype._pixelLocToScaleLoc = function (pixelLoc) {
+        var map = this;
+        var scale = map.viewBoxShift.scale;
+        var viewCenter = {
+            'x': map.viewBox[0] + map.viewBox[2] / 2,
+            'y': map.viewBox[1] + map.viewBox[3] / 2
+        };
+        return {
+            'x': (pixelLoc.x - map.defaults.width / 2) / scale + viewCenter.x,
+            'y': (pixelLoc.y - map.defaults.height / 2) / scale + viewCenter.y
+        };
+    };
+
+    /**
+     * 渲染城市点
+     */
+    Chinamap.prototype.createCityPoints = function (cities, callback) {
+        var conf = this.defaults;
+        var map = this;
+        var point;
+        var points = [];
+        var cb = callback || function (city) {
+            return this.paper.circle(city.coord[0], city.coord[1], 20)
+                .attr({
+                    "fill": "steelblue",
+                    "fill-opacity": 0.5
+                    });
+        };
+
+        cities.forEach(function (d) {
+            //get format name
+            var formatName = map.getCityFormatName(d.name);
+            var viewCenter = {
+                'x': map.viewBox[0] + map.viewBox[2] / 2,
+                'y': map.viewBox[1] + map.viewBox[3] / 2
+            };
+            if (typeof formatName === 'undefined') {
+                if (typeof d.lanlon === 'undefined') {
+                    return;
+                } else {
+                    d.formatName = d.name;
+                }
+            } else {
+                d.formatName = formatName;
+                //get loc (lan, lon)
+                d.lanlon = map.getCityCenter(d.formatName);
+            }
+            //process loc (geo projection)
+            d.coord = map.projection(d.lanlon);
+            //x and y of circle center in the container;
+            d.pointLoc = map._scaleLocToPixelLoc({
+                    'x': d.coord[0], 
+                    'y': d.coord[1] 
+                    });
+            //callback
+            point = cb.call(map, d);
+            points.push(point);
+        });
+        return points;
+    };
+
+    /**
      * 设置自定义事件
      */
-    Chinamap.prototype.on = function (eventName, callback) {
-        if ($.inArray(eventName, ["leafNodeClick", "hoverIn", "hoverOut", "mousemove"]) !== -1) {
+    Chinamap.prototype.setCustomEvent = function (eventName, callback) {
+        if ($.inArray(eventName, ["areaHoverIn", "areaHoverOut", "areaClick",
+                    "wordHoverIn", "wordHoverOut", "wordClick"]) !== -1) {
             this.defaults.customEvent[eventName] = callback;
         }
     };

@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3, _, EventProxy, $, jQuery */
+/*global d3, _, EventProxy, $, jQuery, Raphael */
 /*!
  * DataV兼容定义
  */
@@ -26215,7 +26215,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         var startColor = color[0];
-        var colorColor;
+        var endColor;
         var colorCount = color.length;
 
         var hsb;
@@ -26317,7 +26317,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       }
       var keys = _.keys(list[0]);
       var ret = [keys];
-      _.each(list, function (obj, index) {
+      _.each(list, function (obj) {
         ret.push(_.values(obj));
       });
       return ret;
@@ -26431,7 +26431,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      */
     var Chart = DataV.extend(EventProxy, {
         type: "Chart",
-        initialize: function (node, options) {
+        initialize: function () {
             // 默认设置
             this.defaults = {};
             // 插件
