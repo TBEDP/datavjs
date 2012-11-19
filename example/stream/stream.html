@@ -5,7 +5,6 @@
     <title>Streamgraph</title>
     <script src="../../build/deps.js"></script>
     <script src="../../deps/seajs/sea.js"></script>
-
 <style type="text/css">
 #chart {
     border-top: 1px dashed #F00;
@@ -15,39 +14,28 @@
 </style>
   </head>
   <body>
-
     <div id="clickInfo">clickInfo</div>
     <div id="hoverInfo">hoverInfo</div>
     <div id="chart"></div>
-
     <script>
-
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
     var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
-        alias: {
-            'DataV': dir + '/../../lib/datav.js',
-            'Axis': dir + '/../../lib/charts/axis.js',
-            'Stream': dir + '/../../lib/charts/stream.js'
-        }
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Axis': dir + '/../../lib/charts/axis.js',
+        'Stream': dir + '/../../lib/charts/stream.js'
+      }
     });
     seajs.use(["Stream", "DataV"], function (Stream, DataV) {
-        DataV.changeTheme("theme0");
-        var stream = new Stream("chart", {"width": 800});
-        stream.setOptions({"more": false});
-        //DataV.csv("streamDataExample.csv", function (source) {
-        DataV.csv("streamDataExample.csv", function (source) {
-            stream.setSource(source);
-            /*
-            stream.on("mousemove", function(data) {
-                console.log(data.timeIndex + " " + data.pathIndex);
-                });
-            */
-            stream.render();
-        });
+      DataV.changeTheme("theme0");
+      var stream = new Stream("chart", {"width": 800});
+      stream.setOptions({"more": false});
+      DataV.csv("streamDataExample.csv", function (source) {
+        stream.setSource(source);
+        stream.render();
+      });
     });
-
     </script>
-
   </body>
 </html>

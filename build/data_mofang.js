@@ -10913,7 +10913,7 @@ d3.geo.greatCircle = d3.geo.circle;
 
 }).call(this);
 
-/*global d3, _, $, jQuery, Raphael */
+/*global d3, _, $, jQuery, Raphael, EventProxy */
 /*!
  * DataV兼容定义
  */
@@ -11332,7 +11332,7 @@ d3.geo.greatCircle = d3.geo.circle;
      *    });
      * ```
      */
-    var Chart = DataV.extend(require('EventProxy'), {
+    var Chart = DataV.extend(EventProxy, {
         type: "Chart",
         initialize: function () {
             // 默认设置

@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3, _, $, jQuery, Raphael */
+/*global d3, _, $, jQuery, Raphael, EventProxy */
 /*!
  * DataV兼容定义
  */
@@ -26429,7 +26429,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      *    });
      * ```
      */
-    var Chart = DataV.extend(require('EventProxy'), {
+    var Chart = DataV.extend(EventProxy, {
         type: "Chart",
         initialize: function () {
             // 默认设置
