@@ -14,9 +14,20 @@
 </style>
   </head>
   <body>
-    <div id="clickInfo">clickInfo</div>
-    <div id="hoverInfo">hoverInfo</div>
-    <div id="chart"></div>
+    <div id="chart">
+      <div class="legend">
+      </div>
+      <div>
+        <div class="nav">
+        </div>
+        <div>
+          <div class="percentage">
+          </div>
+          <div class="stream">
+          </div>
+        </div>
+      </div>
+    </div>
     <script>
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
     var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
@@ -24,13 +35,14 @@
       alias: {
         'DataV': dir + '/../../lib/datav.js',
         'Axis': dir + '/../../lib/charts/axis.js',
-        'Stream': dir + '/../../lib/charts/stream.js'
+        'Legend': dir + '/../../lib/charts/legend.js',
+        'Stream': dir + '/../../lib/charts/stream.refine.js'
       }
     });
     seajs.use(["Stream", "DataV"], function (Stream, DataV) {
       DataV.changeTheme("theme0");
       var stream = new Stream("chart", {"width": 800});
-      stream.setOptions({"more": false});
+      stream.setOptions({"more": false, "legendPosition": "left"});
       DataV.csv("streamDataExample.csv", function (source) {
         stream.setSource(source);
         stream.render();
