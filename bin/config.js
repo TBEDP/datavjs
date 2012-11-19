@@ -34,6 +34,11 @@ exports.data_shu = exports.without([
   'deps/underscore-1.4.2.js'
 ]);
 
+exports.data_mofang = exports.without([
+  'deps/raphael.js',
+  'deps/jquery-1.7.1.js'
+]);
+
 exports.all = exports.datav.concat([
   'lib/charts/axis.js',
   'lib/charts/brush.js',

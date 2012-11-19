@@ -30,6 +30,7 @@ exports.build('datav', "version");
 exports.build('datav', "version", "minify");
 
 exports.build('deps');
+exports.build('data_mofang');
 
 exports.build('all');
 exports.build('all', "version", "minify");
