@@ -14,7 +14,7 @@ exports.datav = exports.deps.concat([
 
 exports.without = function (excludes) {
   return exports.datav.filter(function (filename) {
-    return excludes.indexOf(filename) !== -1;
+    return excludes.indexOf(filename) === -1;
   });
 };
 

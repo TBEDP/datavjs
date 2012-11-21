@@ -5,49 +5,113 @@
     <title>Streamgraph</title>
     <script src="../../build/deps.js"></script>
     <script src="../../deps/seajs/sea.js"></script>
-
 <style type="text/css">
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
 #chart {
-    border-top: 1px dashed #F00;
-    border-bottom: 1px dashed #F00;
-    padding-left: 20px;
+  border-top: 1px dashed #F00;
+  border-bottom: 1px dashed #F00;
+  padding-left: 20px;
 }
 </style>
   </head>
   <body>
-
-    <div id="clickInfo">clickInfo</div>
-    <div id="hoverInfo">hoverInfo</div>
-    <div id="chart"></div>
-
+    <div id="chart" class="clearfix">
+    </div>
+    <script type="text/template">
+      <div class="legend">
+      </div>
+      <div>
+        <div class="nav">
+        </div>
+        <div>
+          <div class="percentage">
+          </div>
+          <div class="stream">
+          </div>
+        </div>
+      </div>
+    </script>
     <script>
-
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
     var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
     seajs.config({
-        alias: {
-            'DataV': dir + '/../../lib/datav.js',
-            'Axis': dir + '/../../lib/charts/axis.js',
-            'Stream': dir + '/../../lib/charts/stream.js'
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Axis': dir + '/../../lib/charts/axis.js',
+        'StreamAxis': dir + '/../../lib/charts/stream_axis.js',
+        'Legend': dir + '/../../lib/charts/legend.js',
+        'Navi': dir + '/../../lib/charts/navi.js',
+        'Tip': dir + '/../../lib/charts/tip.js',
+        'Percentage': dir + '/../../lib/charts/percentage.js',
+        'HoverLine': dir + '/../../lib/charts/hover_line.js',
+        'PathLabel': dir + '/../../lib/charts/path_label.js',
+        'Cover': dir + '/../../lib/charts/cover.js',
+        'Stream': dir + '/../../lib/charts/stream.js',
+        'StreamComponent': dir + '/../../lib/components/stream.js'
+      }
+    });
+    seajs.use(["StreamComponent", "DataV"], function (StreamComponent, DataV) {
+      DataV.changeTheme("theme0");
+      var component = new StreamComponent("chart", {"width": 800});
+      component.setOptions({
+        "legendPosition": "left",
+        "tipStyle": {
+          "textAlign": "left",
+          "border": "3px solid white",
+          "borderRadius": "5px",
+          "lineHeight": "140%"
         }
-    });
-    seajs.use(["Stream", "DataV"], function (Stream, DataV) {
-        DataV.changeTheme("theme0");
-        var stream = new Stream("chart", {"width": 800});
-        stream.setOptions({"more": false});
-        //DataV.csv("streamDataExample.csv", function (source) {
-        DataV.csv("streamDataExample.csv", function (source) {
-            stream.setSource(source);
-            /*
-            stream.on("mousemove", function(data) {
-                console.log(data.timeIndex + " " + data.pathIndex);
-                });
-            */
-            stream.render();
+      });
+      var source = [
+        ['2012-10-21','book', 100],
+        ['2012-10-21','food', 110],
+        ['2012-10-21','coffee', 18],
+        ['2012-10-22','book', 30],
+        ['2012-10-22','food', 140],
+        ['2012-10-22','coffee', 18],
+        ['2012-10-23','book', 90],
+        ['2012-10-23','food', 100],
+        ['2012-10-23','coffee', 18],
+        ['2012-10-24','book', 15],
+        ['2012-10-24','food', 12],
+        ['2012-10-24','coffee', 18],
+      ];
+      DataV.csv("women_clothes.csv", function (source) {
+        var remaped = [];
+        var first = source.shift();
+        for (var i = 1; i < first.length; i++) {
+          for (var j = 0; j < source.length; j++) {
+            remaped.push([first[i], source[j][0], parseFloat(source[j][i])]);
+          }
+        }
+        source = remaped;
+        component.setOptions({
+          getContent: function (obj) {
+            var html = "类目：" + obj[this.mapping.type];
+            html += "<br />实际值：" + obj[this.mapping.value];
+            html += "<br />排名：第" + obj.rank;
+            html += "<br />占比：" + (obj.rate * 100).toFixed(2) + "%";
+            return html;
+          },
+          getPathLabel: function (obj) {
+            return obj.type + " 占比：" + (obj.sum / obj.total * 100).toFixed(2) + "% 排名：第" + obj.rank;
+          }
         });
+        component.setSource(source, {
+          x: 0,
+          type: 1,
+          value: 2
+        });
+        component.render();
+      });
     });
-
     </script>
-
   </body>
 </html>
