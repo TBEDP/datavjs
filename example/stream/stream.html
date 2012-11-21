@@ -53,19 +53,27 @@
         'HoverLine': dir + '/../../lib/charts/hover_line.js',
         'PathLabel': dir + '/../../lib/charts/path_label.js',
         'Cover': dir + '/../../lib/charts/cover.js',
-        'Stream': dir + '/../../lib/charts/stream_chart.js',
-        'StreamComponent': dir + '/../../lib/charts/stream.refine.js'
+        'Stream': dir + '/../../lib/charts/stream.js',
+        'StreamComponent': dir + '/../../lib/components/stream.js'
       }
     });
-    seajs.use(["StreamComponent", "DataV"], function (Stream, DataV) {
+    seajs.use(["StreamComponent", "DataV"], function (StreamComponent, DataV) {
       DataV.changeTheme("theme0");
       var component = new StreamComponent("chart", {"width": 800});
       component.setOptions({"legendPosition": "left"});
       var source = [
         ['2012-10-21','book', 100],
         ['2012-10-21','food', 110],
+        ['2012-10-21','coffee', 18],
         ['2012-10-22','book', 30],
-        ['2012-10-22','food', 140]
+        ['2012-10-22','food', 140],
+        ['2012-10-22','coffee', 18],
+        ['2012-10-23','book', 90],
+        ['2012-10-23','food', 100],
+        ['2012-10-23','coffee', 18],
+        ['2012-10-24','book', 15],
+        ['2012-10-24','food', 12],
+        ['2012-10-24','coffee', 18],
       ];
       component.setSource(source, {
         x: 0,
