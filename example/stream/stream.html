@@ -60,7 +60,15 @@
     seajs.use(["StreamComponent", "DataV"], function (StreamComponent, DataV) {
       DataV.changeTheme("theme0");
       var component = new StreamComponent("chart", {"width": 800});
-      component.setOptions({"legendPosition": "left"});
+      component.setOptions({
+        "legendPosition": "left",
+        "tipStyle": {
+          "textAlign": "left",
+          "border": "3px solid white",
+          "borderRadius": "5px",
+          "lineHeight": "140%"
+        }
+      });
       var source = [
         ['2012-10-21','book', 100],
         ['2012-10-21','food', 110],
@@ -75,12 +83,34 @@
         ['2012-10-24','food', 12],
         ['2012-10-24','coffee', 18],
       ];
-      component.setSource(source, {
-        x: 0,
-        type: 1,
-        value: 2
+      DataV.csv("women_clothes.csv", function (source) {
+        var remaped = [];
+        var first = source.shift();
+        for (var i = 1; i < first.length; i++) {
+          for (var j = 0; j < source.length; j++) {
+            remaped.push([first[i], source[j][0], parseFloat(source[j][i])]);
+          }
+        }
+        source = remaped;
+        component.setOptions({
+          getContent: function (obj) {
+            var html = "类目：" + obj[this.mapping.type];
+            html += "<br />实际值：" + obj[this.mapping.value];
+            html += "<br />排名：第" + obj.rank;
+            html += "<br />占比：" + (obj.rate * 100).toFixed(2) + "%";
+            return html;
+          },
+          getPathLabel: function (obj) {
+            return obj.type + " 占比：" + (obj.sum / obj.total * 100).toFixed(2) + "% 排名：第" + obj.rank;
+          }
+        });
+        component.setSource(source, {
+          x: 0,
+          type: 1,
+          value: 2
+        });
+        component.render();
       });
-      component.render();
     });
     </script>
   </body>
