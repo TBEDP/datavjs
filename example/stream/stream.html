@@ -6,15 +6,25 @@
     <script src="../../build/deps.js"></script>
     <script src="../../deps/seajs/sea.js"></script>
 <style type="text/css">
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
 #chart {
-    border-top: 1px dashed #F00;
-    border-bottom: 1px dashed #F00;
-    padding-left: 20px;
+  border-top: 1px dashed #F00;
+  border-bottom: 1px dashed #F00;
+  padding-left: 20px;
 }
 </style>
   </head>
   <body>
-    <div id="chart">
+    <div id="chart" class="clearfix">
+    </div>
+    <script type="text/template">
       <div class="legend">
       </div>
       <div>
@@ -27,7 +37,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </script>
     <script>
     //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
     var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
@@ -35,20 +45,34 @@
       alias: {
         'DataV': dir + '/../../lib/datav.js',
         'Axis': dir + '/../../lib/charts/axis.js',
+        'StreamAxis': dir + '/../../lib/charts/stream_axis.js',
         'Legend': dir + '/../../lib/charts/legend.js',
         'Navi': dir + '/../../lib/charts/navi.js',
+        'Tip': dir + '/../../lib/charts/tip.js',
         'Percentage': dir + '/../../lib/charts/percentage.js',
-        'Stream': dir + '/../../lib/charts/stream.refine.js'
+        'HoverLine': dir + '/../../lib/charts/hover_line.js',
+        'PathLabel': dir + '/../../lib/charts/path_label.js',
+        'Cover': dir + '/../../lib/charts/cover.js',
+        'Stream': dir + '/../../lib/charts/stream_chart.js',
+        'StreamComponent': dir + '/../../lib/charts/stream.refine.js'
       }
     });
-    seajs.use(["Stream", "DataV"], function (Stream, DataV) {
+    seajs.use(["StreamComponent", "DataV"], function (Stream, DataV) {
       DataV.changeTheme("theme0");
-      var stream = new Stream("chart", {"width": 800});
-      stream.setOptions({"more": false, "legendPosition": "left"});
-      DataV.csv("streamDataExample.csv", function (source) {
-        stream.setSource(source);
-        stream.render();
+      var component = new StreamComponent("chart", {"width": 800});
+      component.setOptions({"legendPosition": "left"});
+      var source = [
+        ['2012-10-21','book', 100],
+        ['2012-10-21','food', 110],
+        ['2012-10-22','book', 30],
+        ['2012-10-22','food', 140]
+      ];
+      component.setSource(source, {
+        x: 0,
+        type: 1,
+        value: 2
       });
+      component.render();
     });
     </script>
   </body>
