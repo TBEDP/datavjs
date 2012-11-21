@@ -4,6 +4,10 @@ DataV组件库的设计
 
 ## DataV结构
 
+- Chart
+- Widget
+- Component
+
 ## API设计
 
 ## 数据映射

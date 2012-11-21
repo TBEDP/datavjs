@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3, _, EventProxy, $, jQuery, Raphael */
+/*global d3, _, $, jQuery, Raphael */
 /*!
  * DataV兼容定义
  */
@@ -26029,7 +26029,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     /**
      * 版本号
      */
-    DataV.version = "0.0.1";
+    DataV.version = "0.1.0";
 
     /**
      * 全局主题对象
@@ -26429,7 +26429,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      *    });
      * ```
      */
-    var Chart = DataV.extend(EventProxy, {
+    var Chart = DataV.extend(require('EventProxy'), {
         type: "Chart",
         initialize: function () {
             // 默认设置
