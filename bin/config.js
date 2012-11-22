@@ -14,7 +14,7 @@ exports.datav = exports.deps.concat([
 
 exports.without = function (excludes) {
   return exports.datav.filter(function (filename) {
-    return excludes.indexOf(filename) !== -1;
+    return excludes.indexOf(filename) === -1;
   });
 };
 
@@ -32,6 +32,11 @@ exports.data_shu = exports.without([
   'deps/eventproxy.js',
   'deps/jquery-1.7.1.js',
   'deps/underscore-1.4.2.js'
+]);
+
+exports.data_mofang = exports.without([
+  'deps/raphael.js',
+  'deps/jquery-1.7.1.js'
 ]);
 
 exports.all = exports.datav.concat([

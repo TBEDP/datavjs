@@ -26010,7 +26010,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-/*global d3, _, EventProxy, $, jQuery */
+/*global d3, _, $, jQuery, Raphael */
 /*!
  * DataV兼容定义
  */
@@ -26029,7 +26029,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     /**
      * 版本号
      */
-    DataV.version = "0.0.1";
+    DataV.version = "0.1.0";
 
     /**
      * 全局主题对象
@@ -26080,7 +26080,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      * 默认主题
      */
     DataV.Themes.add('default', 'theme0', {
-         COLOR_ARGS: [
+        COLOR_ARGS: [
             ["#3dc6f4", "#8ce3ff"],
             ["#214fd9", "#7396ff"],
             ["#4f21d9", "#9673ff"],
@@ -26215,7 +26215,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
         }
 
         var startColor = color[0];
-        var colorColor;
+        var endColor;
         var colorCount = color.length;
 
         var hsb;
@@ -26317,7 +26317,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       }
       var keys = _.keys(list[0]);
       var ret = [keys];
-      _.each(list, function (obj, index) {
+      _.each(list, function (obj) {
         ret.push(_.values(obj));
       });
       return ret;
@@ -26367,6 +26367,27 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     };
 
     /**
+     * 添加数值边缘检测
+     * @param {Number} number 数字
+     * @param {Number} min 下边缘
+     * @param {Number} max 上边缘
+     * @return {Boolean} 返回边缘检测后的数值
+     */
+    DataV.limit = function (number, min, max) {
+        var ret;
+        if (typeof min !== 'undefined') {
+            ret = number < min ? min : number;
+        }
+        if (typeof max !== 'undefined') {
+            if (max < min) {
+                throw new Error('The max value should bigger than min value');
+            }
+            ret = number > max ? max: number;
+        }
+        return ret;
+    };
+
+    /**
      * 继承
      * @param {Function} parent 父类
      * @param {Object} properties 新属性
@@ -26408,9 +26429,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
      *    });
      * ```
      */
-    var Chart = DataV.extend(EventProxy, {
+    var Chart = DataV.extend(require('EventProxy'), {
         type: "Chart",
-        initialize: function (node, options) {
+        initialize: function () {
             // 默认设置
             this.defaults = {};
             // 插件
