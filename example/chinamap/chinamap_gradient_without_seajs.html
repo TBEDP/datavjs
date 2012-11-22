@@ -17,14 +17,10 @@
   <body>
     <div id="chart"></div>
     <script>
-        var searchIndexColor = "steelblue";
-        var tradeIndexColor = "#78E700";
-
-        DataV.changeTheme("theme0");
         var chinamap = new Chinamap("chart", {
-                'width': 720,
+                'width': 720,//大小
                 'height': 600,
-                "geoDataPath": '../../lib/charts/data/chinaMap/'
+                "geoDataPath": '../../lib/charts/data/chinaMap/'//地图数据路径
                 });
         chinamap.setOptions({'showWords': false});
         chinamap.setOptions({'levelChangeable': false});
@@ -33,7 +29,7 @@
         chinamap.setOptions({
             //"wordStyle": {'stroke': "black"},
             "colorModel": "gradient",
-            "colors": ["#ddd", "#88f"]
+            "colors": ["#ddd", "#88f"]//设置渐变颜色
         });
         //2010 人口统计
         chinamap.setSource({
@@ -77,6 +73,7 @@
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
+            //map.floatTag 是一个jqNode对象，样式调整用.css()，内容调整用.html()。
             map.floatTag.html("<p>" + info.properties.name + "</p>"
                             + "<p>" + map.sourceData[info.properties.name] + "</p>");
             map.floatTag.css({"visibility": "visible"});
