@@ -36,6 +36,7 @@ exports.data_shu = exports.without([
 
 exports.data_mofang = exports.without([
   'deps/raphael.js',
+  'deps/underscore-1.4.2.js',
   'deps/jquery-1.7.1.js'
 ]);
 
