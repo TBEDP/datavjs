@@ -3,7 +3,7 @@ exports.deps = [
   'deps/json2.js',
   'deps/d3.js',
   'deps/raphael.js',
-  'deps/eventproxy.js',
+  'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
   'deps/underscore-1.4.2.js'
 ];
@@ -29,13 +29,14 @@ exports.data_html5 = exports.without([
 
 exports.data_shu = exports.without([
   'deps/raphael.js',
-  'deps/eventproxy.js',
+  'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
   'deps/underscore-1.4.2.js'
 ]);
 
 exports.data_mofang = exports.without([
   'deps/raphael.js',
+  'deps/underscore-1.4.2.js',
   'deps/jquery-1.7.1.js'
 ]);
 
@@ -59,3 +60,17 @@ exports.all = exports.datav.concat([
   'lib/charts/treemap.js',
   'lib/charts/chinamap.js'
 ]);
+
+exports.stream_component = [
+  'lib/charts/axis.js',
+  'lib/charts/stream_axis.js',
+  'lib/charts/legend.js',
+  'lib/charts/navi.js',
+  'lib/charts/tip.js',
+  'lib/charts/percentage.js',
+  'lib/charts/hover_line.js',
+  'lib/charts/path_label.js',
+  'lib/charts/cover.js',
+  'lib/charts/stream.js',
+  'lib/components/stream.js'
+];
