@@ -18,7 +18,11 @@
     <div id="chart"></div>
     <script>
         DataV.changeTheme("theme0");
-        var chinamap = new Chinamap("chart", {"geoDataPath": '../../lib/charts/data/chinaMap/'});
+        var chinamap = new Chinamap("chart", {
+            //"width": 2000,
+            //"height": 1700,
+            "geoDataPath": '../../lib/charts/data/chinaMap/'
+            });
         //chinamap.setOptions({'showWords': false});
         chinamap.setOptions({'mapId': 0});
 
@@ -160,7 +164,7 @@
         */
         //console.log(chinamap._searchIndex("loc", "阿拉尔市", "fasd"));
         //console.log(chinamap.getCityFormatName("阿拉善盟"));
-        //chinamap.setOptions({'levelChangeable': false})o
+        //chinamap.setOptions({'levelChangeable': false})
 
         chinamap.setCustomEvent('areaHoverIn', function () {
             var map = this.data("map");
