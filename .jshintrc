@@ -2,7 +2,9 @@
   "predef":[
     "define",
     "console",
-    "document"
+    "document",
+    "clearInterval",
+    "setInterval"
   ],
   "es5": false,
   "bitwise": true,
