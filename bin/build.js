@@ -27,5 +27,7 @@ exports.build = function (name, withVersion, minify) {
 
 exports.build('datav');
 exports.build('deps');
+exports.build('data_shu');
 exports.build('data_mofang');
+exports.build('stream_component');
 exports.build('all');

@@ -101,8 +101,12 @@
             return html;
           },
           getPathLabel: function (obj) {
-            return obj.type + " 占比：" + (obj.sum / obj.total * 100).toFixed(2) + "% 排名：第" + obj.rank;
-          }
+            return obj.type + ' ' + (obj.sum / obj.total * 100).toFixed(2) + "%";
+          },
+          more: true,
+          max: 20,
+          // gradientColor: ['#24dd24', '#3737ee']
+          gradientColor: ['#61dd61', '#3737ee']
         });
         component.setSource(source, {
           x: 0,
