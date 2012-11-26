@@ -31,9 +31,29 @@
     </script>
     <script>
     seajs.use(["Chinamap", "DataV"], function (Chinamap, DataV) {
-      DataV.changeTheme("theme0");
-      var chinamap = new Chinamap("chart", {"geoDataPath": '../../lib/charts/data/chinaMap/'});
-      chinamap.render();
+        DataV.changeTheme("theme0");
+        var chinamap = new Chinamap("chart", {"geoDataPath": '../../lib/charts/data/chinaMap/'});
+        chinamap.render();
+        /*
+        chinamap.on("areaHoverIn", function () {
+          console.log("hello in");
+        });
+        chinamap.on("areaHoverOut", function () {
+          console.log("hello out");
+        });
+        chinamap.on("areaClick", function () {
+          console.log("hello click");
+        });
+        chinamap.on("wordHoverIn", function () {
+          console.log("hello word in");
+        });
+        chinamap.on("wordHoverOut", function () {
+          console.log("hello word out");
+        });
+        chinamap.on("wordClick", function () {
+          console.log("hello word click");
+        });
+        */
     });
     </script>
 
