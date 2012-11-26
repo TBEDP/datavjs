@@ -341,7 +341,8 @@
                                 })
                             .data("cityInfo", city)
                             .mouseout(function () {
-                              lowlightCity(city.name);
+                              //lowlightCity(city.name);
+                              chinamap.fire("cityMouseout", city.name);
                             });
                     })[0];
           var cityInfo = highlightedCityPoint.data("cityInfo");
@@ -440,7 +441,6 @@
         });
         
         var highlightCity = function (cityName) {
-            lowlightCity(cityName);
             var cityData = data[stage].searchCityHash[cityName] || data[stage].tradeCityHash[cityName];
             //highlight searchIndex city
             if (cityData.search <=  10) {
@@ -448,7 +448,7 @@
                 .css({"color": "black"})
                 .eq(cityData.search - 1)
                 .css({"color": "blue"});
-            } 
+            }
             //highlight tradeIndex city
             if (cityData.trade <=  10) {
               tradeCityTd.find("span")
@@ -456,8 +456,12 @@
                 .eq(cityData.trade - 1)
                 .css({"color": "blue"});
             }
+
+            /*
+            lowlightCity(cityName);
             //highlight city point in map
             highlightCityPoint(cityName);
+            */
         };
 
         var lowlightCity = function (cityName) {
@@ -473,17 +477,10 @@
                 .css({"color": "black"});
             }
             //highlight city point in map
-            lowlightCityPoint();
+            //lowlightCityPoint();
         };
 
-        $("#mapTableCityRow").delegate("span", "mouseover", function () {
-          var cityName = $(this).html().split(' ')[1];
-          highlightCity(cityName);
-        });
-        $("#mapTableCityRow").delegate("span", "mouseout", function () {
-          var cityName = $(this).html().split(' ')[1];
-          lowlightCity(cityName);
-        });
+
 /*
         // hover searchindex city
         $("#mapTableCityRow").find("td:nth-child(2)").delegate("span", "mouseover", function () {
@@ -515,10 +512,10 @@
         $("#chart").css({"width": w});
 
         var chinamap = new Chinamap("chart", {
-                'width': w,
-                'height': h,
-                "geoDataPath": '../../lib/charts/data/chinaMap/'
-                });
+            'width': w,
+            'height': h,
+            'geoDataPath': '../../lib/charts/data/chinaMap/'
+        });
         chinamap.setOptions({'showWords': false});
         chinamap.setOptions({'levelChangeable': false});
         chinamap.setOptions({'mapId': 0});
@@ -566,7 +563,8 @@
                             .data("map", this)
                             .data("cityInfo", city)
                             .mouseover(function () {
-                              highlightCity(city.name);
+                              //highlightCity(city.name);
+                              chinamap.fire("cityMouseover", city.name);
                             });
                     });
 
@@ -580,6 +578,17 @@
             popuPoints.forEach(function (el) {
                 el.hide();
             });
+
+            chinamap.on("cityMouseover", function (cityName) {
+              //lowlightCity(cityName);
+              chinamap.fire("cityMouseout", cityName);
+              //highlight city point in map
+              highlightCityPoint(cityName);
+            });
+
+            chinamap.on("cityMouseout", function (cityName) {
+              lowlightCityPoint(cityName);
+            });
             /*
             var tgiSearchP = chinamap.createCityPoints(data.tgi.searchTopCities, function (city) {
                         return this.paper.circle(city.coord[0], city.coord[1], 20)
@@ -591,7 +600,8 @@
                             .data("map", this)
                             .data("cityInfo", city)
                             .mouseover(function () {
-                              highlightCity(city.name);
+                              //highlightCity(city.name);
+                              chinamap.fire("cityMouseover", city.name);
                             });
                     });
             var tgiTradeP = chinamap.createCityPoints(data.tgi.tradeTopCities, function (city) {
@@ -604,7 +614,8 @@
                             .data("map", this)
                             .data("cityInfo", city)
                             .mouseover(function () {
-                              highlightCity(city.name);
+                              //highlightCity(city.name);
+                              chinamap.fire("cityMouseover", city.name);
                             });
                     });
                     */
@@ -617,8 +628,32 @@
 
             */
             fillTable();
+
+            chinamap.on("cityMouseover", function (cityName) {
+                //console.log(cityName);
+                highlightCity(cityName);
+            });
+            chinamap.on("cityMouseout", function (cityName) {
+                //console.log(cityName);
+                lowlightCity(cityName);
+            });
+            $("#mapTableCityRow").delegate("span", "mouseover", function () {
+              var cityName = $(this).html().split(' ')[1];
+              //highlightCity(cityName);
+              chinamap.fire("cityMouseover", cityName);
+            });
+            $("#mapTableCityRow").delegate("span", "mouseout", function () {
+              var cityName = $(this).html().split(' ')[1];
+              //lowlightCity(cityName);
+              chinamap.fire("cityMouseout", cityName);
+            });
+
         };
         chinamap.render();
+
+
+
+
 
     </script>
 
