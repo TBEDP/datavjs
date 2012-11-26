@@ -101,7 +101,7 @@
             return html;
           },
           getPathLabel: function (obj) {
-            return obj.type; //(obj.sum / obj.total * 100).toFixed(2) + "%";
+            return obj.type + ' ' + (obj.sum / obj.total * 100).toFixed(2) + "%";
           },
           more: true,
           max: 20,
