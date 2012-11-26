@@ -118,7 +118,7 @@
 
 通过[jsdoc](http://code.google.com/p/jsdoc-toolkit/w/list)的注释，将利于我们后期导出API文档。
 
-## 文件名
+## 文件名（以及目录）
 文件名的方式也是通过驼峰式，但是以下划线分割单词，一律小写单词。如：
 
     d3.js

@@ -1,7 +1,7 @@
 exports.deps = [
   'deps/array_shim.js',
   'deps/json2.js',
-  'deps/d3.js',
+  'deps/d3.v2.js',
   'deps/raphael.js',
   'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
