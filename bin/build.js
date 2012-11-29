@@ -22,7 +22,11 @@ exports.build = function (name, withVersion, minify) {
   var output = minify ? exports.minify(unminified) : unminified;
   var filename = withVersion ? name + '-' + version: name;
   filename += (minify ? '.min.js': '.js');
-  fs.writeFileSync(path.join(__dirname, '..', 'build', filename), output, 'utf-8');
+  var folder = path.join(__dirname, '..', 'build');
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder);
+  }
+  fs.writeFileSync(path.join(folder, filename), output, 'utf-8');
 };
 
 exports.build('datav');
