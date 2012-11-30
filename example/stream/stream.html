@@ -106,7 +106,11 @@
           more: true,
           max: 20,
           // gradientColor: ['#24dd24', '#3737ee']
-          gradientColor: ['#61dd61', '#3737ee']
+          gradientColor: ['#61dd61', '#3737ee'],
+          formatLabel: function (text) {
+            var len = 3;
+            return text.length > len ? text.substr(0, len) + '...': text;
+          }
         });
         component.setSource(source, {
           x: 0,
