@@ -50,9 +50,10 @@
     var bar = new Bar("chart", {
       "width": 980,
       "height": 600,
-      "margin": 50,
+      "margin": [10, 20, 30, 50],
       "gap": 20,
-      "yBase": 50
+      "yBase": 50,
+      "showLegend": true
     });
     bar.setSource(source, {
       bar: 0,
