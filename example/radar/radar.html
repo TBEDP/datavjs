@@ -42,8 +42,12 @@
                     height: 600,
                     legend: true
                 });
-                DataV.csv("cars.csv", function (source) {
-                    radar.setSource(source);
+                DataV.csv("cars2.csv", function (source) {
+                    radar.setSource(source,{
+                        name: 0,
+                        dimName: 1,
+                        dimValue: 2
+                    });
                     radar.render();
                 });
             });
