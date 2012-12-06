@@ -25,6 +25,7 @@
       var scatterplotMatrix = new ScatterplotMatrix("chart", {
           "width": 800,
           "height": 600,
+          "legendWidth": 200,
           "margin": 50,
           "typeName": "等级",
           "tagDimen": "交易总额"
@@ -36,6 +37,25 @@
           scatterplotMatrix.setTypeName(["等级1", "等级2", "等级3", "等级4", "等级5", "等级6", "等级7"]);
           scatterplotMatrix.render();
       });
+
+      /* // no legend
+      var scatterplotMatrix = new ScatterplotMatrix("chart", {
+          "width": 800,
+          "height": 600,
+          //"legendWidth": 0,
+          "margin": 50,
+          //"typeName": "等级",
+          "tagDimen": "交易总额"
+      });
+      DataV.csv("DataExample.csv", function (dataSource) {
+          scatterplotMatrix.setSource(dataSource);
+          scatterplotMatrix.setDimensionsX(["年龄", "交易总额", "交易笔数"]);
+          scatterplotMatrix.setDimensionsY(["年龄", "交易总额", "交易笔数"]);
+          //scatterplotMatrix.setTypeName(["等级1", "等级2", "等级3", "等级4", "等级5", "等级6", "等级7"]);
+          scatterplotMatrix.render();
+      });
+      */
+
     });
   </script>
 </body>
