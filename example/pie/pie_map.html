@@ -7,10 +7,11 @@
         <!-- chord -->
         <script src="../../deps/seajs/sea.js"></script>
         <script>
+            var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
             seajs.config({
                 alias: {
-                    'DataV': '/lib/datav.js',
-                    'Pie': '/lib/charts/pie.js'
+                    'DataV': dir + '/../../lib/datav.js',
+                    'Pie': dir + '/../../lib/charts/pie.js'
                 }
             });
         </script>
