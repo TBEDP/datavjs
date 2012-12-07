@@ -1,3 +1,6 @@
+// 1. xmlhttprequest compatible
+// 2. cssstyledeclaration compatible
+// 3. no_dataSciRec func add
 (function() {
   function d3_class(ctor, properties) {
     try {
@@ -1108,6 +1111,23 @@
   }
   function d3_svg_lineY(d) {
     return d[1];
+  }
+
+  // Linear interpolation; generates "L" commans.
+  function d3_svg_lineLinear(points) {
+    var no_dataSciRec = function (d) {
+      if (d < 0.0001) {
+        return Math.round(d * 10000) / 10000;
+      } else {
+        return d;
+      }
+    }
+    var i = 0,
+        n = points.length,
+        p = points[0],
+        path = [no_dataSciRec(p[0]), ",", no_dataSciRec(p[1])];
+    while (++i < n) path.push("L", no_dataSciRec((p = points[i])[0]), ",", no_dataSciRec(p[1]));
+    return path.join("");
   }
   function d3_svg_lineLinear(points) {
     return points.join("L");
@@ -2925,15 +2945,18 @@
     return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x);
   };
   d3.xhr = function(url, mime, callback) {
-    var req = new XMLHttpRequest;
-    if (arguments.length < 3) callback = mime, mime = null; else if (mime && req.overrideMimeType) req.overrideMimeType(mime);
+    var req; // = new XMLHttpRequest;
+    if (window.XMLHttpRequest) {// code for all new browsers
+      req = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {// code for IE5 and IE6
+      req = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    if (arguments.length < 3) callback = mime, mime = null;
+    else if (mime && req.overrideMimeType) req.overrideMimeType(mime);
     req.open("GET", url, true);
     if (mime) req.setRequestHeader("Accept", mime);
     req.onreadystatechange = function() {
-      if (req.readyState === 4) {
-        var s = req.status;
-        callback(!s && req.response || s >= 200 && s < 300 || s === 304 ? req : null);
-      }
+      if (req.readyState === 4) callback(req.status < 300 ? req : null);
     };
     req.send(null);
   };
