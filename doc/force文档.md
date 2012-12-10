@@ -10,7 +10,7 @@ var net = new DataV.Force("chart"，{“width”: 700, “height”: 500});
 //设置net选项，边的目标长度为100。
 net.setOptions({"linkLength": 100}); //options
 //设置数据，输入的数据为一个二维数组。
-net.setSource(source); //source is a 2-d array
+net.setSource(source, {id: 0, name: 1, nValue: 2, source: 3, target: 4, lValue: 5}); //source is a 2-d array
 //绘制
 net.render();
 ```
@@ -30,11 +30,11 @@ net.render();
 
 ```
 [
-    [Id,Name,Value],
+    [node],
     [0,Li,0],
     [1,Wang,1],
     [2,Zhang,0],
-    [Source,Target,Value],
+    [link],
     [0,1,1],
     [1,2,8],
     [2,0,3]
