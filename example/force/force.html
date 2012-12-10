@@ -47,7 +47,7 @@
         tag: true
       });
       DataV.csv("DataExample.csv", function (source) {
-        net.setSource(source);
+        net.setSource(source, {id: 0, name: 1, nValue: 2, source: 3, target: 4, lValue: 5});
         net.render();
       });
     });
