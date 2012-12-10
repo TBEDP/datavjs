@@ -46,7 +46,7 @@
 	<key>Creator</key>
 	<string>JacksonTian</string>
 	<key>DisplayScale</key>
-	<string>1 0/72 in = 1 0/72 in</string>
+	<string>1 0/72 in = 1.0000 in</string>
 	<key>GraphDocumentVersion</key>
 	<integer>8</integer>
 	<key>GraphicsList</key>
@@ -1109,7 +1109,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2012-11-23 19:04:32 +0000</string>
+	<string>2012-12-05 03:17:51 +0000</string>
 	<key>Modifier</key>
 	<string>JacksonTian</string>
 	<key>NotesVisible</key>
@@ -1199,9 +1199,9 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-71, 62}, {701, 639}}</string>
+		<string>{{0, 0}, {0, 0}}</string>
 		<key>Zoom</key>
-		<real>1</real>
+		<real>0.0</real>
 		<key>ZoomValues</key>
 		<array>
 			<array>

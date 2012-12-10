@@ -19,7 +19,12 @@
     });
 
     seajs.use(["Bubble", "DataV"], function (Bubble, DataV) {
-      var bubble = new Bubble("chart", {"width": 1200, "height": 800});
+      var bubble = new Bubble("chart", {
+        "width": 600,
+        "height": 400,
+        // "showLegend": false
+        "margin": [10, 10, 80, 200]
+      });
       DataV.csv("nations2.csv", function(dataSource) {
         bubble.setSource(dataSource);
         // the dimension order is time, key, xaxis,yaxis,size,color dimension
