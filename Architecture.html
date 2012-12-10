@@ -41,11 +41,11 @@
               </li>
             
               <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./force文档.html">force文档</a>
               </li>
             
               <li>
-                <a href="./Getting Start.html">Getting Start</a>
+                <a href="./changelog.html">changelog</a>
               </li>
             
             
@@ -63,6 +63,10 @@
                 
                   <li>
                     <a href="./Pie文档.html">Pie文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./radar文档.html">radar文档</a>
                   </li>
                 
                   <li>
@@ -86,7 +90,7 @@
                   </li>
                 
                   <li>
-                    <a href="./force文档.html">force文档</a>
+                    <a href="./Getting Start.html">Getting Start</a>
                   </li>
                 
                 </ul>
@@ -99,7 +103,7 @@
     </div>
     <header class="jumbotron subhead">
       <div class="container">
-        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <h1>datavjs <small>Version: 0.1.1 By @DataV</small></h1>
         <p class="lead">
           DataV.js is a JavaScript library for data visualization
         </p>
@@ -117,14 +121,56 @@
   </li>
 
   <li class="level_2">
-    <a href="#index_DataV结构" title="DataV结构">
-      <i class="icon-chevron-right"></i>DataV结构
+    <a href="#index_依赖结构" title="依赖结构">
+      <i class="icon-chevron-right"></i>依赖结构
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_依赖描述" title="依赖描述">
+      <i class="icon-chevron-right"></i>依赖描述
+    </a>
+  </li>
+
+  <li class="level_2">
+    <a href="#index_组件结构" title="组件结构">
+      <i class="icon-chevron-right"></i>组件结构
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_Chart" title="Chart">
+      <i class="icon-chevron-right"></i>Chart
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_Widget" title="Widget">
+      <i class="icon-chevron-right"></i>Widget
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_Component" title="Component">
+      <i class="icon-chevron-right"></i>Component
     </a>
   </li>
 
   <li class="level_2">
     <a href="#index_API设计" title="API设计">
       <i class="icon-chevron-right"></i>API设计
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_plugin" title="plugin">
+      <i class="icon-chevron-right"></i>plugin
+    </a>
+  </li>
+
+  <li class="level_3">
+    <a href="#index_formatter" title="formatter">
+      <i class="icon-chevron-right"></i>formatter
     </a>
   </li>
 
@@ -152,11 +198,51 @@
     <div class="span9">
       <section>
         <h1>DataV组件库的设计</h1>
-<p>本文简单介绍DataV的设计理念，这样您会明白DataV的来龙去脉，有助于您理解和使用DataV的组件，同时也期望在理解的基础上能够迈进DataV的贡献者队伍中。
+<p>本文将简单介绍DataV的设计理念，希望能帮大家了解到DataV的来龙去脉，以便理解和使用DataV的组件，同时也期望在理解的基础上能够迈进DataV的贡献者队伍中。
 
 </p>
-<h2>DataV结构</h2>
+<h2>依赖结构</h2>
+<p>目前组件库中有8个高级组件，4个基础组件。在底层，我们主要依赖了4个库，每一个库的选择，都是思虑良久才决定的。
+<img src="./assets/deps.png" alt="组件依赖关系图">
+
+</p>
+<h3>依赖描述</h3>
+<h4>Raphael</h4>
+<p>选择Raphael的出发点很简单。它内部分别采用了VML和SVG两套引擎实现跨浏览器的支持。如果没有一个基本图形图像库的支持，DataV需要重头开始实现一些细节，这对于我们团队而言，在时间和精力上都是投入不起的。之所以不选择Canvas技术，有以下几个考虑点：
+
+</p>
+<ol>
+<li>跨浏览器的支持不够。</li>
+<li>SVG与VML这样的结构在DOM上能够携带状态，这比纯代码控制图标的状态好让人轻松。</li>
+<li>动画。SVG与VML在局部动画的支持上，要远远好于Canvas，它无需整个界面重绘。</li>
+</ol>
+<p>在当时的选型中，Processing.js因为选用的Canvas作为基础，在兼容性的选项上落败。
+</p>
+<h4>D3</h4>
+<p>在最初我们的理想状态下，只要一个底层绘图库支撑，我们就可以完成可视化组件的开发。后来实践过程才知道，在绘图过程中需要处理大量算法，这一点Raphael无法满足我们的需求，导致我们的代码中会出现大量代码用于布局位置计算。而这一点上D3的数据驱动文档设计上，自身携带了这方面的功能。最初摒弃D3不用的原因在于它自身不提供绘图，以及在浏览器兼容方面，它只照顾了高端浏览器。<br>事实面前，灵光却开始闪现。Raphael擅长绘制，D3擅长处理绘制逻辑，用户的数据则是传统意义上的Model。所以前端可视化的简单分层出现，D3司Controller部分，Raphael司View部分，用户则是Model的提供者。这就是选择D3的缘故，它打破我们过去非此即彼的固态思维，使得两个库之间相互协作，各自发挥长处，组件库的开发过程中，可以节省大量基础性的工作。我们将重心可以专注到如何提升组件的易用性上。
+</p>
+<h4>jQuery</h4>
+<p>除了SVG与VML这样的DOM操作外，实际绘制过程中，还是需要或多或少接触到DOM相关的操作。尽管用原生JavaScript操作DOM并不难，但是为了调用方便和代码重构，开发过程中，我们会不由自主归类DOM操作函数，到一定程度就会重构出一个DOM操作库来。反之，如果直接使用jQuery这样成熟的DOM库，可以节省掉重构DOM操作的精力。而且大多数Web应用中，不用jQuery的应该寥寥无几了吧。
+</p>
+<h4>Underscore</h4>
+<p>或者是对D3的了解还不够，在用户数据的处理上，操作起来并没那么方便。Underscore作为目前除jQuery外最火的库，在操作数据方面的能力十分强大。在预处理数据方面，Underscore能够带来很多帮助。在其函数式调用的风格影响下，可以节省许多代码。
+</p>
+<h4>EventProxy</h4>
+<p>为何会加入EventProxy库。EventProxy库的设计是受Backbone的Events部分影响而来。可视化组件编程，终归是GUI编程，事件驱动的场景必不可少。尽管jQuery也有自定义事件，但是纠缠于单个DOM节点，并非组件整体，它在帮助实现组件之间的解耦方面，需要封装后才能生效。作为去掉注释200行左右的小库，引入它，并不带来什么压力。<br>在DOM事件方面，依旧交给jQuery去发挥优势，组件层面，则利用EventProxy实现。关于自定义事件的利用，在后续接口设计部分会再次提到。
+
+</p>
+<h2>组件结构</h2>
+<p>最初我们只是要设计可视化组件，其实是我们认为的Chart，既图表。后来随着一些交互和业务的渗入。组件自身开始变得复杂，代码量也开始膨胀，更糟糕的是变更和迭代开始变得十分困难，组件的定制性开始变强，重用性则降低。几经重构和摸索，梳理出来以下三个结构。
+
+</p>
+<h3>Chart</h3>
+<p>这是我们最初认为的组件。但是后来发现，它只是组件的一部分，且是核心的一部分。
+</p>
+<h3>Widget</h3>
+<h3>Component</h3>
 <h2>API设计</h2>
+<h3>plugin</h3>
+<h3>formatter</h3>
 <h2>数据映射</h2>
 <h2>视觉设计</h2>
 <h2>对应交互</h2>

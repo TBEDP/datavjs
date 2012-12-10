@@ -41,11 +41,11 @@
               </li>
             
               <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./force文档.html">force文档</a>
               </li>
             
               <li>
-                <a href="./Getting Start.html">Getting Start</a>
+                <a href="./changelog.html">changelog</a>
               </li>
             
             
@@ -63,6 +63,10 @@
                 
                   <li>
                     <a href="./Pie文档.html">Pie文档</a>
+                  </li>
+                
+                  <li>
+                    <a href="./radar文档.html">radar文档</a>
                   </li>
                 
                   <li>
@@ -86,7 +90,7 @@
                   </li>
                 
                   <li>
-                    <a href="./force文档.html">force文档</a>
+                    <a href="./Getting Start.html">Getting Start</a>
                   </li>
                 
                 </ul>
@@ -99,7 +103,7 @@
     </div>
     <header class="jumbotron subhead">
       <div class="container">
-        <h1>datavjs <small>Version: 0.0.1 By @DataV</small></h1>
+        <h1>datavjs <small>Version: 0.1.1 By @DataV</small></h1>
         <p class="lead">
           DataV.js is a JavaScript library for data visualization
         </p>
@@ -145,7 +149,7 @@ var net = new DataV.Force(&quot;chart&quot;，{“width”: 700, “height”: 5
 //设置net选项，边的目标长度为100。
 net.setOptions({&quot;linkLength&quot;: 100}); //options
 //设置数据，输入的数据为一个二维数组。
-net.setSource(source); //source is a 2-d array
+net.setSource(source, {id: 0, name: 1, nValue: 2, source: 3, target: 4, lValue: 5}); //source is a 2-d array
 //绘制
 net.render();</code></pre>
 <p>创建Force对象时，第一个参数是包含Force的dom结点 或该结点的id， 第二个参数是各种选项，其中最重要的宽和高。 
@@ -166,11 +170,11 @@ net.render();</code></pre>
 
 </p>
 <pre><code>[
-    [Id,Name,Value],
+    [node],
     [0,Li,0],
     [1,Wang,1],
     [2,Zhang,0],
-    [Source,Target,Value],
+    [link],
     [0,1,1],
     [1,2,8],
     [2,0,3]
