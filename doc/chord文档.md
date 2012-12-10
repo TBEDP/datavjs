@@ -8,7 +8,7 @@
 //创建Chord对象，包含于id为”chart”的dom结点，宽、高分别为700、500px。
 var chord = new DataV.Chord("chart", {“width”: 700, “height”: 500});        
 //设置数据，输入的数据为一个二维数组。
-chord.setSource(source, {from:0,to:1,value:2}); //source is a 2-d array
+chord.setSource(source, {from: 0, to: 1, value: 2}); //source is a 2-d array
 //绘制
 chord.render();
 ```
@@ -23,10 +23,10 @@ chord.render();
 
 ```
 [
-	[from,to,value]
-	[北京,上海,11880],
-	[北京,广州,5147],
-	[上海,拉萨,255]
+    [from, to, value]
+    [北京, 上海, 11880],
+    [北京, 广州, 5147],
+    [上海, 拉萨, 255]
 ]
 ```
 

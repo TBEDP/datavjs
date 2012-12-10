@@ -27,10 +27,10 @@ radar.render();
 
 ```
 [
-	[Cadillac Eldorado,economy,23],
-	[Cadillac Eldorado,cylinders,8],
-	[Citroen DS-21 Pallas,economy,0],
-	[Citroen DS-21 Pallas,cylinders,4]
+    [Cadillac Eldorado,economy,23],
+    [Cadillac Eldorado,cylinders,8],
+    [Citroen DS-21 Pallas,economy,0],
+    [Citroen DS-21 Pallas,cylinders,4]
 ]
 ```
 
