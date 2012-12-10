@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+    <title>Streamgraph</title>
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+<style type="text/css">
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+#chart {
+  border-top: 1px dashed #F00;
+  border-bottom: 1px dashed #F00;
+  padding-left: 20px;
+}
+</style>
+  </head>
+  <body>
+    <div id="chart" class="clearfix">
+    </div>
+    <script type="text/template">
+      <div class="legend">
+      </div>
+      <div>
+        <div class="nav">
+        </div>
+        <div>
+          <div class="percentage">
+          </div>
+          <div class="stream">
+          </div>
+        </div>
+      </div>
+    </script>
+    <script>
+    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
+    var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Axis': dir + '/../../lib/charts/axis.js',
+        'StreamAxis': dir + '/../../lib/charts/stream_axis.js',
+        'Legend': dir + '/../../lib/charts/legend.js',
+        'Navi': dir + '/../../lib/charts/navi.js',
+        'Tip': dir + '/../../lib/charts/tip.js',
+        'Percentage': dir + '/../../lib/charts/percentage.js',
+        'HoverLine': dir + '/../../lib/charts/hover_line.js',
+        'PathLabel': dir + '/../../lib/charts/path_label.js',
+        'Cover': dir + '/../../lib/charts/cover.js',
+        'Stream': dir + '/../../lib/charts/stream.js',
+        'StreamComponent': dir + '/../../lib/components/stream.js'
+      }
+    });
+    seajs.use(["StreamComponent", "DataV"], function (StreamComponent, DataV) {
+      DataV.changeTheme("theme0");
+      var component = new StreamComponent("chart", {"width": 800});
+      component.setOptions({
+        "legendPosition": "left",
+        "tipStyle": {
+          "textAlign": "left",
+          "border": "3px solid white",
+          "borderRadius": "5px",
+          "lineHeight": "140%"
+        }
+      });
+      var source = [
+        ['2012-10-21','book', 100],
+        ['2012-10-21','food', 110],
+        ['2012-10-21','coffee', 18],
+        ['2012-10-22','book', 30],
+        ['2012-10-22','food', 140],
+        ['2012-10-22','coffee', 18],
+        ['2012-10-23','book', 90],
+        ['2012-10-23','food', 100],
+        ['2012-10-23','coffee', 18],
+        ['2012-10-24','book', 15],
+        ['2012-10-24','food', 12],
+        ['2012-10-24','coffee', 18],
+      ];
+      var source = [{"id":"50006846","date":"2012-05-31","name":"短袜/打底袜/丝袜/美腿袜","m0":574663,"dateStr":"2012-05-31"},{"id":"50006846","date":"2012-06-01","name":"短袜/打底袜/丝袜/美腿袜","m0":534286,"dateStr":"2012-06-01"},{"id":"50006846","date":"2012-07-31","name":"短袜/打底袜/丝袜/美腿袜","m0":385291,"dateStr":"2012-07-31"},{"id":"50008881","date":"2012-05-31","name":"文胸","m0":801081,"dateStr":"2012-05-31"},{"id":"50008881","date":"2012-06-01","name":"文胸","m0":730530,"dateStr":"2012-06-01"},{"id":"50008881","date":"2012-07-31","name":"文胸","m0":1015370,"dateStr":"2012-07-31"},{"id":"50008882","date":"2012-05-31","name":"内裤","m0":516088,"dateStr":"2012-05-31"},{"id":"50008882","date":"2012-06-01","name":"内裤","m0":487166,"dateStr":"2012-06-01"},{"id":"50008882","date":"2012-07-31","name":"内裤","m0":813886,"dateStr":"2012-07-31"},{"id":"50008883","date":"2012-05-31","name":"文胸套装","m0":89176,"dateStr":"2012-05-31"},{"id":"50008883","date":"2012-06-01","name":"文胸套装","m0":82269,"dateStr":"2012-06-01"},{"id":"50008883","date":"2012-07-31","name":"文胸套装","m0":132893,"dateStr":"2012-07-31"},{"id":"50008884","date":"2012-05-31","name":"塑身美体衣","m0":33294,"dateStr":"2012-05-31"},{"id":"50008884","date":"2012-06-01","name":"塑身美体衣","m0":30447,"dateStr":"2012-06-01"},{"id":"50008884","date":"2012-07-31","name":"塑身美体衣","m0":33710,"dateStr":"2012-07-31"},{"id":"50008885","date":"2012-05-31","name":"保暖上装","m0":2584,"dateStr":"2012-05-31"},{"id":"50008885","date":"2012-06-01","name":"保暖上装","m0":2154,"dateStr":"2012-06-01"},{"id":"50008885","date":"2012-07-31","name":"保暖上装","m0":3589,"dateStr":"2012-07-31"},{"id":"50008886","date":"2012-05-31","name":"睡衣上装","m0":4095,"dateStr":"2012-05-31"},{"id":"50008886","date":"2012-06-01","name":"睡衣上装","m0":3685,"dateStr":"2012-06-01"},{"id":"50008886","date":"2012-07-31","name":"睡衣上装","m0":6201,"dateStr":"2012-07-31"},{"id":"50008888","date":"2012-05-31","name":"抹胸","m0":58387,"dateStr":"2012-05-31"},{"id":"50008888","date":"2012-06-01","name":"抹胸","m0":54413,"dateStr":"2012-06-01"},{"id":"50008888","date":"2012-07-31","name":"抹胸","m0":54273,"dateStr":"2012-07-31"},{"id":"50008889","date":"2012-05-31","name":"乳贴","m0":8562,"dateStr":"2012-05-31"},{"id":"50008889","date":"2012-06-01","name":"乳贴","m0":7913,"dateStr":"2012-06-01"},{"id":"50008889","date":"2012-07-31","name":"乳贴","m0":9391,"dateStr":"2012-07-31"},{"id":"50008890","date":"2012-05-31","name":"肚兜","m0":4525,"dateStr":"2012-05-31"},{"id":"50008890","date":"2012-06-01","name":"肚兜","m0":4199,"dateStr":"2012-06-01"},{"id":"50008890","date":"2012-07-31","name":"肚兜","m0":7975,"dateStr":"2012-07-31"},{"id":"50010394","date":"2012-05-31","name":"吊带/背心/T恤","m0":65386,"dateStr":"2012-05-31"},{"id":"50010394","date":"2012-06-01","name":"吊带/背心/T恤","m0":58330,"dateStr":"2012-06-01"},{"id":"50010394","date":"2012-07-31","name":"吊带/背心/T恤","m0":55640,"dateStr":"2012-07-31"},{"id":"50012766","date":"2012-05-31","name":"睡裤/家居裤","m0":24279,"dateStr":"2012-05-31"},{"id":"50012766","date":"2012-06-01","name":"睡裤/家居裤","m0":21052,"dateStr":"2012-06-01"},{"id":"50012766","date":"2012-07-31","name":"睡裤/家居裤","m0":28970,"dateStr":"2012-07-31"},{"id":"50012771","date":"2012-05-31","name":"睡裙","m0":242595,"dateStr":"2012-05-31"},{"id":"50012771","date":"2012-06-01","name":"睡裙","m0":217191,"dateStr":"2012-06-01"},{"id":"50012771","date":"2012-07-31","name":"睡裙","m0":411655,"dateStr":"2012-07-31"},{"id":"50012772","date":"2012-05-31","name":"睡衣/家居服套装","m0":555249,"dateStr":"2012-05-31"},{"id":"50012772","date":"2012-06-01","name":"睡衣/家居服套装","m0":499636,"dateStr":"2012-06-01"},{"id":"50012772","date":"2012-07-31","name":"睡衣/家居服套装","m0":821138,"dateStr":"2012-07-31"},{"id":"50012773","date":"2012-05-31","name":"睡袍/浴袍","m0":20704,"dateStr":"2012-05-31"},{"id":"50012773","date":"2012-06-01","name":"睡袍/浴袍","m0":18679,"dateStr":"2012-06-01"},{"id":"50012773","date":"2012-07-31","name":"睡袍/浴袍","m0":34204,"dateStr":"2012-07-31"},{"id":"50012774","date":"2012-05-31","name":"塑身美体裤","m0":30505,"dateStr":"2012-05-31"},{"id":"50012774","date":"2012-06-01","name":"塑身美体裤","m0":26460,"dateStr":"2012-06-01"},{"id":"50012774","date":"2012-07-31","name":"塑身美体裤","m0":24762,"dateStr":"2012-07-31"},{"id":"50012775","date":"2012-05-31","name":"塑身腰封/腰夹","m0":14827,"dateStr":"2012-05-31"},{"id":"50012775","date":"2012-06-01","name":"塑身腰封/腰夹","m0":13284,"dateStr":"2012-06-01"},{"id":"50012775","date":"2012-07-31","name":"塑身腰封/腰夹","m0":11439,"dateStr":"2012-07-31"},{"id":"50012776","date":"2012-05-31","name":"塑身分体套装","m0":8807,"dateStr":"2012-05-31"},{"id":"50012776","date":"2012-06-01","name":"塑身分体套装","m0":7680,"dateStr":"2012-06-01"},{"id":"50012776","date":"2012-07-31","name":"塑身分体套装","m0":6755,"dateStr":"2012-07-31"},{"id":"50012777","date":"2012-05-31","name":"保暖裤","m0":6149,"dateStr":"2012-05-31"},{"id":"50012777","date":"2012-06-01","name":"保暖裤","m0":5637,"dateStr":"2012-06-01"},{"id":"50012777","date":"2012-07-31","name":"保暖裤","m0":9717,"dateStr":"2012-07-31"},{"id":"50012778","date":"2012-05-31","name":"保暖套装","m0":12412,"dateStr":"2012-05-31"},{"id":"50012778","date":"2012-06-01","name":"保暖套装","m0":10653,"dateStr":"2012-06-01"},{"id":"50012778","date":"2012-07-31","name":"保暖套装","m0":32591,"dateStr":"2012-07-31"},{"id":"50012781","date":"2012-05-31","name":"塑身连体衣","m0":29915,"dateStr":"2012-05-31"},{"id":"50012781","date":"2012-06-01","name":"塑身连体衣","m0":25792,"dateStr":"2012-06-01"},{"id":"50012781","date":"2012-07-31","name":"塑身连体衣","m0":28083,"dateStr":"2012-07-31"},{"id":"50012784","date":"2012-05-31","name":"肩带","m0":19732,"dateStr":"2012-05-31"},{"id":"50012784","date":"2012-06-01","name":"肩带","m0":18186,"dateStr":"2012-06-01"},{"id":"50012784","date":"2012-07-31","name":"肩带","m0":19850,"dateStr":"2012-07-31"},{"id":"50012785","date":"2012-05-31","name":"吊袜带","m0":3442,"dateStr":"2012-05-31"},{"id":"50012785","date":"2012-06-01","name":"吊袜带","m0":3108,"dateStr":"2012-06-01"},{"id":"50012785","date":"2012-07-31","name":"吊袜带","m0":4142,"dateStr":"2012-07-31"},{"id":"50012786","date":"2012-05-31","name":"插片/胸垫","m0":4800,"dateStr":"2012-05-31"},{"id":"50012786","date":"2012-06-01","name":"插片/胸垫","m0":4403,"dateStr":"2012-06-01"},{"id":"50012786","date":"2012-07-31","name":"插片/胸垫","m0":5755,"dateStr":"2012-07-31"},{"id":"50012787","date":"2012-05-31","name":"搭扣","m0":3511,"dateStr":"2012-05-31"},{"id":"50012787","date":"2012-06-01","name":"搭扣","m0":2693,"dateStr":"2012-06-01"},{"id":"50012787","date":"2012-07-31","name":"搭扣","m0":2438,"dateStr":"2012-07-31"}];
+      // DataV.csv("women_clothes.csv", function (source) {
+      //   var remaped = [];
+      //   var first = source.shift();
+      //   for (var i = 1; i < first.length; i++) {
+      //     for (var j = 0; j < source.length; j++) {
+      //       remaped.push([first[i], source[j][0], parseFloat(source[j][i])]);
+      //     }
+      //   }
+      //   source = remaped;
+        component.setOptions({
+          getContent: function (obj) {
+            var html = "类目：" + obj[this.mapping.type];
+            html += "<br />实际值：" + obj[this.mapping.value];
+            html += "<br />排名：第" + obj.rank;
+            html += "<br />占比：" + (obj.rate * 100).toFixed(2) + "%";
+            return html;
+          },
+          getPathLabel: function (obj) {
+            return obj.type + ' ' + (obj.sum / obj.total * 100).toFixed(2) + "%";
+          },
+          // more: true,
+          // max: 20,
+          // gradientColor: ['#24dd24', '#3737ee']
+          gradientColor: ['#61dd61', '#3737ee'],
+          formatLabel: function (text) {
+            var len = 3;
+            return text.length > len ? text.substr(0, len) + '...': text;
+          }
+        });
+        // component.setSource(source, {
+        //   x: 0,
+        //   type: 1,
+        //   value: 2
+        // });
+        component.setSource(source, {
+          x: "dateStr",
+          value: "m0",
+          type: "name"
+        });
+        component.render();
+      // });
+    });
+    </script>
+  </body>
+</html>
