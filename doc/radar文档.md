@@ -10,7 +10,7 @@ var radar = new DataV.Radar("chart"，{“width”: 700, “height”: 500});
 //设置radar选项，半径为100。
 radar.setOptions({"radius": 100}); //options
 //设置数据，输入的数据为一个二维数组。
-radar.setSource(source，{name: 0, dimName: 1, dimValue: 2}); //source is a 2-d array
+radar.setSource(source，{name: 0, dim: 1, value: 2}); //source is a 2-d array
 //绘制
 radar.render();
 ```
