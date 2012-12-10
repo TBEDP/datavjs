@@ -1129,9 +1129,7 @@
     while (++i < n) path.push("L", no_dataSciRec((p = points[i])[0]), ",", no_dataSciRec(p[1]));
     return path.join("");
   }
-  function d3_svg_lineLinear(points) {
-    return points.join("L");
-  }
+
   function d3_svg_lineLinearClosed(points) {
     return d3_svg_lineLinear(points) + "Z";
   }
