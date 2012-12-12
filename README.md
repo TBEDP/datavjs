@@ -6,7 +6,28 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 ![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
 
 - [API文档](http://tbedp.github.com/datavjs/index.html)
+- 当前分支为Butterfly，处于开发中，任意疑问，请移至底下联系人部分即可。
 
+## 安装
+目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
+
+```
+// Clone到本地
+git clone git://github.com/TBEDP/datavjs.git
+// 进入目录
+cd datavjs
+// 启动demo
+npm install & npm run build & npm start
+```
+或者
+
+```
+npm install datavjs
+npm start datavjs
+// 源码位于node_modules/datavjs
+```
+
+你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
@@ -99,5 +120,22 @@ Below is the output from `git-summary`
 
 ```
 
+非开发组人员如果有提交Bugfix，年底（2013年起）送出fix最多bug的5位同学一份纪念品。
+
 ## License
 DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
+
+## Contact
+开发联系人，有问题可咨询：
+
+- 阿里旺旺
+  - 朴灵[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
+  - 宁朗[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
+  - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
+- 阿里旺旺群：76480715
+- QQ群: 18164936
+- Google Group: [DataVlab](http://groups.google.com/group/datavlab)
+- Gtalk: <shyvo1987@gmail.com>
+
+如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
+
