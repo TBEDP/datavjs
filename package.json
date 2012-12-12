@@ -11,13 +11,16 @@
   "author": "DataV",
   "license": "MIT",
   "description": "DataV.js is a JavaScript library for data visualization",
-  "devDependencies": {
-    "uglify-js": "*",
+  "dependencies": {
     "anywhere": "*"
   },
+  "devDependencies": {
+    "uglify-js": "*"
+  },
   "scripts": {
-    "start": "npm run build & anywhere 8888",
-    "build": "node bin/build.js"
+    "start": "node ./node_modules/.bin/anywhere 8888",
+    "build": "node bin/build.js",
+    "prepublish": "npm run build"
   },
   "tracker": "UA-17170593-4"
 }
