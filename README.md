@@ -26,6 +26,8 @@ npm install datavjs
 npm start datavjs
 // 源码位于node_modules/datavjs
 ```
+
+你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
