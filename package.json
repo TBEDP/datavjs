@@ -18,7 +18,7 @@
     "uglify-js": "*"
   },
   "scripts": {
-    "start": "node ./node_modules/.bin/anywhere 8888",
+    "start": "node ./node_modules/datavjs/node_modules/.bin/anywhere 8888",
     "build": "node bin/build.js",
     "prepublish": "npm run build"
   },
