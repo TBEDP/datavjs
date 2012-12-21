@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Hierarchical Edge Bundling</title>
+    <style type="text/css">
+      .node {
+        font: 12px sans-serif;
+      }
+      .link {
+        stroke: steelblue;
+        stroke-opacity: .4;
+        fill: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+
+    <div id="chart"></div>
+    <script>
+    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
+    var dir = location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+        alias: {
+            'DataV': dir + '/../../lib/datav.js',
+            'Bundle': dir + '/../../lib/charts/bundle.js'
+        }
+    });
+    seajs.use(["Bundle", "DataV"], function (Bundle, DataV) {
+        var bundle = new Bundle("chart", {
+            "diameter": 1000
+        });
+        DataV.json("data.json", function (source) {
+            bundle.setSource(source);
+            bundle.render();
+        });
+        /*
+        DataV.csv("bundle.csv", function(source){
+            bundle.setSource(source);
+            bundle.render();
+        });
+        */
+    });
+    </script>
+  </body>
+
+</html>

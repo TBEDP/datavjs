@@ -1,0 +1,7 @@
+*.db
+*.swp
+*.swo
+*.bak
+node_modules/*
+example/chinamap/demo/*
+build/*

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+    <title>Streamgraph</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/stream.bak.js"></script>
+    <style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+    </style>
+  </head>
+  <body>
+    <div id="clickInfo">clickInfo</div>
+    <div id="hoverInfo">hoverInfo</div>
+    <div id="chart"></div>
+
+    <script type="text/javascript">
+        DataV.changeTheme("theme0");
+        var stream = new Stream("chart", {"width": 800});
+        stream.setOptions({
+            "moreConfig": {
+                "more": true,
+                "max": 20,
+                "level": 0,
+                "other": 0.05
+            }
+        });
+        stream.setOptions({
+            gradientColor: ["#4fd921", "#2f8ae7"]
+        });
+        stream.setOptions({"order": "descending"});
+        stream.setOptions({"legendPosition": "left"});
+        DataV.csv("women_clothes.csv", function (source) {
+            stream.setSource(source, source);
+            stream.render();
+        });
+    </script>
+  </body>
+</html>

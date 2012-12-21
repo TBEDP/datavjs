@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Chord Diagram</title>
+
+    <!-- chord -->
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+    <script>
+    seajs.config({
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Chord': '/lib/charts/chord.js'
+      }
+    });
+    </script>
+
+  <style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+.textArea {
+    border: 2px solid black;
+    color: black;
+    font-family: monospace;
+    height: 3in;
+    overflow: auto;
+    padding: 0.5em;
+    width: 750px;
+}
+</style>
+  </head>
+  <body>
+    <div id="chart"></div>
+
+    <script>
+    seajs.use(["Chord", "DataV"], function (Chord, DataV) {
+      // DataV.changeTheme("datav");
+      var chord = new Chord("chart",{
+        width: 800
+      });
+      DataV.csv("flight2.csv", function (source) {
+        chord.setSource(source, {from:0,to:1,value:2});
+        chord.render();
+      });
+    });
+    </script>
+  </body>
+</html>

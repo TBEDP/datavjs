@@ -14,6 +14,9 @@
 // │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
 // └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
+//datav change 1
+//setviewbox bug fix according https://github.com/DmitryBaranovskiy/raphael/issues/468
+
 (function (glob) {
     var version = "0.3.4",
         has = "hasOwnProperty",
@@ -5301,12 +5304,22 @@ window.Raphael.vml && function (R) {
             return this._.transform;
         }
         var vbs = this.paper._viewBoxShift,
-            vbt = vbs ? "s" + [vbs.scale, vbs.scale] + "-1-1t" + [vbs.dx, vbs.dy] : E,
+            //vbt = vbs ? "s" + [vbs.scale, vbs.scale] + "-1-1t" + [vbs.dx, vbs.dy] : E, //datav change 1
+            vbt = vbs ? "s" + [vbs.scale, vbs.scale] + ",-1,-1t" + [vbs.dx, vbs.dy] : E,
             oldt;
         if (vbs) {
             oldt = tstr = Str(tstr).replace(/\.{3}|\u2026/g, this._.transform || E);
         }
-        R._extractTransform(this, vbt + tstr);
+        //R._extractTransform(this, vbt + tstr); //datav change 1
+        if (!this.fvb && vbt != "") {
+          this.fvb = vbt;
+        }
+        var trsfrm = vbt + tstr;
+        if (this.fvb && tstr == this.fvb) {
+          trsfrm = vbt;
+        }
+        R._extractTransform(this, trsfrm);
+                
         var matrix = this.matrix.clone(),
             skew = this.skew,
             o = this.node,
@@ -5314,7 +5327,8 @@ window.Raphael.vml && function (R) {
             isGrad = ~Str(this.attrs.fill).indexOf("-"),
             isPatt = !Str(this.attrs.fill).indexOf("url(");
         matrix.translate(-.5, -.5);
-        if (isPatt || isGrad || this.type == "image") {
+        //if (isPatt || isGrad || this.type == "image") { //datav change 1
+        if (isPatt || isGrad) {
             skew.matrix = "1 0 0 1";
             skew.offset = "0 0";
             split = matrix.split();

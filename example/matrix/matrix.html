@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Matrix</title>
+  <script src="../../build/deps.js"></script>
+  <script src="../../deps/seajs/sea.js"></script>
+
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+}
+.textArea {
+    border: 2px solid black;
+    color: black;
+    font-family: monospace;
+    height: 3in;
+    overflow: auto;
+    padding: 0.5em;
+    width: 750px;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script>
+    seajs.config({
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Matrix': '/lib/charts/matrix.js'
+      }
+    });
+    seajs.use(["Matrix", "DataV"], function (Matrix, DataV) {
+      var matrix = new Matrix("chart", {});
+      DataV.csv("DataExample.csv", function(source){
+        matrix.setSource(source);
+        matrix.render();
+      });
+
+      matrix.on("click", function (event) {
+        var sort = new Array();
+        var count;
+        var n, pt;
+        for (n = 0; n < 100; n++) {
+          sort[n] = n;
+        }
+
+        for (n = 0; n < 100; n++) { 
+          count = Math.round(Math.random() * 99);
+          pt = sort[n];
+          sort[n] = sort[count];
+          sort[count] = pt;
+        }
+
+        matrix.update(sort);
+      });
+    });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Parallel Coordinates</title>
+    <style type="text/css">
+    </style>
+  </head>
+  <body>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/brush.js"></script>
+    <script src="../../lib/charts/parallel.js"></script>
+
+    <div id="chart"></div>
+    <p>brushstart</p>
+    <div id="info_brushstart"></div>
+    <p>brush</p>
+    <div id="info_brush"></div>
+    <p>brushend</p>
+    <div id="info_brushend"></div>
+    <script>
+      //创建parallel对象，包含于id为"chart"的dom结点，宽、高分别为950、500px。
+      var parallel = new Parallel("chart", {"width": 950, "height": 500});
+      DataV.csv("cars.csv", function (dataSource) {
+        //设置数据，输入的数据为一个二维数组, 第一项为列名数组。
+        parallel.setSource(dataSource);
+        //选择坐标轴， 输入为列名数组。（此步骤可选，默认会选择所有列）
+        //parallel.chooseDimensions(["name", "name", "economy (mpg)"]);//列名可相同
+        parallel.chooseDimensions([
+          "economy (mpg)", "cylinders", "displacement (cc)",
+          "power (hp)", "weight (lb)", "0-60 mph (s)", "year"
+        ]);
+        //设置坐标轴类型，离散数据或连续数据。（此步骤可选，默认会自动判断所有列，全是数字的就是连续数据，否则为离散数据）
+        parallel.setDimensionType({"cylinders": "ordinal", "economy (mpg)": "quantitative"});
+        var domains = parallel.getDimensionDomains();//获取坐标轴定义域
+        //设置坐标轴定义域 （此步骤可选，默认会自动设置所有列，全是数字的为数值区间，否则为去重后的string数组）
+        parallel.setDimensionDomain({
+          "cylinders": domains["cylinders"].sort(d3.ascending),
+          "economy (mpg)": domains["economy (mpg)"].reverse()
+        });
+        //设置坐标轴圈选区域 （此步骤可选，默认为整个定义域）
+        parallel.setDimensionExtent({
+          "cylinders": ["6", "3"],
+          "economy (mpg)": [35, 20]
+        });
+        //设置事件响应
+        parallel.on("brushstart", function() {
+          $("#info_brushstart").html(JSON.stringify(this.statistic));
+        });
+        parallel.on("brush", function() {
+          $("#info_brush").html(JSON.stringify(this.statistic));
+        });
+        parallel.on("brushend", function() {
+          $("#info_brushend").html(JSON.stringify(this.statistic));
+        });
+        //渲染
+        parallel.render();
+        //设置坐标轴圈选区域。因为此时已经render, 所以会自动刷新图片。
+        parallel.setDimensionExtent({
+            "economy (mpg)": [29, 20],
+            "cylinders": ["6", "4"]
+        });
+      });
+
+    </script>
+  </body>
+</html>

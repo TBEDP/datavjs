@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>chinamap</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/chinamap.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script>
+        var chinamap = new Chinamap("chart", {
+                'width': 720,//大小
+                'height': 600,
+                "geoDataPath": '../../lib/charts/data/chinaMap/'//地图数据路径
+                });
+        chinamap.setOptions({'showWords': false});
+        chinamap.setOptions({'levelChangeable': false});
+        chinamap.setOptions({'mapId': 0});
+
+        chinamap.setOptions({
+            //"wordStyle": {'stroke': "black"},
+            "colorModel": "gradient",
+            "colors": ["#ddd", "#88f"]//设置渐变颜色
+        });
+        //2010 人口统计
+        chinamap.setSource({
+            '北京': 19612368,
+            '天津': 12938224,
+            '河北': 71854202,
+            '山西': 35712111,
+            '内蒙': 24706321,
+            '辽宁': 43746323,
+            '吉林': 27462297,
+            '黑龙': 38312224,
+            '上海': 23019148,
+            '江苏': 78659903,
+            '浙江': 54426891,
+            '安徽': 59500510,
+            '福建': 36894216,
+            '江西': 44567475,
+            '山东': 95793065,
+            '河南': 94023567,
+            '湖北': 57237740,
+            '湖南': 65683722,
+            '广东': 104303132,
+            '广西': 46026629,
+            '海南': 8671518,
+            '重庆': 28846170,
+            '四川': 80418200,
+            '贵州': 34746468,
+            '云南': 45966239,
+            '西藏': 3002166,
+            '陕西': 37327378,
+            '甘肃': 25575254,
+            '青海': 5626722,
+            '宁夏': 6301350,
+            '新疆': 21813334,
+            '香港': 7097600,
+            '澳门': 552300,
+            '台湾': 23162123
+        });
+
+        chinamap.setCustomEvent('areaHoverIn', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            //map.floatTag 是一个jqNode对象，样式调整用.css()，内容调整用.html()。
+            map.floatTag.html("<p>" + info.properties.name + "</p>"
+                            + "<p>" + map.sourceData[info.properties.name] + "</p>");
+            map.floatTag.css({"visibility": "visible"});
+            this.attr({"fill": "pink"});
+        });
+        chinamap.setCustomEvent('areaHoverOut', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            map.floatTag.css({"visibility": "hidden"});
+            this.attr({"fill": info.fillColor});
+        });
+
+        chinamap.render();
+
+    </script>
+
+  </body>
+</html>

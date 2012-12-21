@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ScatterplotMatrix</title>
+  <style type="text/css"></style>
+</head>
+
+<body>
+  <script src="../../build/deps.js"></script>
+  <script src="../../deps/seajs/sea.js"></script>
+  <script>
+    var dir = location.href.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Brush': dir + '/../../lib/charts/brush.js',
+        'ScatterplotMatrix': dir + '/../../lib/charts/scatterplotMatrix.js'
+      }
+    });
+  </script>
+  <div id="chart"></div>
+  <script>
+    seajs.use(["DataV", "ScatterplotMatrix"], function (DataV, ScatterplotMatrix) {
+      var scatterplotMatrix = new ScatterplotMatrix("chart", {
+          "width": 800,
+          "height": 600,
+          "legendWidth": 200,
+          "margin": 50,
+          "typeName": "等级",
+          "tagDimen": "交易总额"
+      });
+      DataV.csv("DataExample.csv", function (dataSource) {
+          scatterplotMatrix.setSource(dataSource);
+          scatterplotMatrix.setDimensionsX(["年龄", "交易总额", "交易笔数"]);
+          scatterplotMatrix.setDimensionsY(["年龄", "交易总额", "交易笔数"]);
+          scatterplotMatrix.setTypeName(["等级1", "等级2", "等级3", "等级4", "等级5", "等级6", "等级7"]);
+          scatterplotMatrix.render();
+      });
+
+      /* // no legend
+      var scatterplotMatrix = new ScatterplotMatrix("chart", {
+          "width": 800,
+          "height": 600,
+          //"legendWidth": 0,
+          "margin": 50,
+          //"typeName": "等级",
+          "tagDimen": "交易总额"
+      });
+      DataV.csv("DataExample.csv", function (dataSource) {
+          scatterplotMatrix.setSource(dataSource);
+          scatterplotMatrix.setDimensionsX(["年龄", "交易总额", "交易笔数"]);
+          scatterplotMatrix.setDimensionsY(["年龄", "交易总额", "交易笔数"]);
+          //scatterplotMatrix.setTypeName(["等级1", "等级2", "等级3", "等级4", "等级5", "等级6", "等级7"]);
+          scatterplotMatrix.render();
+      });
+      */
+
+    });
+  </script>
+</body>
+</html>
