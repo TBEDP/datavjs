@@ -1,805 +1,5 @@
 /****************************************************************
  *                                                              *
- *  compatible.js                                               *
- *                                                              *
- ****************************************************************
- */
-// Production steps of ECMA-262, Edition 5, 15.4.4.19  
-// Reference: http://es5.github.com/#x15.4.4.19  
-if (!Array.prototype.map) {  
-  Array.prototype.map = function(callback, thisArg) {  
-  
-    var T, A, k;  
-  
-    if (this == null) {  
-      throw new TypeError(" this is null or not defined");  
-    }  
-  
-    // 1. Let O be the result of calling ToObject passing the |this| value as the argument.  
-    var O = Object(this);  
-  
-    // 2. Let lenValue be the result of calling the Get internal method of O with the argument "length".  
-    // 3. Let len be ToUint32(lenValue).  
-    var len = O.length >>> 0;  
-  
-    // 4. If IsCallable(callback) is false, throw a TypeError exception.  
-    // See: http://es5.github.com/#x9.11  
-    if ({}.toString.call(callback) != "[object Function]") {  
-      throw new TypeError(callback + " is not a function");  
-    }  
-  
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.  
-    if (thisArg) {  
-      T = thisArg;  
-    }  
-  
-    // 6. Let A be a new array created as if by the expression new Array(len) where Array is  
-    // the standard built-in constructor with that name and len is the value of len.  
-    A = new Array(len);  
-  
-    // 7. Let k be 0  
-    k = 0;  
-  
-    // 8. Repeat, while k < len  
-    while(k < len) {  
-  
-      var kValue, mappedValue;  
-  
-      // a. Let Pk be ToString(k).  
-      //   This is implicit for LHS operands of the in operator  
-      // b. Let kPresent be the result of calling the HasProperty internal method of O with argument Pk.  
-      //   This step can be combined with c  
-      // c. If kPresent is true, then  
-      if (k in O) {  
-  
-        // i. Let kValue be the result of calling the Get internal method of O with argument Pk.  
-        kValue = O[ k ];  
-  
-        // ii. Let mappedValue be the result of calling the Call internal method of callback  
-        // with T as the this value and argument list containing kValue, k, and O.  
-        mappedValue = callback.call(T, kValue, k, O);  
-  
-        // iii. Call the DefineOwnProperty internal method of A with arguments  
-        // Pk, Property Descriptor {Value: mappedValue, Writable: true, Enumerable: true, Configurable: true},  
-        // and false.  
-  
-        // In browsers that support Object.defineProperty, use the following:  
-        // Object.defineProperty(A, Pk, { value: mappedValue, writable: true, enumerable: true, configurable: true });  
-  
-        // For best browser support, use the following:  
-        A[ k ] = mappedValue;  
-      }  
-      // d. Increase k by 1.  
-      k++;  
-    }  
-  
-    // 9. return A  
-    return A;  
-  };        
-} 
-if (!Array.prototype.reduce) {  
-  Array.prototype.reduce = function reduce(accumulator){  
-    var i = 0, l = this.length >> 0, curr;  
-  
-    if(typeof accumulator !== "function") // ES5 : "If IsCallable(callbackfn) is false, throw a TypeError exception."  
-      throw new TypeError("First argument is not callable");  
-  
-    if(arguments.length < 2) {  
-      if (l === 0) throw new TypeError("Array length is 0 and no second argument");  
-      curr = this[0]; // Increase i to start searching the secondly defined element in the array  
-      i = 1; // start accumulating at the second element  
-    }  
-    else  
-      curr = arguments[1];  
-  
-    while (i < l) {  
-      if(i in this) curr = accumulator.call(undefined, curr, this[i], i, this);  
-      ++i;  
-    }  
-  
-    return curr;  
-  };  
-} 
-
-// Production steps of ECMA-262, Edition 5, 15.4.4.18  
-// Reference: http://es5.github.com/#x15.4.4.18  
-if ( !Array.prototype.forEach ) {  
-  
-  Array.prototype.forEach = function( callback, thisArg ) {  
-  
-    var T, k;  
-  
-    if ( this == null ) {  
-      throw new TypeError( " this is null or not defined" );  
-    }  
-  
-    // 1. Let O be the result of calling ToObject passing the |this| value as the argument.  
-    var O = Object(this);  
-  
-    // 2. Let lenValue be the result of calling the Get internal method of O with the argument "length".  
-    // 3. Let len be ToUint32(lenValue).  
-    var len = O.length >>> 0; // Hack to convert O.length to a UInt32  
-  
-    // 4. If IsCallable(callback) is false, throw a TypeError exception.  
-    // See: http://es5.github.com/#x9.11  
-    if ( {}.toString.call(callback) != "[object Function]" ) {  
-      throw new TypeError( callback + " is not a function" );  
-    }  
-  
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.  
-    if ( thisArg ) {  
-      T = thisArg;  
-    }  
-  
-    // 6. Let k be 0  
-    k = 0;  
-  
-    // 7. Repeat, while k < len  
-    while( k < len ) {  
-  
-      var kValue;  
-  
-      // a. Let Pk be ToString(k).  
-      //   This is implicit for LHS operands of the in operator  
-      // b. Let kPresent be the result of calling the HasProperty internal method of O with argument Pk.  
-      //   This step can be combined with c  
-      // c. If kPresent is true, then  
-      if ( k in O ) {  
-  
-        // i. Let kValue be the result of calling the Get internal method of O with argument Pk.  
-        kValue = O[ k ];  
-  
-        // ii. Call the Call internal method of callback with T as the this value and  
-        // argument list containing kValue, k, and O.  
-        callback.call( T, kValue, k, O );  
-      }  
-      // d. Increase k by 1.  
-      k++;  
-    }  
-    // 8. return undefined  
-  };  
-}
-
-//filter
-if (!Array.prototype.filter)  
-    {  
-      Array.prototype.filter = function(fun /*, thisp */)  
-      {  
-        "use strict";  
-      
-        if (this == null)  
-          throw new TypeError();  
-      
-        var t = Object(this);  
-        var len = t.length >>> 0;  
-        if (typeof fun != "function")  
-          throw new TypeError();  
-      
-        var res = [];  
-        var thisp = arguments[1];  
-        for (var i = 0; i < len; i++)  
-        {  
-          if (i in t)  
-          {  
-            var val = t[i]; // in case fun mutates this  
-            if (fun.call(thisp, val, i, t))  
-              res.push(val);  
-          }  
-        }  
-      
-        return res;  
-      };  
-    }  
-
-//every
-if (!Array.prototype.every)  
-{  
-  Array.prototype.every = function(fun /*, thisp */)  
-  {  
-    "use strict";  
-  
-    if (this == null)  
-      throw new TypeError();  
-  
-    var t = Object(this);  
-    var len = t.length >>> 0;  
-    if (typeof fun != "function")  
-      throw new TypeError();  
-  
-    var thisp = arguments[1];  
-    for (var i = 0; i < len; i++)  
-    {  
-      if (i in t && !fun.call(thisp, t[i], i, t))  
-        return false;  
-    }  
-  
-    return true;  
-  };  
-} 
-
-
-
-
-/*! JSON v3.2.2 | http://bestiejs.github.com/json3 | Copyright 2012, Kit Cambridge | http://kit.mit-license.org */
-
-
-/*
-    json2.js
-    2011-10-19
-
-    Public Domain.
-
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-
-    See http://www.JSON.org/js.html
-
-
-    This code should be minified before deployment.
-    See http://javascript.crockford.com/jsmin.html
-
-    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-    NOT CONTROL.
-
-
-    This file creates a global JSON object containing two methods: stringify
-    and parse.
-
-        JSON.stringify(value, replacer, space)
-            value       any JavaScript value, usually an object or array.
-
-            replacer    an optional parameter that determines how object
-                        values are stringified for objects. It can be a
-                        function or an array of strings.
-
-            space       an optional parameter that specifies the indentation
-                        of nested structures. If it is omitted, the text will
-                        be packed without extra whitespace. If it is a number,
-                        it will specify the number of spaces to indent at each
-                        level. If it is a string (such as '\t' or '&nbsp;'),
-                        it contains the characters used to indent at each level.
-
-            This method produces a JSON text from a JavaScript value.
-
-            When an object value is found, if the object contains a toJSON
-            method, its toJSON method will be called and the result will be
-            stringified. A toJSON method does not serialize: it returns the
-            value represented by the name/value pair that should be serialized,
-            or undefined if nothing should be serialized. The toJSON method
-            will be passed the key associated with the value, and this will be
-            bound to the value
-
-            For example, this would serialize Dates as ISO strings.
-
-                Date.prototype.toJSON = function (key) {
-                    function f(n) {
-                        // Format integers to have at least two digits.
-                        return n < 10 ? '0' + n : n;
-                    }
-
-                    return this.getUTCFullYear()   + '-' +
-                         f(this.getUTCMonth() + 1) + '-' +
-                         f(this.getUTCDate())      + 'T' +
-                         f(this.getUTCHours())     + ':' +
-                         f(this.getUTCMinutes())   + ':' +
-                         f(this.getUTCSeconds())   + 'Z';
-                };
-
-            You can provide an optional replacer method. It will be passed the
-            key and value of each member, with this bound to the containing
-            object. The value that is returned from your method will be
-            serialized. If your method returns undefined, then the member will
-            be excluded from the serialization.
-
-            If the replacer parameter is an array of strings, then it will be
-            used to select the members to be serialized. It filters the results
-            such that only members with keys listed in the replacer array are
-            stringified.
-
-            Values that do not have JSON representations, such as undefined or
-            functions, will not be serialized. Such values in objects will be
-            dropped; in arrays they will be replaced with null. You can use
-            a replacer function to replace those with JSON values.
-            JSON.stringify(undefined) returns undefined.
-
-            The optional space parameter produces a stringification of the
-            value that is filled with line breaks and indentation to make it
-            easier to read.
-
-            If the space parameter is a non-empty string, then that string will
-            be used for indentation. If the space parameter is a number, then
-            the indentation will be that many spaces.
-
-            Example:
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}]);
-            // text is '["e",{"pluribus":"unum"}]'
-
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
-            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
-
-            text = JSON.stringify([new Date()], function (key, value) {
-                return this[key] instanceof Date ?
-                    'Date(' + this[key] + ')' : value;
-            });
-            // text is '["Date(---current time---)"]'
-
-
-        JSON.parse(text, reviver)
-            This method parses a JSON text to produce an object or array.
-            It can throw a SyntaxError exception.
-
-            The optional reviver parameter is a function that can filter and
-            transform the results. It receives each of the keys and values,
-            and its return value is used instead of the original value.
-            If it returns what it received, then the structure is not modified.
-            If it returns undefined then the member is deleted.
-
-            Example:
-
-            // Parse the text. Values that look like ISO date strings will
-            // be converted to Date objects.
-
-            myData = JSON.parse(text, function (key, value) {
-                var a;
-                if (typeof value === 'string') {
-                    a =
-/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
-                    if (a) {
-                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
-                            +a[5], +a[6]));
-                    }
-                }
-                return value;
-            });
-
-            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
-                var d;
-                if (typeof value === 'string' &&
-                        value.slice(0, 5) === 'Date(' &&
-                        value.slice(-1) === ')') {
-                    d = new Date(value.slice(5, -1));
-                    if (d) {
-                        return d;
-                    }
-                }
-                return value;
-            });
-
-
-    This is a reference implementation. You are free to copy, modify, or
-    redistribute.
-*/
-
-/*jslint evil: true, regexp: true */
-
-/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
-    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
-    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
-    lastIndex, length, parse, prototype, push, replace, slice, stringify,
-    test, toJSON, toString, valueOf
-*/
-
-
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-var JSON;
-if (!JSON) {
-    JSON = {};
-}
-
-(function () {
-    'use strict';
-
-    function f(n) {
-        // Format integers to have at least two digits.
-        return n < 10 ? '0' + n : n;
-    }
-
-    if (typeof Date.prototype.toJSON !== 'function') {
-
-        Date.prototype.toJSON = function (key) {
-
-            return isFinite(this.valueOf())
-                ? this.getUTCFullYear()     + '-' +
-                    f(this.getUTCMonth() + 1) + '-' +
-                    f(this.getUTCDate())      + 'T' +
-                    f(this.getUTCHours())     + ':' +
-                    f(this.getUTCMinutes())   + ':' +
-                    f(this.getUTCSeconds())   + 'Z'
-                : null;
-        };
-
-        String.prototype.toJSON      =
-            Number.prototype.toJSON  =
-            Boolean.prototype.toJSON = function (key) {
-                return this.valueOf();
-            };
-    }
-
-    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-        gap,
-        indent,
-        meta = {    // table of character substitutions
-            '\b': '\\b',
-            '\t': '\\t',
-            '\n': '\\n',
-            '\f': '\\f',
-            '\r': '\\r',
-            '"' : '\\"',
-            '\\': '\\\\'
-        },
-        rep;
-
-
-    function quote(string) {
-
-// If the string contains no control characters, no quote characters, and no
-// backslash characters, then we can safely slap some quotes around it.
-// Otherwise we must also replace the offending characters with safe escape
-// sequences.
-
-        escapable.lastIndex = 0;
-        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
-            var c = meta[a];
-            return typeof c === 'string'
-                ? c
-                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-        }) + '"' : '"' + string + '"';
-    }
-
-
-    function str(key, holder) {
-
-// Produce a string from holder[key].
-
-        var i,          // The loop counter.
-            k,          // The member key.
-            v,          // The member value.
-            length,
-            mind = gap,
-            partial,
-            value = holder[key];
-
-// If the value has a toJSON method, call it to obtain a replacement value.
-
-        if (value && typeof value === 'object' &&
-                typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
-        }
-
-// If we were called with a replacer function, then call the replacer to
-// obtain a replacement value.
-
-        if (typeof rep === 'function') {
-            value = rep.call(holder, key, value);
-        }
-
-// What happens next depends on the value's type.
-
-        switch (typeof value) {
-        case 'string':
-            return quote(value);
-
-        case 'number':
-
-// JSON numbers must be finite. Encode non-finite numbers as null.
-
-            return isFinite(value) ? String(value) : 'null';
-
-        case 'boolean':
-        case 'null':
-
-// If the value is a boolean or null, convert it to a string. Note:
-// typeof null does not produce 'null'. The case is included here in
-// the remote chance that this gets fixed someday.
-
-            return String(value);
-
-// If the type is 'object', we might be dealing with an object or an array or
-// null.
-
-        case 'object':
-
-// Due to a specification blunder in ECMAScript, typeof null is 'object',
-// so watch out for that case.
-
-            if (!value) {
-                return 'null';
-            }
-
-// Make an array to hold the partial results of stringifying this object value.
-
-            gap += indent;
-            partial = [];
-
-// Is the value an array?
-
-            if (Object.prototype.toString.apply(value) === '[object Array]') {
-
-// The value is an array. Stringify every element. Use null as a placeholder
-// for non-JSON values.
-
-                length = value.length;
-                for (i = 0; i < length; i += 1) {
-                    partial[i] = str(i, value) || 'null';
-                }
-
-// Join all of the elements together, separated with commas, and wrap them in
-// brackets.
-
-                v = partial.length === 0
-                    ? '[]'
-                    : gap
-                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
-                    : '[' + partial.join(',') + ']';
-                gap = mind;
-                return v;
-            }
-
-// If the replacer is an array, use it to select the members to be stringified.
-
-            if (rep && typeof rep === 'object') {
-                length = rep.length;
-                for (i = 0; i < length; i += 1) {
-                    if (typeof rep[i] === 'string') {
-                        k = rep[i];
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
-            } else {
-
-// Otherwise, iterate through all of the keys in the object.
-
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
-            }
-
-// Join all of the member texts together, separated with commas,
-// and wrap them in braces.
-
-            v = partial.length === 0
-                ? '{}'
-                : gap
-                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
-                : '{' + partial.join(',') + '}';
-            gap = mind;
-            return v;
-        }
-    }
-
-// If the JSON object does not yet have a stringify method, give it one.
-
-    if (typeof JSON.stringify !== 'function') {
-        JSON.stringify = function (value, replacer, space) {
-
-// The stringify method takes a value and an optional replacer, and an optional
-// space parameter, and returns a JSON text. The replacer can be a function
-// that can replace values, or an array of strings that will select the keys.
-// A default replacer method can be provided. Use of the space parameter can
-// produce text that is more easily readable.
-
-            var i;
-            gap = '';
-            indent = '';
-
-// If the space parameter is a number, make an indent string containing that
-// many spaces.
-
-            if (typeof space === 'number') {
-                for (i = 0; i < space; i += 1) {
-                    indent += ' ';
-                }
-
-// If the space parameter is a string, it will be used as the indent string.
-
-            } else if (typeof space === 'string') {
-                indent = space;
-            }
-
-// If there is a replacer, it must be a function or an array.
-// Otherwise, throw an error.
-
-            rep = replacer;
-            if (replacer && typeof replacer !== 'function' &&
-                    (typeof replacer !== 'object' ||
-                    typeof replacer.length !== 'number')) {
-                throw new Error('JSON.stringify');
-            }
-
-// Make a fake root object containing our value under the key of ''.
-// Return the result of stringifying the value.
-
-            return str('', {'': value});
-        };
-    }
-
-
-// If the JSON object does not yet have a parse method, give it one.
-
-    if (typeof JSON.parse !== 'function') {
-        JSON.parse = function (text, reviver) {
-
-// The parse method takes a text and an optional reviver function, and returns
-// a JavaScript value if the text is a valid JSON text.
-
-            var j;
-
-            function walk(holder, key) {
-
-// The walk method is used to recursively walk the resulting structure so
-// that modifications can be made.
-
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
-                            if (v !== undefined) {
-                                value[k] = v;
-                            } else {
-                                delete value[k];
-                            }
-                        }
-                    }
-                }
-                return reviver.call(holder, key, value);
-            }
-
-
-// Parsing happens in four stages. In the first stage, we replace certain
-// Unicode characters with escape sequences. JavaScript handles many characters
-// incorrectly, either silently deleting them, or treating them as line endings.
-
-            text = String(text);
-            cx.lastIndex = 0;
-            if (cx.test(text)) {
-                text = text.replace(cx, function (a) {
-                    return '\\u' +
-                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-                });
-            }
-
-// In the second stage, we run the text against regular expressions that look
-// for non-JSON patterns. We are especially concerned with '()' and 'new'
-// because they can cause invocation, and '=' because it can cause mutation.
-// But just to be safe, we want to reject all unexpected forms.
-
-// We split the second stage into 4 regexp operations in order to work around
-// crippling inefficiencies in IE's and Safari's regexp engines. First we
-// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
-// replace all simple value tokens with ']' characters. Third, we delete all
-// open brackets that follow a colon or comma or that begin the text. Finally,
-// we look to see that the remaining characters are only whitespace or ']' or
-// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
-
-            if (/^[\],:{}\s]*$/
-                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
-                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-
-// In the third stage we use the eval function to compile the text into a
-// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
-// in JavaScript: it can begin a block or an object literal. We wrap the text
-// in parens to eliminate the ambiguity.
-
-                j = eval('(' + text + ')');
-
-// In the optional fourth stage, we recursively walk the new structure, passing
-// each name/value pair to a reviver function for possible transformation.
-
-                return typeof reviver === 'function'
-                    ? walk({'': j}, '')
-                    : j;
-            }
-
-// If the text is not JSON parseable, then a SyntaxError is thrown.
-
-            throw new SyntaxError('JSON.parse');
-        };
-    }
-}());
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/****************************************************************
- *                                                              *
  *  d3.js                                                       *
  *                                                              *
  ****************************************************************
@@ -8500,11 +7700,945 @@ d3.time.scale.utc = function() {
 
 /****************************************************************
  *                                                              *
- *  ?.js                                               *
+ *  d3.geo.js                                                   *
  *                                                              *
  ****************************************************************
  */
+(function(){d3.geo = {};
 
+var d3_geo_radians = Math.PI / 180;
+// TODO clip input coordinates on opposite hemisphere
+d3.geo.azimuthal = function() {
+  var mode = "orthographic", // or stereographic, gnomonic, equidistant or equalarea
+      origin,
+      scale = 200,
+      translate = [480, 250],
+      x0,
+      y0,
+      cy0,
+      sy0;
 
+  function azimuthal(coordinates) {
+    var x1 = coordinates[0] * d3_geo_radians - x0,
+        y1 = coordinates[1] * d3_geo_radians,
+        cx1 = Math.cos(x1),
+        sx1 = Math.sin(x1),
+        cy1 = Math.cos(y1),
+        sy1 = Math.sin(y1),
+        cc = mode !== "orthographic" ? sy0 * sy1 + cy0 * cy1 * cx1 : null,
+        c,
+        k = mode === "stereographic" ? 1 / (1 + cc)
+          : mode === "gnomonic" ? 1 / cc
+          : mode === "equidistant" ? (c = Math.acos(cc), c ? c / Math.sin(c) : 0)
+          : mode === "equalarea" ? Math.sqrt(2 / (1 + cc))
+          : 1,
+        x = k * cy1 * sx1,
+        y = k * (sy0 * cy1 * cx1 - cy0 * sy1);
+    return [
+      scale * x + translate[0],
+      scale * y + translate[1]
+    ];
+  }
 
+  azimuthal.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale,
+        p = Math.sqrt(x * x + y * y),
+        c = mode === "stereographic" ? 2 * Math.atan(p)
+          : mode === "gnomonic" ? Math.atan(p)
+          : mode === "equidistant" ? p
+          : mode === "equalarea" ? 2 * Math.asin(.5 * p)
+          : Math.asin(p),
+        sc = Math.sin(c),
+        cc = Math.cos(c);
+    return [
+      (x0 + Math.atan2(x * sc, p * cy0 * cc + y * sy0 * sc)) / d3_geo_radians,
+      Math.asin(cc * sy0 - (p ? (y * sc * cy0) / p : 0)) / d3_geo_radians
+    ];
+  };
 
+  azimuthal.mode = function(x) {
+    if (!arguments.length) return mode;
+    mode = x + "";
+    return azimuthal;
+  };
+
+  azimuthal.origin = function(x) {
+    if (!arguments.length) return origin;
+    origin = x;
+    x0 = origin[0] * d3_geo_radians;
+    y0 = origin[1] * d3_geo_radians;
+    cy0 = Math.cos(y0);
+    sy0 = Math.sin(y0);
+    return azimuthal;
+  };
+
+  azimuthal.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return azimuthal;
+  };
+
+  azimuthal.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return azimuthal;
+  };
+
+  return azimuthal.origin([0, 0]);
+};
+// Derived from Tom Carden's Albers implementation for Protovis.
+// http://gist.github.com/476238
+// http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
+
+d3.geo.albers = function() {
+  var origin = [-98, 38],
+      parallels = [29.5, 45.5],
+      scale = 1000,
+      translate = [480, 250],
+      lng0, // d3_geo_radians * origin[0]
+      n,
+      C,
+      p0;
+
+  function albers(coordinates) {
+    var t = n * (d3_geo_radians * coordinates[0] - lng0),
+        p = Math.sqrt(C - 2 * n * Math.sin(d3_geo_radians * coordinates[1])) / n;
+    return [
+      scale * p * Math.sin(t) + translate[0],
+      scale * (p * Math.cos(t) - p0) + translate[1]
+    ];
+  }
+
+  albers.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale,
+        p0y = p0 + y,
+        t = Math.atan2(x, p0y),
+        p = Math.sqrt(x * x + p0y * p0y);
+    return [
+      (lng0 + t / n) / d3_geo_radians,
+      Math.asin((C - p * p * n * n) / (2 * n)) / d3_geo_radians
+    ];
+  };
+
+  function reload() {
+    var phi1 = d3_geo_radians * parallels[0],
+        phi2 = d3_geo_radians * parallels[1],
+        lat0 = d3_geo_radians * origin[1],
+        s = Math.sin(phi1),
+        c = Math.cos(phi1);
+    lng0 = d3_geo_radians * origin[0];
+    n = .5 * (s + Math.sin(phi2));
+    C = c * c + 2 * n * s;
+    p0 = Math.sqrt(C - 2 * n * Math.sin(lat0)) / n;
+    return albers;
+  }
+
+  albers.origin = function(x) {
+    if (!arguments.length) return origin;
+    origin = [+x[0], +x[1]];
+    return reload();
+  };
+
+  albers.parallels = function(x) {
+    if (!arguments.length) return parallels;
+    parallels = [+x[0], +x[1]];
+    return reload();
+  };
+
+  albers.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return albers;
+  };
+
+  albers.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return albers;
+  };
+
+  return reload();
+};
+
+// A composite projection for the United States, 960x500. The set of standard
+// parallels for each region comes from USGS, which is published here:
+// http://egsc.usgs.gov/isb/pubs/MapProjections/projections.html#albers
+// TODO allow the composite projection to be rescaled?
+d3.geo.albersUsa = function() {
+  var lower48 = d3.geo.albers();
+
+  var alaska = d3.geo.albers()
+      .origin([-160, 60])
+      .parallels([55, 65]);
+
+  var hawaii = d3.geo.albers()
+      .origin([-160, 20])
+      .parallels([8, 18]);
+
+  var puertoRico = d3.geo.albers()
+      .origin([-60, 10])
+      .parallels([8, 18]);
+
+  function albersUsa(coordinates) {
+    var lon = coordinates[0],
+        lat = coordinates[1];
+    return (lat > 50 ? alaska
+        : lon < -140 ? hawaii
+        : lat < 21 ? puertoRico
+        : lower48)(coordinates);
+  }
+
+  albersUsa.scale = function(x) {
+    if (!arguments.length) return lower48.scale();
+    lower48.scale(x);
+    alaska.scale(x * .6);
+    hawaii.scale(x);
+    puertoRico.scale(x * 1.5);
+    return albersUsa.translate(lower48.translate());
+  };
+
+  albersUsa.translate = function(x) {
+    if (!arguments.length) return lower48.translate();
+    var dz = lower48.scale() / 1000,
+        dx = x[0],
+        dy = x[1];
+    lower48.translate(x);
+    alaska.translate([dx - 400 * dz, dy + 170 * dz]);
+    hawaii.translate([dx - 190 * dz, dy + 200 * dz]);
+    puertoRico.translate([dx + 580 * dz, dy + 430 * dz]);
+    return albersUsa;
+  };
+
+  return albersUsa.scale(lower48.scale());
+};
+d3.geo.bonne = function() {
+  var scale = 200,
+      translate = [480, 250],
+      x0, // origin longitude in radians
+      y0, // origin latitude in radians
+      y1, // parallel latitude in radians
+      c1; // cot(y1)
+
+  function bonne(coordinates) {
+    var x = coordinates[0] * d3_geo_radians - x0,
+        y = coordinates[1] * d3_geo_radians - y0;
+    if (y1) {
+      var p = c1 + y1 - y, E = x * Math.cos(y) / p;
+      x = p * Math.sin(E);
+      y = p * Math.cos(E) - c1;
+    } else {
+      x *= Math.cos(y);
+      y *= -1;
+    }
+    return [
+      scale * x + translate[0],
+      scale * y + translate[1]
+    ];
+  }
+
+  bonne.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale;
+    if (y1) {
+      var c = c1 + y, p = Math.sqrt(x * x + c * c);
+      y = c1 + y1 - p;
+      x = x0 + p * Math.atan2(x, c) / Math.cos(y);
+    } else {
+      y *= -1;
+      x /= Math.cos(y);
+    }
+    return [
+      x / d3_geo_radians,
+      y / d3_geo_radians
+    ];
+  };
+
+  // 90° for Werner, 0° for Sinusoidal
+  bonne.parallel = function(x) {
+    if (!arguments.length) return y1 / d3_geo_radians;
+    c1 = 1 / Math.tan(y1 = x * d3_geo_radians);
+    return bonne;
+  };
+
+  bonne.origin = function(x) {
+    if (!arguments.length) return [x0 / d3_geo_radians, y0 / d3_geo_radians];
+    x0 = x[0] * d3_geo_radians;
+    y0 = x[1] * d3_geo_radians;
+    return bonne;
+  };
+
+  bonne.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return bonne;
+  };
+
+  bonne.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return bonne;
+  };
+
+  return bonne.origin([0, 0]).parallel(45);
+};
+d3.geo.equirectangular = function() {
+  var scale = 500,
+      translate = [480, 250];
+
+  function equirectangular(coordinates) {
+    var x = coordinates[0] / 360,
+        y = -coordinates[1] / 360;
+    return [
+      scale * x + translate[0],
+      scale * y + translate[1]
+    ];
+  }
+
+  equirectangular.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale;
+    return [
+      360 * x,
+      -360 * y
+    ];
+  };
+
+  equirectangular.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return equirectangular;
+  };
+
+  equirectangular.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return equirectangular;
+  };
+
+  return equirectangular;
+};
+d3.geo.mercator = function() {
+  var scale = 500,
+      translate = [480, 250];
+
+  function mercator(coordinates) {
+    var x = coordinates[0] / 360,
+        y = -(Math.log(Math.tan(Math.PI / 4 + coordinates[1] * d3_geo_radians / 2)) / d3_geo_radians) / 360;
+    return [
+      scale * x + translate[0],
+      scale * Math.max(-.5, Math.min(.5, y)) + translate[1]
+    ];
+  }
+
+  mercator.invert = function(coordinates) {
+    var x = (coordinates[0] - translate[0]) / scale,
+        y = (coordinates[1] - translate[1]) / scale;
+    return [
+      360 * x,
+      2 * Math.atan(Math.exp(-360 * y * d3_geo_radians)) / d3_geo_radians - 90
+    ];
+  };
+
+  mercator.scale = function(x) {
+    if (!arguments.length) return scale;
+    scale = +x;
+    return mercator;
+  };
+
+  mercator.translate = function(x) {
+    if (!arguments.length) return translate;
+    translate = [+x[0], +x[1]];
+    return mercator;
+  };
+
+  return mercator;
+};
+function d3_geo_type(types, defaultValue) {
+  return function(object) {
+    return object && object.type in types ? types[object.type](object) : defaultValue;
+  };
+}
+/**
+ * Returns a function that, given a GeoJSON object (e.g., a feature), returns
+ * the corresponding SVG path. The function can be customized by overriding the
+ * projection. Point features are mapped to circles with a default radius of
+ * 4.5px; the radius can be specified either as a constant or a function that
+ * is evaluated per object.
+ */
+d3.geo.path = function() {
+  var pointRadius = 4.5,
+      pointCircle = d3_path_circle(pointRadius),
+      projection = d3.geo.albersUsa();
+
+  function path(d, i) {
+    if (typeof pointRadius === "function") {
+      pointCircle = d3_path_circle(pointRadius.apply(this, arguments));
+    }
+    return pathType(d) || null;
+  }
+
+  function project(coordinates) {
+    return projection(coordinates).join(",");
+  }
+
+  var pathType = d3_geo_type({
+
+    FeatureCollection: function(o) {
+      var path = [],
+          features = o.features,
+          i = -1, // features.index
+          n = features.length;
+      while (++i < n) path.push(pathType(features[i].geometry));
+      return path.join("");
+    },
+
+    Feature: function(o) {
+      return pathType(o.geometry);
+    },
+
+    Point: function(o) {
+      return "M" + project(o.coordinates) + pointCircle;
+    },
+
+    MultiPoint: function(o) {
+      var path = [],
+          coordinates = o.coordinates,
+          i = -1, // coordinates.index
+          n = coordinates.length;
+      while (++i < n) path.push("M", project(coordinates[i]), pointCircle);
+      return path.join("");
+    },
+
+    LineString: function(o) {
+      var path = ["M"],
+          coordinates = o.coordinates,
+          i = -1, // coordinates.index
+          n = coordinates.length;
+      while (++i < n) path.push(project(coordinates[i]), "L");
+      path.pop();
+      return path.join("");
+    },
+
+    MultiLineString: function(o) {
+      var path = [],
+          coordinates = o.coordinates,
+          i = -1, // coordinates.index
+          n = coordinates.length,
+          subcoordinates, // coordinates[i]
+          j, // subcoordinates.index
+          m; // subcoordinates.length
+      while (++i < n) {
+        subcoordinates = coordinates[i];
+        j = -1;
+        m = subcoordinates.length;
+        path.push("M");
+        while (++j < m) path.push(project(subcoordinates[j]), "L");
+        path.pop();
+      }
+      return path.join("");
+    },
+
+    Polygon: function(o) {
+      var path = [],
+          coordinates = o.coordinates,
+          i = -1, // coordinates.index
+          n = coordinates.length,
+          subcoordinates, // coordinates[i]
+          j, // subcoordinates.index
+          m; // subcoordinates.length
+      while (++i < n) {
+        subcoordinates = coordinates[i];
+        j = -1;
+        if ((m = subcoordinates.length - 1) > 0) {
+          path.push("M");
+          while (++j < m) path.push(project(subcoordinates[j]), "L");
+          path[path.length - 1] = "Z";
+        }
+      }
+      return path.join("");
+    },
+
+    MultiPolygon: function(o) {
+      var path = [],
+          coordinates = o.coordinates,
+          i = -1, // coordinates index
+          n = coordinates.length,
+          subcoordinates, // coordinates[i]
+          j, // subcoordinates index
+          m, // subcoordinates.length
+          subsubcoordinates, // subcoordinates[j]
+          k, // subsubcoordinates index
+          p; // subsubcoordinates.length
+      while (++i < n) {
+        subcoordinates = coordinates[i];
+        j = -1;
+        m = subcoordinates.length;
+        while (++j < m) {
+          subsubcoordinates = subcoordinates[j];
+          k = -1;
+          if ((p = subsubcoordinates.length - 1) > 0) {
+            path.push("M");
+            while (++k < p) path.push(project(subsubcoordinates[k]), "L");
+            path[path.length - 1] = "Z";
+          }
+        }
+      }
+      return path.join("");
+    },
+
+    GeometryCollection: function(o) {
+      var path = [],
+          geometries = o.geometries,
+          i = -1, // geometries index
+          n = geometries.length;
+      while (++i < n) path.push(pathType(geometries[i]));
+      return path.join("");
+    }
+
+  });
+
+  var areaType = path.area = d3_geo_type({
+
+    FeatureCollection: function(o) {
+      var area = 0,
+          features = o.features,
+          i = -1, // features.index
+          n = features.length;
+      while (++i < n) area += areaType(features[i]);
+      return area;
+    },
+
+    Feature: function(o) {
+      return areaType(o.geometry);
+    },
+
+    Polygon: function(o) {
+      return polygonArea(o.coordinates);
+    },
+
+    MultiPolygon: function(o) {
+      var sum = 0,
+          coordinates = o.coordinates,
+          i = -1, // coordinates index
+          n = coordinates.length;
+      while (++i < n) sum += polygonArea(coordinates[i]);
+      return sum;
+    },
+
+    GeometryCollection: function(o) {
+      var sum = 0,
+          geometries = o.geometries,
+          i = -1, // geometries index
+          n = geometries.length;
+      while (++i < n) sum += areaType(geometries[i]);
+      return sum;
+    }
+
+  }, 0);
+
+  function polygonArea(coordinates) {
+    var sum = area(coordinates[0]), // exterior ring
+        i = 0, // coordinates.index
+        n = coordinates.length;
+    while (++i < n) sum -= area(coordinates[i]); // holes
+    return sum;
+  }
+
+  function polygonCentroid(coordinates) {
+    var polygon = d3.geom.polygon(coordinates[0].map(projection)), // exterior ring
+        area = polygon.area(),
+        centroid = polygon.centroid(area < 0 ? (area *= -1, 1) : -1),
+        x = centroid[0],
+        y = centroid[1],
+        z = area,
+        i = 0, // coordinates index
+        n = coordinates.length;
+    while (++i < n) {
+      polygon = d3.geom.polygon(coordinates[i].map(projection)); // holes
+      area = polygon.area();
+      centroid = polygon.centroid(area < 0 ? (area *= -1, 1) : -1);
+      x -= centroid[0];
+      y -= centroid[1];
+      z -= area;
+    }
+    return [x, y, 6 * z]; // weighted centroid
+  }
+
+  var centroidType = path.centroid = d3_geo_type({
+
+    // TODO FeatureCollection
+    // TODO Point
+    // TODO MultiPoint
+    // TODO LineString
+    // TODO MultiLineString
+    // TODO GeometryCollection
+
+    Feature: function(o) {
+      return centroidType(o.geometry);
+    },
+
+    Polygon: function(o) {
+      var centroid = polygonCentroid(o.coordinates);
+      return [centroid[0] / centroid[2], centroid[1] / centroid[2]];
+    },
+
+    MultiPolygon: function(o) {
+      var area = 0,
+          coordinates = o.coordinates,
+          centroid,
+          x = 0,
+          y = 0,
+          z = 0,
+          i = -1, // coordinates index
+          n = coordinates.length;
+      while (++i < n) {
+        centroid = polygonCentroid(coordinates[i]);
+        x += centroid[0];
+        y += centroid[1];
+        z += centroid[2];
+      }
+      return [x / z, y / z];
+    }
+
+  });
+
+  function area(coordinates) {
+    return Math.abs(d3.geom.polygon(coordinates.map(projection)).area());
+  }
+
+  path.projection = function(x) {
+    projection = x;
+    return path;
+  };
+
+  path.pointRadius = function(x) {
+    if (typeof x === "function") pointRadius = x;
+    else {
+      pointRadius = +x;
+      pointCircle = d3_path_circle(pointRadius);
+    }
+    return path;
+  };
+
+  return path;
+};
+
+function d3_path_circle(radius) {
+  return "m0," + radius
+      + "a" + radius + "," + radius + " 0 1,1 0," + (-2 * radius)
+      + "a" + radius + "," + radius + " 0 1,1 0," + (+2 * radius)
+      + "z";
+}
+/**
+ * Given a GeoJSON object, returns the corresponding bounding box. The bounding
+ * box is represented by a two-dimensional array: [[left, bottom], [right,
+ * top]], where left is the minimum longitude, bottom is the minimum latitude,
+ * right is maximum longitude, and top is the maximum latitude.
+ */
+d3.geo.bounds = function(feature) {
+  var left = Infinity,
+      bottom = Infinity,
+      right = -Infinity,
+      top = -Infinity;
+  d3_geo_bounds(feature, function(x, y) {
+    if (x < left) left = x;
+    if (x > right) right = x;
+    if (y < bottom) bottom = y;
+    if (y > top) top = y;
+  });
+  return [[left, bottom], [right, top]];
+};
+
+function d3_geo_bounds(o, f) {
+  if (o.type in d3_geo_boundsTypes) d3_geo_boundsTypes[o.type](o, f);
+}
+
+var d3_geo_boundsTypes = {
+  Feature: d3_geo_boundsFeature,
+  FeatureCollection: d3_geo_boundsFeatureCollection,
+  GeometryCollection: d3_geo_boundsGeometryCollection,
+  LineString: d3_geo_boundsLineString,
+  MultiLineString: d3_geo_boundsMultiLineString,
+  MultiPoint: d3_geo_boundsLineString,
+  MultiPolygon: d3_geo_boundsMultiPolygon,
+  Point: d3_geo_boundsPoint,
+  Polygon: d3_geo_boundsPolygon
+};
+
+function d3_geo_boundsFeature(o, f) {
+  d3_geo_bounds(o.geometry, f);
+}
+
+function d3_geo_boundsFeatureCollection(o, f) {
+  for (var a = o.features, i = 0, n = a.length; i < n; i++) {
+    d3_geo_bounds(a[i].geometry, f);
+  }
+}
+
+function d3_geo_boundsGeometryCollection(o, f) {
+  for (var a = o.geometries, i = 0, n = a.length; i < n; i++) {
+    d3_geo_bounds(a[i], f);
+  }
+}
+
+function d3_geo_boundsLineString(o, f) {
+  for (var a = o.coordinates, i = 0, n = a.length; i < n; i++) {
+    f.apply(null, a[i]);
+  }
+}
+
+function d3_geo_boundsMultiLineString(o, f) {
+  for (var a = o.coordinates, i = 0, n = a.length; i < n; i++) {
+    for (var b = a[i], j = 0, m = b.length; j < m; j++) {
+      f.apply(null, b[j]);
+    }
+  }
+}
+
+function d3_geo_boundsMultiPolygon(o, f) {
+  for (var a = o.coordinates, i = 0, n = a.length; i < n; i++) {
+    for (var b = a[i][0], j = 0, m = b.length; j < m; j++) {
+      f.apply(null, b[j]);
+    }
+  }
+}
+
+function d3_geo_boundsPoint(o, f) {
+  f.apply(null, o.coordinates);
+}
+
+function d3_geo_boundsPolygon(o, f) {
+  for (var a = o.coordinates[0], i = 0, n = a.length; i < n; i++) {
+    f.apply(null, a[i]);
+  }
+}
+// TODO breakAtDateLine?
+
+d3.geo.circle = function() {
+  var origin = [0, 0],
+      degrees = 90 - 1e-2,
+      radians = degrees * d3_geo_radians,
+      arc = d3.geo.greatArc().target(Object);
+
+  function circle() {
+    // TODO render a circle as a Polygon
+  }
+
+  function visible(point) {
+    return arc.distance(point) < radians;
+  }
+
+  circle.clip = function(d) {
+    arc.source(typeof origin === "function" ? origin.apply(this, arguments) : origin);
+    return clipType(d);
+  };
+
+  var clipType = d3_geo_type({
+
+    FeatureCollection: function(o) {
+      var features = o.features.map(clipType).filter(Object);
+      return features && (o = Object.create(o), o.features = features, o);
+    },
+
+    Feature: function(o) {
+      var geometry = clipType(o.geometry);
+      return geometry && (o = Object.create(o), o.geometry = geometry, o);
+    },
+
+    Point: function(o) {
+      return visible(o.coordinates) && o;
+    },
+
+    MultiPoint: function(o) {
+      var coordinates = o.coordinates.filter(visible);
+      return coordinates.length && {
+        type: o.type,
+        coordinates: coordinates
+      };
+    },
+
+    LineString: function(o) {
+      var coordinates = clip(o.coordinates);
+      return coordinates.length && (o = Object.create(o), o.coordinates = coordinates, o);
+    },
+
+    MultiLineString: function(o) {
+      var coordinates = o.coordinates.map(clip).filter(function(d) { return d.length; });
+      return coordinates.length && (o = Object.create(o), o.coordinates = coordinates, o);
+    },
+
+    Polygon: function(o) {
+      var coordinates = o.coordinates.map(clip);
+      return coordinates[0].length && (o = Object.create(o), o.coordinates = coordinates, o);
+    },
+
+    MultiPolygon: function(o) {
+      var coordinates = o.coordinates.map(function(d) { return d.map(clip); }).filter(function(d) { return d[0].length; });
+      return coordinates.length && (o = Object.create(o), o.coordinates = coordinates, o);
+    },
+
+    GeometryCollection: function(o) {
+      var geometries = o.geometries.map(clipType).filter(Object);
+      return geometries.length && (o = Object.create(o), o.geometries = geometries, o);
+    }
+
+  });
+
+  function clip(coordinates) {
+    var i = -1,
+        n = coordinates.length,
+        clipped = [],
+        p0,
+        p1,
+        p2,
+        d0,
+        d1;
+
+    while (++i < n) {
+      d1 = arc.distance(p2 = coordinates[i]);
+      if (d1 < radians) {
+        if (p1) clipped.push(d3_geo_greatArcInterpolate(p1, p2)((d0 - radians) / (d0 - d1)));
+        clipped.push(p2);
+        p0 = p1 = null;
+      } else {
+        p1 = p2;
+        if (!p0 && clipped.length) {
+          clipped.push(d3_geo_greatArcInterpolate(clipped[clipped.length - 1], p1)((radians - d0) / (d1 - d0)));
+          p0 = p1;
+        }
+      }
+      d0 = d1;
+    }
+
+    if (p1 && clipped.length) {
+      d1 = arc.distance(p2 = clipped[0]);
+      clipped.push(d3_geo_greatArcInterpolate(p1, p2)((d0 - radians) / (d0 - d1)));
+    }
+
+    return resample(clipped);
+  }
+
+  // Resample coordinates, creating great arcs between each.
+  function resample(coordinates) {
+    var i = 0,
+        n = coordinates.length,
+        j,
+        m,
+        resampled = n ? [coordinates[0]] : coordinates,
+        resamples,
+        origin = arc.source();
+
+    while (++i < n) {
+      resamples = arc.source(coordinates[i - 1])(coordinates[i]).coordinates;
+      for (j = 0, m = resamples.length; ++j < m;) resampled.push(resamples[j]);
+    }
+
+    arc.source(origin);
+    return resampled;
+  }
+
+  circle.origin = function(x) {
+    if (!arguments.length) return origin;
+    origin = x;
+    return circle;
+  };
+
+  circle.angle = function(x) {
+    if (!arguments.length) return degrees;
+    radians = (degrees = +x) * d3_geo_radians;
+    return circle;
+  };
+
+  // Precision is specified in degrees.
+  circle.precision = function(x) {
+    if (!arguments.length) return arc.precision();
+    arc.precision(x);
+    return circle;
+  };
+
+  return circle;
+}
+d3.geo.greatArc = function() {
+  var source = d3_geo_greatArcSource,
+      target = d3_geo_greatArcTarget,
+      precision = 6 * d3_geo_radians;
+
+  function greatArc() {
+    var a = typeof source === "function" ? source.apply(this, arguments) : source,
+        b = typeof target === "function" ? target.apply(this, arguments) : target,
+        i = d3_geo_greatArcInterpolate(a, b),
+        dt = precision / i.d,
+        t = 0,
+        coordinates = [a];
+    while ((t += dt) < 1) coordinates.push(i(t));
+    coordinates.push(b);
+    return {
+      type: "LineString",
+      coordinates: coordinates
+    };
+  }
+
+  // Length returned in radians; multiply by radius for distance.
+  greatArc.distance = function() {
+    var a = typeof source === "function" ? source.apply(this, arguments) : source,
+        b = typeof target === "function" ? target.apply(this, arguments) : target;
+     return d3_geo_greatArcInterpolate(a, b).d;
+  };
+
+  greatArc.source = function(x) {
+    if (!arguments.length) return source;
+    source = x;
+    return greatArc;
+  };
+
+  greatArc.target = function(x) {
+    if (!arguments.length) return target;
+    target = x;
+    return greatArc;
+  };
+
+  // Precision is specified in degrees.
+  greatArc.precision = function(x) {
+    if (!arguments.length) return precision / d3_geo_radians;
+    precision = x * d3_geo_radians;
+    return greatArc;
+  };
+
+  return greatArc;
+};
+
+function d3_geo_greatArcSource(d) {
+  return d.source;
+}
+
+function d3_geo_greatArcTarget(d) {
+  return d.target;
+}
+
+function d3_geo_greatArcInterpolate(a, b) {
+  var x0 = a[0] * d3_geo_radians, cx0 = Math.cos(x0), sx0 = Math.sin(x0),
+      y0 = a[1] * d3_geo_radians, cy0 = Math.cos(y0), sy0 = Math.sin(y0),
+      x1 = b[0] * d3_geo_radians, cx1 = Math.cos(x1), sx1 = Math.sin(x1),
+      y1 = b[1] * d3_geo_radians, cy1 = Math.cos(y1), sy1 = Math.sin(y1),
+      d = interpolate.d = Math.acos(Math.max(-1, Math.min(1, sy0 * sy1 + cy0 * cy1 * Math.cos(x1 - x0)))),
+      sd = Math.sin(d);
+
+  // From http://williams.best.vwh.net/avform.htm#Intermediate
+  function interpolate(t) {
+    var A = Math.sin(d - (t *= d)) / sd,
+        B = Math.sin(t) / sd,
+        x = A * cy0 * cx0 + B * cy1 * cx1,
+        y = A * cy0 * sx0 + B * cy1 * sx1,
+        z = A * sy0       + B * sy1;
+    return [
+      Math.atan2(y, x) / d3_geo_radians,
+      Math.atan2(z, Math.sqrt(x * x + y * y)) / d3_geo_radians
+    ];
+  }
+
+  return interpolate;
+}
+d3.geo.greatCircle = d3.geo.circle;
+})();

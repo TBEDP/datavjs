@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Line</title>
+    <script src="../../build/deps.js"></script>
+    <script src="../../lib/datav.js"></script>
+    <script src="../../lib/charts/line.js"></script>	
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script>
+	var line = new Line("chart");
+    var source = [
+    // ["line", "day", "value"],
+    ["first", "Monday", 1],
+    ["first", "Tuesday", 2],
+    ["first", "Wednesday", 3],
+    ["first", "Thursday", 6],
+    ["first", "Friday", 5],
+    ["first", "Saturday", 4],
+    ["first", "Sunday", 0],
+    ["second", "Monday", 4],
+    ["second", "Tuesday", 3],
+    ["second", "Wednesday", 7],
+    ["second", "Thursday", 3],
+    ["second", "Friday", 2],
+    ["second", "Saturday", 7],
+    ["second", "Sunday", 3]
+  ];
+	line.setSource(source, {line: 0, x: 1, value: 2});
+	line.render();
+    </script>
+  </body>
+</html>

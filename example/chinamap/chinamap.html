@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Chinamap</title>
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="hover">hover node info</div>
+    <div id="info">click leaf node info</div>
+    <div id="chart"></div>
+
+    <script>
+    //http://planetozh.com/blog/2008/04/javascript-basename-and-dirname/
+    var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+    seajs.config({
+      alias: {
+        'DataV': dir + '/../../lib/datav.js',
+        'Chinamap': dir + '/../../lib/charts/chinamap.js'
+      }
+    });
+    </script>
+
+    <script>
+    seajs.use(["Chinamap", "DataV"], function (Chinamap, DataV) {
+        DataV.changeTheme("theme0");
+        var chinamap = new Chinamap("chart", {"geoDataPath": '../../lib/charts/data/chinaMap/'});
+        chinamap.render();
+        /*
+        chinamap.on("areaHoverIn", function () {
+          console.log("hello in");
+        });
+        chinamap.on("areaHoverOut", function () {
+          console.log("hello out");
+        });
+        chinamap.on("areaClick", function () {
+          console.log("hello click");
+        });
+        chinamap.on("wordHoverIn", function () {
+          console.log("hello word in");
+        });
+        chinamap.on("wordHoverOut", function () {
+          console.log("hello word out");
+        });
+        chinamap.on("wordClick", function () {
+          console.log("hello word click");
+        });
+        */
+    });
+    </script>
+
+  </body>
+</html>

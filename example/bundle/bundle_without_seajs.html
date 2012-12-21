@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Hierarchical Edge Bundling</title>
+    <style type="text/css">
+      .node {
+          font: 12px sans-serif;
+      }
+      .link {
+          stroke: steelblue;
+          stroke-opacity: .4;
+          fill: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/bundle.js"></script>
+    <div id="chart"></div>
+    <script>
+      var bundle = new Bundle("chart", {
+        "diameter": 1000
+      });
+      DataV.json("data.json", function (source) {
+        bundle.setSource(source);
+        bundle.render();
+      });
+    </script>
+  </body>
+
+</html>

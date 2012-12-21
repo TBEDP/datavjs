@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>treemap</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/treemap.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="hover">hover node info</div>
+    <div id="info">click leaf node info</div>
+    <div id="chart"></div>
+    <script>
+        DataV.changeTheme("theme0");
+        var treemap = new Treemap("chart");
+        d3.json("category_ratio.json", function (source) {
+            treemap.setSource(source);
+            /*
+            treemap.setOptions({
+                customEvent : {
+                    "leafNodeClick": function () {
+                        $("#info").html(this.name + " is a leaf node.");
+                    },
+                    "hoverIn": function () {
+                        $("#hover").html("hover " + this.name);
+                    },
+                    "hoverOut": function () {
+                        $("#hover").html("leave " + this.name);
+                    }
+                }
+            });
+            */
+            treemap.on("leafNodeClick", function () {
+                $("#info").html(this.name + " is a leaf node.");
+            });
+            treemap.on("hoverIn", function () {
+                $("#hover").html("hover " + this.name);
+            });
+            treemap.on("hoverOut", function () {
+                $("#hover").html("leave " + this.name);
+            });
+            
+            treemap.render();
+        });
+    </script>
+
+  </body>
+</html>

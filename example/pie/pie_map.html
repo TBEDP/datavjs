@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Pie Chart</title>
+        <script src="../../build/deps.js"></script>
+        <!-- chord -->
+        <script src="../../deps/seajs/sea.js"></script>
+        <script>
+            var dir = window.location.href.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
+            seajs.config({
+                alias: {
+                    'DataV': dir + '/../../lib/datav.js',
+                    'Pie': dir + '/../../lib/charts/pie.js'
+                }
+            });
+        </script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+.textArea {
+    border: 2px solid black;
+    color: black;
+    font-family: monospace;
+    height: 3in;
+    overflow: auto;
+    padding: 0.5em;
+    width: 750px;
+}
+</style>
+    </head>
+
+    <body>
+        <div id="chart"></div>
+        <script>
+            seajs.use(["Pie", "DataV"], function (Pie, DataV) {
+                // DataV.changeTheme("datav");
+                var pie = new Pie("chart", {
+                    width: 800,
+                    tag: true
+                });
+                DataV.csv("pie_map.csv", function (source) {
+                    pie.setSource(source, {label: 1, value: 0});
+                    pie.render();
+                });
+            });
+        </script>
+        </script>
+    </body>
+
+</html>

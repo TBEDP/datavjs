@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bubble Graph</title>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script src="../../build/deps.js"></script>
+    <script src="../../deps/seajs/sea.js"></script>
+    <script>
+    seajs.config({
+      alias: {
+        'DataV': '/lib/datav.js',
+        'Axis': '/lib/charts/axis.js',
+        'Bubble': '/lib/charts/bubble.js'
+      }
+    });
+
+    seajs.use(["Bubble", "DataV"], function (Bubble, DataV) {
+      var bubble = new Bubble("chart", {
+        "width": 600,
+        "height": 400,
+        // "showLegend": false
+        "margin": [10, 10, 80, 200]
+      });
+      DataV.csv("nations2.csv", function(dataSource) {
+        bubble.setSource(dataSource);
+        // the dimension order is time, key, xaxis,yaxis,size,color dimension
+        // if you don't input next line, your source dimensions's order should be like above order
+        // bubble.chooseDimensions(["year", "country", "survival", "children", "population", "region"]);
+        bubble.render();
+      });
+    });
+    </script>
+  </body>
+</html>

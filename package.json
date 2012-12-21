@@ -1,0 +1,26 @@
+{
+  "name": "datavjs",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TBEDP/datavjs.git"
+  },
+  "keywords": [
+    "DataV"
+  ],
+  "author": "DataV",
+  "license": "MIT",
+  "description": "DataV.js is a JavaScript library for data visualization",
+  "dependencies": {
+    "anywhere": "*"
+  },
+  "devDependencies": {
+    "uglify-js": "*"
+  },
+  "scripts": {
+    "start": "node ./node_modules/datavjs/node_modules/.bin/anywhere 8888",
+    "build": "node bin/build.js",
+    "prepublish": "npm run build"
+  },
+  "tracker": "UA-17170593-4"
+}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>chinamap</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/chinamap.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+
+  <body>
+    <div id="chart"></div>
+    <script>
+        DataV.changeTheme("theme0");
+        var chinamap = new Chinamap("chart", {
+            //"width": 2000,
+            //"height": 1700,
+            "geoDataPath": '../../lib/charts/data/chinaMap/'
+            });
+        //chinamap.setOptions({'showWords': false});
+        chinamap.setOptions({'mapId': 0});
+
+        /*
+        console.log(chinamap.getLoc("北京市"));
+        //console.log(chinamap.getLoc("bie"));
+        console.log(chinamap.getLoc("南京"));
+        console.log(chinamap.getLoc("张家口"));
+        console.log(chinamap.getLoc("张家界"));
+        console.log(chinamap.getLoc("阿拉善盟"));
+        console.log(chinamap.getLoc("阿拉尔市"));
+        console.log(chinamap.getLoc("阿拉"));
+        console.log(chinamap.getLoc("张家"));
+        console.log(chinamap.getLoc("京"));
+        */
+
+        /*
+        console.log(chinamap.getFormatName("北京市"));
+        //console.log(chinamap.getFormatName("bie"));
+        console.log(chinamap.getFormatName("南京"));
+        console.log(chinamap.getFormatName("张家口"));
+        console.log(chinamap.getFormatName("张家界"));
+        console.log(chinamap.getFormatName("阿拉善盟"));
+        console.log(chinamap.getFormatName("阿拉尔市"));
+        console.log(chinamap.getFormatName("阿拉"));
+        console.log(chinamap.getFormatName("张家"));
+        console.log(chinamap.getFormatName("京"));
+        */
+
+        /*
+        console.log(chinamap.getFormatName("吉林"));
+        console.log(chinamap.getFormatName("吉林市"));
+        console.log(chinamap.getFormatName("海南"));
+        console.log(chinamap.getFormatName("海南藏族自治州"));
+        */
+
+        /*
+        chinamap.setSource({
+                'fdas南': "fdsd", // won't show in chinamap.sourceData;
+                '吉林省': 2323,
+                '吉林市': 234234,
+                '海南': "fdsd",
+                '北京市': 2341,
+                '南京': 2341
+        });
+        */
+
+        chinamap.setOptions({
+            //"colors": ["#1f77b4", "#ff7f0e", "#ff0000"]
+            //"colors": ["blue", "red", "green"]
+            //"colors": ["gray"],
+            "colorModel": "discrete"
+        });
+        chinamap.setSource({
+            '北京': '华北',
+            '天津': '华北',
+            '河北': '华北',
+            '山西': '华北',
+            '内蒙古': '华北',
+            '上海': '华东',
+            '江苏': '华东',
+            '浙江': '华东',
+            '山东': '华东',
+            '安徽': '华东',
+            '辽宁': '东北',
+            '吉林': '东北',
+            '黑龙江': '东北',
+            '湖北': '华中',
+            '湖南': '华中',
+            '河南': '华中',
+            '江西': '华中',
+            '广东': '华南',
+            '广西': '华南',
+            '海南': '华南',
+            '福建': '华南',
+            '四川': '西南',
+            '重庆': '西南',
+            '贵州': '西南',
+            '云南': '西南',
+            '西藏': '西南',
+            '陕西': '西北',
+            '甘肃': '西北',
+            '新疆': '西北',
+            '青海': '西北',
+            '宁夏': '西北',
+            '香港': '港澳台',
+            '澳门': '港澳台',
+            '台湾 ': '港澳台'
+        });
+        /*
+        */
+
+
+        /*
+        chinamap.setOptions({
+            //"wordStyle": {'stroke': "black"},
+            "colorModel": "gradient",
+            "colors": ["#ddd", "#88f"]
+        });
+        //2010 人口统计
+        chinamap.setSource({
+            '北京': 19612368,
+            '天津': 12938224,
+            '河北': 71854202,
+            '山西': 35712111,
+            '内蒙': 24706321,
+            '辽宁': 43746323,
+            '吉林': 27462297,
+            '黑龙': 38312224,
+            '上海': 23019148,
+            '江苏': 78659903,
+            '浙江': 54426891,
+            '安徽': 59500510,
+            '福建': 36894216,
+            '江西': 44567475,
+            '山东': 95793065,
+            '河南': 94023567,
+            '湖北': 57237740,
+            '湖南': 65683722,
+            '广东': 104303132,
+            '广西': 46026629,
+            '海南': 8671518,
+            '重庆': 28846170,
+            '四川': 80418200,
+            '贵州': 34746468,
+            '云南': 45966239,
+            '西藏': 3002166,
+            '陕西': 37327378,
+            '甘肃': 25575254,
+            '青海': 5626722,
+            '宁夏': 6301350,
+            '新疆': 21813334,
+            '香港': 7097600,
+            '澳门': 552300,
+            '台湾': 23162123
+        });
+        */
+        /*
+        */
+        //console.log(chinamap._searchIndex("loc", "阿拉尔市", "fasd"));
+        //console.log(chinamap.getCityFormatName("阿拉善盟"));
+        //chinamap.setOptions({'levelChangeable': false})
+
+        chinamap.setCustomEvent('areaHoverIn', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            var state = this;
+            map.floatTag.html("<p>" + info.properties.name + "</p>"
+                            + "<p>" + map.sourceData[info.properties.name] + "</p>");
+            map.floatTag.css({"visibility": "visible"});
+            state.attr({"fill": "pink"});
+            word.attr({"font-weight": "bold"});
+        });
+        chinamap.setCustomEvent('areaHoverOut', function () {
+            var map = this.data("map");
+            var word = this.data("word");
+            var info = this.data("info");
+            var state = this;
+            map.floatTag.css({"visibility": "hidden"});
+            state.attr({"fill": info.fillColor});
+            word.attr({"font-weight": "normal"});
+        });
+        chinamap.setCustomEvent('wordHoverIn', function () {
+            var map = this.data("map");
+            var state = this.data("state");
+            var info = this.data("info");
+            map.floatTag.html("<p>" + info.properties.name + "</p>"
+                            + "<p>" + map.sourceData[info.properties.name] + "</p>");
+            map.floatTag.css({"visibility": "visible"});
+            state.attr({"fill": "pink"});
+        });
+        chinamap.setCustomEvent('wordHoverOut', function () {
+            var map = this.data("map");
+            var state = this.data("state");
+            var info = this.data("info");
+            map.floatTag.css({"visibility": "hidden"});
+            state.attr({"fill": info.fillColor});
+        });
+        chinamap.setCustomEvent('areaClick', function () {
+            var info = this.data("info");
+            alert("click area " + info.properties.name);
+        });
+        chinamap.setCustomEvent('wordClick', function () {
+            var info = this.data("info");
+            alert("click word " + info.properties.name);
+        });
+
+        chinamap.renderCallback = function () {
+
+            /*
+            // test change floattag loc
+            chinamap.floatTag.creator.mouseToFloatTag({x: 10, y: 10});
+            //warning: html must be set before changeLoc, because dom node's height and width will affect floatTag's loc;
+            chinamap.floatTag.html(tradeP[0].data("cityInfo").name)
+                .css("visibility", "visible");
+            chinamap.floatTag.creator.changeLoc(tradeP[0].data("cityInfo").pointLoc);
+            */
+
+            /*
+            //test viewCenter
+            var map = chinamap;
+            var viewCenter = {'x': map.viewBox[0] + map.viewBox[2] / 2,
+                                'y': map.viewBox[1] + map.viewBox[3] / 2};
+            chinamap.paper.rect(viewCenter.x - 10, viewCenter.y - 10, 20, 20)
+                .attr({'fill': "red"});
+            */
+                    
+            /* // test _scaleLocToPixelLoc
+            var pl = chinamap._scaleLocToPixelLoc({x: 0, y: 0});
+            var sl = chinamap._scaleLocToPixelLoc(pl);
+            console.log(pl.x + " " + pl.y);
+            console.log(sl.x + " " + sl.y);
+            */
+        };
+
+        chinamap.render();
+
+    </script>
+
+  </body>
+</html>

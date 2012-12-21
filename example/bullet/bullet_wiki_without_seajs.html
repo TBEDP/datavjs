@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+	<title>wiki bullet examples</title>
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/bullet.js"></script>
+
+    <style type="text/css">
+#horizonal {
+    width: 400px;
+    margin: 5px;
+    float: left;
+    border: solid 1px;
+}
+
+.horizonal {
+    float: left;
+    width: 400px;
+    border: solid 1px;
+    margin: 2px;
+}
+
+#vertical {
+    height: 300px;
+    margin: 5px;
+    float: left;
+    border: solid 1px;
+}
+
+.vertical {
+    float: left;
+    height: 300px;
+    #border: solid 1px;
+    margin: 2px;
+}
+    </style>
+  </head>
+  <body>
+    <div id="horizonal">
+    </div>
+    <div id="vertical">
+    </div>
+
+    <script>
+        var data0 = {
+            title: "Revenue",
+            subtitle: "US.$(1,000s)", 
+            ranges: [0, 150, 225, 300],
+            measures: [270],
+            markers: [249],
+            rangeTitles: ["bad", "satisfactory", "good"],
+            measureTitles: ["value: 270"],
+            markerTitles: ["mean : 249"] 
+        };
+        
+        var data1 = {
+            title: "Profit",
+            subtitle: "%",
+            ranges: [0, 20, 25, 30],
+            measures: [22.5],
+            markers: [27],
+            rangeTitles: ["bad", "satisfactory", "good"],
+            measureTitles: ["value: 0.225"],
+            markerTitles: ["mean : 0.27"]
+        };
+        
+        var data2 = {
+            title: "Avg Order Size",
+            subtitle: "US.$",
+            ranges: [0, 350, 500, 600],
+            measures: [330],
+            markers: [550],
+            rangeTitles: ["bad", "satisfactory", "good"],
+            measureTitles: ["value: 330"],
+            markerTitles: ["mean : 550"]
+        };    
+        
+        var data3 = {
+            title: "New Customers",
+            subtitle: "Count",
+            ranges: [0, 1400, 2000, 2500],
+            measures: [1700],
+            markers: [2080],
+            rangeTitles: ["bad", "satisfactory", "good"],
+            measureTitles: ["value: 1700"],
+            markerTitles: ["mean : 2080"]
+        };    
+        
+        var data4 = {
+            title: "Cust Satisfaction",
+            subtitle: "Top Rating of 5",
+            ranges: [0, 3.5, 4.3, 5],
+            measures: [4.7],
+            markers: [4.5],
+            rangeTitles: ["bad", "satisfactory", "good"],
+            measureTitles: ["value: 4.7"],
+            markerTitles: ["mean : 4.5"]
+        };    
+        
+        var datas = [data0, data1, data2, data3, data4];
+        
+        datas.forEach(function (d) {
+            var container = $("<div></div>").appendTo($("#horizonal")).addClass("horizonal");
+            var options = {width: 400, height: 60, 
+                margin : [12, 20, 20, 130],
+                color: ["#000", "#ddd"]
+            };
+            var bullet = new Bullet(container[0],options);
+            bullet.setSource(d);
+            if (d.name === "Profit") {
+                bullet.axis.tickFormat(function (d) {return d + "%";})
+            }
+            bullet.render();
+        });
+        
+        data2.title = "Avg Order";
+        data3.title = "New Cust";
+        data4.title = "Cust Sat";
+        
+        datas.forEach(function (d) {
+            var container = $("<div></div>").appendTo($("#vertical")).addClass("vertical");
+            var options = {
+                width: 90, height: 300, 
+                margin : [40, 25, 10, 35],
+                color: ["#000", "#ddd"],
+                orient: "vertical"
+            };
+            //if (d.
+            var bullet = new Bullet(container[0], options);
+            bullet.setSource(d);
+            if (d.name === "Profit") {
+                bullet.axis.tickFormat(function (d) {return d + "%";})
+            }
+            bullet.render();
+        });
+
+    </script>
+  </body>
+</html>

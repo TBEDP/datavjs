@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="../../build/datav.js"></script>
+    <script src="../../lib/charts/axis.js"></script>
+    <script src="../../lib/charts/bullet.js"></script>
+
+    <style type="text/css">
+#horizonal {
+    width: 300px;
+    margin: 5px;
+    float: left;
+}
+#vertical {
+    height: 300px;
+    margin: 5px;
+    float: left;
+}
+.horizonal {
+    float: left;
+    width: 300px;
+    border: solid 1px;
+    margin: 2px;
+}
+.vertical {
+    float: left;
+    height: 300px;
+    border: solid 1px;
+    margin: 2px;
+}
+    </style>
+  </head>
+  <body>
+    <div id="horizonal">
+        <div id="chart"></div>
+        log, color change
+        <div id="log"></div>
+        <div>
+        no subtitle:
+        <div id="no_subtitle"></div>
+        </div>
+        <div>
+        subtitle is " "(space):
+        <div id="no_subtitle2"></div>
+        </div>
+        <div>
+        linear, no interval: 
+        <div id="no_interval"></div>
+        </div>
+        <div>
+        linear, multi markers: 
+        <div id="multi_markers"></div>
+        </div>
+        <div>
+        linear, single measure: 
+        <div id="single_measure"></div>
+        </div>
+        <div>
+        log, min = 0, &lt; 1(dispaly error): 
+        <div id="log_min_error"></div>
+        </div>
+    </div>
+    <div id="vertical">
+        <div id="chartV"></div>
+        <div id="logV"></div>
+    </div>
+
+    <script>
+
+        var data1 = {
+            title: "Sample",
+            subtitle: "ratio",
+            ranges: [0, 0.5, 0.8, 1],
+            measures: [0.7, 0.9],
+            markers: [0.6],
+            rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
+            measureTitles: ["value is 0.7", "value is 0.9"],
+            markerTitles: ["mean is 0.6"] 
+        };
+        var data2 = {
+            title: 1500,//"alipay_trade_amt",
+            subtitle: "RMB",
+            ranges: [1, 921.79, 3433.52, 718259],
+            measures: [1500],
+            markers: [2783],
+            rangeTitles: ["below 50%", "top 20% - 50%", "top 20%"],
+            measureTitles: ["value is 1500"],
+            markerTitles: ["mean is 2783"]
+        };   
+        var data;
+        $("#chart").addClass("horizonal");
+        var bullet = new Bullet("chart", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70]});
+        bullet.setSource(data1);
+        bullet.render();
+        
+        $("#log").addClass("horizonal");
+        var log = new Bullet("log", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                backgroundColor: ["#66f", "#ddf"],
+                measureColor: ["#000", "#000"],
+                markerColor: "#44f",
+                axisStyle: "log",
+                logBase: 10});
+        log.setSource(data2);
+        log.render();
+        
+        $("#no_subtitle").addClass("horizonal");
+        var no_subtitle = new Bullet("no_subtitle", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"]});
+        data = $.extend({}, data1);
+        data.subtitle = undefined;
+        no_subtitle.setSource(data);
+        no_subtitle.render();
+        
+        $("#no_subtitle2").addClass("horizonal");
+        var no_subtitle2 = new Bullet("no_subtitle2", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"]});
+        data = $.extend({}, data1);
+        data.subtitle = " ";
+        no_subtitle2.setSource(data);
+        no_subtitle2.render();
+        
+        $("#no_interval").addClass("horizonal");
+        var no_interval = new Bullet("no_interval", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"]});
+        data = $.extend({}, data1);
+        data.ranges = [0, 1];
+        no_interval.setSource(data);
+        no_interval.render();
+        
+        $("#multi_markers").addClass("horizonal");
+        var multi_markers = new Bullet("multi_markers", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"]});
+        data = $.extend({}, data1);
+        data.markers = [0.6, 0.7];
+        multi_markers.setSource(data);
+        multi_markers.render();
+            
+        $("#single_measure").addClass("horizonal");
+        var single_measure = new Bullet("single_measure", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"]});
+        data = $.extend({}, data1);
+        data.measures = [0.83];
+        single_measure.setSource(data);
+        single_measure.render();
+        
+        $("#log_min_error").addClass("horizonal");
+        var log_min_error = new Bullet("log_min_error", 
+                {width: 300,
+                height: 60, 
+                margin : [10, 10, 20, 70],
+                color: ["#44f", "#ddf"],
+                axisStyle: "log",
+                logBase: 10});
+        data = $.extend({}, data2);
+        data.ranges = [0, 718259];
+        log_min_error.setSource(data);
+        log_min_error.render();
+        
+        $("#chartV").addClass("vertical");
+        var chartV = new Bullet("chartV",
+                {width: 100,
+                height: 300, 
+                margin : [40, 35, 10, 35],
+                orient: "vertical"});
+        chartV.setSource(data1);
+        chartV.render();
+        
+        $("#logV").addClass("vertical");
+        var logV = new Bullet("logV", 
+                {width: 100,
+                height: 300, 
+                margin : [40, 25, 10, 45],
+                axisStyle: "log",
+                logBase: 10,
+                orient: "vertical"});
+        logV.setSource(data2);
+        logV.render();
+
+    </script>
+  </body>
+</html>
