@@ -18,6 +18,11 @@ exports.without = function (excludes) {
   });
 };
 
+exports.datav_without_jquery_json = exports.without([
+  'deps/jquery-1.7.1.js',
+  'deps/json2.js'
+]);
+
 exports.datav_without_jquery = exports.without([
   'deps/jquery-1.7.1.js'
 ]);
