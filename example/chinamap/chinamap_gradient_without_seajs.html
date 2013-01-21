@@ -69,7 +69,7 @@
             '台湾': 23162123
         });
 
-        chinamap.setCustomEvent('areaHoverIn', function () {
+        chinamap.on('areaHoverIn', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -79,7 +79,7 @@
             map.floatTag.css({"visibility": "visible"});
             this.attr({"fill": "pink"});
         });
-        chinamap.setCustomEvent('areaHoverOut', function () {
+        chinamap.on('areaHoverOut', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");

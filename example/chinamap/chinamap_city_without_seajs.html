@@ -528,7 +528,7 @@
         //2010 人口统计
         chinamap.setSource();
 
-        chinamap.setCustomEvent('areaHoverIn', function () {
+        chinamap.on('areaHoverIn', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -537,7 +537,7 @@
             map.floatTag.css({"visibility": "visible"});
             this.attr({"fill": "pink"});
         });
-        chinamap.setCustomEvent('areaHoverOut', function () {
+        chinamap.on('areaHoverOut', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
