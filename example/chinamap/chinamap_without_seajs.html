@@ -166,7 +166,7 @@
         //console.log(chinamap.getCityFormatName("阿拉善盟"));
         //chinamap.setOptions({'levelChangeable': false})
 
-        chinamap.setCustomEvent('areaHoverIn', function () {
+        chinamap.on('areaHoverIn', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -177,7 +177,7 @@
             state.attr({"fill": "pink"});
             word.attr({"font-weight": "bold"});
         });
-        chinamap.setCustomEvent('areaHoverOut', function () {
+        chinamap.on('areaHoverOut', function () {
             var map = this.data("map");
             var word = this.data("word");
             var info = this.data("info");
@@ -186,7 +186,7 @@
             state.attr({"fill": info.fillColor});
             word.attr({"font-weight": "normal"});
         });
-        chinamap.setCustomEvent('wordHoverIn', function () {
+        chinamap.on('wordHoverIn', function () {
             var map = this.data("map");
             var state = this.data("state");
             var info = this.data("info");
@@ -195,18 +195,18 @@
             map.floatTag.css({"visibility": "visible"});
             state.attr({"fill": "pink"});
         });
-        chinamap.setCustomEvent('wordHoverOut', function () {
+        chinamap.on('wordHoverOut', function () {
             var map = this.data("map");
             var state = this.data("state");
             var info = this.data("info");
             map.floatTag.css({"visibility": "hidden"});
             state.attr({"fill": info.fillColor});
         });
-        chinamap.setCustomEvent('areaClick', function () {
+        chinamap.on('areaClick', function () {
             var info = this.data("info");
             alert("click area " + info.properties.name);
         });
-        chinamap.setCustomEvent('wordClick', function () {
+        chinamap.on('wordClick', function () {
             var info = this.data("info");
             alert("click word " + info.properties.name);
         });
