@@ -69,22 +69,20 @@
             '台湾': 23162123
         });
 
-        chinamap.on('areaHoverIn', function () {
-            var map = this.data("map");
-            var word = this.data("word");
-            var info = this.data("info");
+        chinamap.on('areaHoverIn', function (area) {
+            var word = area.data("word");
+            var info = area.data("info");
             //map.floatTag 是一个jqNode对象，样式调整用.css()，内容调整用.html()。
-            map.floatTag.html("<p>" + info.properties.name + "</p>"
-                            + "<p>" + map.sourceData[info.properties.name] + "</p>");
-            map.floatTag.css({"visibility": "visible"});
-            this.attr({"fill": "pink"});
+            chinamap.floatTag.html("<p>" + info.properties.name + "</p>"
+                            + "<p>" + chinamap.sourceData[info.properties.name] + "</p>");
+            chinamap.floatTag.css({"visibility": "visible"});
+            area.attr({"fill": "pink"});
         });
-        chinamap.on('areaHoverOut', function () {
-            var map = this.data("map");
-            var word = this.data("word");
-            var info = this.data("info");
-            map.floatTag.css({"visibility": "hidden"});
-            this.attr({"fill": info.fillColor});
+        chinamap.on('areaHoverOut', function (area) {
+            var word = area.data("word");
+            var info = area.data("info");
+            chinamap.floatTag.css({"visibility": "hidden"});
+            area.attr({"fill": info.fillColor});
         });
 
         chinamap.render();
