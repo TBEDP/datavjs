@@ -34,4 +34,5 @@ exports.build('deps');
 exports.build('data_shu');
 exports.build('data_mofang');
 exports.build('stream_component');
+exports.build('datav_without_jquery_json');
 exports.build('all');
