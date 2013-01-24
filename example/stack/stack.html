@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>stack</title>
+  </head>
+
+  <body>
+    <script src="../../build/deps.js"></script>
+    <script src="../../lib/datav.js"></script>
+    <script src="../../lib/charts/stack.js"></script>    
+    <div id="chart"></div>
+    <script>
+    var source = [
+      ['X','2012/3/01',18],
+      ['Y','2012/3/01',102],
+      ['X','2012/3/02',60],
+      ['Y','2012/3/02',46],
+      ['X','2012/3/03',200],
+      ['Y','2012/3/03',12],
+      ['X','2012/3/04',86],
+      ['Y','2012/3/04',158],
+      ['X','2012/3/05',4],
+      ['Y','2012/3/05',190],
+      ['X','2012/3/06',314],
+      ['Y','2012/3/06',336],
+      ['X','2012/3/07',72],
+      ['Y','2012/3/07',124],
+      ['X','2012/3/08',42],
+      ['Y','2012/3/08',74],
+      ['X','2012/3/09',418],
+      ['Y','2012/3/09',418],
+      ['X','2012/3/10',68],
+      ['Y','2012/3/10',324],
+      ['X','2012/3/11',68],
+      ['Y','2012/3/11',68],
+    ];
+
+    var stack = new Stack("chart", {
+      "width": 980,
+      "height": 600,
+      "barWidth": 30,
+      "yBase": 50
+    });
+    stack.setSource(source, {
+      stack: 0,
+      x: 1,
+      value: 2
+    });
+    stack.render();
+    </script>
+  </body>
+</html>
