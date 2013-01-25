@@ -29,10 +29,6 @@
               </li>
             
               <li>
-                <a href="./chord文档.html">chord文档</a>
-              </li>
-            
-              <li>
                 <a href="./CodingStyle.html">CodingStyle</a>
               </li>
             
@@ -41,11 +37,15 @@
               </li>
             
               <li>
-                <a href="./force文档.html">force文档</a>
+                <a href="./DataV_Introduction.html">DataV_Introduction</a>
               </li>
             
               <li>
-                <a href="./changelog.html">changelog</a>
+                <a href="./chord文档.html">chord文档</a>
+              </li>
+            
+              <li>
+                <a href="./Getting Start.html">Getting Start</a>
               </li>
             
             
@@ -70,6 +70,10 @@
                   </li>
                 
                   <li>
+                    <a href="./changelog.html">changelog</a>
+                  </li>
+                
+                  <li>
                     <a href="./stream文档.html">stream文档</a>
                   </li>
                 
@@ -90,7 +94,7 @@
                   </li>
                 
                   <li>
-                    <a href="./Getting Start.html">Getting Start</a>
+                    <a href="./force文档.html">force文档</a>
                   </li>
                 
                 </ul>
@@ -113,6 +117,12 @@
   <div class="row">
   	<div class="span3 bs-docs-sidebar">
       <ul class="nav nav-list bs-docs-sidenav affix">
+
+  <li class="level_2">
+    <a href="#index_安装" title="安装">
+      <i class="icon-chevron-right"></i>安装
+    </a>
+  </li>
 
   <li class="level_2">
     <a href="#index_Examples" title="Examples">
@@ -156,6 +166,12 @@
     </a>
   </li>
 
+  <li class="level_2">
+    <a href="#index_Contact" title="Contact">
+      <i class="icon-chevron-right"></i>Contact
+    </a>
+  </li>
+
 </ul>
 
     </div>
@@ -169,23 +185,42 @@
 
 </p>
 </blockquote>
-<p><img src="https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png" alt="DataV logo">
+<p><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/logo.png" alt="DataV logo">
 
 </p>
 <ul>
 <li><a href="http://tbedp.github.com/datavjs/index.html">API文档</a></li>
+<li>任意疑问，请移至底下联系人部分即可。</li>
 </ul>
+<h2>安装</h2>
+<p>目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
+
+</p>
+<pre><code>// Clone到本地
+git clone git://github.com/TBEDP/datavjs.git
+// 进入目录
+cd datavjs
+// 启动demo
+npm install &amp; npm run build &amp; npm start</code></pre>
+<p>或者
+
+</p>
+<pre><code>npm install datavjs
+npm start datavjs
+// 源码位于node_modules/datavjs</code></pre>
+<p>你也可以试用基于DataV.js开发的<a href="https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm">Chrome插件</a>，可以在任意网页中将表格可视化。
+</p>
 <h2>Examples</h2>
 <ul>
-<li><a href="http://datavlab.org/datavjs/#pie">Pie</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg" alt="Pie图"></li>
-<li><a href="http://datavlab.org/datavjs/#treemap">Treemap</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/treemap.jpg" alt="Treemap图"></li>
-<li><a href="http://datavlab.org/datavjs/#tree">Tree</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/tree.jpg" alt="Tree图"></li>
-<li><a href="http://datavlab.org/datavjs/#stream">Stream</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/stream.jpg" alt="Stream图"></li>
-<li><a href="http://datavlab.org/datavjs/#scatterplotMatrix">ScatterplotMatrix</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/scatterplotMatrix.jpg" alt="ScatterplotMatrix图"></li>
-<li><a href="http://datavlab.org/datavjs/#force">Force</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/force.jpg" alt="Force图"></li>
-<li><a href="http://datavlab.org/datavjs/#matrix">Matrix</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/matrix.jpg" alt="Matrix图"></li>
-<li><a href="http://datavlab.org/datavjs/#bubble">Bubble</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/bubble.jpg" alt="Bubble图"></li>
-<li><a href="http://datavlab.org/datavjs/#chord">Chord</a><br><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/chord.jpg" alt="Chord图"></li>
+<li><a href="http://datavlab.org/datavjs/#pie">Pie</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg" alt="Pie图"></li>
+<li><a href="http://datavlab.org/datavjs/#treemap">Treemap</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/treemap.jpg" alt="Treemap图"></li>
+<li><a href="http://datavlab.org/datavjs/#tree">Tree</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/tree.jpg" alt="Tree图"></li>
+<li><a href="http://datavlab.org/datavjs/#stream">Stream</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/stream.jpg" alt="Stream图"></li>
+<li><a href="http://datavlab.org/datavjs/#scatterplotMatrix">ScatterplotMatrix</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/scatterplotMatrix.jpg" alt="ScatterplotMatrix图"></li>
+<li><a href="http://datavlab.org/datavjs/#force">Force</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/force.jpg" alt="Force图"></li>
+<li><a href="http://datavlab.org/datavjs/#matrix">Matrix</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/matrix.jpg" alt="Matrix图"></li>
+<li><a href="http://datavlab.org/datavjs/#bubble">Bubble</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/bubble.jpg" alt="Bubble图"></li>
+<li><a href="http://datavlab.org/datavjs/#chord">Chord</a><br><img src="https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg" alt="Chord图"></li>
 </ul>
 <h2>Quick start</h2>
 <p>此处以Pie图为例。
@@ -253,8 +288,35 @@ pie.render();</code></pre>
      2  unknown                 1.7%
      2  xie cong                1.7%
      2  xiecong                 1.7%</code></pre>
+<p>非开发组人员如果有提交Bugfix，年底（2013年起）送出fix最多bug的5位同学一份纪念品。
+
+</p>
 <h2>License</h2>
 <p>DataV.js is available under the <a href="https://github.com/TBEDP/datavjs/blob/master/MIT-License">MIT License</a>.
+
+</p>
+<h2>Contact</h2>
+<p>组件由淘宝数据产品部可视化小组以及浙大CAD&amp;CG可视化与可视分析小组共同开发
+开发联系人，有问题可咨询：
+
+</p>
+<ul>
+<li>阿里旺旺<ul>
+<li>朴灵<a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid=%E6%9C%B4%E7%81%B5&amp;s=1"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid=%E6%9C%B4%E7%81%B5&amp;s=1" alt="朴灵 在线咨询"></a></li>
+<li>宁朗<a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid=%E5%AE%81%E6%9C%97&amp;s=1"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid=%E5%AE%81%E6%9C%97&amp;s=1" alt="宁朗 在线咨询"></a></li>
+<li>法慧<a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid=%E6%B3%95%E6%85%A7&amp;s=1"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid=%E6%B3%95%E6%85%A7&amp;s=1" alt="法慧  在线咨询"></a> </li>
+<li>解聪(浙大实习生)<a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&amp;s=1"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&amp;s=1" alt="解聪  在线咨询"></a> </li>
+<li>黄芯芯(浙大实习生)<a href="http://amos1.taobao.com/msg.ww?v=2&amp;uid=littlemonkey007&amp;s=1"><img src="http://amos1.taobao.com/online.ww?v=2&amp;uid=littlemonkey007&amp;s=1" alt="黄芯芯  在线咨询"></a> </li>
+</ul>
+</li>
+<li>阿里旺旺群：76480715</li>
+<li>QQ群: 18164936</li>
+<li>Google Group: <a href="http://groups.google.com/group/datavlab">DataVLab</a></li>
+<li>Gtalk: <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#58;&#x73;&#104;&#x79;&#118;&#x6f;&#x31;&#x39;&#x38;&#55;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#x73;&#104;&#x79;&#118;&#x6f;&#x31;&#x39;&#x38;&#55;&#x40;&#103;&#x6d;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a></li>
+<li>浙大CAD&amp;CG可视化与可视分析小组: <a href="http://www.cad.zju.edu.cn/home/vagwiki/index.php">VAG Wiki</a></li>
+</ul>
+<p>如有疑问，或发现Bug，也可<a href="https://github.com/TBEDP/datavjs/issues/new">提交Bug</a>
+
 </p>
 
       </section>

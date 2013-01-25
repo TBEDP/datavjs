@@ -119,32 +119,8 @@
       <ul class="nav nav-list bs-docs-sidenav affix">
 
   <li class="level_1">
-    <a href="#index_Getting Start" title="Getting Start">
-      <i class="icon-chevron-right"></i>Getting Start
-    </a>
-  </li>
-
-  <li class="level_2">
-    <a href="#index_引入依赖" title="引入依赖">
-      <i class="icon-chevron-right"></i>引入依赖
-    </a>
-  </li>
-
-  <li class="level_2">
-    <a href="#index_准备数据" title="准备数据">
-      <i class="icon-chevron-right"></i>准备数据
-    </a>
-  </li>
-
-  <li class="level_2">
-    <a href="#index_渲染图表" title="渲染图表">
-      <i class="icon-chevron-right"></i>渲染图表
-    </a>
-  </li>
-
-  <li class="level_2">
-    <a href="#index_结果" title="结果">
-      <i class="icon-chevron-right"></i>结果
+    <a href="#index_DataV.js介绍" title="DataV.js介绍">
+      <i class="icon-chevron-right"></i>DataV.js介绍
     </a>
   </li>
 
@@ -153,46 +129,14 @@
     </div>
     <div class="span9">
       <section>
-        <h1>Getting Start</h1>
-<p>此处以Pie图为例。
+        <h1>DataV.js介绍</h1>
+<p>DataV.js组件库是由阿里巴巴集团数据平台与产品部主导开发的开源数据可视化组件库。DataV.js的目的是致力于推动数据可视化方法在产品中的落地使用。
 
 </p>
-<h2>引入依赖</h2>
-<pre><code>// 依赖
-path/to/deps/compatible.js
-path/to/deps/d3.min.js
-path/to/deps/raphael.min.js
-path/to/deps/eventproxy.js
-path/to/deps/underscore-1.4.2.js
-path/to/deps/jquery-1.7.1.min.js
-// DataV
-path/to/datav.js
-// Pie
-path/to/charts/pie.js</code></pre>
-<p>问题？<a href="">依赖库也太多了吧？</a>
+<p>在过去，数据可视化一向是高层们独享的产品，其产出过程也相对冗长和不易，与普通数据消费者之间存在极大的不透明。开发者们产出的可视化作品，大多需要量身定做，不具备通用性，业界的可视化技术还主要停留在Excel阶段以及设计师的手中。在大数据浪潮扑面而来的时代里的，数据可视化的需求，顿时凸显，可视化方法需要更接地气和人气，使普通的开发者和用户都能快速方便的通过可视化，让数据的魅力散发。
+
 </p>
-<h2>准备数据</h2>
-<pre><code>var source = [
-  &#39;北京&#39;, 50265
-  &#39;上海&#39;, 60555
-  &#39;广州&#39;, 38544
-  &#39;深圳&#39;, 27276
-  &#39;西安&#39;, 20506
-  &#39;昆明&#39;, 26916
-  &#39;武汉&#39;, 17636
-  &#39;拉萨&#39;, 977
-  &#39;哈尔滨&#39;, 10406
-  &#39;乌鲁木齐&#39;, 6695
-];</code></pre>
-<h2>渲染图表</h2>
-<pre><code>// 初始化组件
-var pie = new Pie(&quot;container&quot;, {width: 1000, tag: true});
-// 添加数据源
-pie.setSource(source);
-// 渲染
-pie.render();</code></pre>
-<h2>结果</h2>
-<p><img src="https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg" alt="Pie图"></p>
+<p>但是与工业界截然不同的是，数据可视化在学术界已经有较成熟的理论，DataV.js项目与浙大可视化实验室合作，将工业界的技术与学术界的理论很好的结合在一起，有理论的支持，也有阿里庞大的数据，我们在缝合了技术和理论的间隙后，寄望将可视化方法能够推广到更多项目和产品中去。</p>
 
       </section>
     </div>
