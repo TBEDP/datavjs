@@ -30,23 +30,23 @@ npm start datavjs
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
-![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
+![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
 - [Treemap](http://datavlab.org/datavjs/#treemap)  
-![Treemap图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/treemap.jpg)
+![Treemap图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/treemap.jpg)
 - [Tree](http://datavlab.org/datavjs/#tree)  
-![Tree图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/tree.jpg)
+![Tree图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/tree.jpg)
 - [Stream](http://datavlab.org/datavjs/#stream)  
-![Stream图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/stream.jpg)
+![Stream图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/stream.jpg)
 - [ScatterplotMatrix](http://datavlab.org/datavjs/#scatterplotMatrix)  
-![ScatterplotMatrix图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/scatterplotMatrix.jpg)
+![ScatterplotMatrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/scatterplotMatrix.jpg)
 - [Force](http://datavlab.org/datavjs/#force)  
-![Force图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/force.jpg)
+![Force图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/force.jpg)
 - [Matrix](http://datavlab.org/datavjs/#matrix)  
-![Matrix图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/matrix.jpg)
+![Matrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/matrix.jpg)
 - [Bubble](http://datavlab.org/datavjs/#bubble)  
-![Bubble图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/bubble.jpg)
+![Bubble图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/bubble.jpg)
 - [Chord](http://datavlab.org/datavjs/#chord)  
-![Chord图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/chord.jpg)
+![Chord图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg)
 
 ## Quick start
 此处以Pie图为例。
