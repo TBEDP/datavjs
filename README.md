@@ -3,10 +3,10 @@ DataV.js
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
 > 凡有数据在处，皆能可视化
 
-![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
+![DataV logo](https://raw.github.com/TBEDP/datavjs/master/doc/assets/logo.png)
 
 - [API文档](http://tbedp.github.com/datavjs/index.html)
-- 当前分支为Butterfly，处于开发中，任意疑问，请移至底下联系人部分即可。
+- 任意疑问，请移至底下联系人部分即可。
 
 ## 安装
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
@@ -137,7 +137,7 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
   - 黄芯芯(浙大实习生)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1) 
 - 阿里旺旺群：76480715
 - QQ群: 18164936
-- Google Group: [DataVlab](http://groups.google.com/group/datavlab)
+- Google Group: [DataVLab](http://groups.google.com/group/datavlab)
 - Gtalk: <shyvo1987@gmail.com>
 - 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
