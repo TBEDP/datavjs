@@ -4,7 +4,8 @@ DataV组件库的设计
 
 ## 依赖结构
 目前组件库中有8个高级组件，4个基础组件。在底层，我们主要依赖了4个库，每一个库的选择，都是思虑良久才决定的。
-![组件依赖关系图](./assets/deps.png)
+
+![组件依赖关系图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/deps.png)
 
 ### 依赖描述
 #### Raphael  
@@ -40,12 +41,12 @@ Widget的中文通常翻译为挂件。在DataV的抽象结构中，它是附属
 ### Component
 Component是真正的组件，它是Chart和Widget的总和。Component可以随意组合Widget和Chart。可以保证Chart和Widget自身的稳定性和可重用性。Component可以随着业务的需求变动而变动。
 
-![](./assets/arch.png)
+![](https://raw.github.com/TBEDP/datavjs/master/doc/assets/arch.png)
 
 ## API设计
 所有的组件都是在前文描述的依赖项上构建而成，但是事实上DataV依然做了一个层次性的封装。
 
-![](./assets/api.png)
+![](https://raw.github.com/TBEDP/datavjs/master/doc/assets/api.png)
 
 ### 继承关系
 目前所有的组件都继承自DataV.Chart，DataV.Chart则继承自EventProxy。每一个实例Chart都是一个事件Emitter。
