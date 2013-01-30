@@ -45,6 +45,14 @@ exports.data_mofang = exports.without([
   'deps/jquery-1.7.1.js'
 ]);
 
+exports.v5 = exports.without([
+  'deps/array_shim.js',
+  'deps/json2.js',
+  'deps/eventproxy-0.2.0.js',
+  'deps/jquery-1.7.1.js',
+  'deps/underscore-1.4.2.js'
+]);
+
 exports.all = exports.datav.concat([
   'lib/charts/axis.js',
   'lib/charts/brush.js',
