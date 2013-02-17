@@ -105,22 +105,23 @@ Below is the output from `git-summary`
 
 ```
  project  : datavjs
- repo age : 8 weeks
- active   : 34 days
- commits  : 116
- files    : 155
+ repo age : 6 months
+ active   : 147 days
+ commits  : 416
+ files    : 270
  authors  : 
-    87  Jackson Tian            75.0%
-    14  jdk137                  12.1%
-     5  Theseue                 4.3%
-     4  wxtheseue               3.4%
-     2  unknown                 1.7%
-     2  xie cong                1.7%
-     2  xiecong                 1.7%
-
+   291    Jackson Tian            70.0%
+    46	jdk137                  11.1%
+    25	xie cong                6.0%
+    18	gozo1234                4.3%
+    11	Theseue                 2.6%
+     8	xiecong                 1.9%
+     7	wxtheseue               1.7%
+     4	Jiang Dongke            1.0%
+     3	郭方舟                  0.7%
+     2	unknown                 0.5%
+     1	arcthur                 0.2%
 ```
-
-非开发组人员如果有提交Bugfix，年底（2013年起）送出fix最多bug的5位同学一份纪念品。
 
 ## License
 DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
