@@ -14,38 +14,28 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 ```
 // Clone到本地
 git clone git://github.com/TBEDP/datavjs.git
-// 进入目录
-cd datavjs
-// 启动demo
-npm install & npm run build & npm start
 ```
-或者
-
-```
-npm install datavjs
-npm start datavjs
-// 源码位于node_modules/datavjs
-```
+需要注意的是`example`目录下的例子中有ajax存在，所以你需要一个服务器来托管这些静态文件。
 
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
 ## Examples
-- [Pie](http://datavlab.org/datavjs/#pie)  
+- [Pie](http://datavlab.org/datavjs/#pie)
 ![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
-- [Treemap](http://datavlab.org/datavjs/#treemap)  
+- [Treemap](http://datavlab.org/datavjs/#treemap)
 ![Treemap图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/treemap.jpg)
-- [Tree](http://datavlab.org/datavjs/#tree)  
+- [Tree](http://datavlab.org/datavjs/#tree)
 ![Tree图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/tree.jpg)
-- [Stream](http://datavlab.org/datavjs/#stream)  
+- [Stream](http://datavlab.org/datavjs/#stream)
 ![Stream图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/stream.jpg)
-- [ScatterplotMatrix](http://datavlab.org/datavjs/#scatterplotMatrix)  
+- [ScatterplotMatrix](http://datavlab.org/datavjs/#scatterplotMatrix)
 ![ScatterplotMatrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/scatterplotMatrix.jpg)
-- [Force](http://datavlab.org/datavjs/#force)  
+- [Force](http://datavlab.org/datavjs/#force)
 ![Force图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/force.jpg)
-- [Matrix](http://datavlab.org/datavjs/#matrix)  
+- [Matrix](http://datavlab.org/datavjs/#matrix)
 ![Matrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/matrix.jpg)
-- [Bubble](http://datavlab.org/datavjs/#bubble)  
+- [Bubble](http://datavlab.org/datavjs/#bubble)
 ![Bubble图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/bubble.jpg)
-- [Chord](http://datavlab.org/datavjs/#chord)  
+- [Chord](http://datavlab.org/datavjs/#chord)
 ![Chord图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg)
 
 ## Quick start
@@ -109,7 +99,7 @@ Below is the output from `git-summary`
  active   : 147 days
  commits  : 416
  files    : 270
- authors  : 
+ authors  :
    291    Jackson Tian            70.0%
     46	jdk137                  11.1%
     25	xie cong                6.0%
@@ -133,9 +123,9 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 - 阿里旺旺
   - 朴灵[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
   - 宁朗[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
-  - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
-  - 解聪(浙大实习生)[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1) 
-  - 黄芯芯(浙大实习生)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1) 
+  - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)
+  - 解聪(浙大实习生)[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)
+  - 黄芯芯(浙大实习生)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1)
 - 阿里旺旺群：76480715
 - QQ群: 18164936
 - Google Group: [DataVLab](http://groups.google.com/group/datavlab)

@@ -12878,7 +12878,7 @@ window.Raphael.vml && function (R) {
 
 
 
-/*global d3, _, $, jQuery, Raphael, EventProxy */
+/*global d3, window, _, $, jQuery, Zepto, Raphael, EventProxy */
 /*!
  * DataV兼容定义
  */
@@ -12894,6 +12894,7 @@ window.Raphael.vml && function (R) {
      */
     var DataV = function () {};
 
+    var DOM = window.jQuery || window.Zepto;
     /**
      * 版本号
      */
@@ -13256,12 +13257,12 @@ window.Raphael.vml && function (R) {
         return ret;
     };
 
-    jQuery.fn.wall = function () {
+    DOM.fn.wall = function () {
         return $(this).each(function () {
             $(this).css('visibility', 'hidden');
         });
     };
-    jQuery.fn.unwall = function () {
+    DOM.fn.unwall = function () {
         return $(this).each(function () {
             $(this).css('visibility', 'visible');
         });
@@ -13367,7 +13368,7 @@ window.Raphael.vml && function (R) {
             ret = document.getElementById(node);
         } else if (node.nodeName) { //DOM-element
             ret = node;
-        } else if (node instanceof jQuery && node.size() > 0) {
+        } else if (node.size() > 0) {
             ret = node[0];
         }
         if (!ret) {
@@ -13463,14 +13464,19 @@ window.Raphael.vml && function (R) {
      * 浮动标签
      */
     DataV.FloatTag = function () {
+        var mouseToFloatTag = {x: 20, y: 20};
+        var setContent = function () {};
+        var node;
+        var container;
         //set floatTag location, warning: the html content must be set before call this func,
         // because jqNode's width and height depend on it's content;
         var _changeLoc = function (m) {
             //m is mouse location, example: {x: 10, y: 20}
             var x = m.x;
             var y = m.y;
-            var floatTagWidth = jqNode.outerWidth();
-            var floatTagHeight = jqNode.outerHeight();
+            var floatTagWidth = node.outerWidth ? node.outerWidth() : node.width();
+            var floatTagHeight = node.outerHeight ? node.outerHeight() : node.height();
+
             if (floatTagWidth + x + 2 * mouseToFloatTag.x <=  $(container).width()) {
                 x += mouseToFloatTag.x;
             } else {
@@ -13481,8 +13487,8 @@ window.Raphael.vml && function (R) {
             } else {
                 y += mouseToFloatTag.y;
             }
-            jqNode.css("left",  x  + "px");
-            jqNode.css("top",  y + "px");
+            node.css("left",  x);
+            node.css("top",  y);
         };
         var _mousemove = function (e) {
             var offset = $(container).offset();
@@ -13494,34 +13500,28 @@ window.Raphael.vml && function (R) {
             _changeLoc({'x': x, 'y': y});
         };
 
-        var mouseToFloatTag = {x: 20, y: 20};
-        var setContent = function () {};
-        var jqNode;
-        var container;
-
         var floatTag = function (cont) {
-            container = cont;
-            jqNode = $("<div/>").css({
+            container = $(cont);
+            node = $("<div/>").css({
                 "border": "1px solid",
                 "border-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.8)",
                 "background-color": $.browser.msie ? "rgb(0, 0, 0)" : "rgba(0, 0, 0, 0.75)",
                 "color": "white",
                 "border-radius": "2px",
                 "padding": "12px 8px",
-                //"line-height": "170%",
-                //"opacity": 0.7,
                 "font-size": "12px",
                 "box-shadow": "3px 3px 6px 0px rgba(0,0,0,0.58)",
                 "font-familiy": "宋体",
-                "z-index": 10000,
+                "z-index": 1000,
                 "text-align": "center",
                 "visibility": "hidden",
                 "position": "absolute"
             });
-            $(container).append(jqNode)
-                .mousemove(_mousemove);
-            jqNode.creator = floatTag;
-            return jqNode;
+            container.append(node);
+            container.on('mousemove', _mousemove);
+            container.on('tap', _mousemove);
+            node.creator = floatTag;
+            return node;
         };
 
         floatTag.setContent = function (sc) {
