@@ -5,7 +5,7 @@ exports.deps = [
   'deps/raphael.js',
   'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
-  'deps/underscore-1.4.2.js'
+  'deps/underscore-1.4.4.js'
 ];
 
 exports.datav = exports.deps.concat([
@@ -36,12 +36,12 @@ exports.data_shu = exports.without([
   'deps/raphael.js',
   'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
-  'deps/underscore-1.4.2.js'
+  'deps/underscore-1.4.4.js'
 ]);
 
 exports.data_mofang = exports.without([
   'deps/raphael.js',
-  'deps/underscore-1.4.2.js',
+  'deps/underscore-1.4.4.js',
   'deps/jquery-1.7.1.js'
 ]);
 
@@ -50,7 +50,7 @@ exports.v5 = exports.without([
   'deps/json2.js',
   'deps/eventproxy-0.2.0.js',
   'deps/jquery-1.7.1.js',
-  'deps/underscore-1.4.2.js'
+  'deps/underscore-1.4.4.js'
 ]);
 
 exports.all = exports.datav.concat([
