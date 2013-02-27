@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Dag Graph</title>
+
+    <script src="../../build/deps.js"></script>
+    <script src="../../lib/datav.js"></script>
+    <script src="../../lib/components/dag.js"></script>
+<style type="text/css">
+#chart {
+    border-top: 1px dashed #F00;
+    border-bottom: 1px dashed #F00;
+    padding-left: 20px;
+}
+</style>
+  </head>
+  <body>
+    <div id="chart"></div>
+<script>
+// ├─┬ anywhere@0.0.2
+// │ └─┬ connect@2.7.1
+// │   ├── bytes@0.1.0
+// │   ├── cookie@0.0.5
+// │   ├── cookie-signature@0.0.1
+// │   ├── crc@0.2.0
+// │   ├── debug@0.7.0
+// │   ├── formidable@1.0.11
+// │   ├── fresh@0.1.0
+// │   ├── pause@0.0.1
+// │   ├── qs@0.5.1
+// │   └─┬ send@0.1.0
+// │     ├── mime@1.2.6
+// │     └── range-parser@0.0.4
+var source = [
+  // name, dep, etc
+  ['anywhere', ['connect', 'eventproxy']],
+  ['connect', ['bytes', 'send', 'cookie', 'cookie-signature', 'crc', 'debug', 'formidable', 'fresh', 'pause', 'qs']],
+  ['send', ['mime', 'range-parser']],
+  ['mime'],
+  ['range-parser'],
+  ['bytes'],
+  ['cookie'],
+  ['cookie-signature'],
+  ['crc'],
+  ['debug'],
+  ['formidable'],
+  ['fresh'],
+  ['pause'],
+  ['qs'],
+  ['taobaoindex', ['eventproxy', 'connect']],
+  ['asynclist', ['eventproxy']],
+  ['eventproxy'],
+  ['datav', ['anywhere', 'eventproxy']],
+  ['mofang', ['connect', 'datav']],
+  ['taobaoindexapi', ['taobaoindex']]
+];
+var dag = new Dag('chart');
+dag.setSource(source);
+dag.render('eventproxy');
+</script>
+  </body>
+</html>
