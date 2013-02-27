@@ -7941,7 +7941,7 @@ if (!JSON) {
                     dH = endH - startH;
                     dNum = endNum - startNum;
                 }
-                
+
                 var h = (startH + dH * num) / 360;
                 var s = (70 + Math.abs(4 - (startNum + dNum * num) % 8) * 5) / 100;
                 var b = (100 - Math.abs(4 - (startNum + dNum * num) % 8) * 5) / 100;
@@ -8262,6 +8262,15 @@ if (!JSON) {
         });
         this.mapping = ret;
         return ret;
+    };
+
+    /**
+     * 创建画布
+     */
+    Chart.prototype.createCanvas = function () {
+        var conf = this.defaults;
+        this.node.style.position = "relative";
+        this.paper = new Raphael(this.node, conf.width, conf.height);
     };
 
     /**
