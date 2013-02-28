@@ -50,16 +50,16 @@ git clone git://github.com/TBEDP/datavjs.git
 
 ```
 var source = [
-  '北京', 50265
-  '上海', 60555
-  '广州', 38544
-  '深圳', 27276
-  '西安', 20506
-  '昆明', 26916
-  '武汉', 17636
-  '拉萨', 977
-  '哈尔滨', 10406
-  '乌鲁木齐', 6695
+  ['北京', 50265],
+  ['上海', 60555],
+  ['广州', 38544],
+  ['深圳', 27276],
+  ['西安', 20506],
+  ['昆明', 26916],
+  ['武汉', 17636],
+  ['拉萨', 977],
+  ['哈尔滨', 10406],
+  ['乌鲁木齐', 6695]
 ];
 ```
 ### 渲染图表
@@ -73,11 +73,8 @@ pie.setSource(source);
 pie.render();
 ```
 
-### 结果
+### 结果：
 ![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
-
-## Plan
-* [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). 欢迎Fork，欢迎Contribute.
 
 ## Requirements:
 * [D3.js](https://github.com/mbostock/d3).
@@ -94,23 +91,23 @@ Thanks goes to the people who have contributed code to this library, see the [Gi
 Below is the output from `git-summary`
 
 ```
- project  : datavjs
+ project  : my_datavjs
  repo age : 6 months
- active   : 147 days
- commits  : 416
- files    : 270
+ active   : 154 days
+ commits  : 424
+ files    : 272
  authors  :
-   291    Jackson Tian            70.0%
-    46	jdk137                  11.1%
-    25	xie cong                6.0%
-    18	gozo1234                4.3%
-    11	Theseue                 2.6%
-     8	xiecong                 1.9%
-     7	wxtheseue               1.7%
-     4	Jiang Dongke            1.0%
-     3	郭方舟                  0.7%
-     2	unknown                 0.5%
-     1	arcthur                 0.2%
+   299  Jackson Tian            70.5%
+    46  jdk137                  10.8%
+    25  xie cong                5.9%
+    18  gozo1234                4.2%
+    11  Theseue                 2.6%
+     8  xiecong                 1.9%
+     7  wxtheseue               1.7%
+     4  Jiang Dongke            0.9%
+     3  郭方舟               0.7%
+     2  unknown                 0.5%
+     1  arcthur                 0.2%
 ```
 
 ## License
