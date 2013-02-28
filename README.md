@@ -74,7 +74,7 @@ pie.render();
 ```
 
 ### 结果
-![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
+![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
 
 ## Plan
 * [Phase 2: Butterfly](https://github.com/TBEDP/datavjs/blob/master/docs/DataV%E7%AC%AC%E4%BA%8C%E6%9C%9F%E8%AE%A1%E5%88%92%E8%9D%B4%E8%9D%B6.md). 欢迎Fork，欢迎Contribute.
