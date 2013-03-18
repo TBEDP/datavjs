@@ -29411,6 +29411,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
    * - `height` 高度，默认为522，单位像素
    * - `yBase` 纵坐标的基线值，默认为0，可以设置为任意数值；为undefined时，以数据中的最小值为起始值
    * - `barWidth` 柱子的宽度
+   * - `autoWidth` 是否柱子的宽度与间隙自动调整
    * - `showLegend` 是否显示图例
    * - `legendWidth` 图例的宽度
    * - `margin` 图表的间距，依次为上右下左
@@ -29466,6 +29467,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
       this.defaults.margin = [50, 50, 50, 50];
 
       this.defaults.barWidth = 10;
+      this.defaults.autoWidth = false;
       this.defaults.circleR = 3;
       this.defaults.barColor = ["#308BE6", "#8EEC00", "#DDDF0D"];
       this.defaults.sortX = true;
@@ -29611,7 +29613,9 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     }).length;
     var width = diagramArea[2] - diagramArea[0];
     this.clusterWidth = width / this.clusterCount;
-    this.gap = (this.clusterWidth - this.columnCount * conf.barWidth) / 2;
+    // 如果是自动设置宽度，那么柱子与间隙的比例为2:1
+    this.barWidth = conf.autoWidth ? this.clusterWidth / (this.columnCount + 0.5) : conf.barWidth;
+    this.gap = (this.clusterWidth - this.columnCount * this.barWidth) / 2;
   };
 
   /**
@@ -29695,7 +29699,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var axis = this.axisPosition;
     var paper = this.canvas;
     //bars
-    var barWidth = conf.barWidth;
+    var barWidth = this.barWidth;
     var columnSet = this.columnSet = [];
     var values = _.values(this.columns);
 
@@ -29721,7 +29725,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
     var that = this;
     var conf = this.defaults;
     var columnSet = this.columnSet;
-    var barWidth = conf.barWidth;
+    var barWidth = this.barWidth;
     var paper = this.canvas;
     //var tagSet = paper.set();
     var axis = this.axisPosition;
@@ -29900,7 +29904,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
             offset = that.columnSet.length - columnIndex - offset - 1;
             d.attr({
               "opacity": 1,
-              "transform": "t" + (-that.defaults.barWidth * offset) + "," + y[0]
+              "transform": "t" + (-that.barWidth * offset) + "," + y[0]
             });
           } else {
             d.attr({"opacity": 0});
