@@ -4,6 +4,8 @@
     "console",
     "document",
     "clearInterval",
+    "Raphael",
+    "$",
     "setInterval"
   ],
   "es5": false,
