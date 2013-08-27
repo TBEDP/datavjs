@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Gender Chart Demo</title>
+  <script src="../../build/deps.js"></script>
+  <script src="../../lib/datav.js"></script>  
+  <script src="../../lib/charts/gender.js"></script>  
+  
+  <style type="text/css">
+  .gender_chart {
+    padding: 10px;
+    margin: 10px;
+    height: 235px;
+    width: 300px;
+    overflow: hidden;
+    float: left;
+  }
+  </style>
+</head>
+<body>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+<div class="gender_chart">
+</div>
+
+<script>
+var gender0 = new GenderChart($('.gender_chart:eq(0)'));
+gender0.render([99, 3]);
+
+var gender1 = new GenderChart($('.gender_chart:eq(1)'), {maleText: 'M', femaleText: 'W'});
+gender1.render([100, 0]);
+
+var gender2 = new GenderChart($('.gender_chart:eq(2)'));
+gender2.render([0, 100]);
+
+var gender3 = new GenderChart($('.gender_chart:eq(3)'));
+gender3.render([50, 50]);
+
+new GenderChart($('.gender_chart:eq(4)')).setSource([40, 60]).render();
+
+var gender5 = new GenderChart($('.gender_chart:eq(5)'));
+gender5.render([30, 70]);
+
+var gender6 = new GenderChart($('.gender_chart:eq(6)'));
+gender6.render([20, 80]);
+
+var gender7 = new GenderChart($('.gender_chart:eq(7)'));
+gender7.render([10, 90]);
+
+var gender8 = new GenderChart($('.gender_chart:eq(8)'));
+gender8.render([5, 95]);
+
+var gender9 = new GenderChart($('.gender_chart:eq(9)'));
+gender9.render([1, 99]);
+
+var gender10 = new GenderChart($('.gender_chart:eq(10)'));
+gender10.render([2, 98]);
+
+var gender11 = new GenderChart($('.gender_chart:eq(11)'));
+gender11.render([3, 97]);
+
+var gender12 = new GenderChart($('.gender_chart:eq(12)'));
+gender12.render([4, 96]);
+
+var gender13 = new GenderChart($('.gender_chart:eq(13)'));
+gender13.render([5, 95]);
+
+var gender14 = new GenderChart($('.gender_chart:eq(14)'));
+gender14.render([6, 94]);
+
+var gender15 = new GenderChart($('.gender_chart:eq(15)'));
+gender15.render([10, 90]);
+
+var gender16 = new GenderChart($('.gender_chart:eq(16)'));
+gender16.render([15, 85]);
+
+var gender17 = new GenderChart($('.gender_chart:eq(17)'));
+gender17.render([20, 80]);
+
+var gender18 = new GenderChart($('.gender_chart:eq(18)'));
+gender18.render([99, 1]);
+
+var gender19 = new GenderChart($('.gender_chart:eq(19)'));
+gender19.render([98, 2]);
+
+var gender20 = new GenderChart($('.gender_chart:eq(20)'));
+gender20.render([97, 3]);
+
+var gender21 = new GenderChart($('.gender_chart:eq(21)'));
+gender21.render([96, 4]);
+
+var gender22 = new GenderChart($('.gender_chart:eq(22)'));
+gender22.render([95, 5]);
+
+var gender23 = new GenderChart($('.gender_chart:eq(23)'));
+gender23.render([94, 6]);
+
+var gender24 = new GenderChart($('.gender_chart:eq(24)'));
+gender24.render([90, 10]);
+
+var gender25 = new GenderChart($('.gender_chart:eq(25)'));
+gender25.render([85, 15]);
+
+var gender26 = new GenderChart($('.gender_chart:eq(26)'));
+gender26.render([75, 25]);
+var gender27 = new GenderChart($('.gender_chart:eq(27)'));
+gender27.render([0, 0]);
+</script>
+</body>
+</html>

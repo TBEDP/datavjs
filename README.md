@@ -1,6 +1,7 @@
 DataV.js
 ============
-DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
+DataV.js 是一个 JavaScript 的数据可视化库，致力于推动数据可视化在普通业务的落地应用。
+我们的目标是：
 > 凡有数据在处，皆能可视化
 
 ![DataV logo](https://raw.github.com/TBEDP/datavjs/master/doc/assets/logo.png)
@@ -11,13 +12,14 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 ## 安装
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
 
+```bash
+$ git clone git://github.com/TBEDP/datavjs.git
 ```
-// Clone到本地
-git clone git://github.com/TBEDP/datavjs.git
-```
-需要注意的是`example`目录下的例子中有ajax存在，所以你需要一个服务器来托管这些静态文件。
 
-你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
+需要注意的是 [example](https://github.com/TBEDP/datavjs/tree/master/example) 目录下的例子中有 `ajax` 存在，所以你需要一个服务器来托管这些静态文件。
+
+你也可以试用基于 DataV.js 开发的 [Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
+
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)
 ![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
@@ -37,18 +39,22 @@ git clone git://github.com/TBEDP/datavjs.git
 ![Bubble图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/bubble.jpg)
 - [Chord](http://datavlab.org/datavjs/#chord)
 ![Chord图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg)
+- [Gender 性别图](https://github.com/TBEDP/datavjs/tree/master/example/gender)
+![Gender](http://nfs.nodeblog.org/d/3/d317bbffe6cc085b63c653e02d4d5373.png)
 
 ## Quick start
 此处以Pie图为例。
 
 ### 引入依赖
 
-    <script src="path/to/build/datav.js"></script>
-    <script src="path/to/charts/pie.js"></script>
+```html
+<script src="path/to/build/datav.js"></script>
+<script src="path/to/charts/pie.js"></script>
+```
 
 ### 准备数据
 
-```
+```js
 var source = [
   ['北京', 50265],
   ['上海', 60555],
@@ -62,9 +68,10 @@ var source = [
   ['乌鲁木齐', 6695]
 ];
 ```
+
 ### 渲染图表
 
-```
+```js
 // 初始化组件
 var pie = new Pie("container", {width: 1000, tag: true});
 // 添加数据源
@@ -74,6 +81,7 @@ pie.render();
 ```
 
 ### 结果：
+
 ![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
 
 ## Requirements:
@@ -90,20 +98,22 @@ Thanks goes to the people who have contributed code to this library, see the [Gi
 
 Below is the output from `git-summary`
 
-```
- project  : my_datavjs
- repo age : 6 months
- active   : 154 days
- commits  : 424
- files    : 272
- authors  :
-   299  Jackson Tian            70.5%
-    46  jdk137                  10.8%
-    25  xie cong                5.9%
+```bash
+$ git summary 
+
+ project  : datavjs
+ repo age : 1 year
+ active   : 159 days
+ commits  : 431
+ files    : 276
+ authors  : 
+   305  Jackson Tian            70.8%
+    46  jdk137                  10.7%
+    25  xie cong                5.8%
     18  gozo1234                4.2%
     11  Theseue                 2.6%
      8  xiecong                 1.9%
-     7  wxtheseue               1.7%
+     8  wxtheseue               1.9%
      4  Jiang Dongke            0.9%
      3  郭方舟               0.7%
      2  unknown                 0.5%
@@ -111,9 +121,11 @@ Below is the output from `git-summary`
 ```
 
 ## License
+
 DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
 
 ## Contact
+
 组件由淘宝数据产品部可视化小组以及浙大CAD&CG可视化与可视分析小组共同开发
 开发联系人，有问题可咨询：
 
@@ -130,4 +142,3 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 - 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
-
