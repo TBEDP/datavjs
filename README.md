@@ -44,7 +44,7 @@ $ git clone git://github.com/TBEDP/datavjs.git
 - [Level 层级图](https://github.com/TBEDP/datavjs/tree/master/example/level)
 ![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/level.jpg)
 - [ChineseMap图](https://github.com/TBEDP/datavjs/tree/master/example/chinamap)
-![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
+![ChineseMap](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
 
 
 ## Quick start
