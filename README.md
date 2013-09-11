@@ -42,9 +42,9 @@ $ git clone git://github.com/TBEDP/datavjs.git
 - [Gender 性别图](https://github.com/TBEDP/datavjs/tree/master/example/gender)
 ![Gender](http://nfs.nodeblog.org/d/3/d317bbffe6cc085b63c653e02d4d5373.png)
 - [Level 层级图](https://github.com/TBEDP/datavjs/tree/master/example/level)
-![Level](https://raw.github.com/TBEDP/datavjs/master/doc/assets/level.jpg)
-- [ChineseMap图](https://github.com/TBEDP/datavjs/tree/master/example/chinamap/chinamap_city_without_seajs.html)
-![Level](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chinesemap.jpg)
+![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/level.jpg)
+- [ChineseMap图](https://github.com/TBEDP/datavjs/tree/master/example/chinamap)
+![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
 
 
 ## Quick start
