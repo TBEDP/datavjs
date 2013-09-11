@@ -41,6 +41,9 @@ $ git clone git://github.com/TBEDP/datavjs.git
 ![Chord图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg)
 - [Gender 性别图](https://github.com/TBEDP/datavjs/tree/master/example/gender)
 ![Gender](http://nfs.nodeblog.org/d/3/d317bbffe6cc085b63c653e02d4d5373.png)
+- [Level 层级图](https://github.com/TBEDP/datavjs/tree/master/example/level)
+![Gender](https://raw.github.com/TBEDP/datavjs/master/doc/assets/level.jpg)
+
 
 ## Quick start
 此处以Pie图为例。
