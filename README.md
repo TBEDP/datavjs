@@ -9,41 +9,17 @@ DataV.js 是一个 JavaScript 的数据可视化库，致力于推动数据可�
 - [API文档](http://tbedp.github.com/datavjs/index.html)
 - 任意疑问，请移至底下联系人部分即可。
 
-## 安装
-目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
+## 说明
+此版本只演示与TEDP主版本有区别或新增的内容,如需查看原始主版本,请至 [DataV.js on Github](https://github.com/TBEDP/datavjs) .
 
-```bash
-$ git clone git://github.com/TBEDP/datavjs.git
-```
-
-需要注意的是 [example](https://github.com/TBEDP/datavjs/tree/master/example) 目录下的例子中有 `ajax` 存在，所以你需要一个服务器来托管这些静态文件。
-
-你也可以试用基于 DataV.js 开发的 [Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
-
-## Examples
-- [Pie](http://datavlab.org/datavjs/#pie)
-![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
-- [Treemap](http://datavlab.org/datavjs/#treemap)
-![Treemap图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/treemap.jpg)
-- [Tree](http://datavlab.org/datavjs/#tree)
-![Tree图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/tree.jpg)
-- [Stream](http://datavlab.org/datavjs/#stream)
-![Stream图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/stream.jpg)
-- [ScatterplotMatrix](http://datavlab.org/datavjs/#scatterplotMatrix)
-![ScatterplotMatrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/scatterplotMatrix.jpg)
-- [Force](http://datavlab.org/datavjs/#force)
-![Force图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/force.jpg)
-- [Matrix](http://datavlab.org/datavjs/#matrix)
-![Matrix图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/matrix.jpg)
-- [Bubble](http://datavlab.org/datavjs/#bubble)
-![Bubble图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/bubble.jpg)
-- [Chord](http://datavlab.org/datavjs/#chord)
-![Chord图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/chord.jpg)
-- [Gender 性别图](https://github.com/TBEDP/datavjs/tree/master/example/gender)
+## New Examples
+- [Gender 性别图](https://github.com/hlqf/datavjs/tree/master/example/gender)
 ![Gender](http://nfs.nodeblog.org/d/3/d317bbffe6cc085b63c653e02d4d5373.png)
-- [Level 层级图](https://github.com/TBEDP/datavjs/tree/master/example/level)
+- [Level 层级图](https://github.com/hlqf/datavjs/tree/master/example/level)
 ![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/level.jpg)
-- [ChineseMap图](https://github.com/TBEDP/datavjs/tree/master/example/chinamap)
+- [Level 多元素层级图](https://github.com/hlqf/datavjs/tree/master/example/level)
+![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/level_duo.jpg)
+- [ChineseMap图](https://github.com/hlqf/datavjs/tree/master/example/chinamap)
 ![ChineseMap](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
 
 
