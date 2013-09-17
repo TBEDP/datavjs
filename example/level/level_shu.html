@@ -16,6 +16,17 @@
       overflow: hidden;
       float: left;
     }
+    .level2 {
+      padding: 10px;
+      margin: 10px;
+      height: 235px;
+      width: 500px;
+      overflow: hidden;
+      float: left;
+    }
+    .clr {
+      clear: both;
+    }
   </style>
 </head>
 <body>
@@ -24,6 +35,8 @@
   <div class="level"></div>
   <div class="level"></div>
   <div class="level"></div>
+  <div class="clr"></div>
+  <div class="level2"></div>
   <script>
     /**
      * Examples about how to use LevelChart
@@ -48,6 +61,13 @@
     //You could use your own images for marking the baseline on the top-right of the chart now!
     var tester = new LevelChart($('.level:eq(4)'));
     tester.render([ 10, 35, 88, 49, 10 ], { globalBase : [ 0, 0, 5, 0, 0], tipImg : 'http://img03.taobaocdn.com/tps/i3/T1iTjQXXXbXXc_eAHa-19-18.png' });
+
+    //When there is no baseline, the hover effects won't be shown.
+    var tester = new LevelChart($('.level2:eq(0)'), {
+      "width": 400,
+      "height": 235,
+    });
+    tester.render([[ 10, 35, 88, 49, 10 ],[ 15, 45, 78, 40, 10 ]]);
 
   </script>
 </body>
