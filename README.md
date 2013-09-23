@@ -7,7 +7,6 @@ DataV.js 是一个 JavaScript 的数据可视化库，致力于推动数据可�
 ![DataV logo](https://raw.github.com/TBEDP/datavjs/master/doc/assets/logo.png)
 
 - [API文档](http://tbedp.github.com/datavjs/index.html)
-- 任意疑问，请移至底下联系人部分即可。
 
 ## 说明
 此版本只演示与TEDP主版本有区别或新增的内容,如需查看原始主版本,请至 [DataV.js on Github](https://github.com/TBEDP/datavjs) .
@@ -21,105 +20,6 @@ DataV.js 是一个 JavaScript 的数据可视化库，致力于推动数据可�
 ![Level](https://raw.github.com/hlqf/datavjs/master/doc/assets/level_duo.jpg)
 - [ChineseMap图](https://github.com/hlqf/datavjs/tree/master/example/chinamap)
 ![ChineseMap](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
-
-
-## Quick start
-此处以Pie图为例。
-
-### 引入依赖
-
-```html
-<script src="path/to/build/datav.js"></script>
-<script src="path/to/charts/pie.js"></script>
-```
-
-### 准备数据
-
-```js
-var source = [
-  ['北京', 50265],
-  ['上海', 60555],
-  ['广州', 38544],
-  ['深圳', 27276],
-  ['西安', 20506],
-  ['昆明', 26916],
-  ['武汉', 17636],
-  ['拉萨', 977],
-  ['哈尔滨', 10406],
-  ['乌鲁木齐', 6695]
-];
-```
-
-### 渲染图表
-
-```js
-// 初始化组件
-var pie = new Pie("container", {width: 1000, tag: true});
-// 添加数据源
-pie.setSource(source);
-// 渲染
-pie.render();
-```
-
-### 结果：
-
-![Pie图](https://raw.github.com/TBEDP/datavjs/master/doc/assets/pie.jpg)
-
-## Requirements:
-* [D3.js](https://github.com/mbostock/d3).
-* [Raphael.js](http://raphaeljs.com/).
-* [Sea.js](https://github.com/seajs/seajs).
-
-## Learn more?
-- The example site: <http://datavlab.org/datavjs/>
-- [API Docs](http://tbedp.github.com/datavjs/)
-
-## Contributors
-Thanks goes to the people who have contributed code to this library, see the [GitHub Contributors](https://github.com/TBEDP/datavjs/graphs/contributors) page.
-
-Below is the output from `git-summary`
-
-```bash
-$ git summary 
-
- project  : datavjs
- repo age : 1 year
- active   : 159 days
- commits  : 431
- files    : 276
- authors  : 
-   305  Jackson Tian            70.8%
-    46  jdk137                  10.7%
-    25  xie cong                5.8%
-    18  gozo1234                4.2%
-    11  Theseue                 2.6%
-     8  xiecong                 1.9%
-     8  wxtheseue               1.9%
-     4  Jiang Dongke            0.9%
-     3  郭方舟               0.7%
-     2  unknown                 0.5%
-     1  arcthur                 0.2%
-```
-
-## License
-
-DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/blob/master/MIT-License).
-
-## Contact
-
-组件由淘宝数据产品部可视化小组以及浙大CAD&CG可视化与可视分析小组共同开发
-开发联系人，有问题可咨询：
-
-- 阿里旺旺
-  - 朴灵[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
-  - 宁朗[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
-  - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)
-  - 解聪(浙大实习生)[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)
-  - 黄芯芯(浙大实习生)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1)
-- 阿里旺旺群：76480715
-- QQ群: 18164936
-- Google Group: [DataVLab](http://groups.google.com/group/datavlab)
-- Gtalk: <shyvo1987@gmail.com>
-- 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
-
-如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
+- [图表选择器](https://github.com/hlqf/datavjs/tree/master/example/tiflevel)
+![TifLevel](https://raw.github.com/hlqf/datavjs/master/doc/assets/tiflevel.jpg)
+图表选择器用于既需要显示数据间的相关占比关系又需要合并或拆分查询条件的业务场景。

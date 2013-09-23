@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Document</title>
+  <script src="../../build/deps.js"></script>
+  <script src="../../lib/datav.js"></script>  
+  <script src="../../lib/charts/tiflevel.js"></script> 
+  <style>
+  </style>
+</head>
+<body>
+  <div class="level" id="tiflevel-demo1"></div>
+  <div class="level" id="tiflevel-demo2"></div>
+  <script>
+    //Init params for chart and darw the picture;
+    var tifLevel = new TifBuyerLevel({
+      container: "tiflevel-demo1",
+      width: 326,
+      height: 190,
+      margin: {
+            top: 60,
+            bottom: 100,
+            left: 30,
+            right: 50
+          },
+      clickHandle: function (d, i) {
+           console.log(d);
+           console.log(i);
+          },
+    });
+
+      
+    var tifLevel = new TifBuyerLevel({
+      container: "tiflevel-demo2",
+      width: 326,
+      height: 190,
+      margin: {
+            top: 60,
+            bottom: 100,
+            left: 30,
+            right: 50
+          },
+      data: [{name: "白富美", value: 40}, {name: "高富帅", value: 30}, {name: "穷屌丝", value: 20}, {name: "女汉子", value: 15}],
+      clickHandle: function (d, i) { //event after click the bar or the tag,use console to show up.
+           console.log(d);
+           console.log(i);
+          },
+    });
+    //Add mark for some sections, you could use imgages like this.
+    tifLevel.paper.image("http://shu.taobao.com/assets/images/buyer_level_heart.png", tifLevel.leftArr[0] - 8, tifLevel.config.margin.top - 18, 18, 18)
+          .attr({"title": "段落标记"});
+    tifLevel.paper.image("http://shu.taobao.com/assets/images/buyer_level_heart.png", tifLevel.leftArr[1] - 9, tifLevel.config.margin.top - 18, 18, 18)
+          .attr({"title": "MarkII"});
+    tifLevel.paper.text(20, 30, "图表选择器").attr({
+          "font-family": "微软雅黑",
+          "font-size": "14px",
+          "text-anchor": "start"
+        });
+
+  </script>
+</body>
+</html>
