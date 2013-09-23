@@ -21,5 +21,6 @@ DataV.js 是一个 JavaScript 的数据可视化库，致力于推动数据可�
 - [ChineseMap图](https://github.com/hlqf/datavjs/tree/master/example/chinamap)   
 ![ChineseMap](https://raw.github.com/hlqf/datavjs/master/doc/assets/chinesemap.jpg)
 - [图表选择器](https://github.com/hlqf/datavjs/tree/master/example/tiflevel)   
-![TifLevel](https://raw.github.com/hlqf/datavjs/master/doc/assets/tiflevel.jpg)   
+![TifLevel](https://raw.github.com/hlqf/datavjs/master/doc/assets/tiflevel.jpg)
+   
 图表选择器用于既需要显示数据间的相关占比关系又需要合并或拆分查询条件的业务场景。
