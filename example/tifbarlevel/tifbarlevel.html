@@ -5,15 +5,17 @@
   <title>Demo</title>
   <script src="../../build/deps.js"></script>
   <script src="../../lib/datav.js"></script>  
-  <script src="../../lib/charts/tifbarlevel.js"></script> 
+  <script src="../../lib/charts/tifbarlevel.js"></script>
+  <!--If you need to roate the chart, you should use tifbarlevel2.js-->
+  <!--<script src="../../lib/charts/tifbarlevel2.js"></script>-->
 </head>
 <body>
   <div id="demo1"></div>
   <script>
     var chart = new TifBarLevel({
           container: "demo1",
-          width: 326,
-          height: 190,
+          width: 450,
+          height: 250,
           data: [{name: "白富美", value: 40}, {name: "高富帅", value: 60}, {name: "穷屌丝", value: 34}, {name: "女汉子", value: 45}], 
           clickHandle: function (d, i) {
             console.log(d);
