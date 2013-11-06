@@ -21,7 +21,7 @@ As DataV.js is under constraction, we don't have a release version. Please use t
 git clone git://github.com/TBEDP/datavjs.git
 // 进入目录 Enter directory
 cd datavjs
-// 启动demo Startup Demo
+// 启动 demo Startup Demo
 npm install & npm run build & npm start
 ```
 或者 or
@@ -83,11 +83,11 @@ var source = [
 ### 渲染图表 Rendering
 
 ```
-// 初始化组件
+// 初始化组件 Init component
 var pie = new Pie("container", {width: 1000, tag: true});
-// 添加数据源
+// 添加数据源 Add data
 pie.setSource(source);
-// 渲染
+// 渲染 Render
 pie.render();
 ```
 
@@ -153,5 +153,5 @@ Contact Information:
 
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new).
 
-If you find any bugs or problems, Please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new)
+If you find any bug or problem, please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new).
 
