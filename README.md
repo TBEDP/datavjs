@@ -1,8 +1,8 @@
 DataV.js
 ============
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
-DataV.js is a open source JavaScript library for data visualization, which focus on the daily business. DataV.js is based on D3.js and Rafeal.js. Our Objective is:
-> 凡有数据在处，皆能可视化
+DataV.js is an open source JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our Objective is:
+> 凡有数据在处，皆能可视化.
 > There's Data, there's visualization!
 
 ![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
@@ -13,7 +13,8 @@ DataV.js is a open source JavaScript library for data visualization, which focus
 
 ## 安装 Installation
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
-As DataV.js is under constraction, we don't have a release version. Please use the following way to install.
+
+As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
 
 ```
 // Clone 到本地 Clone to lacal
@@ -32,7 +33,8 @@ npm start datavjs
 ```
 
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
-Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV. It visulizes tables in any websites.
+
+Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV, which visualizes tables in any websites.
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
@@ -57,7 +59,7 @@ Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkn
 此处以Pie图为例。
 For example, if you want to use Pie chart:
 
-### 引入依赖 Import dependence
+### 引入依赖 Import dependent Libraries
 
     <script src="path/to/build/datav.js"></script>
     <script src="path/to/charts/pie.js"></script>
@@ -149,6 +151,7 @@ Contact Information:
 - Gtalk: <shyvo1987@gmail.com>
 - Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
-如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
+如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new).
+
 If you find any bugs or problems, Please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new)
 
