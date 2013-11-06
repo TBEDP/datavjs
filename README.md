@@ -1,25 +1,29 @@
 DataV.js
 ============
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
+DataV.js is a open source JavaScript library for data visualization, which focus on the daily business. DataV.js is based on D3.js and Rafeal.js. Our Objective is:
 > 凡有数据在处，皆能可视化
+> There's Data, there's visualization!
 
 ![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
 
-- [API文档](http://tbedp.github.com/datavjs/index.html)
+- [API Documents](http://tbedp.github.com/datavjs/index.html)
 - 当前分支为Butterfly，处于开发中，任意疑问，请移至底下联系人部分即可。
+- The current branch is Butterfly, If you have any question, please contact us.
 
-## 安装
+## 安装 Installation
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
+As DataV.js is under constraction, we don't have a release version. Please use the following way to install.
 
 ```
-// Clone到本地
+// Clone 到本地 Clone to lacal
 git clone git://github.com/TBEDP/datavjs.git
-// 进入目录
+// 进入目录 Enter directory
 cd datavjs
-// 启动demo
+// 启动demo Startup Demo
 npm install & npm run build & npm start
 ```
-或者
+或者 or
 
 ```
 npm install datavjs
@@ -28,6 +32,7 @@ npm start datavjs
 ```
 
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
+Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV. It visulizes tables in any websites.
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
@@ -50,13 +55,14 @@ npm start datavjs
 
 ## Quick start
 此处以Pie图为例。
+For example, if you want to use Pie chart:
 
-### 引入依赖
+### 引入依赖 Import dependence
 
     <script src="path/to/build/datav.js"></script>
     <script src="path/to/charts/pie.js"></script>
 
-### 准备数据
+### 准备数据 Data preparation
 
 ```
 var source = [
@@ -72,7 +78,7 @@ var source = [
   '乌鲁木齐', 6695
 ];
 ```
-### 渲染图表
+### 渲染图表 Rendering
 
 ```
 // 初始化组件
@@ -83,7 +89,7 @@ pie.setSource(source);
 pie.render();
 ```
 
-### 结果
+### 结果 Visualization
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
 
 ## Plan
@@ -128,18 +134,21 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 ## Contact
 组件由淘宝数据产品部可视化小组以及浙大CAD&CG可视化与可视分析小组共同开发
 开发联系人，有问题可咨询：
+DataV.js is developed together by eDP of Taobao.com and Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University.
+Contact Information:
 
-- 阿里旺旺
-  - 朴灵[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
-  - 宁朗[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
-  - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
-  - 解聪(浙大实习生)[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1) 
-  - 黄芯芯(浙大实习生)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1) 
+- 阿里旺旺 Ali WangWang
+  - 朴灵(Pu Ling)[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
+  - 宁朗(Ning Lang)[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
+  - 法慧(Fa hui)[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
+  - 解聪(浙大实习生)(Cong Xie)[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1) 
+  - 黄芯芯(浙大实习生)(XinXin Huang)[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1) 
 - 阿里旺旺群：76480715
 - QQ群: 18164936
 - Google Group: [DataVlab](http://groups.google.com/group/datavlab)
 - Gtalk: <shyvo1987@gmail.com>
-- 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
+- Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
+If you find any bugs or problems, Please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new)
 
