@@ -145,7 +145,7 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new).
 
 
-English Version
+Read Me
 ============
 DataV.js is a JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our motto is:
 > There's Data, there's visualization!
