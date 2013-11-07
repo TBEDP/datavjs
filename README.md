@@ -154,21 +154,12 @@ DataV.js is a JavaScript library for data visualization, which focuses on the da
 ## Installation
 As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
 
+```bash
+$ git clone git://github.com/TBEDP/datavjs.git
 ```
-// Clone to lacal
-git clone git://github.com/TBEDP/datavjs.git
-// Enter the directory
-cd datavjs
-// Startup Demo
-npm install & npm run build & npm start
-```
-or
 
-```
-npm install datavjs
-npm start datavjs
-// source code is at node_modules/datavjs
-```
+Attention: [example](https://github.com/TBEDP/datavjs/tree/master/example) directory contains examples using `ajax` , you need to setup a server.
+
 
 Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV, which visualizes tables in any websites.
 
