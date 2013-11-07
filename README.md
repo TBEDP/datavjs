@@ -149,6 +149,7 @@ Read Me (English Version)
 ============
 DataV.js is a JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our motto is:
 > There's Data, there's visualization!
+
 - The current branch is Butterfly, If you have any question, please contact us.
 
 ## Installation
