@@ -142,3 +142,48 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 - 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
+
+Read Me
+============
+DataV.js is a JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our motto is:
+> There's Data, there's visualization!
+
+- [API Document](http://tbedp.github.com/datavjs/index.html)
+- If you have any question, please contact us.
+
+## Installation
+As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
+
+```
+// Clone to lacal
+git clone git://github.com/TBEDP/datavjs.git
+// Enter the directory
+cd datavjs
+// Startup Demo
+npm install & npm run build & npm start
+```
+or
+
+```
+npm install datavjs
+npm start datavjs
+// source code is at node_modules/datavjs
+```
+
+Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV, which visualizes tables in any websites.
+
+## Contact
+DataV.js is developed together by eDP of Taobao.com and Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University.
+Contact Information:
+
+- Ali WangWang
+  - Pu Ling[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
+  - Ning Lang[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
+  - Fa hui[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
+  - Cong Xie[![解聪  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E9%95%BF%E4%BA%AD%E7%9A%84%E8%8B%8F%E5%B9%95%E9%81%AE&s=1) 
+  - XinXin Huang[![黄芯芯  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=littlemonkey007&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=littlemonkey007&s=1) 
+- Google Group: [DataVlab](http://groups.google.com/group/datavlab)
+- Gtalk: <shyvo1987@gmail.com>
+- Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
+
+If you find any bug or problem, please submit it to[Bug Submission](https://github.com/TBEDP/datavjs/issues/new).
