@@ -186,4 +186,4 @@ Contact Information:
 - Gtalk: <shyvo1987@gmail.com>
 - Visual Analytics Group of State Key Lab of CAD&CD, Zhejiang University: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
-If you find any bug or problem, please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new).
+If you find any bug or problem, please submit it to[Bug Submission](https://github.com/TBEDP/datavjs/issues/new).
