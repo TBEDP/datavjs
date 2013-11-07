@@ -1,20 +1,16 @@
 DataV.js
 ============
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
-DataV.js is an open source JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our Objective is:
 > 凡有数据在处，皆能可视化.
-> There's Data, there's visualization!
 
 ![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
 
 - [API Documents](http://tbedp.github.com/datavjs/index.html)
 - 当前分支为Butterfly，处于开发中，任意疑问，请移至底下联系人部分即可。
-- The current branch is Butterfly, If you have any question, please contact us.
 
 ## 安装 Installation
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
 
-As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
 
 ```
 // Clone 到本地 Clone to lacal
@@ -34,7 +30,6 @@ npm start datavjs
 
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
 
-Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV, which visualizes tables in any websites.
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
@@ -57,14 +52,13 @@ Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkn
 
 ## Quick start
 此处以Pie图为例。
-For example, if you want to use Pie chart:
 
-### 引入依赖 Import dependent Libraries
+### 引入依赖
 
     <script src="path/to/build/datav.js"></script>
     <script src="path/to/charts/pie.js"></script>
 
-### 准备数据 Data preparation
+### 准备数据
 
 ```
 var source = [
@@ -80,8 +74,7 @@ var source = [
   '乌鲁木齐', 6695
 ];
 ```
-### 渲染图表 Rendering
-
+### 渲染图表
 ```
 // 初始化组件 Init component
 var pie = new Pie("container", {width: 1000, tag: true});
@@ -91,7 +84,7 @@ pie.setSource(source);
 pie.render();
 ```
 
-### 结果 Visualization
+### 结果
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
 
 ## Plan
@@ -153,5 +146,31 @@ Contact Information:
 
 如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new).
 
-If you find any bug or problem, please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new).
 
+English Version
+============
+DataV.js is a JavaScript library for data visualization, which focuses on the daily business use. DataV.js is based on D3.js and Rafeal.js. Our Objective is:
+> There's Data, there's visualization!
+- The current branch is Butterfly, If you have any question, please contact us.
+
+As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
+
+```
+// Clone to lacal
+git clone git://github.com/TBEDP/datavjs.git
+// Enter the directory
+cd datavjs
+// Startup Demo
+npm install & npm run build & npm start
+```
+or
+
+```
+npm install datavjs
+npm start datavjs
+// source code is at node_modules/datavjs
+```
+
+Try [Chrome Extension](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm) based on DataV, which visualizes tables in any websites.
+
+If you find any bug or problem, please submit it to[ Submit Bug](https://github.com/TBEDP/datavjs/issues/new).
