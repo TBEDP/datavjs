@@ -1,7 +1,7 @@
 DataV.js
 ============
 DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视化在普通业务的落地应用。我们的目标是：
-> 凡有数据在处，皆能可视化.
+> 凡有数据在处，皆能可视化
 
 ![DataV logo](https://raw.github.com/JacksonTian/datavjs/butterfly/doc/assets/logo.png)
 
@@ -11,13 +11,12 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 ## 安装
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
 
-
 ```
 // Clone到本地
 git clone git://github.com/TBEDP/datavjs.git
 // 进入目录
 cd datavjs
-// 启动 demo
+// 启动demo
 npm install & npm run build & npm start
 ```
 或者
@@ -29,7 +28,6 @@ npm start datavjs
 ```
 
 你也可以试用基于DataV.js开发的[Chrome插件](https://chrome.google.com/webstore/detail/datavjs/fkekhkndcgobgjbkclehjognobgdoppm)，可以在任意网页中将表格可视化。
-
 ## Examples
 - [Pie](http://datavlab.org/datavjs/#pie)  
 ![Pie图](https://raw.github.com/TBEDP/datavjs/butterfly/doc/assets/pie.jpg)
@@ -75,6 +73,7 @@ var source = [
 ];
 ```
 ### 渲染图表
+
 ```
 // 初始化组件 Init component
 var pie = new Pie("container", {width: 1000, tag: true});
@@ -142,7 +141,7 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 - Gtalk: <shyvo1987@gmail.com>
 - 浙大CAD&CG可视化与可视分析小组: [VAG Wiki](http://www.cad.zju.edu.cn/home/vagwiki/index.php)
 
-如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new).
+如有疑问，或发现Bug，也可[提交Bug](https://github.com/TBEDP/datavjs/issues/new)
 
 
 Read Me (English Version)
