@@ -130,7 +130,7 @@ DataV.js is available under the [MIT License](https://github.com/TBEDP/datavjs/b
 组件由淘宝数据产品部可视化小组以及浙大CAD&CG可视化与可视分析小组共同开发
 开发联系人，有问题可咨询：
 
-- 阿里旺旺 Ali WangWang
+- 阿里旺旺
   - 朴灵[![朴灵 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%9C%B4%E7%81%B5&s=1)
   - 宁朗[![宁朗 在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E5%AE%81%E6%9C%97&s=1)
   - 法慧[![法慧  在线咨询](http://amos1.taobao.com/online.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1)](http://amos1.taobao.com/msg.ww?v=2&uid=%E6%B3%95%E6%85%A7&s=1) 
