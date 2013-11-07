@@ -8,19 +8,19 @@ DataV.js是一个JavaScript的数据可视化库，致力于推动数据可视�
 - [API Documents](http://tbedp.github.com/datavjs/index.html)
 - 当前分支为Butterfly，处于开发中，任意疑问，请移至底下联系人部分即可。
 
-## 安装 Installation
+## 安装
 目前处于开发中，并未release正式版本，如需使用，请采用如下方式：
 
 
 ```
-// Clone 到本地 Clone to lacal
+// Clone到本地
 git clone git://github.com/TBEDP/datavjs.git
-// 进入目录 Enter directory
+// 进入目录
 cd datavjs
-// 启动 demo Startup Demo
+// 启动 demo
 npm install & npm run build & npm start
 ```
-或者 or
+或者
 
 ```
 npm install datavjs
@@ -151,6 +151,7 @@ DataV.js is a JavaScript library for data visualization, which focuses on the da
 > There's Data, there's visualization!
 - The current branch is Butterfly, If you have any question, please contact us.
 
+## Installation
 As DataV.js is under constraction, we don't have a release version. Please use the following way to install:
 
 ```
