@@ -7731,6 +7731,10 @@ if (!JSON) {
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
 
+
+//datav change 1 (replace elproto.transform)
+//setviewbox bug fix according https://github.com/DmitryBaranovskiy/raphael/issues/468
+
 (function (glob) {
     var version = "0.4.2",
         has = "hasOwnProperty",
@@ -15296,25 +15300,79 @@ if (!JSON) {
 
     Element.prototype = elproto;
     elproto.constructor = Element;
+    // elproto.transform = function (tstr) {
+    //     if (tstr == null) {
+    //         return this._.transform;
+    //     }
+    //     var vbs = this.paper._viewBoxShift,
+    //         vbt = vbs ? "s" + [vbs.scale, vbs.scale] + "-1-1t" + [vbs.dx, vbs.dy] : E,
+    //         oldt;
+    //     if (vbs) {
+    //         oldt = tstr = Str(tstr).replace(/\.{3}|\u2026/g, this._.transform || E);
+    //     }
+    //     R._extractTransform(this, vbt + tstr);
+    //     var matrix = this.matrix.clone(),
+    //         skew = this.skew,
+    //         o = this.node,
+    //         split,
+    //         isGrad = ~Str(this.attrs.fill).indexOf("-"),
+    //         isPatt = !Str(this.attrs.fill).indexOf("url(");
+    //     matrix.translate(1, 1);
+    //     if (isPatt || isGrad || this.type == "image") {
+    //         skew.matrix = "1 0 0 1";
+    //         skew.offset = "0 0";
+    //         split = matrix.split();
+    //         if ((isGrad && split.noRotation) || !split.isSimple) {
+    //             o.style.filter = matrix.toFilter();
+    //             var bb = this.getBBox(),
+    //                 bbt = this.getBBox(1),
+    //                 dx = bb.x - bbt.x,
+    //                 dy = bb.y - bbt.y;
+    //             o.coordorigin = (dx * -zoom) + S + (dy * -zoom);
+    //             setCoords(this, 1, 1, dx, dy, 0);
+    //         } else {
+    //             o.style.filter = E;
+    //             setCoords(this, split.scalex, split.scaley, split.dx, split.dy, split.rotate);
+    //         }
+    //     } else {
+    //         o.style.filter = E;
+    //         skew.matrix = Str(matrix);
+    //         skew.offset = matrix.offset();
+    //     }
+    //     oldt && (this._.transform = oldt);
+    //     return this;
+    // };
+    // datav change 1 from raphael 2.1.0
     elproto.transform = function (tstr) {
         if (tstr == null) {
             return this._.transform;
         }
         var vbs = this.paper._viewBoxShift,
-            vbt = vbs ? "s" + [vbs.scale, vbs.scale] + "-1-1t" + [vbs.dx, vbs.dy] : E,
+            //vbt = vbs ? "s" + [vbs.scale, vbs.scale] + "-1-1t" + [vbs.dx, vbs.dy] : E, //datav change 1
+            vbt = vbs ? "s" + [vbs.scale, vbs.scale] + ",-1,-1t" + [vbs.dx, vbs.dy] : E,
             oldt;
         if (vbs) {
             oldt = tstr = Str(tstr).replace(/\.{3}|\u2026/g, this._.transform || E);
         }
-        R._extractTransform(this, vbt + tstr);
+        //R._extractTransform(this, vbt + tstr); //datav change 1
+        if (!this.fvb && vbt != "") {
+          this.fvb = vbt;
+        }
+        var trsfrm = vbt + tstr;
+        if (this.fvb && tstr == this.fvb) {
+          trsfrm = vbt;
+        }
+        R._extractTransform(this, trsfrm);
+
         var matrix = this.matrix.clone(),
             skew = this.skew,
             o = this.node,
             split,
             isGrad = ~Str(this.attrs.fill).indexOf("-"),
             isPatt = !Str(this.attrs.fill).indexOf("url(");
-        matrix.translate(1, 1);
-        if (isPatt || isGrad || this.type == "image") {
+        matrix.translate(-.5, -.5);
+        //if (isPatt || isGrad || this.type == "image") { //datav change 1
+        if (isPatt || isGrad) {
             skew.matrix = "1 0 0 1";
             skew.offset = "0 0";
             split = matrix.split();
