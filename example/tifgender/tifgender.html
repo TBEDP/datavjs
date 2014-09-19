@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo</title>
+  <script src="../../build/deps.js"></script>
+  <script src="../../lib/datav.js"></script>  
+  <script src="../../lib/charts/tifgender.js"></script> 
+</head>
+<body>
+  <div id="demo1"></div>
+  <script>
+    var chart = new TifGender({
+          container: "demo1",
+          width: 326,
+          height: 190,
+          data: [{name: "男", value: 55}, {name: "女", value: 45, color: "#ff88a2"}],
+          clickHandle: function (d, i) {
+            console.log(d);
+            console.log(i);
+          },
+          margin: {
+            top: 50,
+            bottom: 30,
+            left: 20,
+            right: 20
+          }
+    });
+  </script>
+</body>
+</html>

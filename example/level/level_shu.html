@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>Document</title>
+  <script src="../../build/deps.js"></script>
+  <script src="../../lib/datav.js"></script>  
+  <script src="../../lib/charts/level.js"></script> 
+  <style>
+    .level {
+      padding: 10px;
+      margin: 10px;
+      height: 235px;
+      width: 300px;
+      overflow: hidden;
+      float: left;
+    }
+    .level2 {
+      padding: 10px;
+      margin: 10px;
+      height: 235px;
+      width: 500px;
+      overflow: hidden;
+      float: left;
+    }
+    .clr {
+      clear: both;
+    }
+  </style>
+</head>
+<body>
+  <div class="level"></div>
+  <div class="level"></div>
+  <div class="level"></div>
+  <div class="level"></div>
+  <div class="level"></div>
+  <div class="clr"></div>
+  <div class="level2"></div>
+  <script>
+    /**
+     * Examples about how to use LevelChart
+     * var tester = new LevelChart(DomNode); //init levelchart
+     * tester.render([ Array data ],{ Object globalBase: [Array globalBascialData], labels : [Array labelTypes], tipImg : "String image url for giving a tip" }, nobase : Boolean true/false );
+     */
+
+    //To draw charts in different data env
+    var tester = new LevelChart($('.level:eq(0)'));
+    tester.render([ 10, 20, 30, 49, 50 ]);
+
+    var tester = new LevelChart($('.level:eq(1)'));
+    tester.render([ 10, 35, 88, 49, 10 ], { globalBase : [ 10, 20, 50, 30, 15], labels : [ 'a', 'b', 'c', 'd', 'e' ] });
+
+    var tester = new LevelChart($('.level:eq(2)'));
+    tester.render([ 0, 0, 0, 0, 0 ], { globalBase : [ 10, 20, 50, 30, 15], labels : [ 'a', 'b', 'c', 'd', 'e' ] });
+
+    //When there is no baseline, the hover effects won't be shown.
+    var tester = new LevelChart($('.level:eq(3)'));
+    tester.render([ 10, 35, 88, 49, 10 ], { nobase : true });
+
+    //You could use your own images for marking the baseline on the top-right of the chart now!
+    var tester = new LevelChart($('.level:eq(4)'));
+    tester.render([ 10, 35, 88, 49, 10 ], { globalBase : [ 0, 0, 5, 0, 0], tipImg : 'http://img03.taobaocdn.com/tps/i3/T1iTjQXXXbXXc_eAHa-19-18.png' });
+
+    //When there is no baseline, the hover effects won't be shown.
+    var tester = new LevelChart($('.level2:eq(0)'), {
+      "width": 400,
+      "height": 235,
+    });
+    tester.render([[ 10, 35, 88, 49, 10 ],[ 15, 45, 78, 40, 10 ]], { globalBase : [[ 10, 20, 70, 30, 5 ], [ 10, 35, 70, 40, 15 ]]});
+
+  </script>
+</body>
+</html>
